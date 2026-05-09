@@ -24,7 +24,7 @@ export default defineConfig({
   ],
   resolve: {
         alias: {
-      "@package/ui": path.resolve(__dirname, "../../packages/ui/src"),
+      "@package/ui": path.resolve(__dirname, "../../packages/ui/src/index.ts"),
     }
   }
 })

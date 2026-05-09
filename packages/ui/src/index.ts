@@ -1,1 +1,1 @@
-export {TestComponent} from './test-component'
+export * from './components/ui'
