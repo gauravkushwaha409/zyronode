@@ -123,9 +123,6 @@ importers:
       '@tanstack/react-router-devtools':
         specifier: ^1.166.13
         version: 1.166.13(@tanstack/react-router@1.169.2(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(@tanstack/router-core@1.169.2)(csstype@3.2.3)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
-      axios:
-        specifier: ^1.16.0
-        version: 1.16.0
       react:
         specifier: ^19.2.5
         version: 19.2.5
@@ -199,6 +196,22 @@ importers:
       vite:
         specifier: ^8.0.10
         version: 8.0.10(@types/node@24.12.2)(jiti@2.7.0)(terser@5.46.2)
+
+  packages/api-client:
+    dependencies:
+      axios:
+        specifier: ^1.16.0
+        version: 1.16.0
+    devDependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/node':
+        specifier: ^22.15.3
+        version: 22.15.3
+      typescript:
+        specifier: 5.9.2
+        version: 5.9.2
 
   packages/eslint-config:
     devDependencies:

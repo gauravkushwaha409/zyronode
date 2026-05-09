@@ -1,5 +1,4 @@
-import axios from 'axios';
-import type { ApiError } from '../../types';
+import axios, { AxiosError } from 'axios';
 
 
 export const api = axios.create({
@@ -23,7 +22,7 @@ api.interceptors.request.use(
 // Response interceptor
 api.interceptors.response.use(
   (response) => response,
-  async (error: ApiError) => {
+  async (error: AxiosError) => {
     return Promise.reject(error);
   },
 );
