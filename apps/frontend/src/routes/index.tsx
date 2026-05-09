@@ -1,6 +1,7 @@
 // path: apps/frontend/src/routes/index.tsx
 
-import { TestComponent } from '@package/ui'
+import { Button } from '@package/ui/components/ui/button'
+import { TestComponent } from '@package/ui/test-component'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/')({
@@ -10,5 +11,6 @@ export const Route = createFileRoute('/')({
 function RouteComponent() {
   return <div>
     <TestComponent />
+    <Button>Test Button</Button>
   </div>
 }
