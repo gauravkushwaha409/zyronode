@@ -1,0 +1,15 @@
+# .dockerignore
+**/.git
+**/.turbo
+**/node_modules
+**/dist
+**/.env
+**/.env.local
+**/.env.*.local
+**/coverage
+**/*.log
+**/npm-debug.log*
+**/.next
+**/.cache
+**/.vite
+**/build

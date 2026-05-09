@@ -1,0 +1,31 @@
+# docker-compose.prod.yml — full production stack
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+    container_name: backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://admin:admin@postgres:5432/mydb
+      JWT_SECRET: your-super-secret-key
+      JWT_EXPIRES_IN: 7d
+      NODE_ENV: production
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: >
+      sh -c "npx prisma migrate deploy && node dist/main.js"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile
+    container_name: frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
