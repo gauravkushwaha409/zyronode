@@ -15,8 +15,8 @@ importers:
         specifier: ^2.9.9
         version: 2.9.9
       typescript:
-        specifier: 5.9.2
-        version: 5.9.2
+        specifier: 6.0.3
+        version: 6.0.3
 
   apps/backend:
     dependencies:

@@ -1,0 +1,8 @@
+// tsconfig.json
+{
+  "compilerOptions": {
+    "paths": {
+      "@package/ui": ["./packages/ui/src/index.ts"],
+    }
+  }
+}
