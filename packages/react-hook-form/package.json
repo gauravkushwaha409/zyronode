@@ -14,9 +14,9 @@
     "typescript": "5.9.2"
   },
   "dependencies": {
-    "react-hook-form": "^7.0.0",
-    "@hookform/resolvers": "^3.0.0",
-    "zod": "^3.0.0",
-    "@package/ui": "workspace:*"
+    "@hookform/resolvers": "^5.2.2",
+    "@package/ui": "workspace:*",
+    "react-hook-form": "^7.75.0",
+    "zod": "^4.4.3"
   }
 }
