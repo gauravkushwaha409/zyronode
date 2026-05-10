@@ -8,8 +8,9 @@
     "check-types": "tsc --noEmit"
   },
   "peerDependencies": {
-  "react": "^19.0.0",
-    "react-dom": "^19.0.0" 
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "zod": "^3.0.0"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
@@ -18,12 +19,12 @@
     "@types/react-dom": "19.2.2",
     "react": "19.2.5",
     "react-dom": "19.2.5",
-    "typescript": "6.0.3"         
+    "typescript": "6.0.3",
+    "zod": "3.24.4"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
     "@package/ui": "workspace:*",
-    "react-hook-form": "^7.75.0",
-    "zod": "^3.24.0"              
+    "react-hook-form": "^7.75.0"
   }
 }
