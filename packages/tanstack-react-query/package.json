@@ -16,8 +16,8 @@
     "@types/node": "^22.15.3",
     "@types/react": "^19.2.14",
     "@types/react-dom": "19.2.2",
-    "react": "19.2.5",
-    "react-dom": "19.2.5",
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
     "typescript": "6.0.3"         
   },
   "dependencies": {
