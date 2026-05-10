@@ -5,8 +5,14 @@
     "composite": true,
     "jsx": "react-jsx",
     "paths": {
-      "@package/ui": [
-        "./src/index.ts"
+      "#lib/*": [
+        "./src/lib/*"
+      ],
+      "#components/*": [
+        "./src/components/*"
+      ],
+      "#hooks/*": [
+        "./src/hooks/*"
       ]
     }
   },

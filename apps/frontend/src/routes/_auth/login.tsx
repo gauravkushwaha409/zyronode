@@ -1,4 +1,4 @@
-import { RegisterForm } from '@package/ui'
+import { LoginMutation } from '@/features/auth/components'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_auth/login')({
@@ -6,7 +6,10 @@ export const Route = createFileRoute('/_auth/login')({
 })
 
 function RouteComponent() {
-  return <div>
-    <RegisterForm />
-  </div>
+  return (
+    <div>
+      <LoginMutation />
+    </div>
+  )
+
 }

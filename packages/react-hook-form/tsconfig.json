@@ -11,6 +11,7 @@
   },
   "include": [
     "src",
+    "../ui/src"
   ],
   "exclude": ["node_modules", "dist"],
    "references": [

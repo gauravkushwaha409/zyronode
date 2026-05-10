@@ -28,8 +28,11 @@
       "@/*": [
         "./src/*"
       ],
-      "@packages/ui/*": [
+      "@packages/ui": [
         "../../packages/ui/src/index.ts"
+      ],
+      "@packages/react-hook-form": [
+        "../../packages/react-hook-form/src/index.ts"
       ]
     }
   },

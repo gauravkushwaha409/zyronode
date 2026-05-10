@@ -22,7 +22,8 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-    "@": path.resolve(__dirname, "./src"),
+      "@": path.resolve(__dirname, "./src"),
+      "@packages/react-hook-form": path.resolve(__dirname, "../../packages/react-hook-form/src/index.ts")
     }
   }
 })

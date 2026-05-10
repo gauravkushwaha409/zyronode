@@ -7,13 +7,5 @@
     {
       "path": "./tsconfig.node.json"
     },
-  ],
-  "compilerOptions": {
-    "@/*": [
-      "./src/*"
-    ],
-    "@packages/ui/*": [
-      "../../packages/ui/src/index.ts"
-    ]
-  }
+  ]
 }
