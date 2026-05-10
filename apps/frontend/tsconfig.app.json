@@ -25,7 +25,10 @@
     "noFallthroughCasesInSwitch": true,
     /* Path mapping */
     "paths": {
-      "@package/ui": [
+      "@/*": [
+        "./src/*"
+      ],
+      "@packages/ui/*": [
         "../../packages/ui/src/index.ts"
       ]
     }

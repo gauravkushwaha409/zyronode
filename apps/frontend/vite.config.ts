@@ -1,8 +1,7 @@
 // apps/frontend/vite.config.ts
 
 import { defineConfig } from 'vite'
-import react, { reactCompilerPreset } from '@vitejs/plugin-react'
-import babel from '@rolldown/plugin-babel'
+import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { tanstackRouter } from '@tanstack/router-plugin/vite'
 import path from 'node:path'
@@ -15,7 +14,6 @@ export default defineConfig({
       autoCodeSplitting: true,
     }),
     react(),
-    babel({ presets: [reactCompilerPreset()] }),
     tailwindcss(),
 
 
@@ -24,8 +22,7 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      "@package/ui": path.resolve(__dirname, "../../packages/ui/src/index.ts"),
-      "@package/react-hook-form": path.resolve(__dirname, "../../packages/react-hook-form/src/index.ts"),
+    "@": path.resolve(__dirname, "./src"),
     }
   }
 })

@@ -1,14 +1,20 @@
 // packages/ui/tsconfig.json
-
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "composite": true,
     "jsx": "react-jsx",
-    "paths": {    }
+    "paths": {
+      "@package/ui": [
+        "./src/index.ts"
+      ]
+    }
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist"],
-  "references": [  ]
-  
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ],
 }
