@@ -10,5 +10,13 @@ export function useRegisterForm() {
         schema: registerSchema,
     })
 
+    const handleSubmit = form.handleSubmit((values) => {
+        console.log(values)
+    })
+
+    const handleError = form.handleSubmit(() => {
+        console.log("error")
+    })
+
     return { form }
 }
