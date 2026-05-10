@@ -1,22 +1,25 @@
 {
   "name": "turbo-repo",
   "private": true,
+  "type": "module",
   "scripts": {
-    "local": "turbo run dev",
     "dev": "pnpm docker:up && pnpm wait-for-db && turbo dev",
-    "dev:frontend": "pnpm docker:up && turbo dev --filter frontend",
+    "dev:frontend": "turbo dev --filter frontend", 
     "dev:backend": "pnpm docker:up && pnpm wait-for-db && turbo dev --filter backend",
-    "start": "docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build",
-    "stop": "docker compose -f docker-compose.yml -f docker-compose.prod.yml down",
+    "build": "turbo build",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "check-types": "turbo run check-types",
+
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
     "docker:logs": "docker compose logs -f",
     "docker:reset": "docker compose down -v && docker compose up -d",
+
     "wait-for-db": "node scripts/wait-for-db.mjs",
-    "build": "turbo build",
-    "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "check-types": "turbo run check-types"
+    "db:migrate": "turbo run prisma:migrate --filter backend",
+    "db:studio": "turbo run prisma:studio --filter backend"
+
   },
   "devDependencies": {
     "prettier": "^3.7.4",
