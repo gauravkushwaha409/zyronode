@@ -1,6 +1,5 @@
 // path: apps/frontend/src/routes/index.tsx
 
-import { Button } from '@package/ui'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/')({
@@ -8,7 +7,9 @@ export const Route = createFileRoute('/')({
 })
 
 function RouteComponent() {
-  return <div>
-    <Button>Test Button</Button>
-  </div>
+  return (
+    <div>
+      hello world
+    </div>
+  )
 }

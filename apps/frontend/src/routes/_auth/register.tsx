@@ -1,3 +1,4 @@
+import { RegisterForm } from '@package/ui'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_auth/register')({
@@ -5,5 +6,9 @@ export const Route = createFileRoute('/_auth/register')({
 })
 
 function RouteComponent() {
-  return <div>Hello "/_auth/register"!</div>
+  return (
+    <div>
+      <RegisterForm />
+    </div>
+  )
 }
