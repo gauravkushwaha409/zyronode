@@ -10,12 +10,12 @@ export class AuthController {
 
   @Post('register')
   register(@Body() dto: RegisterDto) {
-    return this.auth.register(dto)
+    return "Not implemented yet"
   }
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
   login(@Body() dto: LoginDto) {
-    return this.auth.login(dto)
+    return "Not implemented yet"
   }
 }
