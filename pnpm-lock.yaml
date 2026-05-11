@@ -236,6 +236,9 @@ importers:
       axios:
         specifier: ^1.16.0
         version: 1.16.0
+      vite:
+        specifier: ^8.0.10
+        version: 8.0.11(@types/node@22.19.18)(jiti@2.7.0)(terser@5.47.1)
     devDependencies:
       '@repo/typescript-config':
         specifier: workspace:*
@@ -11613,6 +11616,19 @@ snapshots:
   validator@13.15.35: {}
 
   vary@1.1.2: {}
+
+  vite@8.0.11(@types/node@22.19.18)(jiti@2.7.0)(terser@5.47.1):
+    dependencies:
+      lightningcss: 1.32.0
+      picomatch: 4.0.4
+      postcss: 8.5.14
+      rolldown: 1.0.0-rc.18
+      tinyglobby: 0.2.16
+    optionalDependencies:
+      '@types/node': 22.19.18
+      fsevents: 2.3.3
+      jiti: 2.7.0
+      terser: 5.47.1
 
   vite@8.0.11(@types/node@24.12.3)(jiti@2.7.0)(terser@5.47.1):
     dependencies:

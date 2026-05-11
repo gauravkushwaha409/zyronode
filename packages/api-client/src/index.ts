@@ -1,2 +1,6 @@
 export { BaseAPIService } from './base-api.service'
-export { apiClient } from './api-client'
+export { createApiClient } from './api-client'
+
+export { type AxiosRequestConfig } from 'axios'
+
+export type { ApiResponse, APIError } from './types'
