@@ -1,7 +1,7 @@
 import axios, { AxiosError } from 'axios';
 
 
-export const api = axios.create({
+export const apiClient = axios.create({
   baseURL: '',
   timeout: 100,
   headers: {
@@ -11,7 +11,7 @@ export const api = axios.create({
 });
 
 // Request interceptor
-api.interceptors.request.use(
+apiClient.interceptors.request.use(
   (config) => {
 
     return config;
@@ -20,7 +20,7 @@ api.interceptors.request.use(
 );
 
 // Response interceptor
-api.interceptors.response.use(
+apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
     return Promise.reject(error);
