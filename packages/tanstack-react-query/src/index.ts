@@ -1,5 +1,5 @@
 // packages/tanstack-react-query/src/index.ts
-export { QueryProvider } from './provider'
+export { TanstackQueryProvider } from './provider'
 export { createQueryClient } from './query-client'
 export { asyncStoragePersister } from './persister'
 

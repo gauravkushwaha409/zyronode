@@ -28,17 +28,21 @@
       "@/*": [
         "./src/*"
       ],
-      "@packages/ui": [
+      "@package/ui": [
         "../../packages/ui/src/index.ts"
       ],
-      "@packages/react-hook-form": [
+      "@package/react-hook-form": [
         "../../packages/react-hook-form/src/index.ts"
+      ],
+      "@package/tanstack-react-query": [
+        "../../packages/tanstack-react-query/src/index.ts"
+      ],
+      "@package/api-client": [
+        "../../packages/api-client/src/index.ts"
       ]
     }
   },
   "include": [
-    "src",
-    "../../packages/ui/src",
-    "../../packages/react-hook-form/src"
+    "src"
   ]
 }

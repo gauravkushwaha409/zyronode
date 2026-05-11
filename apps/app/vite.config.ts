@@ -23,7 +23,10 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      "@packages/react-hook-form": path.resolve(__dirname, "../../packages/react-hook-form/src/index.ts")
+      "@package/ui": path.resolve(__dirname, "../../packages/ui/src/index.ts"),
+      "@package/react-hook-form": path.resolve(__dirname, "../../packages/react-hook-form/src/index.ts"),
+      "@package/tanstack-react-query": path.resolve(__dirname, "../../packages/tanstack-react-query/src/index.ts"),
+      "@package/api-client": path.resolve(__dirname, "../../packages/api-client/src/index.ts")
     }
   }
 })

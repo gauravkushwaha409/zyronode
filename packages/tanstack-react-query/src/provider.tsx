@@ -11,7 +11,7 @@ interface QueryProviderProps {
   children: ReactNode
 }
 
-export function QueryProvider({ children }: QueryProviderProps) {
+export function TanstackQueryProvider({ children }: QueryProviderProps) {
   return (
     <PersistQueryClientProvider
       client={queryClient}
@@ -25,7 +25,7 @@ export function QueryProvider({ children }: QueryProviderProps) {
       }}
     >
       {children}
-      {process.env.NODE_ENV === 'development' && (
+      {import.meta.env.DEV && (
         <ReactQueryDevtools initialIsOpen={false} />
       )}
     </PersistQueryClientProvider>

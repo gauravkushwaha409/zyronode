@@ -1,8 +1,8 @@
-import { RhfInput } from "@packages/react-hook-form";
-import { Button } from "@packages/ui";
+import { RhfInput } from "@package/react-hook-form";
+import { Button } from "@package/ui";
 
 export function RegisterForm() {
-    return(
+    return (
         <div className="space-y-5">
             <RhfInput name="firstName" label="First Name" />
             <RhfInput name="lastName" label="Last Name" />
