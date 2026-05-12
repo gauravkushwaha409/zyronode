@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute(
-  '/_organization-protected/$organization-id',
+  '/_organization-protected/$organization',
 )({
   component: RouteComponent,
 })

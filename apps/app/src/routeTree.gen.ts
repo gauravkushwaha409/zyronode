@@ -16,13 +16,13 @@ import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as VerifyVerifyMfaRouteImport } from './routes/_verify/verify-mfa'
 import { Route as VerifyVerifyEmailRouteImport } from './routes/_verify/verify-email'
-import { Route as OrganizationProtectedOrganizationIdRouteImport } from './routes/_organization-protected/$organization-id'
+import { Route as OrganizationProtectedOrganizationRouteImport } from './routes/_organization-protected/$organization'
 import { Route as AuthRegisterRouteImport } from './routes/_auth/register'
 import { Route as AuthLoginRouteImport } from './routes/_auth/login'
-import { Route as OrganizationProtectedOrgIdVisitorRouteImport } from './routes/_organization-protected/$orgId/visitor'
-import { Route as OrganizationProtectedOrgIdTicketRouteImport } from './routes/_organization-protected/$orgId/ticket'
-import { Route as OrganizationProtectedOrgIdInboxRouteImport } from './routes/_organization-protected/$orgId/inbox'
-import { Route as OrganizationProtectedOrgIdDashboardRouteImport } from './routes/_organization-protected/$orgId/dashboard'
+import { Route as OrganizationProtectedOrganizationVisitorRouteImport } from './routes/_organization-protected/$organization/visitor'
+import { Route as OrganizationProtectedOrganizationTicketRouteImport } from './routes/_organization-protected/$organization/ticket'
+import { Route as OrganizationProtectedOrganizationInboxRouteImport } from './routes/_organization-protected/$organization/inbox'
+import { Route as OrganizationProtectedOrganizationDashboardRouteImport } from './routes/_organization-protected/$organization/dashboard'
 
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
@@ -56,10 +56,10 @@ const VerifyVerifyEmailRoute = VerifyVerifyEmailRouteImport.update({
   path: '/verify-email',
   getParentRoute: () => VerifyRoute,
 } as any)
-const OrganizationProtectedOrganizationIdRoute =
-  OrganizationProtectedOrganizationIdRouteImport.update({
-    id: '/$organization-id',
-    path: '/$organization-id',
+const OrganizationProtectedOrganizationRoute =
+  OrganizationProtectedOrganizationRouteImport.update({
+    id: '/$organization',
+    path: '/$organization',
     getParentRoute: () => OrganizationProtectedRoute,
   } as any)
 const AuthRegisterRoute = AuthRegisterRouteImport.update({
@@ -72,29 +72,29 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => AuthRoute,
 } as any)
-const OrganizationProtectedOrgIdVisitorRoute =
-  OrganizationProtectedOrgIdVisitorRouteImport.update({
-    id: '/$orgId/visitor',
-    path: '/$orgId/visitor',
-    getParentRoute: () => OrganizationProtectedRoute,
+const OrganizationProtectedOrganizationVisitorRoute =
+  OrganizationProtectedOrganizationVisitorRouteImport.update({
+    id: '/visitor',
+    path: '/visitor',
+    getParentRoute: () => OrganizationProtectedOrganizationRoute,
   } as any)
-const OrganizationProtectedOrgIdTicketRoute =
-  OrganizationProtectedOrgIdTicketRouteImport.update({
-    id: '/$orgId/ticket',
-    path: '/$orgId/ticket',
-    getParentRoute: () => OrganizationProtectedRoute,
+const OrganizationProtectedOrganizationTicketRoute =
+  OrganizationProtectedOrganizationTicketRouteImport.update({
+    id: '/ticket',
+    path: '/ticket',
+    getParentRoute: () => OrganizationProtectedOrganizationRoute,
   } as any)
-const OrganizationProtectedOrgIdInboxRoute =
-  OrganizationProtectedOrgIdInboxRouteImport.update({
-    id: '/$orgId/inbox',
-    path: '/$orgId/inbox',
-    getParentRoute: () => OrganizationProtectedRoute,
+const OrganizationProtectedOrganizationInboxRoute =
+  OrganizationProtectedOrganizationInboxRouteImport.update({
+    id: '/inbox',
+    path: '/inbox',
+    getParentRoute: () => OrganizationProtectedOrganizationRoute,
   } as any)
-const OrganizationProtectedOrgIdDashboardRoute =
-  OrganizationProtectedOrgIdDashboardRouteImport.update({
-    id: '/$orgId/dashboard',
-    path: '/$orgId/dashboard',
-    getParentRoute: () => OrganizationProtectedRoute,
+const OrganizationProtectedOrganizationDashboardRoute =
+  OrganizationProtectedOrganizationDashboardRouteImport.update({
+    id: '/dashboard',
+    path: '/dashboard',
+    getParentRoute: () => OrganizationProtectedOrganizationRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -102,26 +102,26 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
-  '/$organization-id': typeof OrganizationProtectedOrganizationIdRoute
+  '/$organization': typeof OrganizationProtectedOrganizationRouteWithChildren
   '/verify-email': typeof VerifyVerifyEmailRoute
   '/verify-mfa': typeof VerifyVerifyMfaRoute
-  '/$orgId/dashboard': typeof OrganizationProtectedOrgIdDashboardRoute
-  '/$orgId/inbox': typeof OrganizationProtectedOrgIdInboxRoute
-  '/$orgId/ticket': typeof OrganizationProtectedOrgIdTicketRoute
-  '/$orgId/visitor': typeof OrganizationProtectedOrgIdVisitorRoute
+  '/$organization/dashboard': typeof OrganizationProtectedOrganizationDashboardRoute
+  '/$organization/inbox': typeof OrganizationProtectedOrganizationInboxRoute
+  '/$organization/ticket': typeof OrganizationProtectedOrganizationTicketRoute
+  '/$organization/visitor': typeof OrganizationProtectedOrganizationVisitorRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
-  '/$organization-id': typeof OrganizationProtectedOrganizationIdRoute
+  '/$organization': typeof OrganizationProtectedOrganizationRouteWithChildren
   '/verify-email': typeof VerifyVerifyEmailRoute
   '/verify-mfa': typeof VerifyVerifyMfaRoute
-  '/$orgId/dashboard': typeof OrganizationProtectedOrgIdDashboardRoute
-  '/$orgId/inbox': typeof OrganizationProtectedOrgIdInboxRoute
-  '/$orgId/ticket': typeof OrganizationProtectedOrgIdTicketRoute
-  '/$orgId/visitor': typeof OrganizationProtectedOrgIdVisitorRoute
+  '/$organization/dashboard': typeof OrganizationProtectedOrganizationDashboardRoute
+  '/$organization/inbox': typeof OrganizationProtectedOrganizationInboxRoute
+  '/$organization/ticket': typeof OrganizationProtectedOrganizationTicketRoute
+  '/$organization/visitor': typeof OrganizationProtectedOrganizationVisitorRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -132,13 +132,13 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/register': typeof AuthRegisterRoute
-  '/_organization-protected/$organization-id': typeof OrganizationProtectedOrganizationIdRoute
+  '/_organization-protected/$organization': typeof OrganizationProtectedOrganizationRouteWithChildren
   '/_verify/verify-email': typeof VerifyVerifyEmailRoute
   '/_verify/verify-mfa': typeof VerifyVerifyMfaRoute
-  '/_organization-protected/$orgId/dashboard': typeof OrganizationProtectedOrgIdDashboardRoute
-  '/_organization-protected/$orgId/inbox': typeof OrganizationProtectedOrgIdInboxRoute
-  '/_organization-protected/$orgId/ticket': typeof OrganizationProtectedOrgIdTicketRoute
-  '/_organization-protected/$orgId/visitor': typeof OrganizationProtectedOrgIdVisitorRoute
+  '/_organization-protected/$organization/dashboard': typeof OrganizationProtectedOrganizationDashboardRoute
+  '/_organization-protected/$organization/inbox': typeof OrganizationProtectedOrganizationInboxRoute
+  '/_organization-protected/$organization/ticket': typeof OrganizationProtectedOrganizationTicketRoute
+  '/_organization-protected/$organization/visitor': typeof OrganizationProtectedOrganizationVisitorRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -147,26 +147,26 @@ export interface FileRouteTypes {
     | '/about'
     | '/login'
     | '/register'
-    | '/$organization-id'
+    | '/$organization'
     | '/verify-email'
     | '/verify-mfa'
-    | '/$orgId/dashboard'
-    | '/$orgId/inbox'
-    | '/$orgId/ticket'
-    | '/$orgId/visitor'
+    | '/$organization/dashboard'
+    | '/$organization/inbox'
+    | '/$organization/ticket'
+    | '/$organization/visitor'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
     | '/login'
     | '/register'
-    | '/$organization-id'
+    | '/$organization'
     | '/verify-email'
     | '/verify-mfa'
-    | '/$orgId/dashboard'
-    | '/$orgId/inbox'
-    | '/$orgId/ticket'
-    | '/$orgId/visitor'
+    | '/$organization/dashboard'
+    | '/$organization/inbox'
+    | '/$organization/ticket'
+    | '/$organization/visitor'
   id:
     | '__root__'
     | '/'
@@ -176,13 +176,13 @@ export interface FileRouteTypes {
     | '/about'
     | '/_auth/login'
     | '/_auth/register'
-    | '/_organization-protected/$organization-id'
+    | '/_organization-protected/$organization'
     | '/_verify/verify-email'
     | '/_verify/verify-mfa'
-    | '/_organization-protected/$orgId/dashboard'
-    | '/_organization-protected/$orgId/inbox'
-    | '/_organization-protected/$orgId/ticket'
-    | '/_organization-protected/$orgId/visitor'
+    | '/_organization-protected/$organization/dashboard'
+    | '/_organization-protected/$organization/inbox'
+    | '/_organization-protected/$organization/ticket'
+    | '/_organization-protected/$organization/visitor'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -244,11 +244,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VerifyVerifyEmailRouteImport
       parentRoute: typeof VerifyRoute
     }
-    '/_organization-protected/$organization-id': {
-      id: '/_organization-protected/$organization-id'
-      path: '/$organization-id'
-      fullPath: '/$organization-id'
-      preLoaderRoute: typeof OrganizationProtectedOrganizationIdRouteImport
+    '/_organization-protected/$organization': {
+      id: '/_organization-protected/$organization'
+      path: '/$organization'
+      fullPath: '/$organization'
+      preLoaderRoute: typeof OrganizationProtectedOrganizationRouteImport
       parentRoute: typeof OrganizationProtectedRoute
     }
     '/_auth/register': {
@@ -265,33 +265,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof AuthRoute
     }
-    '/_organization-protected/$orgId/visitor': {
-      id: '/_organization-protected/$orgId/visitor'
-      path: '/$orgId/visitor'
-      fullPath: '/$orgId/visitor'
-      preLoaderRoute: typeof OrganizationProtectedOrgIdVisitorRouteImport
-      parentRoute: typeof OrganizationProtectedRoute
+    '/_organization-protected/$organization/visitor': {
+      id: '/_organization-protected/$organization/visitor'
+      path: '/visitor'
+      fullPath: '/$organization/visitor'
+      preLoaderRoute: typeof OrganizationProtectedOrganizationVisitorRouteImport
+      parentRoute: typeof OrganizationProtectedOrganizationRoute
     }
-    '/_organization-protected/$orgId/ticket': {
-      id: '/_organization-protected/$orgId/ticket'
-      path: '/$orgId/ticket'
-      fullPath: '/$orgId/ticket'
-      preLoaderRoute: typeof OrganizationProtectedOrgIdTicketRouteImport
-      parentRoute: typeof OrganizationProtectedRoute
+    '/_organization-protected/$organization/ticket': {
+      id: '/_organization-protected/$organization/ticket'
+      path: '/ticket'
+      fullPath: '/$organization/ticket'
+      preLoaderRoute: typeof OrganizationProtectedOrganizationTicketRouteImport
+      parentRoute: typeof OrganizationProtectedOrganizationRoute
     }
-    '/_organization-protected/$orgId/inbox': {
-      id: '/_organization-protected/$orgId/inbox'
-      path: '/$orgId/inbox'
-      fullPath: '/$orgId/inbox'
-      preLoaderRoute: typeof OrganizationProtectedOrgIdInboxRouteImport
-      parentRoute: typeof OrganizationProtectedRoute
+    '/_organization-protected/$organization/inbox': {
+      id: '/_organization-protected/$organization/inbox'
+      path: '/inbox'
+      fullPath: '/$organization/inbox'
+      preLoaderRoute: typeof OrganizationProtectedOrganizationInboxRouteImport
+      parentRoute: typeof OrganizationProtectedOrganizationRoute
     }
-    '/_organization-protected/$orgId/dashboard': {
-      id: '/_organization-protected/$orgId/dashboard'
-      path: '/$orgId/dashboard'
-      fullPath: '/$orgId/dashboard'
-      preLoaderRoute: typeof OrganizationProtectedOrgIdDashboardRouteImport
-      parentRoute: typeof OrganizationProtectedRoute
+    '/_organization-protected/$organization/dashboard': {
+      id: '/_organization-protected/$organization/dashboard'
+      path: '/dashboard'
+      fullPath: '/$organization/dashboard'
+      preLoaderRoute: typeof OrganizationProtectedOrganizationDashboardRouteImport
+      parentRoute: typeof OrganizationProtectedOrganizationRoute
     }
   }
 }
@@ -308,23 +308,37 @@ const AuthRouteChildren: AuthRouteChildren = {
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
+interface OrganizationProtectedOrganizationRouteChildren {
+  OrganizationProtectedOrganizationDashboardRoute: typeof OrganizationProtectedOrganizationDashboardRoute
+  OrganizationProtectedOrganizationInboxRoute: typeof OrganizationProtectedOrganizationInboxRoute
+  OrganizationProtectedOrganizationTicketRoute: typeof OrganizationProtectedOrganizationTicketRoute
+  OrganizationProtectedOrganizationVisitorRoute: typeof OrganizationProtectedOrganizationVisitorRoute
+}
+
+const OrganizationProtectedOrganizationRouteChildren: OrganizationProtectedOrganizationRouteChildren =
+  {
+    OrganizationProtectedOrganizationDashboardRoute:
+      OrganizationProtectedOrganizationDashboardRoute,
+    OrganizationProtectedOrganizationInboxRoute:
+      OrganizationProtectedOrganizationInboxRoute,
+    OrganizationProtectedOrganizationTicketRoute:
+      OrganizationProtectedOrganizationTicketRoute,
+    OrganizationProtectedOrganizationVisitorRoute:
+      OrganizationProtectedOrganizationVisitorRoute,
+  }
+
+const OrganizationProtectedOrganizationRouteWithChildren =
+  OrganizationProtectedOrganizationRoute._addFileChildren(
+    OrganizationProtectedOrganizationRouteChildren,
+  )
+
 interface OrganizationProtectedRouteChildren {
-  OrganizationProtectedOrganizationIdRoute: typeof OrganizationProtectedOrganizationIdRoute
-  OrganizationProtectedOrgIdDashboardRoute: typeof OrganizationProtectedOrgIdDashboardRoute
-  OrganizationProtectedOrgIdInboxRoute: typeof OrganizationProtectedOrgIdInboxRoute
-  OrganizationProtectedOrgIdTicketRoute: typeof OrganizationProtectedOrgIdTicketRoute
-  OrganizationProtectedOrgIdVisitorRoute: typeof OrganizationProtectedOrgIdVisitorRoute
+  OrganizationProtectedOrganizationRoute: typeof OrganizationProtectedOrganizationRouteWithChildren
 }
 
 const OrganizationProtectedRouteChildren: OrganizationProtectedRouteChildren = {
-  OrganizationProtectedOrganizationIdRoute:
-    OrganizationProtectedOrganizationIdRoute,
-  OrganizationProtectedOrgIdDashboardRoute:
-    OrganizationProtectedOrgIdDashboardRoute,
-  OrganizationProtectedOrgIdInboxRoute: OrganizationProtectedOrgIdInboxRoute,
-  OrganizationProtectedOrgIdTicketRoute: OrganizationProtectedOrgIdTicketRoute,
-  OrganizationProtectedOrgIdVisitorRoute:
-    OrganizationProtectedOrgIdVisitorRoute,
+  OrganizationProtectedOrganizationRoute:
+    OrganizationProtectedOrganizationRouteWithChildren,
 }
 
 const OrganizationProtectedRouteWithChildren =
