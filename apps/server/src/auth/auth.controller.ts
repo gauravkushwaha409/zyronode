@@ -6,16 +6,16 @@ import { LoginDto } from './dto/login.dto'
 
 @Controller('auth')
 export class AuthController {
-  constructor(private auth: AuthService) {}
+  constructor(private authService: AuthService) {}
 
   @Post('register')
   register(@Body() dto: RegisterDto) {
-    return "Not implemented yet"
+    return this.authService.register(dto)
   }
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
   login(@Body() dto: LoginDto) {
-    return "Not implemented yet"
+    return this.authService.login(dto)
   }
 }
