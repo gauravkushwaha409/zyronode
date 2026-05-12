@@ -10,14 +10,31 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as VerifyRouteImport } from './routes/_verify'
+import { Route as OrganizationProtectedRouteImport } from './routes/_organization-protected'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as VerifyVerifyMfaRouteImport } from './routes/_verify/verify-mfa'
+import { Route as VerifyVerifyEmailRouteImport } from './routes/_verify/verify-email'
+import { Route as OrganizationProtectedOrganizationIdRouteImport } from './routes/_organization-protected/$organization-id'
 import { Route as AuthRegisterRouteImport } from './routes/_auth/register'
 import { Route as AuthLoginRouteImport } from './routes/_auth/login'
+import { Route as OrganizationProtectedOrgIdVisitorRouteImport } from './routes/_organization-protected/$orgId/visitor'
+import { Route as OrganizationProtectedOrgIdTicketRouteImport } from './routes/_organization-protected/$orgId/ticket'
+import { Route as OrganizationProtectedOrgIdInboxRouteImport } from './routes/_organization-protected/$orgId/inbox'
+import { Route as OrganizationProtectedOrgIdDashboardRouteImport } from './routes/_organization-protected/$orgId/dashboard'
 
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VerifyRoute = VerifyRouteImport.update({
+  id: '/_verify',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrganizationProtectedRoute = OrganizationProtectedRouteImport.update({
+  id: '/_organization-protected',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -29,6 +46,22 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VerifyVerifyMfaRoute = VerifyVerifyMfaRouteImport.update({
+  id: '/verify-mfa',
+  path: '/verify-mfa',
+  getParentRoute: () => VerifyRoute,
+} as any)
+const VerifyVerifyEmailRoute = VerifyVerifyEmailRouteImport.update({
+  id: '/verify-email',
+  path: '/verify-email',
+  getParentRoute: () => VerifyRoute,
+} as any)
+const OrganizationProtectedOrganizationIdRoute =
+  OrganizationProtectedOrganizationIdRouteImport.update({
+    id: '/$organization-id',
+    path: '/$organization-id',
+    getParentRoute: () => OrganizationProtectedRoute,
+  } as any)
 const AuthRegisterRoute = AuthRegisterRouteImport.update({
   id: '/register',
   path: '/register',
@@ -39,44 +72,124 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => AuthRoute,
 } as any)
+const OrganizationProtectedOrgIdVisitorRoute =
+  OrganizationProtectedOrgIdVisitorRouteImport.update({
+    id: '/$orgId/visitor',
+    path: '/$orgId/visitor',
+    getParentRoute: () => OrganizationProtectedRoute,
+  } as any)
+const OrganizationProtectedOrgIdTicketRoute =
+  OrganizationProtectedOrgIdTicketRouteImport.update({
+    id: '/$orgId/ticket',
+    path: '/$orgId/ticket',
+    getParentRoute: () => OrganizationProtectedRoute,
+  } as any)
+const OrganizationProtectedOrgIdInboxRoute =
+  OrganizationProtectedOrgIdInboxRouteImport.update({
+    id: '/$orgId/inbox',
+    path: '/$orgId/inbox',
+    getParentRoute: () => OrganizationProtectedRoute,
+  } as any)
+const OrganizationProtectedOrgIdDashboardRoute =
+  OrganizationProtectedOrgIdDashboardRouteImport.update({
+    id: '/$orgId/dashboard',
+    path: '/$orgId/dashboard',
+    getParentRoute: () => OrganizationProtectedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
+  '/$organization-id': typeof OrganizationProtectedOrganizationIdRoute
+  '/verify-email': typeof VerifyVerifyEmailRoute
+  '/verify-mfa': typeof VerifyVerifyMfaRoute
+  '/$orgId/dashboard': typeof OrganizationProtectedOrgIdDashboardRoute
+  '/$orgId/inbox': typeof OrganizationProtectedOrgIdInboxRoute
+  '/$orgId/ticket': typeof OrganizationProtectedOrgIdTicketRoute
+  '/$orgId/visitor': typeof OrganizationProtectedOrgIdVisitorRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
+  '/$organization-id': typeof OrganizationProtectedOrganizationIdRoute
+  '/verify-email': typeof VerifyVerifyEmailRoute
+  '/verify-mfa': typeof VerifyVerifyMfaRoute
+  '/$orgId/dashboard': typeof OrganizationProtectedOrgIdDashboardRoute
+  '/$orgId/inbox': typeof OrganizationProtectedOrgIdInboxRoute
+  '/$orgId/ticket': typeof OrganizationProtectedOrgIdTicketRoute
+  '/$orgId/visitor': typeof OrganizationProtectedOrgIdVisitorRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_auth': typeof AuthRouteWithChildren
+  '/_organization-protected': typeof OrganizationProtectedRouteWithChildren
+  '/_verify': typeof VerifyRouteWithChildren
   '/about': typeof AboutRoute
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/register': typeof AuthRegisterRoute
+  '/_organization-protected/$organization-id': typeof OrganizationProtectedOrganizationIdRoute
+  '/_verify/verify-email': typeof VerifyVerifyEmailRoute
+  '/_verify/verify-mfa': typeof VerifyVerifyMfaRoute
+  '/_organization-protected/$orgId/dashboard': typeof OrganizationProtectedOrgIdDashboardRoute
+  '/_organization-protected/$orgId/inbox': typeof OrganizationProtectedOrgIdInboxRoute
+  '/_organization-protected/$orgId/ticket': typeof OrganizationProtectedOrgIdTicketRoute
+  '/_organization-protected/$orgId/visitor': typeof OrganizationProtectedOrgIdVisitorRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/login' | '/register'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/login'
+    | '/register'
+    | '/$organization-id'
+    | '/verify-email'
+    | '/verify-mfa'
+    | '/$orgId/dashboard'
+    | '/$orgId/inbox'
+    | '/$orgId/ticket'
+    | '/$orgId/visitor'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/login' | '/register'
+  to:
+    | '/'
+    | '/about'
+    | '/login'
+    | '/register'
+    | '/$organization-id'
+    | '/verify-email'
+    | '/verify-mfa'
+    | '/$orgId/dashboard'
+    | '/$orgId/inbox'
+    | '/$orgId/ticket'
+    | '/$orgId/visitor'
   id:
     | '__root__'
     | '/'
     | '/_auth'
+    | '/_organization-protected'
+    | '/_verify'
     | '/about'
     | '/_auth/login'
     | '/_auth/register'
+    | '/_organization-protected/$organization-id'
+    | '/_verify/verify-email'
+    | '/_verify/verify-mfa'
+    | '/_organization-protected/$orgId/dashboard'
+    | '/_organization-protected/$orgId/inbox'
+    | '/_organization-protected/$orgId/ticket'
+    | '/_organization-protected/$orgId/visitor'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRouteWithChildren
+  OrganizationProtectedRoute: typeof OrganizationProtectedRouteWithChildren
+  VerifyRoute: typeof VerifyRouteWithChildren
   AboutRoute: typeof AboutRoute
 }
 
@@ -87,6 +200,20 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_verify': {
+      id: '/_verify'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof VerifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_organization-protected': {
+      id: '/_organization-protected'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof OrganizationProtectedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth': {
@@ -103,6 +230,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_verify/verify-mfa': {
+      id: '/_verify/verify-mfa'
+      path: '/verify-mfa'
+      fullPath: '/verify-mfa'
+      preLoaderRoute: typeof VerifyVerifyMfaRouteImport
+      parentRoute: typeof VerifyRoute
+    }
+    '/_verify/verify-email': {
+      id: '/_verify/verify-email'
+      path: '/verify-email'
+      fullPath: '/verify-email'
+      preLoaderRoute: typeof VerifyVerifyEmailRouteImport
+      parentRoute: typeof VerifyRoute
+    }
+    '/_organization-protected/$organization-id': {
+      id: '/_organization-protected/$organization-id'
+      path: '/$organization-id'
+      fullPath: '/$organization-id'
+      preLoaderRoute: typeof OrganizationProtectedOrganizationIdRouteImport
+      parentRoute: typeof OrganizationProtectedRoute
+    }
     '/_auth/register': {
       id: '/_auth/register'
       path: '/register'
@@ -116,6 +264,34 @@ declare module '@tanstack/react-router' {
       fullPath: '/login'
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof AuthRoute
+    }
+    '/_organization-protected/$orgId/visitor': {
+      id: '/_organization-protected/$orgId/visitor'
+      path: '/$orgId/visitor'
+      fullPath: '/$orgId/visitor'
+      preLoaderRoute: typeof OrganizationProtectedOrgIdVisitorRouteImport
+      parentRoute: typeof OrganizationProtectedRoute
+    }
+    '/_organization-protected/$orgId/ticket': {
+      id: '/_organization-protected/$orgId/ticket'
+      path: '/$orgId/ticket'
+      fullPath: '/$orgId/ticket'
+      preLoaderRoute: typeof OrganizationProtectedOrgIdTicketRouteImport
+      parentRoute: typeof OrganizationProtectedRoute
+    }
+    '/_organization-protected/$orgId/inbox': {
+      id: '/_organization-protected/$orgId/inbox'
+      path: '/$orgId/inbox'
+      fullPath: '/$orgId/inbox'
+      preLoaderRoute: typeof OrganizationProtectedOrgIdInboxRouteImport
+      parentRoute: typeof OrganizationProtectedRoute
+    }
+    '/_organization-protected/$orgId/dashboard': {
+      id: '/_organization-protected/$orgId/dashboard'
+      path: '/$orgId/dashboard'
+      fullPath: '/$orgId/dashboard'
+      preLoaderRoute: typeof OrganizationProtectedOrgIdDashboardRouteImport
+      parentRoute: typeof OrganizationProtectedRoute
     }
   }
 }
@@ -132,9 +308,48 @@ const AuthRouteChildren: AuthRouteChildren = {
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
+interface OrganizationProtectedRouteChildren {
+  OrganizationProtectedOrganizationIdRoute: typeof OrganizationProtectedOrganizationIdRoute
+  OrganizationProtectedOrgIdDashboardRoute: typeof OrganizationProtectedOrgIdDashboardRoute
+  OrganizationProtectedOrgIdInboxRoute: typeof OrganizationProtectedOrgIdInboxRoute
+  OrganizationProtectedOrgIdTicketRoute: typeof OrganizationProtectedOrgIdTicketRoute
+  OrganizationProtectedOrgIdVisitorRoute: typeof OrganizationProtectedOrgIdVisitorRoute
+}
+
+const OrganizationProtectedRouteChildren: OrganizationProtectedRouteChildren = {
+  OrganizationProtectedOrganizationIdRoute:
+    OrganizationProtectedOrganizationIdRoute,
+  OrganizationProtectedOrgIdDashboardRoute:
+    OrganizationProtectedOrgIdDashboardRoute,
+  OrganizationProtectedOrgIdInboxRoute: OrganizationProtectedOrgIdInboxRoute,
+  OrganizationProtectedOrgIdTicketRoute: OrganizationProtectedOrgIdTicketRoute,
+  OrganizationProtectedOrgIdVisitorRoute:
+    OrganizationProtectedOrgIdVisitorRoute,
+}
+
+const OrganizationProtectedRouteWithChildren =
+  OrganizationProtectedRoute._addFileChildren(
+    OrganizationProtectedRouteChildren,
+  )
+
+interface VerifyRouteChildren {
+  VerifyVerifyEmailRoute: typeof VerifyVerifyEmailRoute
+  VerifyVerifyMfaRoute: typeof VerifyVerifyMfaRoute
+}
+
+const VerifyRouteChildren: VerifyRouteChildren = {
+  VerifyVerifyEmailRoute: VerifyVerifyEmailRoute,
+  VerifyVerifyMfaRoute: VerifyVerifyMfaRoute,
+}
+
+const VerifyRouteWithChildren =
+  VerifyRoute._addFileChildren(VerifyRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRouteWithChildren,
+  OrganizationProtectedRoute: OrganizationProtectedRouteWithChildren,
+  VerifyRoute: VerifyRouteWithChildren,
   AboutRoute: AboutRoute,
 }
 export const routeTree = rootRouteImport
