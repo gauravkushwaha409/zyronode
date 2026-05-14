@@ -1,6 +1,6 @@
 export const ENDPOINTS = {
     AUTH: {
-        LOGIN: '/login',
-        REGISTER: '/register'
+        LOGIN: '/auth/login',
+        REGISTER: '/auth/register'
     }   
 }

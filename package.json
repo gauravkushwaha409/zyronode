@@ -15,9 +15,9 @@
     "docker:logs": "docker compose logs -f",
     "docker:reset": "docker compose down -v && docker compose up -d",
     "wait-for-db": "node scripts/wait-for-db.mjs",
-    "db:migrate": "turbo run prisma:migrate --filter backend",
-    "db:studio": "turbo run prisma:studio --filter backend",
-    "db:generate": "turbo run prisma:generate --filter backend"
+    "db:migrate": "turbo run prisma:migrate --filter server",
+    "db:studio": "turbo run prisma:studio --filter server",
+    "db:generate": "turbo run prisma:generate --filter server"
   },
   "devDependencies": {
     "prettier": "^3.7.4",
