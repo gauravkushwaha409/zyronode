@@ -1,10 +1,10 @@
-// apps/backend/src/auth/auth.service.ts
+// apps/server/src/auth/auth.service.ts
 import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common'
-import { JwtService } from '@nestjs/jwt'
 import { PrismaService } from '../prisma/prisma.service'
+import { AuthJwtService } from './jwt.service'
 import { RegisterDto } from './dto/register.dto'
 import { LoginDto } from './dto/login.dto'
 import * as bcryptjs from 'bcryptjs'
@@ -13,11 +13,21 @@ import * as bcryptjs from 'bcryptjs'
 export class AuthService {
   constructor(
     private prisma: PrismaService,
-    private jwt: JwtService,
+    private authJwtService: AuthJwtService,
   ) { }
 
   private async hashPassword(password: string) {
     return await bcryptjs.hash(password, 10)
+  }
+
+  async getTokens(user: { id: string; email: string; firstName: string | null; lastName: string | null }) {
+    const payload = {
+      id: user.id,
+      email: user.email,
+      name: `${user.firstName || ''} ${user.lastName || ''}`.trim(),
+    };
+    
+    return this.authJwtService.generateAuthTokens(payload);
   }
 
   async register(dto: RegisterDto) {
@@ -30,7 +40,7 @@ export class AuthService {
         profile: dto.profile,
       },
     })
-    return user
+    return this.getTokens(user)
   }
 
   async login(dto: LoginDto) {
@@ -42,12 +52,12 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('Invalid credentials')
     }
-    if (user.password !== dto.password) {
+    const isPasswordValid = await bcryptjs.compare(dto.password, user.password);
+    if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials')
     }
-    return {
-      access_token: this.jwt.sign({ email: user.email }),
-    }
+    
+    return this.getTokens(user)
   }
 
 }
