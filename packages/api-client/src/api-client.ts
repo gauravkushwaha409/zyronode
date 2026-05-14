@@ -1,4 +1,4 @@
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 
 
 export const createApiClient = (baseURL: string) => axios.create({

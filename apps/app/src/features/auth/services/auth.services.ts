@@ -1,15 +1,15 @@
 import { CONFIG } from "@/config";
 import {  BaseAPIService, type AxiosRequestConfig } from "@package/api-client";
-import type { LoginMutationPayload, RegisterMutationPayload, } from "../types";
+import type {  LoginMutationTypes, RegisterMutationTypes,  } from "../types";
 import { apiClient } from "@/lib";
 
 class AuthApiServices extends BaseAPIService {
 
-    async login(data: LoginMutationPayload, axiosConfiguration: AxiosRequestConfig) {
+    async login(data: LoginMutationTypes.LoginMutationPayload, axiosConfiguration?: AxiosRequestConfig) {
         return super.post(CONFIG.ENDPOINTS.AUTH.LOGIN, data, axiosConfiguration)
     }
 
-    async register(data: RegisterMutationPayload, axiosConfiguration?: AxiosRequestConfig) {
+    async register(data: RegisterMutationTypes.RegisterMutationPayload, axiosConfiguration?: AxiosRequestConfig) {
         return super.post(CONFIG.ENDPOINTS.AUTH.REGISTER, data, axiosConfiguration)
     }
 

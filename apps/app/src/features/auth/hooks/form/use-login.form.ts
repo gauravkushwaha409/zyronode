@@ -1,8 +1,8 @@
 import { useAppForm } from "@package/react-hook-form"
-import { loginSchema } from "../schema"
+import { loginSchema, type LoginSchema } from "../../schema"
 
 export function useLoginForm() {
-    const form = useAppForm({
+    const form = useAppForm<LoginSchema>({
         defaultValues: {
             email: "",
             password: ""

@@ -1,2 +1,2 @@
-export *  from './login-mutation.types'
-export *  from './register-mutation.types'
+export *  as LoginMutationTypes from './login-mutation.types'
+export * as RegisterMutationTypes from './register-mutation.types'

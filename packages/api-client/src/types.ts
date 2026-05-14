@@ -1,4 +1,4 @@
-import { AxiosError, AxiosResponse } from "axios";
+import { AxiosError, type AxiosResponse } from "axios";
 
 export type ApiResponse<T> = AxiosResponse<{
     success: boolean;

@@ -1,12 +1,12 @@
 import { useMutation } from "@package/tanstack-react-query";
 import { authApiService } from "../../services";
 import type { APIError, ApiResponse } from "@package/api-client";
-import type { RegisterMutationPayload } from "../../types";
+import type {  LoginMutationTypes,  } from "../../types";
 
 
-export function useRegisterMutation() {    
-    return useMutation<ApiResponse<null>,APIError,RegisterMutationPayload>(
-        (data)=> authApiService.register(data),
+export function useLoginMutation() {    
+    return useMutation<ApiResponse<null>,APIError,LoginMutationTypes.LoginMutationPayload>(
+        (data)=> authApiService.login(data),
         {
             onSuccess: (data) => {
                 console.log("on success ", data)

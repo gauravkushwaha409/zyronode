@@ -1,5 +1,5 @@
 import { useAppForm } from "@package/react-hook-form"
-import { registerSchema, type RegisterSchema } from "../schema"
+import { registerSchema, type RegisterSchema } from "../../schema"
 
 export function useRegisterForm() {
     const form = useAppForm<RegisterSchema>({
