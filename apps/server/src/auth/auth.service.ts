@@ -26,7 +26,7 @@ export class AuthService {
       email: user.email,
       name: `${user.firstName || ''} ${user.lastName || ''}`.trim(),
     };
-    
+
     return this.authJwtService.generateAuthTokens(payload);
   }
 
@@ -56,8 +56,9 @@ export class AuthService {
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials')
     }
-    
-    return this.getTokens(user)
+
+    const tokens = await this.getTokens(user);
+    return {  user,tokens };
   }
 
 }
