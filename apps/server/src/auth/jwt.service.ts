@@ -18,8 +18,8 @@ export class AuthJwtService {
     ]);
 
     return {
-      access_token: accessToken,
-      refresh_token: refreshToken,
+      access: accessToken,
+      refresh: refreshToken,
     };
   }
 

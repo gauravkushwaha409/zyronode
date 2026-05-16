@@ -8,6 +8,7 @@ import { AuthJwtService } from './jwt.service'
 import { RegisterDto } from './dto/register.dto'
 import { LoginDto } from './dto/login.dto'
 import * as bcryptjs from 'bcryptjs'
+import { Response } from 'express'
 
 @Injectable()
 export class AuthService {
@@ -30,7 +31,7 @@ export class AuthService {
     return this.authJwtService.generateAuthTokens(payload);
   }
 
-  async register(dto: RegisterDto) {
+  async register(dto: RegisterDto, response: Response) {
     const user = await this.prisma.user.create({
       data: {
         email: dto.email,
@@ -40,10 +41,33 @@ export class AuthService {
         profile: dto.profile,
       },
     })
-    return this.getTokens(user)
+    const tokens = await this.getTokens(user)
+
+    response.cookie('access', tokens.access, {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'none',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    })
+
+    response.cookie('refresh', tokens.refresh, {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'none',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    })
+
+    return {
+      message: 'User registered successfully',
+      success: true,
+      data: {
+        user,
+        tokens
+      }
+    };
   }
 
-  async login(dto: LoginDto) {
+  async login(dto: LoginDto, response: Response) {
     const user = await this.prisma.user.findUnique({
       where: {
         email: dto.email,
@@ -58,7 +82,29 @@ export class AuthService {
     }
 
     const tokens = await this.getTokens(user);
-    return {  user,tokens };
+
+    response.cookie('access', tokens.access, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'none',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    })
+
+    response.cookie('refresh', tokens.refresh, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'none',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    })
+
+    return {
+      message: 'User logged in successfully',
+      success: true,
+      data: {
+        user,
+        tokens
+      }
+    };
   }
 
 }
