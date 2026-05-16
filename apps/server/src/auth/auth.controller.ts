@@ -1,5 +1,5 @@
 // apps/backend/src/auth/auth.controller.ts
-import { Body, Controller, HttpCode, HttpStatus, Post, Res } from '@nestjs/common'
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Res } from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { RegisterDto } from './dto/register.dto'
 import { LoginDto } from './dto/login.dto'
@@ -18,5 +18,10 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   login(@Body() dto: LoginDto, @Res({passthrough: true}) response: Response) {
     return this.authService.login(dto, response)
+  }
+
+  @Get('me')
+  me(){
+    return this.authService.me();
   }
 }

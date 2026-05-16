@@ -107,4 +107,12 @@ export class AuthService {
     };
   }
 
+  async me(){
+    return {
+      message: 'This is a protected route',
+      success: true,
+    }
+  }
+
+
 }

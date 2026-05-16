@@ -15,6 +15,62 @@ model User {
   firstName       String?
   lastName        String?
   profile         String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+}
+
+model Organization {
+  id          String       @id @default(uuid())
+  name        String
+  website     String?      // their public website
+  email       String       @unique
+  phone       String?
+  industry    String?
+  plan        PlanType     @default(FREE)
+  isActive    Boolean      @default(true)
+
+  visitors    Visitor[]   // all visitors captured from this org's website
+
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+
+  @@map("organizations")
+}
+
+model Visitor {
+  id             String        @id @default(uuid())
+  organizationId String        // which org's website they visited
+  organization   Organization  @relation(fields: [organizationId], references: [id])
+
+  name           String?
+  email          String?
+  phone          String?
+  ipAddress      String?
+  sourceUrl      String?       // page they landed on
+  utmSource      String?       // google, facebook, etc.
+  utmMedium      String?
+  utmCampaign    String?
+
+  status         VisitorStatus @default(NEW)
+
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+
+  @@index([organizationId])
+  @@index([email])
+  @@map("visitors")
+}
+
+enum PlanType {
+  FREE
+  STARTER
+  PRO
+  ENTERPRISE
+}
+
+enum VisitorStatus {
+  NEW        // just captured, no action taken
+  REVIEWED   // sales rep has seen them
+  CONVERTED  // became a lead
+  IGNORED    // not a fit, dismissed
 }
