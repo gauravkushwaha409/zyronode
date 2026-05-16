@@ -8,7 +8,7 @@ export function LoginForm() {
       <RhfInput name="password" label="Password" type="password" />
 
       <div className="mt-10">
-        <Button>Submittttt</Button>
+        <Button>Submit</Button>
       </div>
     </div>
   );
