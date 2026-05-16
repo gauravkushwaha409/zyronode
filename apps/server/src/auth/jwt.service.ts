@@ -33,8 +33,6 @@ export class AuthJwtService {
   async issueRefreshToken(payload: TokenPayload): Promise<string> {
     return this.jwtService.signAsync(payload, {
       expiresIn: '7d',
-      // Optional: you can define a different secret for refresh tokens here
-      // secret: process.env.JWT_REFRESH_SECRET
     });
   }
 

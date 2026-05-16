@@ -60,6 +60,7 @@ export class AuthService {
     return {
       message: 'User registered successfully',
       success: true,
+      statusCode: 201,
       data: {
         user,
         tokens
@@ -100,6 +101,7 @@ export class AuthService {
     return {
       message: 'User logged in successfully',
       success: true,
+      statusCode: 200,
       data: {
         user,
         tokens
@@ -108,6 +110,7 @@ export class AuthService {
   }
 
   async me(userId: string) {
+    console.log('AuthService me called with userId:', userId)  // IGNORE
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       omit: {
@@ -118,9 +121,9 @@ export class AuthService {
     return {
       message: 'User fetched successfully',
       success: true,
-      data: {
-        user,
-      }
+      statusCode: 200,
+      data: user,
+      
     }
   }
 
