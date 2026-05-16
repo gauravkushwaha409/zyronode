@@ -1,0 +1,1 @@
+export { type DialogSize, DialogWrapper } from './dialog-wrapper'
