@@ -1,5 +1,6 @@
 // path: apps/frontend/src/routes/index.tsx
 
+import { RootPage } from '@/pages'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/')({
@@ -8,8 +9,6 @@ export const Route = createFileRoute('/')({
 
 function RouteComponent() {
   return (
-    <div>
-      hello world
-    </div>
+    <RootPage />
   )
 }

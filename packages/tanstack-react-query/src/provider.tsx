@@ -19,8 +19,9 @@ export function TanstackQueryProvider({ children }: QueryProviderProps) {
         persister: asyncStoragePersister,
         maxAge: 1000 * 60 * 60 * 24,    // 24 hours
         dehydrateOptions: {
-          shouldDehydrateQuery: (query) =>
-            query.state.status === 'success', // only persist successful queries
+          shouldDehydrateQuery: (query) =>{
+           return query.meta?.persist === true
+          }
         },
       }}
     >

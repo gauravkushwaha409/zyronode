@@ -13,5 +13,9 @@ class AuthApiServices extends BaseAPIService {
         return super.post(CONFIG.ENDPOINTS.AUTH.REGISTER, data, axiosConfiguration)
     }
 
+    async me(axiosConfiguration?: AxiosRequestConfig) {
+        return super.get(CONFIG.ENDPOINTS.AUTH.ME, axiosConfiguration)
+    }
+
 }
 export const authApiService = new AuthApiServices(apiClient)

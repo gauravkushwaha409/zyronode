@@ -85,14 +85,14 @@ export class AuthService {
 
     response.cookie('access', tokens.access, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: true,
       sameSite: 'none',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     })
 
     response.cookie('refresh', tokens.refresh, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: true,
       sameSite: 'none',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     })
@@ -107,10 +107,20 @@ export class AuthService {
     };
   }
 
-  async me(){
+  async me(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      omit: {
+        password: true,
+      }
+    })
+
     return {
-      message: 'This is a protected route',
+      message: 'User fetched successfully',
       success: true,
+      data: {
+        user,
+      }
     }
   }
 

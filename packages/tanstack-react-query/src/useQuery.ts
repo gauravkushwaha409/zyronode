@@ -13,8 +13,8 @@ export function useQuery<
   TParams = unknown,
 >(
   queryKey: QueryKey,
-  fetchFn: (params: TParams) => Promise<TQueryFnData>,
-  params: TParams,
+  fetchFn: (params?: TParams) => Promise<TQueryFnData>,
+  params?: TParams,
   options?: Omit<
     UseQueryOptions<TQueryFnData, TError, TData, QueryKey>,
     'queryKey' | 'queryFn'
