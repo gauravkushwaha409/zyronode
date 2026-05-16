@@ -3,17 +3,24 @@ import { RegisterForm } from "./register-form";
 import { useRegisterForm, useRegisterMutation } from "../hooks";
 
 export function RegisterMutation() {
-    const registerForm = useRegisterForm()
-    const registerMutation = useRegisterMutation()
+  const registerForm = useRegisterForm();
+  const registerMutation = useRegisterMutation();
 
-    const handleSubmit = registerForm.form.handleSubmit((data) => {
-        registerMutation.mutate(data)
-    }, (error) => {
-        console.log("on error ", error)
-    })
-    return (
-        <AppFormWrapper useFormMethods={registerForm.form} formProps={{ onSubmit: handleSubmit }}>
-            <RegisterForm />
-        </AppFormWrapper>
-    )
+  const handleSubmit = registerForm.form.handleSubmit(
+    (data) => {
+      console.log(data);
+      registerMutation.mutate(data);
+    },
+    (error) => {
+      console.log("on error ", error);
+    },
+  );
+  return (
+    <AppFormWrapper
+      useFormMethods={registerForm.form}
+      formProps={{ onSubmit: handleSubmit }}
+    >
+      <RegisterForm />
+    </AppFormWrapper>
+  );
 }
