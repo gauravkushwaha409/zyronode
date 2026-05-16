@@ -1,5 +1,6 @@
 import { RhfInput } from "@package/react-hook-form";
 import { Button } from "@package/ui";
+import { Link } from "@tanstack/react-router";
 
 export function RegisterForm() {
   return (
@@ -14,11 +15,9 @@ export function RegisterForm() {
         </p>
       </div>
 
-      <div className="gap-4">
-        <RhfInput name="firstName" label="First Name" placeholder="John" />
+      <RhfInput name="firstName" label="First Name" placeholder="John" />
 
-        <RhfInput name="lastName" label="Last Name" placeholder="Doe" />
-      </div>
+      <RhfInput name="lastName" label="Last Name" placeholder="Doe" />
 
       <RhfInput
         name="email"
@@ -48,7 +47,7 @@ export function RegisterForm() {
       <p className="text-center text-sm text-muted-foreground">
         Already have an account?{" "}
         <span className="cursor-pointer font-medium text-foreground hover:underline">
-          Sign in
+          <Link to="/login">Sign In</Link>
         </span>
       </p>
     </div>
