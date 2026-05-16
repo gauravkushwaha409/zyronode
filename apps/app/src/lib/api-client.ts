@@ -1,6 +1,7 @@
 import { createApiClient } from "@package/api-client";
 
-export const apiClient = createApiClient(import.meta.env.VITE_SERVER_URL);
+// export const apiClient = createApiClient(import.meta.env.VITE_SERVER_URL);
+export const apiClient = createApiClient('/api');
 
 apiClient.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
