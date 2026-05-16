@@ -16,13 +16,13 @@ async function bootstrap() {
     credentials: true
   })
 
-app.use(cookieParser());
+  app.use(cookieParser());
 
 
   // app.useGlobalInterceptors(new ResponseInterceptor());
   // app.useGlobalFilters(new HttpExceptionFilter());
 
-  await app.listen(process.env.PORT ?? 8000,'0.0.0.0');
+  await app.listen(process.env.PORT ?? 8000, '0.0.0.0');
 
 }
 bootstrap();

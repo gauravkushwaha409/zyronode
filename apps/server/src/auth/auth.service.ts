@@ -110,7 +110,6 @@ export class AuthService {
   }
 
   async me(userId: string) {
-    console.log('AuthService me called with userId:', userId)  // IGNORE
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       omit: {

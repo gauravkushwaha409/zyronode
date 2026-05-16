@@ -25,7 +25,6 @@ export class AuthController {
   @Get('me')
   @UseGuards(JwtAuthGuard)
   me(@CurrentUser() user){
-    console.log('AuthController me called with user:', user)  // IGNORE
     return this.authService.me(user.id);
   }
 }

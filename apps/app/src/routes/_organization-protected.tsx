@@ -1,9 +1,14 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { AuthGaurd } from '@/features/auth/gaurds'
+import { createFileRoute, Outlet } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_organization-protected')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  return <div>Hello "/_organization-protected"!</div>
+  return(
+    <AuthGaurd>
+      <Outlet />
+    </AuthGaurd>
+  )
 }

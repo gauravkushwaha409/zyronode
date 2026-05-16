@@ -1,7 +1,8 @@
 import { ENDPOINTS } from "./endpoints";
 import { ENV } from "./env";
 import { QUERY_KEY } from "./query-key";
+import { ROUTES } from "./routes";
 
 export const CONFIG = {
-    ENDPOINTS,ENV, QUERY_KEY
+    ENDPOINTS, ENV, QUERY_KEY, ROUTES
 }

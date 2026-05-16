@@ -1,7 +1,20 @@
-import { createFileRoute, Outlet } from '@tanstack/react-router'
+import { authApiService } from '@/features/auth/services'
+import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_auth')({
   component: RouteComponent,
+  beforeLoad: async () => {
+    const user = await authApiService.me().catch(() => null)
+
+    if (user) {
+      throw redirect({
+        to: `/$organization/dashboard`, params: {
+          organization: "organization-id"
+        }
+      })
+    }
+
+  }
 })
 
 function RouteComponent() {

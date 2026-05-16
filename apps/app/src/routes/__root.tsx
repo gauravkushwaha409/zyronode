@@ -1,9 +1,9 @@
 import * as React from 'react'
-import { Outlet, createRootRoute } from '@tanstack/react-router'
+import { Outlet, createRootRoute, redirect } from '@tanstack/react-router'
 import { TanstackQueryProvider } from '@package/tanstack-react-query'
 
 export const Route = createRootRoute({
-  component: RootComponent,
+  component: RootComponent
 })
 
 function RootComponent() {
