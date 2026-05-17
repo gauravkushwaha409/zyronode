@@ -2,19 +2,18 @@
 import { type ReactNode } from 'react'
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { createQueryClient } from './query-client'
 import { asyncStoragePersister } from './persister'
-
-const queryClient = createQueryClient()
+import type { QueryClient } from '@tanstack/react-query'
 
 interface QueryProviderProps {
   children: ReactNode
+  client: QueryClient
 }
 
-export function TanstackQueryProvider({ children }: QueryProviderProps) {
+export function TanstackQueryProvider({ children, client }: QueryProviderProps) {
   return (
     <PersistQueryClientProvider
-      client={queryClient}
+      client={client}
       persistOptions={{
         persister: asyncStoragePersister,
         maxAge: 1000 * 60 * 60 * 24,    // 24 hours

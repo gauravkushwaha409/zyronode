@@ -1,14 +1,13 @@
 // path: apps/frontend/src/routes/index.tsx
 
 import { CONFIG } from '@/config'
-import { authApiService } from '@/features/auth/services'
 import { RootPage } from '@/pages'
 import { createFileRoute, redirect } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/')({
   component: RouteComponent,
-  beforeLoad: async () => {
-    const user = await authApiService.me().catch(() => null)
+  beforeLoad: async ({ context }) => {
+    const user = context.queryClient.getQueryData(CONFIG.QUERY_KEY.AUTH.ME)
 
     if (user) {
       throw redirect({

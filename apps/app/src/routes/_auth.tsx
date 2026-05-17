@@ -1,10 +1,17 @@
-import { authApiService } from '@/features/auth/services'
+import { CONFIG } from '@/config'
+import { authApiService } from '@/features/auth/services/auth.services'
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_auth')({
   component: RouteComponent,
-  beforeLoad: async () => {
-    const user = await authApiService.me().catch(() => null)
+  beforeLoad: async ({ context }) => {
+    const user = await context.queryClient
+      .fetchQuery({
+        queryKey: CONFIG.QUERY_KEY.AUTH.ME,
+        queryFn: () => authApiService.me().then(r => r.data),
+        staleTime: 1000 * 60 * 5,  // don't refetch if fresh
+      })
+      .catch(() => null);  // 401 → null instead of throwing
 
     if (user) {
       throw redirect({
