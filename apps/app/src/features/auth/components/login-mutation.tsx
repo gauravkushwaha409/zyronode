@@ -7,15 +7,15 @@ export function LoginMutation() {
     const loginMutation = useLoginMutation()
 
     const handleSubmit = loginForm.form.handleSubmit(
-        (data)=>{
+        (data) => {
             loginMutation.mutate(data)
         },
-        (error)=>{console.log("On error: ", error)}
+        (error) => { console.log("On error: ", error) }
     )
 
     return (
-        <AppFormWrapper useFormMethods={loginForm.form} formProps={{onSubmit: handleSubmit}}>
-            <LoginForm />
+        <AppFormWrapper useFormMethods={loginForm.form} formProps={{ onSubmit: handleSubmit }}>
+            <LoginForm handleTurnstileSuccess={loginForm.handleTurnstileSuccess} />
         </AppFormWrapper>
     )
 }

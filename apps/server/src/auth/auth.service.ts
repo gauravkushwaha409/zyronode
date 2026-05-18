@@ -69,6 +69,12 @@ export class AuthService {
   }
 
   async login(dto: LoginDto, response: Response) {
+    const isValidUser =  this.verifyTurnstileToken(dto.turnstile)
+    if (!isValidUser) {
+      throw new UnauthorizedException('Turnstile verification failed')
+    }
+
+
     const user = await this.prisma.user.findUnique({
       where: {
         email: dto.email,
@@ -123,6 +129,34 @@ export class AuthService {
       statusCode: 200,
       data: user,
       
+    }
+  }
+
+  async verifyTurnstileToken(token: string): Promise<boolean> {
+    const secretKey = process.env.CLOUDEFLARE_TURNSTILE_SECRET_KEY;
+    if (!secretKey) {
+      console.error('Cloudflare Turnstile secret key is not set');
+      return false;
+    }
+
+    try {
+      const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          secret: secretKey,
+          response: token,
+        }),
+      });
+
+      const data = await response.json();
+      console.log('Turnstile verification response:', data);
+      return data.success === true;
+    } catch (error) {
+      console.error('Error verifying Turnstile token:', error);
+      return false;
     }
   }
 

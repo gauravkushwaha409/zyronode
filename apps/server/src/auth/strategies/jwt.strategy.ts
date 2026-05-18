@@ -7,7 +7,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         super({
             jwtFromRequest: ExtractJwt.fromExtractors([
                 (req:Request) => { 
-                console.log('Extracting JWT from request cookies:', req.cookies.access)  // IGNORE
                     return req?.cookies?.access
                 }
             ]),
@@ -16,7 +15,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     async validate(payload: any) {
-        console.log('JwtStrategy validate called with payload:', payload)  // IGNORE
         return {
             id: payload.id,
             email: payload.email,

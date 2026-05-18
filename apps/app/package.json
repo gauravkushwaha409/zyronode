@@ -11,6 +11,7 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
+    "@marsidev/react-turnstile": "^1.5.2",
     "@package/api-client": "workspace:*",
     "@package/react-hook-form": "workspace:*",
     "@package/tanstack-react-query": "workspace:*",

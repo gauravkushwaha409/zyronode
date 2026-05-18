@@ -5,11 +5,15 @@ export function useLoginForm() {
     const form = useAppForm<LoginSchema>({
         defaultValues: {
             email: "",
-            password: ""
+            password: "",
+            turnstile: ''
         },
         schema: loginSchema,
     })
 
+    const handleTurnstileSuccess = (token: string) => {
+        form.setValue("turnstile", token, { shouldDirty: true })
+    };
 
-    return { form }
+    return { form, handleTurnstileSuccess }
 }
