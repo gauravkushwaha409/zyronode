@@ -16,6 +16,7 @@ import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as VerifyVerifyMfaRouteImport } from './routes/_verify/verify-mfa'
 import { Route as VerifyVerifyEmailRouteImport } from './routes/_verify/verify-email'
+import { Route as OrganizationProtectedSelectOrganizationRouteImport } from './routes/_organization-protected/select-organization'
 import { Route as OrganizationProtectedOrganizationRouteImport } from './routes/_organization-protected/$organization'
 import { Route as AuthRegisterRouteImport } from './routes/_auth/register'
 import { Route as AuthLoginRouteImport } from './routes/_auth/login'
@@ -56,6 +57,12 @@ const VerifyVerifyEmailRoute = VerifyVerifyEmailRouteImport.update({
   path: '/verify-email',
   getParentRoute: () => VerifyRoute,
 } as any)
+const OrganizationProtectedSelectOrganizationRoute =
+  OrganizationProtectedSelectOrganizationRouteImport.update({
+    id: '/select-organization',
+    path: '/select-organization',
+    getParentRoute: () => OrganizationProtectedRoute,
+  } as any)
 const OrganizationProtectedOrganizationRoute =
   OrganizationProtectedOrganizationRouteImport.update({
     id: '/$organization',
@@ -103,6 +110,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
   '/$organization': typeof OrganizationProtectedOrganizationRouteWithChildren
+  '/select-organization': typeof OrganizationProtectedSelectOrganizationRoute
   '/verify-email': typeof VerifyVerifyEmailRoute
   '/verify-mfa': typeof VerifyVerifyMfaRoute
   '/$organization/dashboard': typeof OrganizationProtectedOrganizationDashboardRoute
@@ -116,6 +124,7 @@ export interface FileRoutesByTo {
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
   '/$organization': typeof OrganizationProtectedOrganizationRouteWithChildren
+  '/select-organization': typeof OrganizationProtectedSelectOrganizationRoute
   '/verify-email': typeof VerifyVerifyEmailRoute
   '/verify-mfa': typeof VerifyVerifyMfaRoute
   '/$organization/dashboard': typeof OrganizationProtectedOrganizationDashboardRoute
@@ -133,6 +142,7 @@ export interface FileRoutesById {
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/register': typeof AuthRegisterRoute
   '/_organization-protected/$organization': typeof OrganizationProtectedOrganizationRouteWithChildren
+  '/_organization-protected/select-organization': typeof OrganizationProtectedSelectOrganizationRoute
   '/_verify/verify-email': typeof VerifyVerifyEmailRoute
   '/_verify/verify-mfa': typeof VerifyVerifyMfaRoute
   '/_organization-protected/$organization/dashboard': typeof OrganizationProtectedOrganizationDashboardRoute
@@ -148,6 +158,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/$organization'
+    | '/select-organization'
     | '/verify-email'
     | '/verify-mfa'
     | '/$organization/dashboard'
@@ -161,6 +172,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/$organization'
+    | '/select-organization'
     | '/verify-email'
     | '/verify-mfa'
     | '/$organization/dashboard'
@@ -177,6 +189,7 @@ export interface FileRouteTypes {
     | '/_auth/login'
     | '/_auth/register'
     | '/_organization-protected/$organization'
+    | '/_organization-protected/select-organization'
     | '/_verify/verify-email'
     | '/_verify/verify-mfa'
     | '/_organization-protected/$organization/dashboard'
@@ -243,6 +256,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/verify-email'
       preLoaderRoute: typeof VerifyVerifyEmailRouteImport
       parentRoute: typeof VerifyRoute
+    }
+    '/_organization-protected/select-organization': {
+      id: '/_organization-protected/select-organization'
+      path: '/select-organization'
+      fullPath: '/select-organization'
+      preLoaderRoute: typeof OrganizationProtectedSelectOrganizationRouteImport
+      parentRoute: typeof OrganizationProtectedRoute
     }
     '/_organization-protected/$organization': {
       id: '/_organization-protected/$organization'
@@ -334,11 +354,14 @@ const OrganizationProtectedOrganizationRouteWithChildren =
 
 interface OrganizationProtectedRouteChildren {
   OrganizationProtectedOrganizationRoute: typeof OrganizationProtectedOrganizationRouteWithChildren
+  OrganizationProtectedSelectOrganizationRoute: typeof OrganizationProtectedSelectOrganizationRoute
 }
 
 const OrganizationProtectedRouteChildren: OrganizationProtectedRouteChildren = {
   OrganizationProtectedOrganizationRoute:
     OrganizationProtectedOrganizationRouteWithChildren,
+  OrganizationProtectedSelectOrganizationRoute:
+    OrganizationProtectedSelectOrganizationRoute,
 }
 
 const OrganizationProtectedRouteWithChildren =

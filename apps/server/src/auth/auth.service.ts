@@ -152,7 +152,6 @@ export class AuthService {
       });
 
       const data = await response.json();
-      console.log('Turnstile verification response:', data);
       return data.success === true;
     } catch (error) {
       console.error('Error verifying Turnstile token:', error);
