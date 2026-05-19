@@ -1,4 +1,4 @@
-import { AppFormWrapper } from "@package/react-hook-form";
+import { FormWrapper } from "@package/react-hook-form";
 import { RegisterForm } from "./register-form";
 import { useRegisterForm, useRegisterMutation } from "../hooks";
 
@@ -16,11 +16,11 @@ export function RegisterMutation() {
     },
   );
   return (
-    <AppFormWrapper
+    <FormWrapper
       useFormMethods={registerForm.form}
       formProps={{ onSubmit: handleSubmit }}
     >
       <RegisterForm />
-    </AppFormWrapper>
+    </FormWrapper>
   );
 }

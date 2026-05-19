@@ -1,4 +1,4 @@
-import { RhfInput } from "@package/react-hook-form";
+import { FormInput } from "@package/react-hook-form";
 import { Button } from "@package/ui";
 import { Link } from "@tanstack/react-router";
 
@@ -15,25 +15,25 @@ export function RegisterForm() {
         </p>
       </div>
 
-      <RhfInput name="firstName" label="First Name" placeholder="John" />
+      <FormInput name="firstName" label="First Name" placeholder="John" />
 
-      <RhfInput name="lastName" label="Last Name" placeholder="Doe" />
+      <FormInput name="lastName" label="Last Name" placeholder="Doe" />
 
-      <RhfInput
+      <FormInput
         name="email"
         label="Email"
         type="email"
         placeholder="john@example.com"
       />
 
-      <RhfInput
+      <FormInput
         name="password"
         label="Password"
         type="password"
         placeholder="Enter your password"
       />
 
-      <RhfInput
+      <FormInput
         name="confirmPassword"
         label="Confirm Password"
         type="password"

@@ -1,5 +1,5 @@
 import { Turnstile } from "@marsidev/react-turnstile";
-import { RhfInput } from "@package/react-hook-form";
+import { FormInput } from "@package/react-hook-form";
 import { Button } from "@package/ui";
 
 export function LoginForm({handleTurnstileSuccess}: {
@@ -7,8 +7,8 @@ export function LoginForm({handleTurnstileSuccess}: {
 }) {
   return (
     <div className="space-y-5">
-      <RhfInput name="email" label="Email" type="email" />
-      <RhfInput name="password" label="Password" type="password" />
+      <FormInput name="email" label="Email" type="email" />
+      <FormInput name="password" label="Password" type="password" />
 
       <Turnstile onSuccess={handleTurnstileSuccess} siteKey={import.meta.env.VITE_CLOUDFLARE_TURNSTILE_SITE_KEY} />
 

@@ -1,0 +1,1 @@
+export { OrganizationMutation } from './organization-mutation'

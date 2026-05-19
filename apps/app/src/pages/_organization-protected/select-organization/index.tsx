@@ -1,7 +1,10 @@
+import { OrganizationMutation } from "@/features/organization/components";
+import { DialogWrapper } from "@package/ui";
+
 export function SelectOrganizationPage(){
     return(
-        <div>
-            Select Organization Page
-        </div>
+        <DialogWrapper open={true} onOpenChange={()=>{}}>
+            <OrganizationMutation />
+        </DialogWrapper>
     )
 }

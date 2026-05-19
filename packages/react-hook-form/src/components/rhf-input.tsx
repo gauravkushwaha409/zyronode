@@ -1,39 +1,43 @@
 // packages/rhf/src/components/rhf-input.tsx
-import { Input, Label } from "@package/ui";
+import { cn, Input, Label } from "@package/ui";
 import { useFormContext, type FieldValues, type Path } from "react-hook-form";
 // Rhf uses register to listen to the input data and store the data object internally and to manage those data we often use useform() hook. useFormContext is used to access shared from internal state.
 
-interface RhfInputProps<T extends FieldValues> {
+interface FormInputProps<T extends FieldValues> {
   name: Path<T>;
   label?: string;
   placeholder?: string;
-  type?: string;
-  className?: string;
+  inputProps?: Omit<React.ComponentProps<typeof Input>, "name" | "placeholder">;
+  labelProps?: Omit<React.ComponentProps<typeof Label>, "children" | "htmlFor">;
+  wrapperProps?: React.HTMLAttributes<HTMLDivElement>;
 }
 
-export function RhfInput<T extends FieldValues>({
+export function FormInput<T extends FieldValues>({
   name,
   label,
   placeholder,
-  type = "text",
-  className,
-}: RhfInputProps<T>) {
+  inputProps,
+  labelProps,
+  wrapperProps,
+}: FormInputProps<T>) {
   const {
     register,
     formState: { errors },
   } = useFormContext<T>();
   const error = errors[name]?.message as string | undefined;
-
+  const { className: inputClassName, ...restInputProps } = inputProps || {};
+  const { className: labelClassName, ...restLabelProps } = labelProps || {};
+  const { className: wrapperClassName, ...restWrapperProps } = wrapperProps || {};
   return (
-    <div className="">
-      {label && <Label htmlFor={name}>{label}</Label>}
+    <div className={cn("space-y-3", wrapperClassName)} {...restWrapperProps}>
+      {label && <Label className={cn("", labelClassName)} htmlFor={name} {...restLabelProps}>
+        {label}
+      </Label>}
       <Input
         id={name}
-        type={type}
         placeholder={placeholder}
-        className={className}
+        className={cn("", inputClassName)}
         {...register(name)}
-        // register() return the object like name: "name", onChange: function, onBlur: function, ref: function which will automatically track the input field and store the value internally with the fieldname of the input field. Using it with the Input field means attaching all the methods of regsiter to the input. Spread opeartor helps to unpack the returned onject properties.
         aria-invalid={!!error}
         aria-describedby={error ? `${name}-error` : undefined}
       />

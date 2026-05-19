@@ -1,2 +1,2 @@
-export { AppFormWrapper } from './app-form-wrapper'
-export { RhfInput } from './rhf-input'
+export { FormWrapper } from './form-wrapper'
+export { FormInput } from './rhf-input'
