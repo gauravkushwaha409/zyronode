@@ -4,7 +4,7 @@ import { registerSchema, type RegisterSchema } from "../../schema";
 
 export function useRegisterForm() {
   const form = useAppForm<RegisterSchema>({
-    // Providing the whole form data to the schema for validation.
+    // Providing the whole form data to the schema for validation. Here we are providing the default values so that the context can know which value is being used for the particular form.
     defaultValues: {
       firstName: "",
       lastName: "",
