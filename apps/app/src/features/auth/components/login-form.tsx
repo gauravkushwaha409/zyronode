@@ -7,8 +7,8 @@ export function LoginForm({handleTurnstileSuccess}: {
 }) {
   return (
     <div className="space-y-5">
-      <FormInput name="email" label="Email" type="email" />
-      <FormInput name="password" label="Password" type="password" />
+      <FormInput name="email" label="Email"  />
+      <FormInput name="password" label="Password"  />
 
       <Turnstile onSuccess={handleTurnstileSuccess} siteKey={import.meta.env.VITE_CLOUDFLARE_TURNSTILE_SITE_KEY} />
 

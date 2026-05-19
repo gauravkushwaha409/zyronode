@@ -40,6 +40,7 @@ export function FormInput<T extends FieldValues>({
         {...register(name)}
         aria-invalid={!!error}
         aria-describedby={error ? `${name}-error` : undefined}
+        {...restInputProps}
       />
       {error && (
         <p

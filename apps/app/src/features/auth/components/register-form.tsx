@@ -22,21 +22,18 @@ export function RegisterForm() {
       <FormInput
         name="email"
         label="Email"
-        type="email"
         placeholder="john@example.com"
       />
 
       <FormInput
         name="password"
         label="Password"
-        type="password"
         placeholder="Enter your password"
       />
 
       <FormInput
         name="confirmPassword"
         label="Confirm Password"
-        type="password"
         placeholder="Re-enter your password"
       />
 
