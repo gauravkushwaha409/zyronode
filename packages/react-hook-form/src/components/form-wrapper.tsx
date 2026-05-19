@@ -1,18 +1,17 @@
-// packages/rhf/src/components/app-form-wrapper.tsx
 import { type FieldValues, FormProvider, type UseFormReturn } from 'react-hook-form'
 import { type ReactNode,  } from 'react'
 
-interface AppFormWrapperProps<T extends FieldValues> {
+interface FormWrapperProps<T extends FieldValues> {
   children: ReactNode
   useFormMethods: UseFormReturn<T>
   formProps?: React.ComponentProps<'form'>
 }
 
-export const AppFormWrapper = <T extends FieldValues>({
+export const FormWrapper = <T extends FieldValues>({
   children,
   useFormMethods,
-  formProps
-}: AppFormWrapperProps<T>) => {
+  formProps   
+}: FormWrapperProps<T>) => {
   const isDisabled = useFormMethods.formState.isSubmitting
   const {onSubmit, ...restFormProps} = formProps ?? {}
 

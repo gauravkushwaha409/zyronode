@@ -1,4 +1,4 @@
-import { AppFormWrapper } from "@package/react-hook-form";
+import { FormWrapper } from "@package/react-hook-form";
 import { LoginForm } from "./login-form";
 import { useLoginForm, useLoginMutation } from "../hooks";
 import { useRouter } from "@tanstack/react-router";
@@ -24,8 +24,8 @@ export function LoginMutation() {
     )
 
     return (
-        <AppFormWrapper useFormMethods={loginForm.form} formProps={{ onSubmit: handleSubmit }}>
+        <FormWrapper useFormMethods={loginForm.form} formProps={{ onSubmit: handleSubmit }}>
             <LoginForm handleTurnstileSuccess={loginForm.handleTurnstileSuccess} />
-        </AppFormWrapper>
+        </FormWrapper>
     )
 }
