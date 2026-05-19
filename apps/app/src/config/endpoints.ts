@@ -3,5 +3,8 @@ export const ENDPOINTS = {
         LOGIN: '/auth/login',
         REGISTER: '/auth/register',
         ME: '/auth/me'
-    }   
+    },
+    ORGANIZATION: {
+        CREATE: '/organization',
+    }
 }
