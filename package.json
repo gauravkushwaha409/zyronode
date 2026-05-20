@@ -4,8 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "pnpm docker:up && pnpm wait-for-db && turbo dev",
-    "dev:app": "turbo dev --filter app",
-    "dev:server": "pnpm docker:up && pnpm wait-for-db && turbo dev --filter server",
+    "dev:frontend": "turbo dev --filter frontend",
+    "dev:backend": "pnpm docker:up && pnpm wait-for-db && turbo dev --filter backend",
     "build": "turbo build",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
