@@ -24,11 +24,11 @@ export class BaseAPIService {
     return response;
   }
 
-  async get(
+  async get<TResponse = unknown>(
     url: string,
     config?: AxiosRequestConfig,
   ): Promise<AxiosResponse> {
-    const response = await this.api.get<AxiosResponse>(url, config);
+    const response = await this.api.get<TResponse>(url, config);
     return response;
   }
 

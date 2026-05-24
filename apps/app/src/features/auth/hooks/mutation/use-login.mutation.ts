@@ -1,11 +1,11 @@
 import { useMutation } from "@package/tanstack-react-query";
 import { authApiService } from "../../services";
-import type { APIError, ApiResponse } from "@package/api-client";
-import type {  LoginMutationTypes,  } from "../../types";
+import type { APIError } from "@package/api-client";
+import type {  LoginMutationTypes, MeQuery,  } from "../../types";
 
 
 export function useLoginMutation() {    
-    return useMutation<ApiResponse<null>,APIError,LoginMutationTypes.LoginMutationPayload>(
+    return useMutation<MeQuery.MeQueryResponse,APIError,LoginMutationTypes.LoginMutationPayload>(
         (data)=> authApiService.login(data),
         {
             onSuccess: (data) => {

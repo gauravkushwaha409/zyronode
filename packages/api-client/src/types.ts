@@ -2,7 +2,7 @@ import { AxiosError, type AxiosResponse } from "axios";
 
 export type ApiResponse<T> = AxiosResponse<{
     success: boolean;
-    message?: string;
+    message: string;
     statusCode: number;
     data: T;
 }>;

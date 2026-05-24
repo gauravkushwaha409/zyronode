@@ -1,26 +1,25 @@
 import { CONFIG } from '@/config'
-import { authApiService } from '@/features/auth/services/auth.services'
+import type { MeQuery } from '@/features/auth/types';
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_auth')({
   component: RouteComponent,
-  beforeLoad: async ({ context }) => {
-    const user = await context.queryClient
-      .fetchQuery({
-        queryKey: CONFIG.QUERY_KEY.AUTH.ME,
-        queryFn: () => authApiService.me().then(r => r.data),
-        staleTime: 1000 * 60 * 5,  
-      })
-      .catch(() => null);
+  beforeLoad: ({ context }) => {
+    const user: MeQuery.MeQueryResponse | undefined = context.queryClient.getQueryData(
+      CONFIG.QUERY_KEY.AUTH.ME
+    );
+    console.log("User in before load: ", user)
 
-    if (user) {
-      throw redirect({
-        to: `/$organization/dashboard`, params: {
-          organization: "organization-id"
-        }
-      })
-    }
+    if (user?.data?.data?.lastOrgId) throw redirect({
+      to: '/$organization/dashboard', params: {
+        organization: user?.data?.data?.lastOrgId
+      }
+    })
 
+
+    if (user?.data?.data?.id) throw redirect({
+      to: '/select-organization'
+    })
   }
 })
 
