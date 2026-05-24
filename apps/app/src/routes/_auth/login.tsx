@@ -1,4 +1,4 @@
-import { LoginMutation } from '@/features/auth/components'
+import { LoginPage } from '@/pages/_auth/login'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_auth/login')({
@@ -6,10 +6,6 @@ export const Route = createFileRoute('/_auth/login')({
 })
 
 function RouteComponent() {
-  return (
-    <div>
-      <LoginMutation />
-    </div>
-  )
+  return <LoginPage />
 
 }

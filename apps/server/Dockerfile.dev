@@ -11,7 +11,5 @@ RUN pnpm install
 
 COPY . .
 
-RUN pnpm db:generate
-
 EXPOSE 8000
-CMD ["pnpm", "dev:server"]
+CMD pnpm prisma:generate && pnpm dev:server

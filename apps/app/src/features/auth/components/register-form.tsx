@@ -4,20 +4,11 @@ import { Link } from "@tanstack/react-router";
 
 export function RegisterForm() {
   return (
-    <div className="w-full max-w-md space-y-6 rounded-2xl border bg-background p-6 shadow-sm">
-      <div className="space-y-1 text-center">
-        <h1 className="text-2xl font-semibold tracking-tight">
-          Create Account
-        </h1>
-
-        <p className="text-sm text-muted-foreground">
-          Enter your information to create your account
-        </p>
+    <div className="space-y-5">
+      <div className="grid grid-cols-2 gap-4">
+        <FormInput name="firstName" label="First Name" placeholder="John" />
+        <FormInput name="lastName" label="Last Name" placeholder="Doe" />
       </div>
-
-      <FormInput name="firstName" label="First Name" placeholder="John" />
-
-      <FormInput name="lastName" label="Last Name" placeholder="Doe" />
 
       <FormInput
         name="email"
@@ -37,16 +28,11 @@ export function RegisterForm() {
         placeholder="Re-enter your password"
       />
 
-      <Button type="submit" className="w-full">
-        Create Account
-      </Button>
-
-      <p className="text-center text-sm text-muted-foreground">
-        Already have an account?{" "}
-        <span className="cursor-pointer font-medium text-foreground hover:underline">
-          <Link to="/login">Sign In</Link>
-        </span>
-      </p>
+      <div className="mt-8">
+        <Button type="submit" className="w-full h-11 text-base font-medium">
+          Create Account
+        </Button>
+      </div>
     </div>
   );
 }

@@ -10,10 +10,12 @@ export function LoginForm({handleTurnstileSuccess}: {
       <FormInput name="email" label="Email"  />
       <FormInput name="password" label="Password"  />
 
-      <Turnstile onSuccess={handleTurnstileSuccess} siteKey={import.meta.env.VITE_CLOUDFLARE_TURNSTILE_SITE_KEY} />
+      <div className="flex justify-center mt-2">
+        <Turnstile onSuccess={handleTurnstileSuccess} siteKey={import.meta.env.VITE_CLOUDFLARE_TURNSTILE_SITE_KEY} />
+      </div>
 
-      <div className="mt-10">
-        <Button>Submit</Button>
+      <div className="mt-8">
+        <Button className="w-full h-11 text-base font-medium">Sign in</Button>
       </div>
     </div>
   );

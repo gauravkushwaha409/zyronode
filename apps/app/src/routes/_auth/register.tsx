@@ -1,4 +1,4 @@
-import { RegisterMutation } from '@/features/auth/components/register-mutation'
+import { RegisterPage } from '@/pages/_auth/register'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_auth/register')({
@@ -6,9 +6,5 @@ export const Route = createFileRoute('/_auth/register')({
 })
 
 function RouteComponent() {
-  return (
-    <div>
-      <RegisterMutation />
-    </div>
-  )
+  return <RegisterPage />
 }
