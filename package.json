@@ -15,9 +15,9 @@
     "docker:reset": "docker compose down -v && docker compose up -d",
     "wait-for-db": "node scripts/wait-for-db.mjs",
     "prisma:migrate": "turbo run prisma:migrate --filter server",
+    "prisma:generate": "pnpm --filter server prisma:generate",
     "prisma:deploy": "pnpm --filter server prisma:deploy",
     "prisma:studio": "turbo run prisma:studio --filter server",
-    "prisma:generate": "turbo run prisma:generate --filter server",
     "resource": "pnpm --filter server exec nest generate resource"
   },
   "devDependencies": {

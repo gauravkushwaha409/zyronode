@@ -50,6 +50,7 @@ services:
       context: .
       dockerfile: apps/server/Dockerfile.dev
     container_name: server
+    command: sh -c "pnpm prisma:generate && pnpm dev:server"
     restart: unless-stopped
     ports:
       - "8000:8000"
