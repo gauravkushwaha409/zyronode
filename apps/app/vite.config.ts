@@ -7,7 +7,8 @@ import { tanstackRouter } from "@tanstack/router-plugin/vite";
 export default defineConfig(({ mode}) => {
   const env = loadEnv(mode, process.cwd());
 
-  const serverUrl = env.VITE_SERVER_URL || "http://localhost:8000";
+  const serverUrl = env.VITE_SERVER_URL;
+  console.log("server url=============>", serverUrl);
   return {
     server: {
       port: 3000,
