@@ -10,6 +10,8 @@ export default defineConfig(({ mode}) => {
   const serverUrl = env.VITE_SERVER_URL || "http://localhost:8000";
   return {
     server: {
+      port: 3000,
+      host: true,
       proxy: {
         "/api": {
           target: serverUrl,

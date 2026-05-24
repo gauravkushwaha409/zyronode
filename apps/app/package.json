@@ -4,9 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --port 3000",
+    "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "eslint .",
     "preview": "vite preview",
     "check-types": "tsc --noEmit"
   },
@@ -24,7 +23,6 @@
     "zod": "3.25.3"
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
     "@tailwindcss/vite": "^4.1.18",
     "tailwindcss": "^4.1.18",
     "@tanstack/router-plugin": "^1.167.35",
@@ -32,12 +30,8 @@
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
-    "eslint": "^10.2.1",
-    "eslint-plugin-react-hooks": "^7.1.1",
-    "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.5.0",
     "typescript": "~6.0.2",
-    "typescript-eslint": "^8.58.2",
     "vite": "^8.0.10"
   }
 }

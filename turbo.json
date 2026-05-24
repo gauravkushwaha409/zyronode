@@ -3,13 +3,23 @@
   "ui": "tui",
   "tasks": {
     "build": {
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**"]
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "dist/**"
+      ]
     },
-    "lint": {},
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "env": [
+        "JWT_SECRET",
+        "NODE_ENV",
+        "PORT",
+        "DATABASE_URL",
+        "VITE_SERVER_URL"
+      ]
     },
     "prisma:migrate": {
       "cache": false,
