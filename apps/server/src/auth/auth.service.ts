@@ -81,7 +81,7 @@ export class AuthService {
       },
     })
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials')
+      throw new UnauthorizedException('No user found!')
     }
     const isPasswordValid = await bcryptjs.compare(dto.password, user.password);
     if (!isPasswordValid) {
@@ -127,7 +127,7 @@ export class AuthService {
       message: 'User fetched successfully',
       success: true,
       statusCode: 200,
-      data: user,
+      data: user
       
     }
   }

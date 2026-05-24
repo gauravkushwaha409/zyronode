@@ -6,6 +6,7 @@ export interface MeQueryData {
   firstName: string;
   lastName: string;
   profile: null;
+  lastOrgId: null;
   createdAt: string;
   updatedAt: string;
 }

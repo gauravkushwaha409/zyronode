@@ -1,6 +1,9 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
+  "globalEnv": [
+    "DATABASE_URL"
+  ],
   "tasks": {
     "build": {
       "dependsOn": [
@@ -26,10 +29,17 @@
     "prisma:migrate": {
       "cache": false,
       "interactive": true,
-      "env": ["DATABASE_URL"]
+      "env": [
+        "DATABASE_URL"
+      ]
     },
     "prisma:generate": {
       "cache": false
+    },
+    "prisma:studio": {
+      "cache": false,
+      "persistent": true,
+      "interactive": true
     }
   }
 }

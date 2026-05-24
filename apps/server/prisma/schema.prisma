@@ -15,6 +15,14 @@ model User {
   firstName       String?
   lastName        String?
   profile         String?
+
+  // relation with organization 
+  organizations  OrganizationMember[]
+  lastOrgId       String?
+  lastOrg         Organization?   @relation("UserLastOrg", fields: [lastOrgId], references: [id])
+
+
+
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 }
@@ -28,13 +36,33 @@ model Organization {
   industry    String?
   plan        PlanType     @default(FREE)
   isActive    Boolean      @default(true)
+  visitors    Visitor[]
+  members     OrganizationMember[]
 
-  visitors    Visitor[]   // all visitors captured from this org's website
+  // back-relation for lastOrg
+  lastOrgUsers  User[]  @relation("UserLastOrg")
 
   createdAt   DateTime     @default(now()) @map("created_at")
   updatedAt   DateTime     @updatedAt @map("updated_at")
 
   @@map("organizations")
+}
+
+// junction table ==> one user => many orgs; one org => many users
+model OrganizationMember {
+  id             String           @id @default(uuid())
+  userId         String
+  organizationId String
+
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  joinedAt       DateTime         @default(now()) @map("joined_at")
+
+  @@unique([userId, organizationId]) 
+  @@index([userId])
+  @@index([organizationId])
+  @@map("organization_members")
 }
 
 model Visitor {
