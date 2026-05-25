@@ -38,6 +38,7 @@ services:
       - .env
     environment:
       - DATABASE_URL=postgresql://admin:admin@postgres:5432/mydb
+      - CI=true
     depends_on:
       postgres:
         condition: service_healthy

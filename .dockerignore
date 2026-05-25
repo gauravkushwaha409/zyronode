@@ -13,3 +13,4 @@
 **/.cache
 **/.vite
 **/build
+.pnpm-store
