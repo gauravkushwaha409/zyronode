@@ -17,60 +17,25 @@ services:
       retries: 10
       start_period: 30s
 
-  pgadmin:
-    image: dpage/pgadmin4:9.14
-    container_name: pgadmin
-    restart: unless-stopped
-    env_file:
-      - .env
-    ports:
-      - "5050:5050"
-    depends_on:
-      - postgres
-
-  migrate:
-    build:
-      context: .
-      dockerfile: apps/server/Dockerfile.dev
-    container_name: migrate
-    command: pnpm prisma:deploy
-    env_file:
-      - .env
-    environment:
-      - DATABASE_URL=postgresql://admin:admin@postgres:5432/mydb
-      - CI=true
-    depends_on:
-      postgres:
-        condition: service_healthy
-    restart: "no"
-    volumes:
-      - .:/app
-      - /app/node_modules
-      - /app/apps/server/node_modules
-
   server:
     build:
       context: .
       dockerfile: apps/server/Dockerfile.dev
     container_name: server
-    command: sh -c "pnpm prisma:generate && pnpm dev:server"
+    command: sh -c "pnpm prisma:generate && pnpm prisma:deploy && pnpm dev:server"
     restart: unless-stopped
     ports:
       - "8000:8000"
     volumes:
-      - .:/app
-      - /app/node_modules
-      - /app/apps/server/node_modules
+      - ./apps/server/src:/app/apps/server/src
+      - ./apps/server/prisma:/app/apps/server/prisma
     env_file:
       - .env
     environment:
       - DATABASE_URL=postgresql://admin:admin@postgres:5432/mydb
-      - CI=true 
     depends_on:
       postgres:
         condition: service_healthy
-      migrate:
-        condition: service_completed_successfully
     healthcheck:
       test: ["CMD-SHELL", "node -e \"require('http').get('http://localhost:8000/auth/me', (res) => process.exit(res.statusCode < 500 ? 0 : 1)).on('error', () => process.exit(1))\""]
       interval: 3s
@@ -82,20 +47,19 @@ services:
       context: .
       dockerfile: apps/app/Dockerfile.dev
     container_name: app
+    command: sh -c "pnpm dev:app"
     restart: unless-stopped
     env_file:
       - .env
-    environment:
-      - CI=true 
     ports:
       - "3000:3000"
     volumes:
-      - .:/app
-      - /app/node_modules
-      - /app/apps/app/node_modules
-    depends_on:
-      server:
-        condition: service_healthy
+      - ./apps/app/src:/app/apps/app/src
+      - ./packages/api-client/src:/app/packages/api-client/src
+      - ./packages/react-hook-form/src:/app/packages/react-hook-form/src
+      - ./packages/tanstack-react-query/src:/app/packages/tanstack-react-query/src
+      - ./packages/ui/src:/app/packages/ui/src
+      - ./packages/typescript-config:/app/packages/typescript-config
 
 volumes:
   postgres_data:
