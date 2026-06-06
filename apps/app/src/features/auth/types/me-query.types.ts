@@ -1,14 +1,15 @@
-import type { ApiResponse } from "@package/api-client";
+import type { ApiResponse, ServerResponse } from "@package/api-client";
 
 export interface MeQueryData {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  profile: null;
-  lastOrgId: null;
-  createdAt: string;
-  updatedAt: string;
+	id: string;
+	email: string;
+	firstName: string;
+	lastName: string;
+	profile: null;
+	lastOrgId: null;
+	createdAt: string;
+	updatedAt: string;
 }
+export type MeQueryResponse = ServerResponse<MeQueryData>;
 
-export type MeQueryResponse = ApiResponse<MeQueryData>
+export type MeQueryAxiosResponse = ApiResponse<MeQueryData>;

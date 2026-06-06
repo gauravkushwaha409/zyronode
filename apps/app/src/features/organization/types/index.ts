@@ -1,1 +1,1 @@
-export * as CreateOrganizationTypes from './create-organization.types';
+export * as OrganizationMutation from "./organization-mutation.types";

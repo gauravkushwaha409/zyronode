@@ -1,11 +1,13 @@
-import { CONFIG } from "@/config";
+import type { APIError } from "@package/api-client";
 import { useQuery } from "@package/tanstack-react-query";
+import { CONFIG } from "@/config";
 import { authApiService } from "../../services";
+import type { MeQuery } from "../../types";
 
 export function useMeQuery() {
-    return useQuery(
-        CONFIG.QUERY_KEY.AUTH.ME, 
-        () =>  authApiService.me(),
-        null
-    )
+	return useQuery<MeQuery.MeQueryAxiosResponse, APIError>(
+		CONFIG.QUERY_KEY.AUTH.ME,
+		() => authApiService.me(),
+		null,
+	);
 }

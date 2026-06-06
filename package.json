@@ -7,8 +7,10 @@
     "dev:app": "turbo dev --filter app",
     "dev:server": "turbo dev --filter server",
     "build": "turbo build",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
+    "lint": "biome lint .",
+    "format": "biome format --write .",
+    "check": "biome check --write .",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
     "docker:logs": "docker compose logs -f",
@@ -21,7 +23,7 @@
     "resource": "pnpm --filter server exec nest generate resource"
   },
   "devDependencies": {
-    "prettier": "^3.8.3",
+    "@biomejs/biome": "^2.4.16",
     "turbo": "^2.9.14",
     "typescript": "6.0.3"
   },
