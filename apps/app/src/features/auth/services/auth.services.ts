@@ -14,7 +14,7 @@ class AuthApiServices extends BaseAPIService {
     }
 
     async me(axiosConfiguration?: AxiosRequestConfig) {
-        return super.get<MeQuery.MeQueryResponse>(CONFIG.ENDPOINTS.AUTH.ME, axiosConfiguration)
+        return super.get<MeQuery.MeQueryData>(CONFIG.ENDPOINTS.AUTH.ME, axiosConfiguration)
     }
 
 }

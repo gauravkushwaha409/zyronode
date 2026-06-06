@@ -7,8 +7,10 @@ import { Toaster } from "@package/ui";
 
 
 const router = createRouter({
-  routeTree, context: {
-    queryClient
+  routeTree,
+  context: {
+    queryClient,
+    user: null,
   }
 })
 

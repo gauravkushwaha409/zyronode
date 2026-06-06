@@ -27,9 +27,9 @@ export class BaseAPIService {
   async get<TResponse = unknown>(
     url: string,
     config?: AxiosRequestConfig,
-  ): Promise<AxiosResponse> {
-    const response = await this.api.get<TResponse>(url, config);
-    return response;
+  ){
+    return this.api.get<TResponse>(url, config);
+    
   }
 
   async put<TBody = unknown>(
