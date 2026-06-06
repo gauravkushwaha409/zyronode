@@ -3,4 +3,4 @@ export { createApiClient } from './api-client'
 
 export { type AxiosRequestConfig } from 'axios'
 
-export type { ApiResponse, APIError } from './types'
+export type { ApiResponse, APIError,ServerResponse } from './types'

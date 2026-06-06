@@ -20,6 +20,8 @@ export function OrganizationMutation() {
             <OrganizationForm />
 
             <Button type="submit" className="mt-10 w-full">Create Organization</Button>
+            <Button type="button" variant={'destructive'} className="mt-10 w-full">Logout</Button>
+
         </FormWrapper>
     )
 }

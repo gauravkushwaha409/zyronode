@@ -69,7 +69,7 @@ export class AuthService {
   }
 
   async login(dto: LoginDto, response: Response) {
-    const isValidUser =  this.verifyTurnstileToken(dto.turnstile)
+    const isValidUser = this.verifyTurnstileToken(dto.turnstile)
     if (!isValidUser) {
       throw new UnauthorizedException('Turnstile verification failed')
     }
@@ -128,7 +128,7 @@ export class AuthService {
       success: true,
       statusCode: 200,
       data: user
-      
+
     }
   }
 
@@ -160,4 +160,13 @@ export class AuthService {
   }
 
 
+  async logout(response: Response) {
+    response.clearCookie('access');
+    response.clearCookie('refresh');
+    return {
+      message: 'User logged out successfully',
+      success: true,
+      statusCode: 200,
+    }
+  }
 }

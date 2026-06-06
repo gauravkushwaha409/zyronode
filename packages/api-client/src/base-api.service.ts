@@ -11,25 +11,24 @@ export class BaseAPIService {
    * TResponse: The expected data shape inside 'data'
    * TBody: The request payload shape
    */
-  async post<TBody = unknown>(
+  async post<TResponse = unknown, TAxiosResponse = unknown, TPayload = unknown>(
     url: string,
-    data?: TBody,
+    data?: TPayload,
     config?: AxiosRequestConfig,
-  ): Promise<AxiosResponse> {
-    const response = await this.api.post<AxiosResponse>(
+  ) {
+    return this.api.post<TResponse, TAxiosResponse, TPayload>(
       url,
       data,
       config,
     );
-    return response;
   }
 
   async get<TResponse = unknown>(
     url: string,
     config?: AxiosRequestConfig,
-  ){
+  ) {
     return this.api.get<TResponse>(url, config);
-    
+
   }
 
   async put<TBody = unknown>(

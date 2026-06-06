@@ -1,6 +1,6 @@
 import { CONFIG } from "@/config";
-import {  BaseAPIService, type AxiosRequestConfig } from "@package/api-client";
-import type {  LoginMutationTypes, MeQuery, RegisterMutationTypes,  } from "../types";
+import { BaseAPIService, type AxiosRequestConfig } from "@package/api-client";
+import type { LoginMutationTypes, LogoutMutation, MeQuery, RegisterMutationTypes, } from "../types";
 import { apiClient } from "@/lib";
 
 class AuthApiServices extends BaseAPIService {
@@ -15,6 +15,10 @@ class AuthApiServices extends BaseAPIService {
 
     async me(axiosConfiguration?: AxiosRequestConfig) {
         return super.get<MeQuery.MeQueryData>(CONFIG.ENDPOINTS.AUTH.ME, axiosConfiguration)
+    }
+
+    async logout(axiosConfiguration?: AxiosRequestConfig) {
+        return super.post<LogoutMutation.LogoutMutationResponse, LogoutMutation.LogoutMutationAxiosResponse>(CONFIG.ENDPOINTS.AUTH.LOGOUT, undefined, axiosConfiguration)
     }
 
 }
