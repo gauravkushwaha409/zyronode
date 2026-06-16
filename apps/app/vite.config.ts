@@ -10,6 +10,7 @@ export default defineConfig(({ mode }) => {
 	const serverUrl = env.VITE_SERVER_URL;
 
 	return {
+		envDir: "../../",
 		server: {
 			port: 3000,
 			host: true,

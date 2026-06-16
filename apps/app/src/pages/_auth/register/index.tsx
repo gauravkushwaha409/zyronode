@@ -1,4 +1,4 @@
-import { RegisterMutation } from "@/features/auth/components/register-mutation";
+import { GoogleLogin, RegisterMutation } from "@/features/auth/components";
 import { Link } from "@tanstack/react-router";
 
 export function RegisterPage() {
@@ -11,6 +11,19 @@ export function RegisterPage() {
                 </div>
 
                 <RegisterMutation />
+
+                <div className="relative my-6">
+                    <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-gray-200 dark:border-zinc-700" />
+                    </div>
+                    <div className="relative flex justify-center text-sm">
+                        <span className="bg-white dark:bg-zinc-900 px-2 text-gray-500 dark:text-gray-400">
+                            or continue with
+                        </span>
+                    </div>
+                </div>
+
+                <GoogleLogin />
 
                 <div className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
                     Already have an account?{" "}

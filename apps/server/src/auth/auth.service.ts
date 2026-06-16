@@ -5,6 +5,7 @@ import type { Response } from "express";
 import { PrismaService } from "../prisma/prisma.service";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
+import { GoogleProfileDto } from "./dto/google-login.dto";
 import { AuthJwtService } from "./jwt.service";
 
 @Injectable()
@@ -84,6 +85,9 @@ export class AuthService {
 		if (!user) {
 			throw new UnauthorizedException("No user found!");
 		}
+		if (!user.password) {
+			throw new UnauthorizedException("Invalid credentials");
+		}
 		const isPasswordValid = await bcryptjs.compare(dto.password, user.password);
 		if (!isPasswordValid) {
 			throw new UnauthorizedException("Invalid credentials");
@@ -130,6 +134,56 @@ export class AuthService {
 			statusCode: 200,
 			data: user,
 		};
+	}
+
+	async googleLogin(profile: GoogleProfileDto, response: Response) {
+		let user = await this.prisma.user.findUnique({
+			where: { googleId: profile.googleId },
+		});
+
+		if (!user && profile.email) {
+			user = await this.prisma.user.findUnique({
+				where: { email: profile.email },
+			});
+
+			if (user) {
+				user = await this.prisma.user.update({
+					where: { id: user.id },
+					data: { googleId: profile.googleId, authProvider: "google" },
+				});
+			}
+		}
+
+		if (!user) {
+			user = await this.prisma.user.create({
+				data: {
+					email: profile.email,
+					googleId: profile.googleId,
+					firstName: profile.firstName,
+					lastName: profile.lastName,
+					profile: profile.profile,
+					authProvider: "google",
+				},
+			});
+		}
+
+		const tokens = await this.getTokens(user);
+
+		response.cookie("access", tokens.access, {
+			httpOnly: true,
+			secure: process.env.NODE_ENV === "production",
+			sameSite: "lax",
+			maxAge: 7 * 24 * 60 * 60 * 1000,
+		});
+
+		response.cookie("refresh", tokens.refresh, {
+			httpOnly: true,
+			secure: process.env.NODE_ENV === "production",
+			sameSite: "lax",
+			maxAge: 7 * 24 * 60 * 60 * 1000,
+		});
+
+		return user;
 	}
 
 	async verifyTurnstileToken(token: string): Promise<boolean> {

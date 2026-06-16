@@ -40,7 +40,7 @@ export class OrganizationService {
 			where: {
 				members: {
 					some: {
-						userId: 1,
+						userId: "1",
 					},
 				},
 			},

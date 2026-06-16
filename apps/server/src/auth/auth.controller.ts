@@ -10,7 +10,8 @@ import {
 	Res,
 	UseGuards,
 } from "@nestjs/common";
-import type { Response } from "express";
+import { AuthGuard } from "@nestjs/passport";
+import type { Request, Response } from "express";
 import { CurrentUser } from "../common/decorator/current-user.decorator";
 import { JwtAuthGuard } from "../common/gaurds/jwt-auth.guard";
 import { AuthService } from "./auth.service";
@@ -49,5 +50,22 @@ export class AuthController {
 	) {
 		console.log("Logout request received from user:", request);
 		return this.authService.logout(response);
+	}
+
+	@Get("google")
+	@UseGuards(AuthGuard("google"))
+	googleAuth() {}
+
+	@Get("google/callback")
+	@UseGuards(AuthGuard("google"))
+	async googleCallback(
+		@Req() req: Request,
+		@Res({ passthrough: true }) response: Response,
+	) {
+		const user = await this.authService.googleLogin(req.user as any, response);
+		const redirectUrl = user?.lastOrgId
+			? `${process.env.VITE_APP_URL}/${user.lastOrgId}/dashboard`
+			: `${process.env.VITE_APP_URL}/select-organization`;
+		response.redirect(redirectUrl);
 	}
 }

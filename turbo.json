@@ -23,7 +23,10 @@
         "DATABASE_URL",
         "VITE_SERVER_URL",
         "VITE_CLOUDFLARE_TURNSTILE_SITE_KEY",
-        "VITE_APP_URL"
+        "VITE_APP_URL",
+        "GOOGLE_CLIENT_ID",
+        "GOOGLE_CLIENT_SECRET",
+        "GOOGLE_CALLBACK_URL"
       ]
     },
     "prisma:migrate": {

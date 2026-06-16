@@ -11,10 +11,12 @@ datasource db {
 model User {
   id        String  @id @default(cuid())
   email     String  @unique
-  password  String
+  password  String?
   firstName String?
   lastName  String?
   profile   String?
+  googleId  String? @unique
+  authProvider String @default("email")
 
   // relation with organization 
   organizations OrganizationMember[]
