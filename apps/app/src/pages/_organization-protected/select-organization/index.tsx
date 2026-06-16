@@ -1,10 +1,17 @@
 import { DialogWrapper } from "@package/ui";
-import { OrganizationMutation } from "@/features/organization/components";
+import { OrganizationList, OrganizationMutation } from "@/features/organization/components";
 
 export function SelectOrganizationPage() {
 	return (
-		<DialogWrapper open={true} onOpenChange={() => {}}>
-			<OrganizationMutation />
-		</DialogWrapper>
+		<div>
+			<OrganizationList />
+			<DialogWrapper
+				title="Create Organization"
+				open={false}
+				onOpenChange={() => {}}
+			>
+				<OrganizationMutation />
+			</DialogWrapper>
+		</div>
 	);
 }

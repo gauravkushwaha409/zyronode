@@ -51,8 +51,14 @@ services:
     restart: unless-stopped
     env_file:
       - .env
+    environment:
+      # Vite proxy runs inside this container; localhost would point here, not at the server service.
+      - VITE_SERVER_URL=http://server:8000
     ports:
       - "3000:3000"
+    depends_on:
+      server:
+        condition: service_healthy
     volumes:
       - ./apps/app/src:/app/apps/app/src
       - ./packages/api-client/src:/app/packages/api-client/src

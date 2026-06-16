@@ -6,7 +6,7 @@ import type { MeQuery } from "@/features/auth/types";
 
 interface RouterContext {
 	queryClient: QueryClient;
-	user: MeQuery.MeQueryResponse | null;
+	user?: MeQuery.MeQueryResponse | null;
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
@@ -20,12 +20,12 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 			})
 			.catch(() => null);
 
-		context.user = user?.data ?? null;
+		return {
+			user,
+		};
 	},
 });
 
 function RootComponent() {
-	return (
-			<Outlet />
-	);
+	return <Outlet />;
 }
