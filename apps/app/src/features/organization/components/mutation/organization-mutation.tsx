@@ -7,11 +7,13 @@ import {
 } from "../../hooks";
 import { OrganizationForm } from "../form";
 
-export function OrganizationMutation() {
+export function OrganizationMutation({
+	onSuccess,
+}: { onSuccess?: () => void }) {
 	const logoutMutation = useLogoutMutation();
 	const organizationForm = useOrganizationForm();
-	const createOrganizationMutation = useCreateOrganizationMutation();
-	
+	const createOrganizationMutation = useCreateOrganizationMutation(onSuccess);
+
 	const handleSubmit = organizationForm.form.handleSubmit((data) => {
 		createOrganizationMutation.mutate({
 			email: data?.email || "",
@@ -31,7 +33,12 @@ export function OrganizationMutation() {
 			<Button type="submit" className="mt-10 w-full">
 				Create Organization
 			</Button>
-			<Button onClick={()=>logoutMutation.mutate()} type="button" variant={"destructive"} className="mt-10 w-full">
+			<Button
+				onClick={() => logoutMutation.mutate()}
+				type="button"
+				variant={"destructive"}
+				className="mt-10 w-full"
+			>
 				Logout
 			</Button>
 		</FormWrapper>

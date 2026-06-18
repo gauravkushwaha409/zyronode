@@ -7,5 +7,6 @@ export const ENDPOINTS = {
     },
     ORGANIZATION: {
         CREATE: '/organization',
+        GET_MY: '/organization/my',
     }
 }

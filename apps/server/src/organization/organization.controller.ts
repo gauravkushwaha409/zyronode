@@ -20,8 +20,17 @@ export class OrganizationController {
 
 	@Post()
 	@UseGuards(JwtAuthGuard)
-	create(@Body() createOrganizationDto: CreateOrganizationDto) {
-		return this.organizationService.create(createOrganizationDto);
+	create(
+		@Body() dto: CreateOrganizationDto,
+		@CurrentUser("id") userId: string,
+	) {
+		return this.organizationService.create(dto, userId);
+	}
+
+	@Get("my")
+	@UseGuards(JwtAuthGuard)
+	getMyOrganizations(@CurrentUser("id") userId: string) {
+		return this.organizationService.getMyOrganizations(userId);
 	}
 
 	@Get()

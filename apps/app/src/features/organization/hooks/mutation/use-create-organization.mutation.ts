@@ -5,7 +5,7 @@ import { useRouter } from "@tanstack/react-router";
 import { organizationApiService } from "../../services";
 import type { OrganizationMutation } from "../../types";
 
-export function useCreateOrganizationMutation() {
+export function useCreateOrganizationMutation(onSuccess?: () => void) {
 	const router = useRouter();
 	return useMutation<
 		OrganizationMutation.OrganizationMutationAxiosResponse,
@@ -13,13 +13,14 @@ export function useCreateOrganizationMutation() {
 		OrganizationMutation.CreateOrganizationPayload
 	>((data) => organizationApiService.create(data), {
 		onSuccess: (data) => {
+			toast.success("Organization created successfully");
+			onSuccess?.();
 			router.navigate({
 				to: "/$organization/dashboard",
 				params: {
 					organization: data?.data?.data?.id || "",
 				},
 			});
-			toast.success("Organization created successfully");
 		},
 		onError: (error) => {
 			console.error("Failed to create organization", error);

@@ -14,6 +14,7 @@ export function LoginMutation() {
 		(data) => {
 			loginMutation.mutate(data, {
 				onSuccess: (data) => {
+					console.log("Login successful: ", data);
 					toast.success(data?.data?.message || "Login successful");
 
 					if (data?.data?.data?.user?.lastOrgId) {

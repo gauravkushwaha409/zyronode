@@ -3,9 +3,9 @@ import { Injectable, UnauthorizedException } from "@nestjs/common";
 import * as bcryptjs from "bcryptjs";
 import type { Response } from "express";
 import { PrismaService } from "../prisma/prisma.service";
+import { GoogleProfileDto } from "./dto/google-login.dto";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
-import { GoogleProfileDto } from "./dto/google-login.dto";
 import { AuthJwtService } from "./jwt.service";
 
 @Injectable()
@@ -187,10 +187,16 @@ export class AuthService {
 	}
 
 	async verifyTurnstileToken(token: string): Promise<boolean> {
-		const secretKey = process.env.CLOUDEFLARE_TURNSTILE_SECRET_KEY;
+		const secretKey = process.env.CLOUDFLARE_TURNSTILE_SECRET_KEY;
 		if (!secretKey) {
-			console.error("Cloudflare Turnstile secret key is not set");
-			return false;
+			if (process.env.NODE_ENV === "production") {
+				console.error("Cloudflare Turnstile secret key is not set");
+				return false;
+			}
+			console.warn(
+				"Cloudflare Turnstile secret key is not set — skipping verification in development",
+			);
+			return true;
 		}
 
 		try {

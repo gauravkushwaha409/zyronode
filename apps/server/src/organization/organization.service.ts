@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateOrganizationDto } from "./dto/create-organization.dto";
 import { UpdateOrganizationDto } from "./dto/update-organization.dto";
@@ -7,10 +7,27 @@ import { UpdateOrganizationDto } from "./dto/update-organization.dto";
 export class OrganizationService {
 	constructor(private prisma: PrismaService) {}
 
-	async create(createOrganizationDto: CreateOrganizationDto) {
-		const organization = await this.prisma.organization.create({
-			data: createOrganizationDto,
+	async create(createOrganizationDto: CreateOrganizationDto, userId: string) {
+		const organization = await this.prisma.$transaction(async (tx) => {
+			const org = await tx.organization.create({
+				data: createOrganizationDto,
+			});
+
+			await tx.organizationMember.create({
+				data: {
+					userId,
+					organizationId: org.id,
+				},
+			});
+
+			await tx.user.update({
+				where: { id: userId },
+				data: { lastOrgId: org.id },
+			});
+
+			return org;
 		});
+
 		return {
 			message: "Organization created successfully",
 			success: true,
@@ -35,17 +52,41 @@ export class OrganizationService {
 		return `This action removes a #${id} organization`;
 	}
 
-	async getMyOrganizations() {
+	async getMyOrganizations(userId: string) {
 		const organizations = await this.prisma.organization.findMany({
 			where: {
 				members: {
 					some: {
-						userId: "1",
+						userId,
+					},
+				},
+			},
+			include: {
+				members: {
+					where: { userId },
+					select: {
+						joinedAt: true,
+						user: {
+							select: {
+								id: true,
+								firstName: true,
+								lastName: true,
+								email: true,
+							},
+						},
 					},
 				},
 			},
 		});
+
+		if (!organizations.length) {
+			throw new NotFoundException("No organizations found");
+		}
+
 		return {
+			message: "Organizations fetched successfully",
+			success: true,
+			statusCode: 200,
 			data: organizations,
 		};
 	}
