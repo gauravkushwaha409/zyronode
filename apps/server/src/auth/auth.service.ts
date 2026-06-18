@@ -47,16 +47,16 @@ export class AuthService {
 		const tokens = await this.getTokens(user);
 
 		response.cookie("access", tokens.access, {
-			httpOnly: false,
+			httpOnly: true,
 			secure: process.env.NODE_ENV === "production",
-			sameSite: "none",
+			sameSite: "lax",
 			maxAge: 7 * 24 * 60 * 60 * 1000,
 		});
 
 		response.cookie("refresh", tokens.refresh, {
-			httpOnly: false,
+			httpOnly: true,
 			secure: process.env.NODE_ENV === "production",
-			sameSite: "none",
+			sameSite: "lax",
 			maxAge: 7 * 24 * 60 * 60 * 1000,
 		});
 
@@ -72,7 +72,7 @@ export class AuthService {
 	}
 
 	async login(dto: LoginDto, response: Response) {
-		const isValidUser = this.verifyTurnstileToken(dto.turnstile);
+		const isValidUser = await this.verifyTurnstileToken(dto.turnstile);
 		if (!isValidUser) {
 			throw new UnauthorizedException("Turnstile verification failed");
 		}
@@ -97,15 +97,15 @@ export class AuthService {
 
 		response.cookie("access", tokens.access, {
 			httpOnly: true,
-			secure: true,
-			sameSite: "none",
+			secure: process.env.NODE_ENV === "production",
+			sameSite: "lax",
 			maxAge: 7 * 24 * 60 * 60 * 1000,
 		});
 
 		response.cookie("refresh", tokens.refresh, {
 			httpOnly: true,
-			secure: true,
-			sameSite: "none",
+			secure: process.env.NODE_ENV === "production",
+			sameSite: "lax",
 			maxAge: 7 * 24 * 60 * 60 * 1000,
 		});
 

@@ -8,11 +8,14 @@ export function LoginMutation() {
 	const router = useRouter();
 	const loginForm = useLoginForm();
 	const loginMutation = useLoginMutation();
+	const { isPending } = loginMutation;
 
 	const handleSubmit = loginForm.form.handleSubmit(
 		(data) => {
 			loginMutation.mutate(data, {
 				onSuccess: (data) => {
+					toast.success(data?.data?.message || "Login successful");
+
 					if (data?.data?.data?.user?.lastOrgId) {
 						router.navigate({
 							from: "/login",
@@ -21,14 +24,12 @@ export function LoginMutation() {
 								organization: data?.data?.data?.user?.lastOrgId,
 							},
 						});
-					}
-					if (data?.data?.data?.user?.id) {
+					} else if (data?.data?.data?.user?.id) {
 						router.navigate({
 							from: "/login",
 							to: "/select-organization",
 						});
 					}
-					toast.success(data?.data?.message || "Login successful");
 				},
 				onError: (error) => {
 					toast.error(error?.response?.data?.message || "An error occurred");
@@ -45,7 +46,10 @@ export function LoginMutation() {
 			useFormMethods={loginForm.form}
 			formProps={{ onSubmit: handleSubmit }}
 		>
-			<LoginForm handleTurnstileSuccess={loginForm.handleTurnstileSuccess} />
+			<LoginForm
+				handleTurnstileSuccess={loginForm.handleTurnstileSuccess}
+				isPending={isPending}
+			/>
 		</FormWrapper>
 	);
 }
