@@ -1,5 +1,5 @@
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
-import { ApiResponse } from "./types";
+import type { ApiResponse } from "./types";
 
 export class BaseAPIService {
 	private api: AxiosInstance;

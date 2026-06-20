@@ -1,6 +1,5 @@
 import { FormInput } from "@package/react-hook-form";
 import { Button } from "@package/ui";
-import { Link } from "@tanstack/react-router";
 
 export function RegisterForm() {
   return (
