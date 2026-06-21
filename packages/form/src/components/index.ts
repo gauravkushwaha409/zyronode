@@ -1,2 +1,2 @@
 export { FormWrapper } from './form-wrapper'
-export { FormInput } from './rhf-input'
+export { FormInput } from './form-input'

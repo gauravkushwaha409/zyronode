@@ -50,6 +50,8 @@
 	--color-background-base: var(--color-background-base);
 	--color-white-base: var(--color-white-base);
 
+	--color-destructive: var(--destructive);
+
 	--color-primary-25: var(--color-primary-25);
 	--color-primary-50: var(--color-primary-50);
 	--color-primary-100: var(--color-primary-100);

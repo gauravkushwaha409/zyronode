@@ -1,4 +1,4 @@
-// packages/rhf/src/components/rhf-input.tsx
+// packages/form/src/components/form-input.tsx
 import { cn, Input, Label } from "@package/ui";
 import { type FieldValues, type Path, useFormContext } from "react-hook-form";
 
