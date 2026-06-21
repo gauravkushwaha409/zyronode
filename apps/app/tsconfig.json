@@ -22,7 +22,7 @@
     "paths": {
       "@/*": ["./src/*"],
       "@package/ui": ["../../packages/ui/src/index.ts"],
-      "@package/react-hook-form": ["../../packages/react-hook-form/src/index.ts"],
+      "@package/form": ["../../packages/form/src/index.ts"],
       "@package/tanstack-react-query": ["../../packages/tanstack-react-query/src/index.ts"],
       "@package/api-client": ["../../packages/api-client/src/index.ts"]
     }

@@ -17,7 +17,7 @@
     "target": "ES2022",
     "paths": {
       "@package/ui": ["../ui/src/index.ts"],
-      "@package/react-hook-form": ["../react-hook-form/src/index.ts"],
+      "@package/form": ["../form/src/index.ts"],
       "@package/tanstack-react-query": ["../tanstack-react-query/src/index.ts"],
       "@package/api-client": ["../api-client/src/index.ts"],
       "@package/icons": ["../icons/src/index.ts"]

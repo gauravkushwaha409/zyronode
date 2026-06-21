@@ -1,4 +1,4 @@
-import { FormWrapper } from "@package/react-hook-form";
+import { FormWrapper } from "@package/form";
 import { Button } from "@package/ui";
 import { useLogoutMutation } from "@/features/auth/hooks";
 import {

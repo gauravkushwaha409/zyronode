@@ -1,4 +1,4 @@
-import { useForm } from "@package/react-hook-form";
+import { useForm } from "@package/form";
 import { registerSchema, type RegisterSchema } from "../../schema";
 
 export function useRegisterForm() {

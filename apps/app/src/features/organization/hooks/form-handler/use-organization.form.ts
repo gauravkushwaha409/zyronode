@@ -1,4 +1,4 @@
-import { useForm } from "@package/react-hook-form";
+import { useForm } from "@package/form";
 import type { CreateOrganizationSchema } from "../../schema";
 
 export function useOrganizationForm() {

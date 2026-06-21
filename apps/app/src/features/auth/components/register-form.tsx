@@ -1,4 +1,4 @@
-import { FormInput } from "@package/react-hook-form";
+import { FormInput } from "@package/form";
 import { Button } from "@package/ui";
 
 export function RegisterForm() {

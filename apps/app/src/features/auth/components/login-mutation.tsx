@@ -1,4 +1,4 @@
-import { FormWrapper } from "@package/react-hook-form";
+import { FormWrapper } from "@package/form";
 import { toast } from "@package/ui";
 import { useRouter } from "@tanstack/react-router";
 import { useLoginForm, useLoginMutation } from "../hooks";

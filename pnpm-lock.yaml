@@ -26,9 +26,9 @@ importers:
       '@package/api-client':
         specifier: workspace:*
         version: link:../../packages/api-client
-      '@package/react-hook-form':
+      '@package/form':
         specifier: workspace:*
-        version: link:../../packages/react-hook-form
+        version: link:../../packages/form
       '@package/tanstack-react-query':
         specifier: workspace:*
         version: link:../../packages/tanstack-react-query
@@ -213,41 +213,7 @@ importers:
         specifier: 5.9.2
         version: 5.9.2
 
-  packages/icons:
-    dependencies:
-      clsx:
-        specifier: ^2.1.1
-        version: 2.1.1
-      tailwind-merge:
-        specifier: ^3.5.0
-        version: 3.6.0
-    devDependencies:
-      '@repo/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
-      '@types/node':
-        specifier: ^22.15.3
-        version: 22.19.19
-      '@types/react':
-        specifier: ^19.2.2
-        version: 19.2.14
-      '@types/react-dom':
-        specifier: ^19.2.2
-        version: 19.2.3(@types/react@19.2.14)
-      react:
-        specifier: ^19.2.6
-        version: 19.2.6
-      react-dom:
-        specifier: ^19.2.6
-        version: 19.2.6(react@19.2.6)
-      ts-node:
-        specifier: ^10.9.2
-        version: 10.9.2(@types/node@22.19.19)(typescript@6.0.3)
-      typescript:
-        specifier: 6.0.3
-        version: 6.0.3
-
-  packages/react-hook-form:
+  packages/form:
     dependencies:
       '@hookform/resolvers':
         specifier: ^5.2.2
@@ -286,6 +252,40 @@ importers:
       zod:
         specifier: 3.25.3
         version: 3.25.3
+
+  packages/icons:
+    dependencies:
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
+      tailwind-merge:
+        specifier: ^3.5.0
+        version: 3.6.0
+    devDependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/node':
+        specifier: ^22.15.3
+        version: 22.19.19
+      '@types/react':
+        specifier: ^19.2.2
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.2.2
+        version: 19.2.3(@types/react@19.2.14)
+      react:
+        specifier: ^19.2.6
+        version: 19.2.6
+      react-dom:
+        specifier: ^19.2.6
+        version: 19.2.6(react@19.2.6)
+      ts-node:
+        specifier: ^10.9.2
+        version: 10.9.2(@types/node@22.19.19)(typescript@6.0.3)
+      typescript:
+        specifier: 6.0.3
+        version: 6.0.3
 
   packages/tanstack-react-query:
     dependencies:

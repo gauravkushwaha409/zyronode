@@ -12,7 +12,7 @@
   "dependencies": {
     "@marsidev/react-turnstile": "^1.5.2",
     "@package/api-client": "workspace:*",
-    "@package/react-hook-form": "workspace:*",
+    "@package/form": "workspace:*",
     "@package/tanstack-react-query": "workspace:*",
     "@package/ui": "workspace:*",
     "@tanstack/react-router": "^1.169.2",

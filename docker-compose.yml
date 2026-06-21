@@ -62,7 +62,7 @@ services:
     volumes:
       - ./apps/app/src:/app/apps/app/src
       - ./packages/api-client/src:/app/packages/api-client/src
-      - ./packages/react-hook-form/src:/app/packages/react-hook-form/src
+      - ./packages/form/src:/app/packages/form/src
       - ./packages/tanstack-react-query/src:/app/packages/tanstack-react-query/src
       - ./packages/ui/src:/app/packages/ui/src
       - ./packages/typescript-config:/app/packages/typescript-config

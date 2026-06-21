@@ -1,4 +1,4 @@
-import { FormWrapper } from "@package/react-hook-form";
+import { FormWrapper } from "@package/form";
 import { RegisterForm } from "./register-form";
 import { useRegisterForm, useRegisterMutation } from "../hooks";
 

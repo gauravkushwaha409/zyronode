@@ -1,4 +1,4 @@
-import { useForm } from "@package/react-hook-form"
+import { useForm } from "@package/form"
 import { loginSchema, type LoginSchema } from "../../schema"
 
 export function useLoginForm() {
