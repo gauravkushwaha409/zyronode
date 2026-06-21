@@ -12,4 +12,6 @@ export type ApiResponse<T> = AxiosResponse<ServerResponse<T>>;
 export type APIError = AxiosError<{
     success: boolean;
     message: string;
+    error?: string;
+    errors?: Record<string, string[]>;
 }>

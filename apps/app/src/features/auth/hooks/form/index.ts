@@ -1,2 +1,5 @@
 export {useLoginForm} from './use-login.form'
 export {useRegisterForm} from './use-register.form'
+export {useSignUpForm} from './use-sign-up.form'
+export {useForgotPasswordForm} from './use-forgot-password.form'
+export {useSetPasswordForm} from './use-set-password.form'

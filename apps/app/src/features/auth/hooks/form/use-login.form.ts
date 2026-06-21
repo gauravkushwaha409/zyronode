@@ -6,14 +6,19 @@ export function useLoginForm() {
         defaultValues: {
             email: "",
             password: "",
-            turnstile: ''
+            checkbox: true,
+            captcha_token: '',
         },
         schema: loginSchema,
     })
 
-    const handleTurnstileSuccess = (token: string) => {
-        form.setValue("turnstile", token, { shouldDirty: true })
-    };
+    const setTurnstileToken = (token: string) => {
+        form.setValue("captcha_token", token, { shouldValidate: true })
+    }
 
-    return { form, handleTurnstileSuccess }
+    const removeTurnstileToken = () => {
+        form.setValue("captcha_token", "", { shouldValidate: true })
+    }
+
+    return { form, setTurnstileToken, removeTurnstileToken }
 }

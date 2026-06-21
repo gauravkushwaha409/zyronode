@@ -18,8 +18,10 @@ import { Route as VerifyVerifyMfaRouteImport } from './routes/_verify/verify-mfa
 import { Route as VerifyVerifyEmailRouteImport } from './routes/_verify/verify-email'
 import { Route as OrganizationProtectedSelectOrganizationRouteImport } from './routes/_organization-protected/select-organization'
 import { Route as OrganizationProtectedOrganizationRouteImport } from './routes/_organization-protected/$organization'
+import { Route as AuthSetPasswordRouteImport } from './routes/_auth/set-password'
 import { Route as AuthRegisterRouteImport } from './routes/_auth/register'
 import { Route as AuthLoginRouteImport } from './routes/_auth/login'
+import { Route as AuthForgotPasswordRouteImport } from './routes/_auth/forgot-password'
 import { Route as OrganizationProtectedOrganizationVisitorRouteImport } from './routes/_organization-protected/$organization/visitor'
 import { Route as OrganizationProtectedOrganizationTicketRouteImport } from './routes/_organization-protected/$organization/ticket'
 import { Route as OrganizationProtectedOrganizationInboxRouteImport } from './routes/_organization-protected/$organization/inbox'
@@ -69,6 +71,11 @@ const OrganizationProtectedOrganizationRoute =
     path: '/$organization',
     getParentRoute: () => OrganizationProtectedRoute,
   } as any)
+const AuthSetPasswordRoute = AuthSetPasswordRouteImport.update({
+  id: '/set-password',
+  path: '/set-password',
+  getParentRoute: () => AuthRoute,
+} as any)
 const AuthRegisterRoute = AuthRegisterRouteImport.update({
   id: '/register',
   path: '/register',
@@ -77,6 +84,11 @@ const AuthRegisterRoute = AuthRegisterRouteImport.update({
 const AuthLoginRoute = AuthLoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
   getParentRoute: () => AuthRoute,
 } as any)
 const OrganizationProtectedOrganizationVisitorRoute =
@@ -107,8 +119,10 @@ const OrganizationProtectedOrganizationDashboardRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/forgot-password': typeof AuthForgotPasswordRoute
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
+  '/set-password': typeof AuthSetPasswordRoute
   '/$organization': typeof OrganizationProtectedOrganizationRouteWithChildren
   '/select-organization': typeof OrganizationProtectedSelectOrganizationRoute
   '/verify-email': typeof VerifyVerifyEmailRoute
@@ -121,8 +135,10 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/forgot-password': typeof AuthForgotPasswordRoute
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
+  '/set-password': typeof AuthSetPasswordRoute
   '/$organization': typeof OrganizationProtectedOrganizationRouteWithChildren
   '/select-organization': typeof OrganizationProtectedSelectOrganizationRoute
   '/verify-email': typeof VerifyVerifyEmailRoute
@@ -139,8 +155,10 @@ export interface FileRoutesById {
   '/_organization-protected': typeof OrganizationProtectedRouteWithChildren
   '/_verify': typeof VerifyRouteWithChildren
   '/about': typeof AboutRoute
+  '/_auth/forgot-password': typeof AuthForgotPasswordRoute
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/register': typeof AuthRegisterRoute
+  '/_auth/set-password': typeof AuthSetPasswordRoute
   '/_organization-protected/$organization': typeof OrganizationProtectedOrganizationRouteWithChildren
   '/_organization-protected/select-organization': typeof OrganizationProtectedSelectOrganizationRoute
   '/_verify/verify-email': typeof VerifyVerifyEmailRoute
@@ -155,8 +173,10 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/forgot-password'
     | '/login'
     | '/register'
+    | '/set-password'
     | '/$organization'
     | '/select-organization'
     | '/verify-email'
@@ -169,8 +189,10 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/forgot-password'
     | '/login'
     | '/register'
+    | '/set-password'
     | '/$organization'
     | '/select-organization'
     | '/verify-email'
@@ -186,8 +208,10 @@ export interface FileRouteTypes {
     | '/_organization-protected'
     | '/_verify'
     | '/about'
+    | '/_auth/forgot-password'
     | '/_auth/login'
     | '/_auth/register'
+    | '/_auth/set-password'
     | '/_organization-protected/$organization'
     | '/_organization-protected/select-organization'
     | '/_verify/verify-email'
@@ -271,6 +295,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrganizationProtectedOrganizationRouteImport
       parentRoute: typeof OrganizationProtectedRoute
     }
+    '/_auth/set-password': {
+      id: '/_auth/set-password'
+      path: '/set-password'
+      fullPath: '/set-password'
+      preLoaderRoute: typeof AuthSetPasswordRouteImport
+      parentRoute: typeof AuthRoute
+    }
     '/_auth/register': {
       id: '/_auth/register'
       path: '/register'
@@ -283,6 +314,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof AuthLoginRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/forgot-password': {
+      id: '/_auth/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof AuthForgotPasswordRouteImport
       parentRoute: typeof AuthRoute
     }
     '/_organization-protected/$organization/visitor': {
@@ -317,13 +355,17 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthRouteChildren {
+  AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
+  AuthSetPasswordRoute: typeof AuthSetPasswordRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
+  AuthForgotPasswordRoute: AuthForgotPasswordRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,
+  AuthSetPasswordRoute: AuthSetPasswordRoute,
 }
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)

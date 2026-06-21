@@ -6,6 +6,7 @@ import type { ApiResponse, ServerResponse } from "@package/api-client";
 export interface LoginMutationPayload {
 	email: string;
 	password: string;
+	captcha_token: string;
 }
 
 /**

@@ -1,26 +1,54 @@
-import { FormWrapper } from "@package/form";
-import { RegisterForm } from "./register-form";
-import { useRegisterForm, useRegisterMutation } from "../hooks";
+import { FormWrapper } from '@package/form';
+import { useSignUpForm } from '../hooks';
+import { SignUpForm } from './sign-up';
 
 export function RegisterMutation() {
-  const registerForm = useRegisterForm();
-  const registerMutation = useRegisterMutation();
+  const signUpForm = useSignUpForm();
 
-  const handleSubmit = registerForm.form.handleSubmit(
+  const handleSubmit = signUpForm.form.handleSubmit(
     (data) => {
-      console.log(data);
-      registerMutation.mutate(data);
+      switch (data.step) {
+        case 1:
+          signUpForm.handleStep1();
+          return;
+        case 2:
+          signUpForm.handleStep2(data);
+          return;
+        case 3: {
+          signUpForm.handleStep3({ token: data?.token });
+          return;
+        }
+      }
     },
     (error) => {
-      console.log("on error ", error);
+      console.error(error);
     },
   );
+
   return (
     <FormWrapper
-      useFormMethods={registerForm.form}
+      useFormMethods={signUpForm.form}
       formProps={{ onSubmit: handleSubmit }}
     >
-      <RegisterForm />
+      {signUpForm.currentStep === 1 && (
+        <SignUpForm.Step1 setTurnstileToken={signUpForm.setTurnstileToken} />
+      )}
+      {signUpForm.currentStep === 2 && (
+        <SignUpForm.Step2
+          isPending={signUpForm.signUpMutation.isPending}
+          onBack={signUpForm.prevStep}
+        />
+      )}
+      {signUpForm.currentStep === 3 && (
+        <SignUpForm.Step3
+          email={signUpForm.form.getValues('email')}
+          onBack={signUpForm.prevStep}
+          handleResend={signUpForm.handleResendEmail}
+          progress={signUpForm.progress}
+          isRunning={signUpForm.isResendEmailCountDown}
+          timeLeft={signUpForm.resendEmailTimeLeft}
+        />
+      )}
     </FormWrapper>
   );
 }

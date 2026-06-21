@@ -2,3 +2,8 @@ export * as LoginMutation from "./login-mutation.types";
 export * as LogoutMutation from "./logout-mutation.types";
 export * as MeQuery from "./me-query.types";
 export * as RegisterMutationTypes from "./register-mutation.types";
+export * as SignUpMutation from "./sign-up-mutation.types";
+export * as ForgotPasswordMutation from "./forgot-password.types";
+export * as SetPasswordMutation from "./set-password.types";
+export * as VerifyEmailMutation from "./verify-email-mutation.types";
+export * as ResendEmailMutation from "./resend-email-mutation.types";
