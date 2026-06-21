@@ -1,4 +1,4 @@
-// packages/tanstack-react-query/src/persister.ts
+// packages/query/src/persister.ts
 import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister'
 
 // wrap localStorage to match AsyncStorage interface

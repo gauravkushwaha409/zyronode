@@ -1,5 +1,5 @@
 import type { APIError } from "@package/api-client";
-import { useQuery } from "@package/tanstack-react-query";
+import { useQuery } from "@package/query";
 import { CONFIG } from "@/config";
 import { organizationApiService } from "../../services";
 import type { OrganizationList } from "../../types";

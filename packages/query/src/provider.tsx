@@ -1,4 +1,4 @@
-// packages/tanstack-react-query/src/provider.tsx
+// packages/query/src/provider.tsx
 import { type ReactNode } from 'react'
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'

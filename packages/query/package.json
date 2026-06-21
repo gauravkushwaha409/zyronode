@@ -1,5 +1,5 @@
 {
-  "name": "@package/tanstack-react-query",
+  "name": "@package/query",
   "version": "0.0.0",
   "private": true,
   "main": "./src/index.ts",

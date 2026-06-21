@@ -1,5 +1,5 @@
 import type { APIError, ApiResponse } from "@package/api-client";
-import { useMutation } from "@package/tanstack-react-query";
+import { useMutation } from "@package/query";
 import { toast } from "@package/ui";
 import { authApiService } from "../../services";
 import type { RegisterMutationTypes } from "../../types";

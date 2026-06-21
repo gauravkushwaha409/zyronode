@@ -3,7 +3,7 @@
     "paths": {
       "@package/ui": ["./packages/ui/src/index.ts"],
       "@package/form": ["./packages/form/src/index.ts"],
-      "@package/tanstack-react-query": ["./packages/tanstack-react-query/src/index.ts"],
+      "@package/query": ["./packages/query/src/index.ts"],
       "@package/api-client": ["./packages/api-client/src/index.ts"],
       "@package/icons": ["./packages/icons/src/index.ts"]
     }

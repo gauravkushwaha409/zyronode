@@ -1,4 +1,4 @@
-import type { QueryClient } from "@package/tanstack-react-query";
+import type { QueryClient } from "@package/query";
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import { CONFIG } from "@/config";
 import { authApiService } from "@/features/auth/services/auth.services";

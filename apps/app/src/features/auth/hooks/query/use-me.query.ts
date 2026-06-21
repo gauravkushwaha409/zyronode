@@ -1,5 +1,5 @@
 import type { APIError } from "@package/api-client";
-import { useQuery } from "@package/tanstack-react-query";
+import { useQuery } from "@package/query";
 import { CONFIG } from "@/config";
 import { authApiService } from "../../services";
 import type { MeQuery } from "../../types";

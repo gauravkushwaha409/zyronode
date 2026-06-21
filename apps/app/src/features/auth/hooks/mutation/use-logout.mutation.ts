@@ -1,4 +1,4 @@
-import { useMutation } from "@package/tanstack-react-query";
+import { useMutation } from "@package/query";
 import { CONFIG } from "@/config";
 import { authApiService } from "../../services";
 

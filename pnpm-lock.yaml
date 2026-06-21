@@ -29,9 +29,9 @@ importers:
       '@package/form':
         specifier: workspace:*
         version: link:../../packages/form
-      '@package/tanstack-react-query':
+      '@package/query':
         specifier: workspace:*
-        version: link:../../packages/tanstack-react-query
+        version: link:../../packages/query
       '@package/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -287,7 +287,7 @@ importers:
         specifier: 6.0.3
         version: 6.0.3
 
-  packages/tanstack-react-query:
+  packages/query:
     dependencies:
       '@tanstack/query-async-storage-persister':
         specifier: ^5.100.9

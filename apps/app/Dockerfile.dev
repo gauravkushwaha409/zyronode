@@ -10,7 +10,7 @@ COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY apps/app/package.json ./apps/app/
 COPY packages/ui/package.json ./packages/ui/
 COPY packages/form/package.json ./packages/form/
-COPY packages/tanstack-react-query/package.json ./packages/tanstack-react-query/
+COPY packages/query/package.json ./packages/query/
 COPY packages/api-client/package.json ./packages/api-client/
 COPY packages/typescript-config/package.json ./packages/typescript-config/
 
