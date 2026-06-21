@@ -7,13 +7,11 @@ import { useSearch } from "@tanstack/react-router";
 export function SetPasswordPage() {
 	const setPasswordForm = useSetPasswordForm();
 	const setPasswordMutation = useSetPasswordMutation();
-	const { token } = useSearch({ from: "/_auth/set-password" });
+	const { token } = useSearch({ from: "/auth/set-password" });
 
 	if (!token) {
 		return (
-			<div className="relative flex min-h-dvh items-center justify-center p-4 bg-gradient-to-br from-gray-50 via-white to-gray-100">
-				<p className="text-red-500">Invalid token</p>
-			</div>
+			<div className="text-red-500">Invalid token</div>
 		);
 	}
 
@@ -27,31 +25,29 @@ export function SetPasswordPage() {
 	);
 
 	return (
-		<div className="relative flex min-h-dvh items-center justify-center p-4 bg-gradient-to-br from-gray-50 via-white to-gray-100">
-			<div className="w-full max-w-md space-y-4">
-				<FormHeader
-					heading="Set a New Password"
-					description="Make sure you set a password you can easily recall next time."
+		<section className="space-y-4 2xl:space-y-6">
+			<FormHeader
+				heading="Set a New Password"
+				description="Make sure you set a password you can easily recall next time."
+			/>
+			<FormWrapper
+				useFormMethods={setPasswordForm.form}
+				formProps={{ onSubmit: handleSetPasswordSubmit, className: "space-y-4" }}
+			>
+				<FormPassword
+					name="password"
+					label="New Password"
+					placeholder="Enter new password"
 				/>
-				<FormWrapper
-					useFormMethods={setPasswordForm.form}
-					formProps={{ onSubmit: handleSetPasswordSubmit, className: "space-y-4" }}
-				>
-					<FormPassword
-						name="password"
-						label="New Password"
-						placeholder="Enter new password"
-					/>
-					<FormPassword
-						name="confirmPassword"
-						label="Confirm Password"
-						placeholder="Re-enter new password"
-					/>
-					<Button size="xl" className="w-full">
-						Change Password
-					</Button>
-				</FormWrapper>
-			</div>
-		</div>
+				<FormPassword
+					name="confirmPassword"
+					label="Confirm Password"
+					placeholder="Re-enter new password"
+				/>
+				<Button size="xl" className="w-full">
+					Change Password
+				</Button>
+			</FormWrapper>
+		</section>
 	);
 }

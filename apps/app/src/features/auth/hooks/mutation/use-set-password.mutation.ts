@@ -14,7 +14,7 @@ export function useSetPasswordMutation() {
 	>((payload) => authApiService.setPassword(payload), {
 		onSuccess: (data) => {
 			toast.success(data?.data?.message || 'Password set successfully');
-			navigate({ to: '/login' });
+			navigate({ to: '/auth/login' });
 		},
 		onError: (error) => {
 			toast.error(error?.response?.data?.error || 'Failed to set password');

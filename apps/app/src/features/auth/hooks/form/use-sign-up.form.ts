@@ -141,7 +141,7 @@ export function useSignUpForm() {
       {
         onSuccess: (data) => {
           toast.success(data?.data?.message);
-          navigate({ to: '/login', replace: true });
+          navigate({ to: '/auth/login', replace: true });
         },
         onError: (error) => {
           toast.error(error?.response?.data?.error || 'Something went wrong');

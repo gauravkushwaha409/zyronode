@@ -15,9 +15,9 @@ export function SelectOrganizationPage() {
 	const handleLogout = () => {
 		logoutMutation.mutate(undefined, {
 			onSuccess: () => {
-				router.navigate({ to: "/login" });
-			},
-		});
+router.navigate({ to: "/auth/login" });
+		},
+	});
 	};
 
 	return (
@@ -99,7 +99,7 @@ export function SelectOrganizationPage() {
 
 					<button
 						type="button"
-						onClick={() => router.navigate({ to: "/login" })}
+						onClick={() => router.navigate({ to: "/auth/login" })}
 						className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-500 hover:underline underline-offset-2 transition-colors"
 					>
 						Back to login

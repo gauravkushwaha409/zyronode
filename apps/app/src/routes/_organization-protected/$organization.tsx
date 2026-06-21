@@ -231,7 +231,7 @@ function SidebarInner() {
 				<div className="border-t border-gray-border-100 pt-3">
 					<SidebarNavLink
 						icon={<LogoutIcon />}
-						onClick={() => router.navigate({ to: "/login" })}
+						onClick={() => router.navigate({ to: "/auth/login" })}
 					>
 						Logout
 					</SidebarNavLink>

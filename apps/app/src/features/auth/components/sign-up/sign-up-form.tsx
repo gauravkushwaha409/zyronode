@@ -42,7 +42,7 @@ const Step1 = ({
           Already have an account?
         </p>
         <Link
-          to="/login"
+          to="/auth/login"
           className="text-sm font-semibold text-blue-600 underline underline-offset-2 hover:text-blue-700"
         >
           Sign in

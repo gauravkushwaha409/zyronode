@@ -28,6 +28,10 @@ out/
 build
 dist
 
+# Accidental JS emit alongside source (from running tsc without noEmit)
+apps/*/src/**/*.js
+packages/*/src/**/*.js
+
 
 # Debug
 npm-debug.log*

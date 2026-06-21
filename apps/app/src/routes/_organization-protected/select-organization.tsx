@@ -8,7 +8,7 @@ export const Route = createFileRoute(
 	beforeLoad: ({ context }) => {
 		console.log(context.user);
 		if (!context.user?.data?.data?.id) {
-			throw redirect({ to: "/login" });
+			throw redirect({ to: "/auth/login" });
 		}
 	},
 });

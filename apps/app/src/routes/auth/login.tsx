@@ -1,9 +1,10 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { CONFIG } from "@/config";
+import { redirectAuthenticatedUserToApp } from "@/features/auth/gaurds";
 import type { MeQuery } from "@/features/auth/types";
 import { LoginPage } from "@/pages/_auth/login";
 
-export const Route = createFileRoute("/_auth/login")({
+export const Route = createFileRoute("/auth/login")({
 	component: RouteComponent,
 	beforeLoad: ({ context }) => {
 		const user =
@@ -11,18 +12,7 @@ export const Route = createFileRoute("/_auth/login")({
 				CONFIG.QUERY_KEY.AUTH.ME,
 			);
 
-		if (user?.data?.data?.lastOrgId)
-			throw redirect({
-				to: "/$organization/dashboard",
-				params: {
-					organization: user?.data?.data?.lastOrgId,
-				},
-			});
-
-		if (user?.data?.data?.id)
-			throw redirect({
-				to: "/select-organization",
-			});
+		redirectAuthenticatedUserToApp(user);
 	},
 });
 

@@ -4,10 +4,10 @@ export const ROUTES = {
         INBOX: '/inbox',
     },
     AUTH: {
-        LOGIN: '/login',
-        REGISTER: '/register',
-        FORGOT_PASSWORD: '/forgot-password',
-        SET_PASSWORD: '/set-password',
+        LOGIN: '/auth/login',
+        REGISTER: '/auth/register',
+        FORGOT_PASSWORD: '/auth/forgot-password',
+        SET_PASSWORD: '/auth/set-password',
     }
 
 }

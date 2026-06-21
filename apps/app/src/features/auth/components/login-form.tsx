@@ -34,7 +34,7 @@ export function LoginForm({
       <div className="flex flex-row items-center justify-between">
         <FormCheckbox name="checkbox" label="Remember Me" />
         <Link
-          to="/forgot-password"
+          to="/auth/forgot-password"
           className="text-sm font-medium text-blue-600 hover:text-blue-500"
         >
           Forgot Password

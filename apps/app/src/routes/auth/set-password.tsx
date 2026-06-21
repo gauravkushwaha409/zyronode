@@ -5,7 +5,7 @@ interface SetPasswordSearch {
   token?: string
 }
 
-export const Route = createFileRoute('/_auth/set-password')({
+export const Route = createFileRoute('/auth/set-password')({
   validateSearch: (search: Record<string, unknown>): SetPasswordSearch => ({
     token: search.token as string | undefined,
   }),

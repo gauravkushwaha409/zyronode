@@ -21,7 +21,7 @@ export const Route = createFileRoute("/")({
 				to: "/select-organization",
 			});
 
-		throw redirect({ to: "/login" });
+		throw redirect({ to: "/auth/login" });
 	},
 });
 

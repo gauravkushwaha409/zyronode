@@ -16,27 +16,25 @@ export function ForgotPasswordPage() {
 	);
 
 	return (
-		<div className="relative flex min-h-dvh items-center justify-center p-4 bg-gradient-to-br from-gray-50 via-white to-gray-100">
-			<div className="w-full max-w-md space-y-4">
-				<FormHeader
-					heading="Reset Your Password"
-					description="Enter your registered email address and we'll send you a password reset link."
-				/>
-				<FormWrapper
-					useFormMethods={forgotPasswordForm.form}
-					formProps={{ onSubmit: handleForgotPasswordSubmit, className: "space-y-4" }}
-				>
-					<FormInput name="email" label="Email" placeholder="Enter your email" />
-					<Button size="xl" className="w-full">
-						Send Reset Link
-					</Button>
-				</FormWrapper>
-				<div className="flex justify-center">
-					<Link to="/login" className="w-fit underline text-blue-600 font-medium text-sm">
-						Return to login
-					</Link>
-				</div>
+		<section className="space-y-4 2xl:space-y-6">
+			<FormHeader
+				heading="Reset Your Password"
+				description="Enter your registered email address and we'll send you a password reset link."
+			/>
+			<FormWrapper
+				useFormMethods={forgotPasswordForm.form}
+				formProps={{ onSubmit: handleForgotPasswordSubmit, className: "space-y-4" }}
+			>
+				<FormInput name="email" label="Email" placeholder="Enter your email" />
+				<Button size="xl" className="w-full">
+					Send Reset Link
+				</Button>
+			</FormWrapper>
+			<div className="flex justify-center">
+				<Link to="/auth/login" className="w-fit underline text-blue-600 font-medium text-sm">
+					Return to login
+				</Link>
 			</div>
-		</div>
+		</section>
 	);
 }
