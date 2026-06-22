@@ -19,6 +19,7 @@ export interface User {
 	lastName: string;
 	lastOrgId: string | null;
 	profile: string | null;
+	isEmailVerified: boolean;
 	createdAt: string;
 	updatedAt: string;
 }

@@ -7,6 +7,7 @@ export interface MeQueryData {
 	lastName: string;
 	profile: null;
 	lastOrgId: null;
+	isEmailVerified: boolean;
 	createdAt: string;
 	updatedAt: string;
 }

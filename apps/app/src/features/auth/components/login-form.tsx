@@ -1,6 +1,6 @@
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
-import { FormCheckbox, FormInput, FormPassword } from '@package/form';
-import { Button } from '@package/ui';
+import { FormCheckbox, FormInput, FormPassword, useFormContext } from '@package/form';
+import { Button, cn } from '@package/ui';
 import { Link } from '@tanstack/react-router';
 import { useRef } from 'react';
 
@@ -16,6 +16,8 @@ export function LoginForm({
   isPending,
 }: LoginFormProps) {
   const turnstileRef = useRef<TurnstileInstance | null>(null);
+  const { formState: { errors } } = useFormContext();
+  const captchaError = errors?.captcha_token?.message as string | undefined;
 
   return (
     <div className="w-full space-y-4">
@@ -41,16 +43,23 @@ export function LoginForm({
         </Link>
       </div>
 
-      <Turnstile
-        ref={turnstileRef}
-        onSuccess={(token) => setTurnstileToken(token)}
-        siteKey={import.meta.env.VITE_CLOUDFLARE_TURNSTILE_SITE_KEY}
-        onExpire={removeTurnstileToken}
-        options={{
-          size: 'flexible',
-          theme: 'light',
-        }}
-      />
+      <div className={cn("space-y-3", captchaError && "space-y-1")}>
+        <Turnstile
+          ref={turnstileRef}
+          onSuccess={(token) => setTurnstileToken(token)}
+          siteKey={import.meta.env.VITE_CLOUDFLARE_TURNSTILE_SITE_KEY}
+          onExpire={removeTurnstileToken}
+          options={{
+            size: 'flexible',
+            theme: 'light',
+          }}
+        />
+        {captchaError && (
+          <p role="alert" className="text-destructive text-sm">
+            {captchaError}
+          </p>
+        )}
+      </div>
 
       <Button
         type="submit"

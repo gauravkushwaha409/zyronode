@@ -1,8 +1,11 @@
-import { FormHeader } from "@/features/auth/components";
-import { useForgotPasswordForm, useForgotPasswordMutation } from "@/features/auth/hooks";
 import { FormInput, FormWrapper } from "@package/form";
 import { Button } from "@package/ui";
 import { Link } from "@tanstack/react-router";
+import { FormHeader } from "@/features/auth/components";
+import {
+	useForgotPasswordForm,
+	useForgotPasswordMutation,
+} from "@/features/auth/hooks";
 
 export function ForgotPasswordPage() {
 	const forgotPasswordMutation = useForgotPasswordMutation();
@@ -31,7 +34,10 @@ export function ForgotPasswordPage() {
 				</Button>
 			</FormWrapper>
 			<div className="flex justify-center">
-				<Link to="/auth/login" className="w-fit underline text-blue-600 font-medium text-sm">
+				<Link
+					to="/auth/login"
+					className="w-fit underline text-blue-600 font-medium text-sm"
+				>
 					Return to login
 				</Link>
 			</div>
