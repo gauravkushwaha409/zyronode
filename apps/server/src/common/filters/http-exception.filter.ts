@@ -1,45 +1,37 @@
 import {
-  ExceptionFilter,
-  Catch,
-  ArgumentsHost,
-  HttpException,
-  HttpStatus,
-} from '@nestjs/common';
-import { Response } from 'express';
-import { ApiResponse } from '../dto/api-response.dto';
+	ArgumentsHost,
+	Catch,
+	ExceptionFilter,
+	HttpException,
+	HttpStatus,
+} from "@nestjs/common";
+import { Response } from "express";
+import { ApiResponse } from "../dto/api-response.dto";
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
-  catch(exception: unknown, host: ArgumentsHost) {
-    const ctx = host.switchToHttp();
-    const response = ctx.getResponse<Response>();
+	catch(exception: unknown, host: ArgumentsHost) {
+		const ctx = host.switchToHttp();
+		const response = ctx.getResponse<Response>();
 
-    const statusCode =
-      exception instanceof HttpException
-        ? exception.getStatus()
-        : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    const exceptionResponse =
-      exception instanceof HttpException
-        ? exception.getResponse()
-        : null;
+		console.error("Exception caught by HttpExceptionFilter: ", exception);
 
-    const message =
-      typeof exceptionResponse === 'string'
-        ? exceptionResponse
-        : (exceptionResponse as any)?.message ?? 'Internal server error';
+		const statusCode =
+			exception instanceof HttpException ? exception.getStatus() : 500;
 
-    const error =
-      typeof exceptionResponse === 'object'
-        ? (exceptionResponse as any)?.error ?? HttpStatus[statusCode]
-        : HttpStatus[statusCode];
+		const exceptionResponse =
+			exception instanceof HttpException ? exception.getResponse() : null;
 
-    response.status(statusCode).json(
-      ApiResponse.error(
-        Array.isArray(message) ? message.join(', ') : message, // handles class-validator errors
-        statusCode,
-        error,
-      ),
-    );
-  }
+      const message = exceptionResponse && typeof exceptionResponse === "object" && "message" in exceptionResponse ? exceptionResponse.message : null;
+
+      const errorCode = exceptionResponse && typeof exceptionResponse === "object" && "error_code" in exceptionResponse ? exceptionResponse.error_code : null;
+
+		response.status(statusCode).json({
+			success: false,
+			statusCode: statusCode,
+			error: message,
+			errorCode: errorCode,
+		});
+	}
 }
