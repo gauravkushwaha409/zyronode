@@ -4,7 +4,7 @@ import { Request } from "express";
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
+export class JwtStrategy extends PassportStrategy(Strategy,"jwt") {
     constructor() {
 
         super({
@@ -14,15 +14,22 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
                 }
             ]),
             secretOrKey: process.env['JWT_SECRET'] ?? "sec",
+            algorithms: ["HS256"],
         })
     }
 
-    async validate(payload: any) {
+    async validate(payload) {
+        console.log("JWT Strategy - validate called with payload:----------> ", payload);
         return {
             id: payload.id,
             email: payload.email,
             name: payload.name,
         };
     }
+
+    fail(challenge: unknown, status?: unknown): void {
+        console.log("JWT Strategy - fail called with challenge: ", challenge, "and status:", status);
+    }
+
 
 }

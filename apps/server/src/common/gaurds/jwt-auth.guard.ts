@@ -13,10 +13,20 @@ export class JwtAuthGuard extends AuthGuard("jwt") {
 	}
 
 	handleRequest(err, user, info) {
-		console.log("JWT Auth Guard - handleRequest called with user: ", info);
-		if (err || !user) throw new UnauthorizedException({message: "Token is invalid or expired", error_code: "INVALID_TOKEN"});
+		console.log("JWT Auth Guard: handleRequest called with user:----------->", user, "and info:", info);
+		if (err || !user)
+			throw new UnauthorizedException({
+				message: "Token is invalid or expired",
+				error_code: "INVALID_TOKEN",
+			});
 		return user;
 	}
 
+	// getRequest(context: ExecutionContext) {}
 
+	// getAuthenticateOptions(
+	// 	context: ExecutionContext,
+	// ): IAuthModuleOptions | undefined {
+	// 	return context;
+	// }
 }
