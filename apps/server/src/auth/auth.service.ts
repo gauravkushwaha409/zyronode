@@ -19,21 +19,6 @@ export class AuthService {
 		return await bcryptjs.hash(password, 10);
 	}
 
-	async getTokens(user: {
-		id: string;
-		email: string;
-		firstName: string | null;
-		lastName: string | null;
-	}) {
-		const payload = {
-			id: user.id,
-			email: user.email,
-			name: `${user.firstName || ""} ${user.lastName || ""}`.trim(),
-		};
-
-		return this.authJwtService.generateAuthTokens(payload);
-	}
-
 	async register(dto: RegisterDto, response: Response) {
 		const user = await this.prisma.user.create({
 			data: {
@@ -44,7 +29,7 @@ export class AuthService {
 				profile: dto.profile,
 			},
 		});
-		const tokens = await this.getTokens(user);
+		const tokens = await this.authJwtService.generateAuthTokens({ id: user.id });
 
 		response.cookie("access", tokens.access, {
 			httpOnly: true,
@@ -93,7 +78,7 @@ export class AuthService {
 			throw new UnauthorizedException("Invalid credentials");
 		}
 
-		const tokens = await this.getTokens(user);
+		const tokens = await this.authJwtService.generateAuthTokens({ id: user.id });
 
 		response.cookie("access", tokens.access, {
 			httpOnly: true,
@@ -167,7 +152,7 @@ export class AuthService {
 			});
 		}
 
-		const tokens = await this.getTokens(user);
+		const tokens = await this.authJwtService.generateAuthTokens({ id: user.id });
 
 		response.cookie("access", tokens.access, {
 			httpOnly: true,

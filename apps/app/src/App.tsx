@@ -22,7 +22,7 @@ declare module "@tanstack/react-router" {
 export function App() {
 	return (
 		<TanstackQueryProvider client={queryClient}>
-			<Toaster position="bottom-right" reverseOrder gutter={100} />
+			<Toaster position="bottom-right" duration={2500} />
 			<RouterProvider router={router} />
 		</TanstackQueryProvider>
 	);

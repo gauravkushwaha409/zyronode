@@ -5,9 +5,7 @@ export const CurrentUser = createParamDecorator(
   (data: string | undefined, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
     const user = request.user;
-
-    // @CurrentUser('email') → returns just the email
-    // @CurrentUser()        → returns full user object
+console.log('CurrentUser decorator called. User:', user, 'Data:', data);
     return data ? user?.[data] : user;
   },
 );

@@ -15,6 +15,7 @@ export class JwtStrategy extends PassportStrategy(Strategy,"jwt") {
             ]),
             secretOrKey: process.env['JWT_SECRET'] ?? "sec",
             algorithms: ["HS256"],
+            
         })
     }
 
@@ -22,14 +23,10 @@ export class JwtStrategy extends PassportStrategy(Strategy,"jwt") {
         console.log("JWT Strategy - validate called with payload:----------> ", payload);
         return {
             id: payload.id,
-            email: payload.email,
-            name: payload.name,
         };
     }
 
-    fail(challenge: unknown, status?: unknown): void {
-        console.log("JWT Strategy - fail called with challenge: ", challenge, "and status:", status);
-    }
+
 
 
 }

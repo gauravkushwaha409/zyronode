@@ -1,1 +1,2 @@
-export { Toaster, toast } from 'react-hot-toast';
+export { toast, type ExternalToast, type ToastT } from 'sonner';
+export { Toaster } from './toaster';

@@ -3,8 +3,6 @@ import { JwtService } from '@nestjs/jwt';
 
 export interface TokenPayload {
   id: string;
-  email: string;
-  name: string;
 }
 
 @Injectable()
@@ -26,13 +24,14 @@ export class AuthJwtService {
   async issueAccessToken(payload: TokenPayload): Promise<string> {
     return this.jwtService.signAsync(payload, {
       expiresIn: '15m',
-      
+      subject: 'access',
     });
   }
 
   async issueRefreshToken(payload: TokenPayload): Promise<string> {
     return this.jwtService.signAsync(payload, {
       expiresIn: '7d',
+      subject: 'refresh',
     });
   }
 

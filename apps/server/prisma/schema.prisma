@@ -17,6 +17,7 @@ model User {
   profile   String?
   googleId  String? @unique
   authProvider String @default("email")
+  isEmailVerified Boolean @default(false)
 
   // relation with organization 
   organizations OrganizationMember[]

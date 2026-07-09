@@ -14,6 +14,8 @@ import { AuthGuard } from "@nestjs/passport";
 import type { Request, Response } from "express";
 import { CurrentUser } from "../common/decorator/current-user.decorator";
 import { JwtAuthGuard } from "../common/gaurds/jwt-auth.guard";
+import { OnboardingGuard } from "../common/gaurds/onboarding.guard";
+import { EmailVerifiedGuard } from "../common/gaurds/email-verified.guard";
 import { AuthService } from "./auth.service";
 import type { LoginDto } from "./dto/login.dto";
 import type { RegisterDto } from "./dto/register.dto";
@@ -22,8 +24,8 @@ import type { RegisterDto } from "./dto/register.dto";
 export class AuthController {
 	constructor(private authService: AuthService) {}
 
-	@Post("register")
-	register(
+	@Post("sign-up")
+	signUp(
 		@Body() dto: RegisterDto,
 		@Res({ passthrough: true }) response: Response,
 	) {
@@ -37,7 +39,7 @@ export class AuthController {
 	}
 
 	@Get("me")
-	@UseGuards(JwtAuthGuard)
+	@UseGuards(JwtAuthGuard, EmailVerifiedGuard, OnboardingGuard)
 	me(@CurrentUser() user) {
 		return this.authService.me(user.id);
 	}
