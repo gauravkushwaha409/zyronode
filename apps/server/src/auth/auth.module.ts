@@ -9,6 +9,7 @@ import { OnboardingGuard } from "../common/gaurds/onboarding.guard";
 import { EmailVerifiedGuard } from "../common/gaurds/email-verified.guard";
 import { GoogleStrategy } from "./strategies/google.strategy";
 import { JwtStrategy } from "./strategies/jwt.strategy";
+import { OtpModule } from "../otp/otp.module";
 
 @Module({
 	imports: [
@@ -16,6 +17,7 @@ import { JwtStrategy } from "./strategies/jwt.strategy";
 		JwtModule.register({
 			secret: process.env.JWT_SECRET,
 		}),
+		OtpModule,
 	],
 	controllers: [AuthController],
 	providers: [AuthService, AuthJwtService, JwtStrategy, GoogleStrategy, OnboardingGuard, EmailVerifiedGuard],

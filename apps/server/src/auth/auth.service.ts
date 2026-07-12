@@ -1,8 +1,9 @@
 // apps/server/src/auth/auth.service.ts
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { Injectable, Logger, UnauthorizedException } from "@nestjs/common";
 import * as bcryptjs from "bcryptjs";
 import type { Response } from "express";
 import { PrismaService } from "../prisma/prisma.service";
+import { OtpService } from "../otp/otp.service";
 import { GoogleProfileDto } from "./dto/google-login.dto";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
@@ -10,9 +11,12 @@ import { AuthJwtService } from "./jwt.service";
 
 @Injectable()
 export class AuthService {
+	private readonly logger = new Logger(AuthService.name);
+
 	constructor(
 		private prisma: PrismaService,
 		private authJwtService: AuthJwtService,
+		private otpService: OtpService,
 	) {}
 
 	private async hashPassword(password: string) {
@@ -45,8 +49,14 @@ export class AuthService {
 			maxAge: 7 * 24 * 60 * 60 * 1000,
 		});
 
+		try {
+			await this.otpService.generateAndSendOtp(dto.email);
+		} catch (error) {
+			this.logger.error(`Failed to send verification OTP: ${error}`);
+		}
+
 		return {
-			message: "User registered successfully",
+			message: "User registered successfully. Please verify your email.",
 			success: true,
 			statusCode: 201,
 			data: {
