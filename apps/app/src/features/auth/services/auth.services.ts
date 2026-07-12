@@ -94,11 +94,15 @@ class AuthApiServices extends BaseAPIService {
 		>(CONFIG.ENDPOINTS.AUTH.VERIFY_EMAIL, payload, axiosConfiguration);
 	}
 
-	async resendEmail(axiosConfiguration?: AxiosRequestConfig) {
+	async resendEmail(
+		payload: ResendEmailMutation.ResendEmailMutationPayload,
+		axiosConfiguration?: AxiosRequestConfig,
+	) {
 		return super.post<
 			ResendEmailMutation.ResendEmailMutationResponseData,
-			ResendEmailMutation.ResendEmailMutationAxiosResponse
-		>(CONFIG.ENDPOINTS.AUTH.RESEND_EMAIL, undefined, axiosConfiguration);
+			ResendEmailMutation.ResendEmailMutationAxiosResponse,
+			ResendEmailMutation.ResendEmailMutationPayload
+		>(CONFIG.ENDPOINTS.AUTH.RESEND_EMAIL, payload, axiosConfiguration);
 	}
 }
 

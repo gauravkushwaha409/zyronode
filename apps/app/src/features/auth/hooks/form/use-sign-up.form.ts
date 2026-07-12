@@ -90,19 +90,23 @@ export function useSignUpForm() {
 
   const handleResendEmail = () => {
     if (isRunning) return;
-    resendEmailMutation.mutate(undefined, {
-      onSuccess: (data) => {
-        toast.success(
-          data?.data?.message || 'Verification email resent successfully',
-        );
-        start();
+    const email = form.getValues('email');
+    resendEmailMutation.mutate(
+      { email },
+      {
+        onSuccess: (data) => {
+          toast.success(
+            data?.data?.message || 'Verification email resent successfully',
+          );
+          start();
+        },
+        onError: (error) => {
+          toast.error(
+            error?.response?.data?.error || 'Failed to resend verification email',
+          );
+        },
       },
-      onError: (error) => {
-        toast.error(
-          error?.response?.data?.error || 'Failed to resend verification email',
-        );
-      },
-    });
+    );
   };
 
   const progress = ((30 - timeLeft) / 30) * 100;
@@ -136,8 +140,9 @@ export function useSignUpForm() {
   };
 
   const handleStep3 = async (data: { token: string }) => {
+    const email = form.getValues('email');
     verifyEmailMutation.mutate(
-      { token: data.token },
+      { email, code: data.token },
       {
         onSuccess: (data) => {
           toast.success(data?.data?.message);

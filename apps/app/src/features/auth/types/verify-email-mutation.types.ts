@@ -1,9 +1,13 @@
 import type { APIError, ApiResponse } from '@package/api-client';
 
 export interface VerifyEmailMutationPayload {
-  token: string;
+  email: string;
+  code: string;
 }
 
-export type VerifyEmailMutationData = null;
+export interface VerifyEmailMutationData {
+  message: string;
+}
+
 export type VerifyEmailMutationAxiosResponse = ApiResponse<VerifyEmailMutationData>;
 export type VerifyEmailMutationError = APIError;

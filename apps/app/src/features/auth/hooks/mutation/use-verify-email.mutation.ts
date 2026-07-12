@@ -7,12 +7,5 @@ export function useVerifyEmailMutation() {
 		VerifyEmailMutation.VerifyEmailMutationAxiosResponse,
 		VerifyEmailMutation.VerifyEmailMutationError,
 		VerifyEmailMutation.VerifyEmailMutationPayload
-	>((data) => authApiService.verifyEmail(data), {
-		onSuccess: (data) => {
-			console.error('Email verified successfully', data);
-		},
-		onError: (error) => {
-			console.error('Email verification failed', error);
-		},
-	});
+	>((data) => authApiService.verifyEmail(data));
 }

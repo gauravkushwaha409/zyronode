@@ -1,131 +1,144 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { Link, useRouter } from '@tanstack/react-router'
-import { useForm } from '@package/form'
-import { z } from 'zod'
-import { FormInput, FormWrapper } from '@package/form'
-import { Button, toast } from '@package/ui'
-import { useMeQuery, useResendEmailMutation, useVerifyEmailMutation } from '@/features/auth/hooks'
-import { queryClient } from '@/lib/query-client'
-import { CONFIG } from '@/config'
-import { authApiService } from '@/features/auth/services'
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useRouter } from '@tanstack/react-router';
+import { useForm } from '@package/form';
+import { z } from 'zod';
+import { FormInput, FormWrapper } from '@package/form';
+import { AuthLayout, Button, toast } from '@package/ui';
+import {
+  useLogoutMutation,
+  useMeQuery,
+  useResendEmailMutation,
+  useVerifyEmailMutation,
+} from '@/features/auth/hooks';
+import { queryClient } from '@/lib/query-client';
+import { CONFIG } from '@/config';
+import { authApiService } from '@/features/auth/services';
 
 const verifyEmailSchema = z.object({
   token: z.string().length(6, 'Code must be exactly 6 characters'),
-})
+});
 
-type VerifyEmailForm = z.infer<typeof verifyEmailSchema>
+type VerifyEmailForm = z.infer<typeof verifyEmailSchema>;
 
 function useCountdown(seconds: number) {
-  const [timeLeft, setTimeLeft] = useState(seconds)
-  const [isRunning, setIsRunning] = useState(false)
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const [timeLeft, setTimeLeft] = useState(seconds);
+  const [isRunning, setIsRunning] = useState(false);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const start = useCallback(() => {
-    setTimeLeft(seconds)
-    setIsRunning(true)
-  }, [seconds])
+    setTimeLeft(seconds);
+    setIsRunning(true);
+  }, [seconds]);
 
   const stop = useCallback(() => {
-    setIsRunning(false)
+    setIsRunning(false);
     if (intervalRef.current) {
-      clearInterval(intervalRef.current)
-      intervalRef.current = null
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
     if (isRunning && timeLeft > 0) {
       intervalRef.current = setInterval(() => {
-        setTimeLeft((prev) => prev - 1)
-      }, 1000)
+        setTimeLeft((prev) => prev - 1);
+      }, 1000);
     } else if (timeLeft <= 0) {
-      stop()
+      stop();
     }
     return () => {
       if (intervalRef.current) {
-        clearInterval(intervalRef.current)
+        clearInterval(intervalRef.current);
       }
-    }
-  }, [isRunning, timeLeft, stop])
+    };
+  }, [isRunning, timeLeft, stop]);
 
-  return { start, stop, timeLeft, isRunning }
+  return { start, stop, timeLeft, isRunning };
 }
 
 export function VerifyEmailPage() {
-  const router = useRouter()
-  const { data: meData } = useMeQuery()
-  const verifyEmailMutation = useVerifyEmailMutation()
-  const resendEmailMutation = useResendEmailMutation()
-  const { start, timeLeft, isRunning } = useCountdown(30)
-  const email = meData?.data?.data?.email || 'your email'
-  const progress = ((30 - timeLeft) / 30) * 100
+  const router = useRouter();
+  const { data: meData } = useMeQuery();
+  const logoutMutation = useLogoutMutation();
+  const verifyEmailMutation = useVerifyEmailMutation();
+  const resendEmailMutation = useResendEmailMutation();
+  const { start, timeLeft, isRunning } = useCountdown(30);
+
+  const email = meData?.data?.data?.email || 'your email';
+  const progress = ((30 - timeLeft) / 30) * 100;
 
   const form = useForm<VerifyEmailForm>({
     schema: verifyEmailSchema,
     defaultValues: { token: '' },
-  })
+  });
 
   const handleSubmit = form.handleSubmit(
     (data) => {
       verifyEmailMutation.mutate(
-        { token: data.token },
+        { email, code: data.token },
         {
           onSuccess: async (response) => {
-            toast.success(response?.data?.message || 'Email verified successfully')
+            toast.success(response?.data?.message || 'Email verified successfully');
 
             await queryClient.fetchQuery({
               queryKey: CONFIG.QUERY_KEY.AUTH.ME,
               queryFn: () => authApiService.me(),
-            })
+            });
 
-            router.navigate({ to: '/auth/login' })
+            router.navigate({ to: '/auth/login' });
           },
           onError: (error) => {
-            toast.error(error?.response?.data?.error || 'Verification failed')
+            toast.error(error?.response?.data?.error || 'Verification failed');
           },
         },
-      )
+      );
     },
     () => {
-      toast.error('Please enter a valid 6-digit code')
+      toast.error('Please enter a valid 6-digit code');
     },
-  )
+  );
 
   const handleResend = () => {
-    if (isRunning) return
-    resendEmailMutation.mutate(undefined, {
-      onSuccess: (data) => {
-        toast.success(data?.data?.message || 'Verification email resent')
-        start()
+    if (isRunning) return;
+    resendEmailMutation.mutate(
+      { email },
+      {
+        onSuccess: (data) => {
+          toast.success(data?.data?.message || 'Verification email resent');
+          start();
+        },
+        onError: (error) => {
+          toast.error(
+            error?.response?.data?.error || 'Failed to resend verification email',
+          );
+        },
       },
-      onError: (error) => {
-        toast.error(error?.response?.data?.error || 'Failed to resend verification email')
-      },
-    })
-  }
+    );
+  };
 
   return (
-    <section className="flex min-h-dvh items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-6">
-        <div className="space-y-2 text-center">
-          <h1 className="text-2xl font-semibold text-gray-900">Verify your Email</h1>
-          <p className="text-sm text-gray-500">
-            Enter the 6-digit code sent to <span className="font-medium text-gray-700">{email}</span>
-          </p>
-        </div>
+    <AuthLayout>
+      <FormWrapper useFormMethods={form} formProps={{ onSubmit: handleSubmit }}>
+        <section className="w-150 space-y-4 2xl:space-y-6">
+          <div className="space-y-1.5">
+            <h3 className="text-xl font-semibold text-gray-900">
+              Verify your Email
+            </h3>
+            <p className="text-sm text-gray-500 font-medium">
+              Enter the 6-digit code sent to{' '}
+              <span className="font-medium text-gray-700">{email}</span> to
+              complete verification.
+            </p>
+          </div>
 
-        <FormWrapper
-          useFormMethods={form}
-          formProps={{ onSubmit: handleSubmit }}
-        >
-          <div className="space-y-4">
+          <div className="space-y-4 2xl:space-y-6">
             <FormInput
               name="token"
               label="Verification Code"
               placeholder="Enter the 6-digit code"
             />
 
-            <div className="flex items-center gap-3">
+            <section className="flex gap-3 flex-row items-center">
               <div
                 style={{
                   width: '24px',
@@ -150,13 +163,17 @@ export function VerifyEmailPage() {
                 type="button"
                 onClick={handleResend}
                 disabled={isRunning}
-                className={`text-sm transition-opacity ${
-                  !isRunning ? 'text-blue-600 cursor-pointer' : 'opacity-40 cursor-not-allowed'
+                className={`typo-1 transition-opacity ${
+                  !isRunning
+                    ? 'text-primary-600 cursor-pointer'
+                    : 'opacity-40'
                 }`}
               >
-                {isRunning ? `Resend Code in ${timeLeft}s` : 'Resend Code'}
+                {isRunning
+                  ? `Resend Code in ${timeLeft}s`
+                  : 'Resend Code'}
               </button>
-            </div>
+            </section>
 
             <Button
               type="submit"
@@ -164,20 +181,20 @@ export function VerifyEmailPage() {
               className="w-full"
               disabled={verifyEmailMutation.isPending}
             >
-              {verifyEmailMutation.isPending ? 'Verifying...' : 'Verify'}
+              {verifyEmailMutation.isPending ? 'Verifying...' : 'Verify Email'}
             </Button>
           </div>
-        </FormWrapper>
 
-        <div className="flex justify-center">
-          <Link
-            to="/auth/login"
-            className="text-sm font-medium text-blue-600 underline underline-offset-2 hover:text-blue-700"
+          <button
+            type="button"
+            onClick={() => logoutMutation.mutate()}
+            disabled={logoutMutation.isPending}
+            className="typo-t1 text-primary-600 underline w-full text-center cursor-pointer font-normal"
           >
-            Back to Login
-          </Link>
-        </div>
-      </div>
-    </section>
-  )
+            Logout
+          </button>
+        </section>
+      </FormWrapper>
+    </AuthLayout>
+  );
 }
