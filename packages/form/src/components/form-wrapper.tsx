@@ -1,16 +1,18 @@
 import { type FieldValues, FormProvider, type UseFormReturn } from 'react-hook-form'
-import { type ReactNode,  } from 'react'
+import { type ReactNode } from 'react'
 
 interface FormWrapperProps<T extends FieldValues> {
   children: ReactNode
   useFormMethods: UseFormReturn<T>
+  className?: string
   formProps?: React.ComponentProps<'form'>
 }
 
 export const FormWrapper = <T extends FieldValues>({
   children,
   useFormMethods,
-  formProps   
+  className,
+  formProps
 }: FormWrapperProps<T>) => {
   const isDisabled = useFormMethods.formState.isSubmitting
   const {onSubmit, ...restFormProps} = formProps ?? {}
@@ -18,12 +20,11 @@ export const FormWrapper = <T extends FieldValues>({
   return (
     <FormProvider {...useFormMethods}>
       <form
-        onSubmit={onSubmit} // the actual submit handler
+        className={className}
+        onSubmit={onSubmit}
         {...restFormProps}
       >
-        <fieldset disabled={isDisabled} className="contents">
           {children}
-        </fieldset>
       </form>
     </FormProvider>
   )

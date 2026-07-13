@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
+    "@package/icons": "workspace:*",
     "@package/ui": "workspace:*",
     "react-hook-form": "^7.75.0"
   }

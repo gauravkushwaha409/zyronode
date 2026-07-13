@@ -2,6 +2,8 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import type React from 'react';
 
 import { cn } from '#lib/utils';
+import { Icon } from '../icons';
+import type { IconName } from '@package/icons';
 
 const inputVariants = cva(
   [
@@ -43,11 +45,19 @@ const inputElementVariants = cva(
   },
 );
 
+const getIconSize = (size: VariantProps<typeof inputVariants>['size']) => {
+  const iconSizeMap: Record<string, number> = {
+    default: 16,
+    lg: 20,
+  };
+  return iconSizeMap[size ?? 'default'] ?? 16;
+};
+
 export interface InputProps
   extends Omit<React.ComponentProps<'input'>, 'size'>,
     VariantProps<typeof inputVariants> {
-  leftIcon?: React.ReactNode;
-  rightIcon?: React.ReactNode;
+  leftIcon?: React.ReactNode | IconName;
+  rightIcon?: React.ReactNode | IconName;
 }
 
 function Input({
@@ -58,6 +68,7 @@ function Input({
   rightIcon,
   ...props
 }: InputProps) {
+  const iconSize = getIconSize(size);
   const isDisabled = props.disabled;
   const isInvalid =
     props['aria-invalid'] === true || props['aria-invalid'] === 'true';
@@ -74,7 +85,12 @@ function Input({
         className,
       )}
     >
-      {leftIcon}
+      {leftIcon &&
+        (typeof leftIcon === 'string' ? (
+          <Icon name={leftIcon as IconName} size={iconSize} />
+        ) : (
+          leftIcon
+        ))}
 
       <input
         type={type}
@@ -83,7 +99,12 @@ function Input({
         {...props}
       />
 
-      {rightIcon}
+      {rightIcon &&
+        (typeof rightIcon === 'string' ? (
+          <Icon name={rightIcon as IconName} size={iconSize} />
+        ) : (
+          rightIcon
+        ))}
     </div>
   );
 }

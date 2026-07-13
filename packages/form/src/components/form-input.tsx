@@ -1,59 +1,108 @@
-// packages/form/src/components/form-input.tsx
-import { cn, Input, Label } from "@package/ui";
-import { type FieldValues, type Path, useFormContext } from "react-hook-form";
+import { cn, Icon, Input, Label, Typography } from "@package/ui";
+import type { IconName } from "@package/icons";
+import {
+	get,
+	useFormContext,
+	type FieldValues,
+	type RegisterOptions,
+} from "react-hook-form";
 
-// Rhf uses register to listen to the input data and store the data object internally and to manage those data we often use useform() hook. useFormContext is used to access shared from internal state.
-
-interface FormInputProps<T extends FieldValues> {
-	name: Path<T>;
+interface FormInputProps {
+	name: string;
 	label?: string;
+	hint?: string;
 	placeholder?: string;
-	inputProps?: Omit<React.ComponentProps<typeof Input>, "name" | "placeholder">;
-	labelProps?: Omit<React.ComponentProps<typeof Label>, "children" | "htmlFor">;
-	wrapperProps?: React.HTMLAttributes<HTMLDivElement>;
+	leftIcon?: IconName;
+	rightIcon?: IconName;
+	hintIcon?: IconName;
+	size?: "default" | "lg";
+	required?: boolean;
+	registerOption?: RegisterOptions<FieldValues, string> | undefined;
+	inputProps?: React.ComponentProps<typeof Input>;
+	wrapperProps?: React.ComponentProps<"div">;
+	labelProps?: React.ComponentProps<typeof Label>;
+	disabled?: boolean;
+	hintIconClassName?: string;
 }
 
-export function FormInput<T extends FieldValues>({
+export function FormInput({
 	name,
 	label,
+	hint,
+	leftIcon,
+	rightIcon,
+	hintIcon = "alert",
+	size = "default",
+	required,
 	placeholder,
+	registerOption,
 	inputProps,
-	labelProps,
+	disabled = false,
 	wrapperProps,
-}: FormInputProps<T>) {
+	labelProps,
+	hintIconClassName,
+}: FormInputProps) {
 	const {
 		register,
 		formState: { errors },
-	} = useFormContext<T>();
-	const error = errors[name]?.message as string | undefined;
-	const { className: inputClassName, ...restInputProps } = inputProps || {};
-	const { className: labelClassName, ...restLabelProps } = labelProps || {};
+	} = useFormContext();
+	const error = get(errors, name);
 	const { className: wrapperClassName, ...restWrapperProps } =
-		wrapperProps || {};
+		wrapperProps ?? {};
+
 	return (
-		<div className={cn("space-y-3", wrapperClassName)} {...restWrapperProps}>
-			{label && (
-				<Label
-					className={cn("", labelClassName)}
-					htmlFor={name}
-					{...restLabelProps}
-				>
-					{label}
-				</Label>
-			)}
+		<div
+			className={cn("flex flex-col gap-1.5", wrapperClassName)}
+			{...restWrapperProps}
+		>
+			<div className="flex flex-row gap-1.5">
+				{label && (
+					<Label
+						htmlFor={name}
+						{...labelProps}
+						className="typo-t3 text-gray-600"
+					>
+						{label}
+					</Label>
+				)}
+				{required && <p>*</p>}
+			</div>
+
 			<Input
-				id={name}
+				aria-invalid={error && true}
+				size={size}
 				placeholder={placeholder}
-				className={cn("", inputClassName)}
-				{...register(name)}
-				aria-invalid={!!error}
-				aria-describedby={error ? `${name}-error` : undefined}
-				{...restInputProps}
+				id={name}
+				leftIcon={leftIcon}
+				rightIcon={rightIcon}
+				disabled={disabled}
+				{...register(name, registerOption)}
+				{...inputProps}
 			/>
+
+			{hint && !error && (
+				<div className="flex items-center gap-1.5">
+					<Icon
+						name={hintIcon}
+						size={14}
+						className={cn("text-gray-400", hintIconClassName)}
+					/>
+					<Typography.T5 className="text-gray-500">
+						{hint}
+					</Typography.T5>
+				</div>
+			)}
 			{error && (
-				<p id={`${name}-error`} role="alert" className="text-destructive text-sm">
-					{error}
-				</p>
+				<div className="flex items-center gap-1.5">
+					<Icon
+						name="alert"
+						size={14}
+						className={cn("text-gray-400", error && "text-alert-500")}
+					/>
+					<Typography.T5 className="text-alert-500">
+						{error.message as string}
+					</Typography.T5>
+				</div>
 			)}
 		</div>
 	);
