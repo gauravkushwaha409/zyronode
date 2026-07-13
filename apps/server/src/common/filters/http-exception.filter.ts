@@ -23,7 +23,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
 		const exceptionResponse =
 			exception instanceof HttpException ? exception.getResponse() : null;
 
-      const message = exceptionResponse && typeof exceptionResponse === "object" && "message" in exceptionResponse ? exceptionResponse.message : null;
+      const message = exceptionResponse && typeof exceptionResponse === "object" && "error" in exceptionResponse ? exceptionResponse.error : null;
 
       const errorCode = exceptionResponse && typeof exceptionResponse === "object" && "error_code" in exceptionResponse ? exceptionResponse.error_code : null;
 

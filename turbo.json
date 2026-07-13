@@ -26,7 +26,15 @@
         "VITE_APP_URL",
         "GOOGLE_CLIENT_ID",
         "GOOGLE_CLIENT_SECRET",
-        "GOOGLE_CALLBACK_URL"
+        "GOOGLE_CALLBACK_URL",
+        
+        // Resend email service env variables
+        "RESEND_API_KEY",
+        "RESEND_FROM_EMAIL",
+
+
+        // Redis env variable
+        "REDIS_HOST"
       ]
     },
     "prisma:migrate": {

@@ -466,10 +466,6 @@ export type EnumPlanTypeFieldUpdateOperationsInput = {
   set?: $Enums.PlanType
 }
 
-export type BoolFieldUpdateOperationsInput = {
-  set?: boolean
-}
-
 export type OrganizationCreateNestedOneWithoutMembersInput = {
   create?: Prisma.XOR<Prisma.OrganizationCreateWithoutMembersInput, Prisma.OrganizationUncheckedCreateWithoutMembersInput>
   connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutMembersInput

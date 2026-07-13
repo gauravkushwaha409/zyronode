@@ -82,6 +82,7 @@ export const UserScalarFieldEnum = {
   profile: 'profile',
   googleId: 'googleId',
   authProvider: 'authProvider',
+  isEmailVerified: 'isEmailVerified',
   lastOrgId: 'lastOrgId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

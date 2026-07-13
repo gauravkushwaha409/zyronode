@@ -33,6 +33,7 @@ export type UserMinAggregateOutputType = {
   profile: string | null
   googleId: string | null
   authProvider: string | null
+  isEmailVerified: boolean | null
   lastOrgId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -47,6 +48,7 @@ export type UserMaxAggregateOutputType = {
   profile: string | null
   googleId: string | null
   authProvider: string | null
+  isEmailVerified: boolean | null
   lastOrgId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -61,6 +63,7 @@ export type UserCountAggregateOutputType = {
   profile: number
   googleId: number
   authProvider: number
+  isEmailVerified: number
   lastOrgId: number
   createdAt: number
   updatedAt: number
@@ -77,6 +80,7 @@ export type UserMinAggregateInputType = {
   profile?: true
   googleId?: true
   authProvider?: true
+  isEmailVerified?: true
   lastOrgId?: true
   createdAt?: true
   updatedAt?: true
@@ -91,6 +95,7 @@ export type UserMaxAggregateInputType = {
   profile?: true
   googleId?: true
   authProvider?: true
+  isEmailVerified?: true
   lastOrgId?: true
   createdAt?: true
   updatedAt?: true
@@ -105,6 +110,7 @@ export type UserCountAggregateInputType = {
   profile?: true
   googleId?: true
   authProvider?: true
+  isEmailVerified?: true
   lastOrgId?: true
   createdAt?: true
   updatedAt?: true
@@ -192,6 +198,7 @@ export type UserGroupByOutputType = {
   profile: string | null
   googleId: string | null
   authProvider: string
+  isEmailVerified: boolean
   lastOrgId: string | null
   createdAt: Date
   updatedAt: Date
@@ -227,6 +234,7 @@ export type UserWhereInput = {
   profile?: Prisma.StringNullableFilter<"User"> | string | null
   googleId?: Prisma.StringNullableFilter<"User"> | string | null
   authProvider?: Prisma.StringFilter<"User"> | string
+  isEmailVerified?: Prisma.BoolFilter<"User"> | boolean
   lastOrgId?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
@@ -243,6 +251,7 @@ export type UserOrderByWithRelationInput = {
   profile?: Prisma.SortOrderInput | Prisma.SortOrder
   googleId?: Prisma.SortOrderInput | Prisma.SortOrder
   authProvider?: Prisma.SortOrder
+  isEmailVerified?: Prisma.SortOrder
   lastOrgId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -262,6 +271,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   lastName?: Prisma.StringNullableFilter<"User"> | string | null
   profile?: Prisma.StringNullableFilter<"User"> | string | null
   authProvider?: Prisma.StringFilter<"User"> | string
+  isEmailVerified?: Prisma.BoolFilter<"User"> | boolean
   lastOrgId?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
@@ -278,6 +288,7 @@ export type UserOrderByWithAggregationInput = {
   profile?: Prisma.SortOrderInput | Prisma.SortOrder
   googleId?: Prisma.SortOrderInput | Prisma.SortOrder
   authProvider?: Prisma.SortOrder
+  isEmailVerified?: Prisma.SortOrder
   lastOrgId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -298,6 +309,7 @@ export type UserScalarWhereWithAggregatesInput = {
   profile?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   googleId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   authProvider?: Prisma.StringWithAggregatesFilter<"User"> | string
+  isEmailVerified?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   lastOrgId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
@@ -312,6 +324,7 @@ export type UserCreateInput = {
   profile?: string | null
   googleId?: string | null
   authProvider?: string
+  isEmailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   organizations?: Prisma.OrganizationMemberCreateNestedManyWithoutUserInput
@@ -327,6 +340,7 @@ export type UserUncheckedCreateInput = {
   profile?: string | null
   googleId?: string | null
   authProvider?: string
+  isEmailVerified?: boolean
   lastOrgId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -342,6 +356,7 @@ export type UserUpdateInput = {
   profile?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authProvider?: Prisma.StringFieldUpdateOperationsInput | string
+  isEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organizations?: Prisma.OrganizationMemberUpdateManyWithoutUserNestedInput
@@ -357,6 +372,7 @@ export type UserUncheckedUpdateInput = {
   profile?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authProvider?: Prisma.StringFieldUpdateOperationsInput | string
+  isEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastOrgId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -372,6 +388,7 @@ export type UserCreateManyInput = {
   profile?: string | null
   googleId?: string | null
   authProvider?: string
+  isEmailVerified?: boolean
   lastOrgId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -386,6 +403,7 @@ export type UserUpdateManyMutationInput = {
   profile?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authProvider?: Prisma.StringFieldUpdateOperationsInput | string
+  isEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -399,6 +417,7 @@ export type UserUncheckedUpdateManyInput = {
   profile?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authProvider?: Prisma.StringFieldUpdateOperationsInput | string
+  isEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastOrgId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -413,6 +432,7 @@ export type UserCountOrderByAggregateInput = {
   profile?: Prisma.SortOrder
   googleId?: Prisma.SortOrder
   authProvider?: Prisma.SortOrder
+  isEmailVerified?: Prisma.SortOrder
   lastOrgId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -427,6 +447,7 @@ export type UserMaxOrderByAggregateInput = {
   profile?: Prisma.SortOrder
   googleId?: Prisma.SortOrder
   authProvider?: Prisma.SortOrder
+  isEmailVerified?: Prisma.SortOrder
   lastOrgId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -441,6 +462,7 @@ export type UserMinOrderByAggregateInput = {
   profile?: Prisma.SortOrder
   googleId?: Prisma.SortOrder
   authProvider?: Prisma.SortOrder
+  isEmailVerified?: Prisma.SortOrder
   lastOrgId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -467,6 +489,10 @@ export type StringFieldUpdateOperationsInput = {
 
 export type NullableStringFieldUpdateOperationsInput = {
   set?: string | null
+}
+
+export type BoolFieldUpdateOperationsInput = {
+  set?: boolean
 }
 
 export type DateTimeFieldUpdateOperationsInput = {
@@ -538,6 +564,7 @@ export type UserCreateWithoutLastOrgInput = {
   profile?: string | null
   googleId?: string | null
   authProvider?: string
+  isEmailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   organizations?: Prisma.OrganizationMemberCreateNestedManyWithoutUserInput
@@ -552,6 +579,7 @@ export type UserUncheckedCreateWithoutLastOrgInput = {
   profile?: string | null
   googleId?: string | null
   authProvider?: string
+  isEmailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   organizations?: Prisma.OrganizationMemberUncheckedCreateNestedManyWithoutUserInput
@@ -595,6 +623,7 @@ export type UserScalarWhereInput = {
   profile?: Prisma.StringNullableFilter<"User"> | string | null
   googleId?: Prisma.StringNullableFilter<"User"> | string | null
   authProvider?: Prisma.StringFilter<"User"> | string
+  isEmailVerified?: Prisma.BoolFilter<"User"> | boolean
   lastOrgId?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
@@ -609,6 +638,7 @@ export type UserCreateWithoutOrganizationsInput = {
   profile?: string | null
   googleId?: string | null
   authProvider?: string
+  isEmailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   lastOrg?: Prisma.OrganizationCreateNestedOneWithoutLastOrgUsersInput
@@ -623,6 +653,7 @@ export type UserUncheckedCreateWithoutOrganizationsInput = {
   profile?: string | null
   googleId?: string | null
   authProvider?: string
+  isEmailVerified?: boolean
   lastOrgId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -653,6 +684,7 @@ export type UserUpdateWithoutOrganizationsInput = {
   profile?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authProvider?: Prisma.StringFieldUpdateOperationsInput | string
+  isEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lastOrg?: Prisma.OrganizationUpdateOneWithoutLastOrgUsersNestedInput
@@ -667,6 +699,7 @@ export type UserUncheckedUpdateWithoutOrganizationsInput = {
   profile?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authProvider?: Prisma.StringFieldUpdateOperationsInput | string
+  isEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   lastOrgId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -681,6 +714,7 @@ export type UserCreateManyLastOrgInput = {
   profile?: string | null
   googleId?: string | null
   authProvider?: string
+  isEmailVerified?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -694,6 +728,7 @@ export type UserUpdateWithoutLastOrgInput = {
   profile?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authProvider?: Prisma.StringFieldUpdateOperationsInput | string
+  isEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organizations?: Prisma.OrganizationMemberUpdateManyWithoutUserNestedInput
@@ -708,6 +743,7 @@ export type UserUncheckedUpdateWithoutLastOrgInput = {
   profile?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authProvider?: Prisma.StringFieldUpdateOperationsInput | string
+  isEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organizations?: Prisma.OrganizationMemberUncheckedUpdateManyWithoutUserNestedInput
@@ -722,6 +758,7 @@ export type UserUncheckedUpdateManyWithoutLastOrgInput = {
   profile?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authProvider?: Prisma.StringFieldUpdateOperationsInput | string
+  isEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -766,6 +803,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   profile?: boolean
   googleId?: boolean
   authProvider?: boolean
+  isEmailVerified?: boolean
   lastOrgId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -783,6 +821,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   profile?: boolean
   googleId?: boolean
   authProvider?: boolean
+  isEmailVerified?: boolean
   lastOrgId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -798,6 +837,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   profile?: boolean
   googleId?: boolean
   authProvider?: boolean
+  isEmailVerified?: boolean
   lastOrgId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -813,12 +853,13 @@ export type UserSelectScalar = {
   profile?: boolean
   googleId?: boolean
   authProvider?: boolean
+  isEmailVerified?: boolean
   lastOrgId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "password" | "firstName" | "lastName" | "profile" | "googleId" | "authProvider" | "lastOrgId" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "password" | "firstName" | "lastName" | "profile" | "googleId" | "authProvider" | "isEmailVerified" | "lastOrgId" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organizations?: boolean | Prisma.User$organizationsArgs<ExtArgs>
   lastOrg?: boolean | Prisma.User$lastOrgArgs<ExtArgs>
@@ -846,6 +887,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     profile: string | null
     googleId: string | null
     authProvider: string
+    isEmailVerified: boolean
     lastOrgId: string | null
     createdAt: Date
     updatedAt: Date
@@ -1282,6 +1324,7 @@ export interface UserFieldRefs {
   readonly profile: Prisma.FieldRef<"User", 'String'>
   readonly googleId: Prisma.FieldRef<"User", 'String'>
   readonly authProvider: Prisma.FieldRef<"User", 'String'>
+  readonly isEmailVerified: Prisma.FieldRef<"User", 'Boolean'>
   readonly lastOrgId: Prisma.FieldRef<"User", 'String'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
