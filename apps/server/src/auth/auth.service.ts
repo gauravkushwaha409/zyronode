@@ -326,7 +326,7 @@ export class AuthService {
 		if (!userId) {
 			throw new NotFoundException({
 				message: "Invalid or expired reset token",
-				error_code: "INVALID_TOKEN",
+				error_code: "UNAUTHENTICATED",
 			});
 		}
 

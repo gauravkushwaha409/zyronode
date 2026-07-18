@@ -33,7 +33,7 @@ export function sessionGuard(user: RouterContext["auth"]) {
 	}
 }
 
-export function emailVerifiedGuard(user: RouterContext["auth"]) {
+export function emailVerifyGuard(user: RouterContext["auth"]) {
 	if (user.isError && user.error_code === "EMAIL_UNVERIFIED") {
 		window.location.href = `${ENV.APP_URL}/verify/email`;
 		return;
@@ -55,7 +55,7 @@ export function organizationOnboardingGaurd(user: RouterContext["auth"]) {
 }
 
 export function redirectAuthenticatedUserToApp(auth: RouterContext["auth"]) {
-	// const currentOrganization = auth.user?.data?.current_organization;
+	// const currentOrganization = auth.user?.data?.data?.current_organization;
 	// const user = auth.user?.data?.user;
 
 	// if (user?.uuid && currentOrganization?.uuid) {

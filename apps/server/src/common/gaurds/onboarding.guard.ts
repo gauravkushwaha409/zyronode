@@ -19,7 +19,7 @@ export class OnboardingGuard implements CanActivate {
     if (!user?.id) {
       throw new UnauthorizedException({
         message: 'Authentication required',
-        error_code: 'INVALID_TOKEN',
+        error_code: 'UNAUTHENTICATED',
       },{cause: "",description: ""});
     }
 

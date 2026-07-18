@@ -9,10 +9,10 @@ export const Route = createFileRoute('/_organization-protected')({
     const user = await context.queryClient
       .fetchQuery({
         queryKey: CONFIG.QUERY_KEY.AUTH.ME,
-        queryFn: () => authApiService.me().then(r => r.data),
-        staleTime: 1000 * 60 * 5,  // don't refetch if fresh
+        queryFn: () => authApiService.me(),
+        staleTime: 1000 * 60 * 5,
       })
-      .catch(() => null);  // 401 → null instead of throwing
+      .catch(() => null);
 
     if (!user) {
       throw redirect({ to: CONFIG.ROUTES.AUTH.LOGIN })

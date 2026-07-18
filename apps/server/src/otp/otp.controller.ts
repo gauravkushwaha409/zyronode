@@ -1,7 +1,7 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
-import { OtpService } from "./otp.service";
 import { SendOtpDto } from "./dto/send-otp.dto";
 import { VerifyOtpDto } from "./dto/verify-otp.dto";
+import { OtpService } from "./otp.service";
 
 @Controller("otp")
 export class OtpController {

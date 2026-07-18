@@ -9,16 +9,15 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VerifyRouteImport } from './routes/verify'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as VerifyRouteImport } from './routes/_verify'
 import { Route as OrganizationProtectedRouteImport } from './routes/_organization-protected'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as VerifyEmailRouteImport } from './routes/verify/email'
 import { Route as AuthSetPasswordRouteImport } from './routes/auth/set-password'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-password'
-import { Route as VerifyVerifyMfaRouteImport } from './routes/_verify/verify-mfa'
-import { Route as VerifyVerifyEmailRouteImport } from './routes/_verify/verify-email'
 import { Route as OrganizationProtectedSelectOrganizationRouteImport } from './routes/_organization-protected/select-organization'
 import { Route as OrganizationProtectedOrganizationRouteImport } from './routes/_organization-protected/$organization'
 import { Route as OrganizationProtectedOrganizationVisitorRouteImport } from './routes/_organization-protected/$organization/visitor'
@@ -26,13 +25,14 @@ import { Route as OrganizationProtectedOrganizationTicketRouteImport } from './r
 import { Route as OrganizationProtectedOrganizationInboxRouteImport } from './routes/_organization-protected/$organization/inbox'
 import { Route as OrganizationProtectedOrganizationDashboardRouteImport } from './routes/_organization-protected/$organization/dashboard'
 
+const VerifyRoute = VerifyRouteImport.update({
+  id: '/verify',
+  path: '/verify',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const VerifyRoute = VerifyRouteImport.update({
-  id: '/_verify',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OrganizationProtectedRoute = OrganizationProtectedRouteImport.update({
@@ -43,6 +43,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const VerifyEmailRoute = VerifyEmailRouteImport.update({
+  id: '/email',
+  path: '/email',
+  getParentRoute: () => VerifyRoute,
 } as any)
 const AuthSetPasswordRoute = AuthSetPasswordRouteImport.update({
   id: '/set-password',
@@ -63,16 +68,6 @@ const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
   id: '/forgot-password',
   path: '/forgot-password',
   getParentRoute: () => AuthRoute,
-} as any)
-const VerifyVerifyMfaRoute = VerifyVerifyMfaRouteImport.update({
-  id: '/verify-mfa',
-  path: '/verify-mfa',
-  getParentRoute: () => VerifyRoute,
-} as any)
-const VerifyVerifyEmailRoute = VerifyVerifyEmailRouteImport.update({
-  id: '/verify-email',
-  path: '/verify-email',
-  getParentRoute: () => VerifyRoute,
 } as any)
 const OrganizationProtectedSelectOrganizationRoute =
   OrganizationProtectedSelectOrganizationRouteImport.update({
@@ -114,14 +109,14 @@ const OrganizationProtectedOrganizationDashboardRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteWithChildren
+  '/verify': typeof VerifyRouteWithChildren
   '/$organization': typeof OrganizationProtectedOrganizationRouteWithChildren
   '/select-organization': typeof OrganizationProtectedSelectOrganizationRoute
-  '/verify-email': typeof VerifyVerifyEmailRoute
-  '/verify-mfa': typeof VerifyVerifyMfaRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/auth/set-password': typeof AuthSetPasswordRoute
+  '/verify/email': typeof VerifyEmailRoute
   '/$organization/dashboard': typeof OrganizationProtectedOrganizationDashboardRoute
   '/$organization/inbox': typeof OrganizationProtectedOrganizationInboxRoute
   '/$organization/ticket': typeof OrganizationProtectedOrganizationTicketRoute
@@ -130,14 +125,14 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteWithChildren
+  '/verify': typeof VerifyRouteWithChildren
   '/$organization': typeof OrganizationProtectedOrganizationRouteWithChildren
   '/select-organization': typeof OrganizationProtectedSelectOrganizationRoute
-  '/verify-email': typeof VerifyVerifyEmailRoute
-  '/verify-mfa': typeof VerifyVerifyMfaRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/auth/set-password': typeof AuthSetPasswordRoute
+  '/verify/email': typeof VerifyEmailRoute
   '/$organization/dashboard': typeof OrganizationProtectedOrganizationDashboardRoute
   '/$organization/inbox': typeof OrganizationProtectedOrganizationInboxRoute
   '/$organization/ticket': typeof OrganizationProtectedOrganizationTicketRoute
@@ -147,16 +142,15 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_organization-protected': typeof OrganizationProtectedRouteWithChildren
-  '/_verify': typeof VerifyRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
+  '/verify': typeof VerifyRouteWithChildren
   '/_organization-protected/$organization': typeof OrganizationProtectedOrganizationRouteWithChildren
   '/_organization-protected/select-organization': typeof OrganizationProtectedSelectOrganizationRoute
-  '/_verify/verify-email': typeof VerifyVerifyEmailRoute
-  '/_verify/verify-mfa': typeof VerifyVerifyMfaRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/auth/set-password': typeof AuthSetPasswordRoute
+  '/verify/email': typeof VerifyEmailRoute
   '/_organization-protected/$organization/dashboard': typeof OrganizationProtectedOrganizationDashboardRoute
   '/_organization-protected/$organization/inbox': typeof OrganizationProtectedOrganizationInboxRoute
   '/_organization-protected/$organization/ticket': typeof OrganizationProtectedOrganizationTicketRoute
@@ -167,14 +161,14 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/verify'
     | '/$organization'
     | '/select-organization'
-    | '/verify-email'
-    | '/verify-mfa'
     | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/register'
     | '/auth/set-password'
+    | '/verify/email'
     | '/$organization/dashboard'
     | '/$organization/inbox'
     | '/$organization/ticket'
@@ -183,14 +177,14 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/verify'
     | '/$organization'
     | '/select-organization'
-    | '/verify-email'
-    | '/verify-mfa'
     | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/register'
     | '/auth/set-password'
+    | '/verify/email'
     | '/$organization/dashboard'
     | '/$organization/inbox'
     | '/$organization/ticket'
@@ -199,16 +193,15 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_organization-protected'
-    | '/_verify'
     | '/auth'
+    | '/verify'
     | '/_organization-protected/$organization'
     | '/_organization-protected/select-organization'
-    | '/_verify/verify-email'
-    | '/_verify/verify-mfa'
     | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/register'
     | '/auth/set-password'
+    | '/verify/email'
     | '/_organization-protected/$organization/dashboard'
     | '/_organization-protected/$organization/inbox'
     | '/_organization-protected/$organization/ticket'
@@ -218,24 +211,24 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   OrganizationProtectedRoute: typeof OrganizationProtectedRouteWithChildren
-  VerifyRoute: typeof VerifyRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
+  VerifyRoute: typeof VerifyRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/verify': {
+      id: '/verify'
+      path: '/verify'
+      fullPath: '/verify'
+      preLoaderRoute: typeof VerifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_verify': {
-      id: '/_verify'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof VerifyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_organization-protected': {
@@ -251,6 +244,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/verify/email': {
+      id: '/verify/email'
+      path: '/email'
+      fullPath: '/verify/email'
+      preLoaderRoute: typeof VerifyEmailRouteImport
+      parentRoute: typeof VerifyRoute
     }
     '/auth/set-password': {
       id: '/auth/set-password'
@@ -279,20 +279,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/auth/forgot-password'
       preLoaderRoute: typeof AuthForgotPasswordRouteImport
       parentRoute: typeof AuthRoute
-    }
-    '/_verify/verify-mfa': {
-      id: '/_verify/verify-mfa'
-      path: '/verify-mfa'
-      fullPath: '/verify-mfa'
-      preLoaderRoute: typeof VerifyVerifyMfaRouteImport
-      parentRoute: typeof VerifyRoute
-    }
-    '/_verify/verify-email': {
-      id: '/_verify/verify-email'
-      path: '/verify-email'
-      fullPath: '/verify-email'
-      preLoaderRoute: typeof VerifyVerifyEmailRouteImport
-      parentRoute: typeof VerifyRoute
     }
     '/_organization-protected/select-organization': {
       id: '/_organization-protected/select-organization'
@@ -380,19 +366,6 @@ const OrganizationProtectedRouteWithChildren =
     OrganizationProtectedRouteChildren,
   )
 
-interface VerifyRouteChildren {
-  VerifyVerifyEmailRoute: typeof VerifyVerifyEmailRoute
-  VerifyVerifyMfaRoute: typeof VerifyVerifyMfaRoute
-}
-
-const VerifyRouteChildren: VerifyRouteChildren = {
-  VerifyVerifyEmailRoute: VerifyVerifyEmailRoute,
-  VerifyVerifyMfaRoute: VerifyVerifyMfaRoute,
-}
-
-const VerifyRouteWithChildren =
-  VerifyRoute._addFileChildren(VerifyRouteChildren)
-
 interface AuthRouteChildren {
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
   AuthLoginRoute: typeof AuthLoginRoute
@@ -409,11 +382,22 @@ const AuthRouteChildren: AuthRouteChildren = {
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
+interface VerifyRouteChildren {
+  VerifyEmailRoute: typeof VerifyEmailRoute
+}
+
+const VerifyRouteChildren: VerifyRouteChildren = {
+  VerifyEmailRoute: VerifyEmailRoute,
+}
+
+const VerifyRouteWithChildren =
+  VerifyRoute._addFileChildren(VerifyRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   OrganizationProtectedRoute: OrganizationProtectedRouteWithChildren,
-  VerifyRoute: VerifyRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
+  VerifyRoute: VerifyRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

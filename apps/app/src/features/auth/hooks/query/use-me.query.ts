@@ -8,6 +8,5 @@ export function useMeQuery() {
 	return useQuery<MeQuery.MeQueryAxiosResponse, APIError>(
 		CONFIG.QUERY_KEY.AUTH.ME,
 		() => authApiService.me(),
-		null,
 	);
 }

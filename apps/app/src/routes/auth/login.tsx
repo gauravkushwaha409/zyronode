@@ -5,11 +5,10 @@ import { LoginPage } from "@/pages/_auth/login";
 export const Route = createFileRoute("/auth/login")({
 	component: RouteComponent,
 	beforeLoad: ({ context }) => {
-		const currentUser = context.user;
-
-		// if (!currentUser.error && currentUser.data) {
-		// 	redirectAuthenticatedUserToApp(currentUser.data);
-		// }
+		const auth = context.auth;
+		if (!auth.isError && auth.user) {
+			redirectAuthenticatedUserToApp(auth);
+		}
 	},
 });
 

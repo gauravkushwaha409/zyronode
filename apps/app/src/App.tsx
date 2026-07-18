@@ -8,7 +8,13 @@ const router = createRouter({
 	routeTree,
 	context: {
 		queryClient,
-		user: { data: null, error: null },
+		auth:{
+			user: null,
+			isPending: true,
+			isError: false,
+			error_code: null,
+			error: null,
+		}
 	},
 });
 

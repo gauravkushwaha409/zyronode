@@ -1,10 +1,10 @@
 export {
-  AuthGaurd,
-  domainGuard,
-  authenticatedGuard,
-  sessionGuard,
-  emailVerifiedGuard,
-  onboardingGuard,
-  organizationOnboardingGaurd,
-  redirectAuthenticatedUserToApp,
-} from './auth.gaurd';
+	AuthGaurd,
+	authenticatedGuard,
+	domainGuard,
+	emailVerifyGuard,
+	onboardingGuard,
+	organizationOnboardingGaurd,
+	redirectAuthenticatedUserToApp,
+	sessionGuard,
+} from "./auth.gaurd";
