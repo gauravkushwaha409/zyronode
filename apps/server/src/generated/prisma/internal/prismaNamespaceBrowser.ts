@@ -83,6 +83,9 @@ export const UserScalarFieldEnum = {
   googleId: 'googleId',
   authProvider: 'authProvider',
   isEmailVerified: 'isEmailVerified',
+  theme: 'theme',
+  referralSource: 'referralSource',
+  isOnboarded: 'isOnboarded',
   lastOrgId: 'lastOrgId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -95,7 +98,6 @@ export const OrganizationScalarFieldEnum = {
   id: 'id',
   name: 'name',
   website: 'website',
-  email: 'email',
   phone: 'phone',
   industry: 'industry',
   plan: 'plan',

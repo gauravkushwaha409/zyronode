@@ -36,7 +36,6 @@ model Organization {
   id       String               @id @default(uuid())
   name     String
   website  String? // their public website
-  email    String               @unique
   phone    String?
   industry String?
   plan     PlanType             @default(FREE)

@@ -1,24 +1,22 @@
-import { IsEmail, IsNotEmpty, IsOptional, IsString, IsUrl } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsUrl } from 'class-validator';
 
 export class CreateOrganizationDto {
   @IsString()
   @IsNotEmpty()
   name!: string;
 
-  @IsEmail()
-  @IsNotEmpty()
-  email!: string;
+  @IsString()
+  @IsOptional()
+  domain?: string;
+
+  @IsOptional()
+  onboarding?: Record<string, any>;
 
   @IsString()
   @IsOptional()
-  @IsUrl()
-  website?: string;
+  logo?: string;
 
   @IsString()
   @IsOptional()
-  phone?: string;
-
-  @IsString()
-  @IsOptional()
-  industry?: string;
+  description?: string;
 }

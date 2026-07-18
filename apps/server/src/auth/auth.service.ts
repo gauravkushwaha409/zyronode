@@ -19,6 +19,7 @@ import { GoogleProfileDto } from "./dto/google-login.dto";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
 import { SetPasswordDto } from "./dto/set-password.dto";
+import { UserOnboardingDto } from "./dto/user-onboarding.dto";
 import { VerifyEmailDto } from "./dto/verify-email.dto";
 import { AuthJwtService } from "./jwt.service";
 
@@ -161,6 +162,21 @@ export class AuthService {
 			where: { id: userId },
 			omit: {
 				password: true,
+			},
+			include: {
+				organizations: {
+					select: {
+						id: true,
+						organizationId: true,
+						joinedAt: true,
+						organization: {
+							select: {
+								id: true,
+								name: true,
+							},
+						},
+					},
+				},
 			},
 		});
 
@@ -396,5 +412,35 @@ export class AuthService {
 			code,
 			OtpPurpose.EMAIL_VERIFICATION,
 		);
+	}
+
+	async userOnboarding(userId: string, dto: UserOnboardingDto) {
+		const user = await this.prisma.user.findUnique({
+			where: { id: userId },
+			select: { id: true },
+		});
+
+		if (!user) {
+			throw new NotFoundException({
+				message: "User not found",
+				error_code: "USER_NOT_FOUND",
+			});
+		}
+
+		await this.prisma.user.update({
+			where: { id: userId },
+			data: {
+				firstName: dto.firstName,
+				lastName: dto.lastName,
+				theme: dto.theme,
+				referralSource: dto.referralSource,
+				isOnboarded: true,
+			},
+		});
+
+		return {
+			message: "User onboarding completed successfully",
+			data: { id: userId },
+		};
 	}
 }

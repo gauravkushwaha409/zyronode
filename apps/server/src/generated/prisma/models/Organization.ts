@@ -28,7 +28,6 @@ export type OrganizationMinAggregateOutputType = {
   id: string | null
   name: string | null
   website: string | null
-  email: string | null
   phone: string | null
   industry: string | null
   plan: $Enums.PlanType | null
@@ -41,7 +40,6 @@ export type OrganizationMaxAggregateOutputType = {
   id: string | null
   name: string | null
   website: string | null
-  email: string | null
   phone: string | null
   industry: string | null
   plan: $Enums.PlanType | null
@@ -54,7 +52,6 @@ export type OrganizationCountAggregateOutputType = {
   id: number
   name: number
   website: number
-  email: number
   phone: number
   industry: number
   plan: number
@@ -69,7 +66,6 @@ export type OrganizationMinAggregateInputType = {
   id?: true
   name?: true
   website?: true
-  email?: true
   phone?: true
   industry?: true
   plan?: true
@@ -82,7 +78,6 @@ export type OrganizationMaxAggregateInputType = {
   id?: true
   name?: true
   website?: true
-  email?: true
   phone?: true
   industry?: true
   plan?: true
@@ -95,7 +90,6 @@ export type OrganizationCountAggregateInputType = {
   id?: true
   name?: true
   website?: true
-  email?: true
   phone?: true
   industry?: true
   plan?: true
@@ -181,7 +175,6 @@ export type OrganizationGroupByOutputType = {
   id: string
   name: string
   website: string | null
-  email: string
   phone: string | null
   industry: string | null
   plan: $Enums.PlanType
@@ -215,7 +208,6 @@ export type OrganizationWhereInput = {
   id?: Prisma.StringFilter<"Organization"> | string
   name?: Prisma.StringFilter<"Organization"> | string
   website?: Prisma.StringNullableFilter<"Organization"> | string | null
-  email?: Prisma.StringFilter<"Organization"> | string
   phone?: Prisma.StringNullableFilter<"Organization"> | string | null
   industry?: Prisma.StringNullableFilter<"Organization"> | string | null
   plan?: Prisma.EnumPlanTypeFilter<"Organization"> | $Enums.PlanType
@@ -231,7 +223,6 @@ export type OrganizationOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   website?: Prisma.SortOrderInput | Prisma.SortOrder
-  email?: Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
   industry?: Prisma.SortOrderInput | Prisma.SortOrder
   plan?: Prisma.SortOrder
@@ -245,7 +236,6 @@ export type OrganizationOrderByWithRelationInput = {
 
 export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  email?: string
   AND?: Prisma.OrganizationWhereInput | Prisma.OrganizationWhereInput[]
   OR?: Prisma.OrganizationWhereInput[]
   NOT?: Prisma.OrganizationWhereInput | Prisma.OrganizationWhereInput[]
@@ -260,13 +250,12 @@ export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
   visitors?: Prisma.VisitorListRelationFilter
   members?: Prisma.OrganizationMemberListRelationFilter
   lastOrgUsers?: Prisma.UserListRelationFilter
-}, "id" | "email">
+}, "id">
 
 export type OrganizationOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   website?: Prisma.SortOrderInput | Prisma.SortOrder
-  email?: Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
   industry?: Prisma.SortOrderInput | Prisma.SortOrder
   plan?: Prisma.SortOrder
@@ -285,7 +274,6 @@ export type OrganizationScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Organization"> | string
   name?: Prisma.StringWithAggregatesFilter<"Organization"> | string
   website?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
-  email?: Prisma.StringWithAggregatesFilter<"Organization"> | string
   phone?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
   industry?: Prisma.StringNullableWithAggregatesFilter<"Organization"> | string | null
   plan?: Prisma.EnumPlanTypeWithAggregatesFilter<"Organization"> | $Enums.PlanType
@@ -298,7 +286,6 @@ export type OrganizationCreateInput = {
   id?: string
   name: string
   website?: string | null
-  email: string
   phone?: string | null
   industry?: string | null
   plan?: $Enums.PlanType
@@ -314,7 +301,6 @@ export type OrganizationUncheckedCreateInput = {
   id?: string
   name: string
   website?: string | null
-  email: string
   phone?: string | null
   industry?: string | null
   plan?: $Enums.PlanType
@@ -330,7 +316,6 @@ export type OrganizationUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   industry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
@@ -346,7 +331,6 @@ export type OrganizationUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   industry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
@@ -362,7 +346,6 @@ export type OrganizationCreateManyInput = {
   id?: string
   name: string
   website?: string | null
-  email: string
   phone?: string | null
   industry?: string | null
   plan?: $Enums.PlanType
@@ -375,7 +358,6 @@ export type OrganizationUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   industry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
@@ -388,7 +370,6 @@ export type OrganizationUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   industry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
@@ -406,7 +387,6 @@ export type OrganizationCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   website?: Prisma.SortOrder
-  email?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   industry?: Prisma.SortOrder
   plan?: Prisma.SortOrder
@@ -419,7 +399,6 @@ export type OrganizationMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   website?: Prisma.SortOrder
-  email?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   industry?: Prisma.SortOrder
   plan?: Prisma.SortOrder
@@ -432,7 +411,6 @@ export type OrganizationMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   website?: Prisma.SortOrder
-  email?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   industry?: Prisma.SortOrder
   plan?: Prisma.SortOrder
@@ -498,7 +476,6 @@ export type OrganizationCreateWithoutLastOrgUsersInput = {
   id?: string
   name: string
   website?: string | null
-  email: string
   phone?: string | null
   industry?: string | null
   plan?: $Enums.PlanType
@@ -513,7 +490,6 @@ export type OrganizationUncheckedCreateWithoutLastOrgUsersInput = {
   id?: string
   name: string
   website?: string | null
-  email: string
   phone?: string | null
   industry?: string | null
   plan?: $Enums.PlanType
@@ -544,7 +520,6 @@ export type OrganizationUpdateWithoutLastOrgUsersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   industry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
@@ -559,7 +534,6 @@ export type OrganizationUncheckedUpdateWithoutLastOrgUsersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   industry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
@@ -574,7 +548,6 @@ export type OrganizationCreateWithoutMembersInput = {
   id?: string
   name: string
   website?: string | null
-  email: string
   phone?: string | null
   industry?: string | null
   plan?: $Enums.PlanType
@@ -589,7 +562,6 @@ export type OrganizationUncheckedCreateWithoutMembersInput = {
   id?: string
   name: string
   website?: string | null
-  email: string
   phone?: string | null
   industry?: string | null
   plan?: $Enums.PlanType
@@ -620,7 +592,6 @@ export type OrganizationUpdateWithoutMembersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   industry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
@@ -635,7 +606,6 @@ export type OrganizationUncheckedUpdateWithoutMembersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   industry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
@@ -650,7 +620,6 @@ export type OrganizationCreateWithoutVisitorsInput = {
   id?: string
   name: string
   website?: string | null
-  email: string
   phone?: string | null
   industry?: string | null
   plan?: $Enums.PlanType
@@ -665,7 +634,6 @@ export type OrganizationUncheckedCreateWithoutVisitorsInput = {
   id?: string
   name: string
   website?: string | null
-  email: string
   phone?: string | null
   industry?: string | null
   plan?: $Enums.PlanType
@@ -696,7 +664,6 @@ export type OrganizationUpdateWithoutVisitorsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   industry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
@@ -711,7 +678,6 @@ export type OrganizationUncheckedUpdateWithoutVisitorsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   industry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
@@ -775,7 +741,6 @@ export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   id?: boolean
   name?: boolean
   website?: boolean
-  email?: boolean
   phone?: boolean
   industry?: boolean
   plan?: boolean
@@ -792,7 +757,6 @@ export type OrganizationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   id?: boolean
   name?: boolean
   website?: boolean
-  email?: boolean
   phone?: boolean
   industry?: boolean
   plan?: boolean
@@ -805,7 +769,6 @@ export type OrganizationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   id?: boolean
   name?: boolean
   website?: boolean
-  email?: boolean
   phone?: boolean
   industry?: boolean
   plan?: boolean
@@ -818,7 +781,6 @@ export type OrganizationSelectScalar = {
   id?: boolean
   name?: boolean
   website?: boolean
-  email?: boolean
   phone?: boolean
   industry?: boolean
   plan?: boolean
@@ -827,7 +789,7 @@ export type OrganizationSelectScalar = {
   updatedAt?: boolean
 }
 
-export type OrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "website" | "email" | "phone" | "industry" | "plan" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["organization"]>
+export type OrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "website" | "phone" | "industry" | "plan" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["organization"]>
 export type OrganizationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   visitors?: boolean | Prisma.Organization$visitorsArgs<ExtArgs>
   members?: boolean | Prisma.Organization$membersArgs<ExtArgs>
@@ -848,7 +810,6 @@ export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     id: string
     name: string
     website: string | null
-    email: string
     phone: string | null
     industry: string | null
     plan: $Enums.PlanType
@@ -1284,7 +1245,6 @@ export interface OrganizationFieldRefs {
   readonly id: Prisma.FieldRef<"Organization", 'String'>
   readonly name: Prisma.FieldRef<"Organization", 'String'>
   readonly website: Prisma.FieldRef<"Organization", 'String'>
-  readonly email: Prisma.FieldRef<"Organization", 'String'>
   readonly phone: Prisma.FieldRef<"Organization", 'String'>
   readonly industry: Prisma.FieldRef<"Organization", 'String'>
   readonly plan: Prisma.FieldRef<"Organization", 'PlanType'>

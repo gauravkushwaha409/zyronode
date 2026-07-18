@@ -1,26 +1,39 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { CONFIG } from "@/config";
-import type { MeQuery } from "@/features/auth/types";
 
 export const Route = createFileRoute("/")({
 	component: RouteComponent,
 	beforeLoad: ({ context }) => {
-		const user: MeQuery.MeQueryResponse | undefined =
-			context.queryClient.getQueryData(CONFIG.QUERY_KEY.AUTH.ME);
+		const auth = context.auth;
 
-		if (user?.data?.lastOrgId)
+		// If user is fully onboarded, redirect to app
+		if (!auth.isError && auth.user?.data?.id && auth.user?.data?.lastOrgId) {
 			throw redirect({
 				to: "/$organization/dashboard",
 				params: {
-					organization: user?.data?.lastOrgId,
+					organization: auth.user.data.lastOrgId,
 				},
 			});
+		}
 
-		if (user?.data?.id)
-			throw redirect({
-				to: "/select-organization",
-			});
+		// If user exists but no org, redirect to select organization
+		if (!auth.isError && auth.user?.data?.id) {
+			throw redirect({ to: "/select-organization" });
+		}
 
+		// Handle error codes
+		if (auth.isError) {
+			if (auth.error_code === "USER_ONBOARDING_REQUIRED") {
+				throw redirect({ to: "/onboarding/user" });
+			}
+			if (auth.error_code === "ORGANIZATION_ONBOARDING_REQUIRED") {
+				throw redirect({ to: "/onboarding/organization" });
+			}
+			if (auth.error_code === "EMAIL_UNVERIFIED") {
+				throw redirect({ to: "/verify/email" });
+			}
+		}
+
+		// Default: redirect to login
 		throw redirect({ to: "/auth/login" });
 	},
 });

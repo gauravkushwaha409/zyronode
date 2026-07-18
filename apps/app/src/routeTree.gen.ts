@@ -10,10 +10,14 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VerifyRouteImport } from './routes/verify'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as OrganizationProtectedRouteImport } from './routes/_organization-protected'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as VerifyEmailRouteImport } from './routes/verify/email'
+import { Route as OnboardingUserRouteImport } from './routes/onboarding/user'
+import { Route as OnboardingSuccessRouteImport } from './routes/onboarding/success'
+import { Route as OnboardingOrganizationRouteImport } from './routes/onboarding/organization'
 import { Route as AuthSetPasswordRouteImport } from './routes/auth/set-password'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
@@ -28,6 +32,11 @@ import { Route as OrganizationProtectedOrganizationDashboardRouteImport } from '
 const VerifyRoute = VerifyRouteImport.update({
   id: '/verify',
   path: '/verify',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -48,6 +57,21 @@ const VerifyEmailRoute = VerifyEmailRouteImport.update({
   id: '/email',
   path: '/email',
   getParentRoute: () => VerifyRoute,
+} as any)
+const OnboardingUserRoute = OnboardingUserRouteImport.update({
+  id: '/user',
+  path: '/user',
+  getParentRoute: () => OnboardingRoute,
+} as any)
+const OnboardingSuccessRoute = OnboardingSuccessRouteImport.update({
+  id: '/success',
+  path: '/success',
+  getParentRoute: () => OnboardingRoute,
+} as any)
+const OnboardingOrganizationRoute = OnboardingOrganizationRouteImport.update({
+  id: '/organization',
+  path: '/organization',
+  getParentRoute: () => OnboardingRoute,
 } as any)
 const AuthSetPasswordRoute = AuthSetPasswordRouteImport.update({
   id: '/set-password',
@@ -109,6 +133,7 @@ const OrganizationProtectedOrganizationDashboardRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteWithChildren
+  '/onboarding': typeof OnboardingRouteWithChildren
   '/verify': typeof VerifyRouteWithChildren
   '/$organization': typeof OrganizationProtectedOrganizationRouteWithChildren
   '/select-organization': typeof OrganizationProtectedSelectOrganizationRoute
@@ -116,6 +141,9 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/auth/set-password': typeof AuthSetPasswordRoute
+  '/onboarding/organization': typeof OnboardingOrganizationRoute
+  '/onboarding/success': typeof OnboardingSuccessRoute
+  '/onboarding/user': typeof OnboardingUserRoute
   '/verify/email': typeof VerifyEmailRoute
   '/$organization/dashboard': typeof OrganizationProtectedOrganizationDashboardRoute
   '/$organization/inbox': typeof OrganizationProtectedOrganizationInboxRoute
@@ -125,6 +153,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteWithChildren
+  '/onboarding': typeof OnboardingRouteWithChildren
   '/verify': typeof VerifyRouteWithChildren
   '/$organization': typeof OrganizationProtectedOrganizationRouteWithChildren
   '/select-organization': typeof OrganizationProtectedSelectOrganizationRoute
@@ -132,6 +161,9 @@ export interface FileRoutesByTo {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/auth/set-password': typeof AuthSetPasswordRoute
+  '/onboarding/organization': typeof OnboardingOrganizationRoute
+  '/onboarding/success': typeof OnboardingSuccessRoute
+  '/onboarding/user': typeof OnboardingUserRoute
   '/verify/email': typeof VerifyEmailRoute
   '/$organization/dashboard': typeof OrganizationProtectedOrganizationDashboardRoute
   '/$organization/inbox': typeof OrganizationProtectedOrganizationInboxRoute
@@ -143,6 +175,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_organization-protected': typeof OrganizationProtectedRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
+  '/onboarding': typeof OnboardingRouteWithChildren
   '/verify': typeof VerifyRouteWithChildren
   '/_organization-protected/$organization': typeof OrganizationProtectedOrganizationRouteWithChildren
   '/_organization-protected/select-organization': typeof OrganizationProtectedSelectOrganizationRoute
@@ -150,6 +183,9 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/auth/set-password': typeof AuthSetPasswordRoute
+  '/onboarding/organization': typeof OnboardingOrganizationRoute
+  '/onboarding/success': typeof OnboardingSuccessRoute
+  '/onboarding/user': typeof OnboardingUserRoute
   '/verify/email': typeof VerifyEmailRoute
   '/_organization-protected/$organization/dashboard': typeof OrganizationProtectedOrganizationDashboardRoute
   '/_organization-protected/$organization/inbox': typeof OrganizationProtectedOrganizationInboxRoute
@@ -161,6 +197,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/onboarding'
     | '/verify'
     | '/$organization'
     | '/select-organization'
@@ -168,6 +205,9 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/register'
     | '/auth/set-password'
+    | '/onboarding/organization'
+    | '/onboarding/success'
+    | '/onboarding/user'
     | '/verify/email'
     | '/$organization/dashboard'
     | '/$organization/inbox'
@@ -177,6 +217,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/onboarding'
     | '/verify'
     | '/$organization'
     | '/select-organization'
@@ -184,6 +225,9 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/register'
     | '/auth/set-password'
+    | '/onboarding/organization'
+    | '/onboarding/success'
+    | '/onboarding/user'
     | '/verify/email'
     | '/$organization/dashboard'
     | '/$organization/inbox'
@@ -194,6 +238,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_organization-protected'
     | '/auth'
+    | '/onboarding'
     | '/verify'
     | '/_organization-protected/$organization'
     | '/_organization-protected/select-organization'
@@ -201,6 +246,9 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/register'
     | '/auth/set-password'
+    | '/onboarding/organization'
+    | '/onboarding/success'
+    | '/onboarding/user'
     | '/verify/email'
     | '/_organization-protected/$organization/dashboard'
     | '/_organization-protected/$organization/inbox'
@@ -212,6 +260,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   OrganizationProtectedRoute: typeof OrganizationProtectedRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
+  OnboardingRoute: typeof OnboardingRouteWithChildren
   VerifyRoute: typeof VerifyRouteWithChildren
 }
 
@@ -222,6 +271,13 @@ declare module '@tanstack/react-router' {
       path: '/verify'
       fullPath: '/verify'
       preLoaderRoute: typeof VerifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -251,6 +307,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/verify/email'
       preLoaderRoute: typeof VerifyEmailRouteImport
       parentRoute: typeof VerifyRoute
+    }
+    '/onboarding/user': {
+      id: '/onboarding/user'
+      path: '/user'
+      fullPath: '/onboarding/user'
+      preLoaderRoute: typeof OnboardingUserRouteImport
+      parentRoute: typeof OnboardingRoute
+    }
+    '/onboarding/success': {
+      id: '/onboarding/success'
+      path: '/success'
+      fullPath: '/onboarding/success'
+      preLoaderRoute: typeof OnboardingSuccessRouteImport
+      parentRoute: typeof OnboardingRoute
+    }
+    '/onboarding/organization': {
+      id: '/onboarding/organization'
+      path: '/organization'
+      fullPath: '/onboarding/organization'
+      preLoaderRoute: typeof OnboardingOrganizationRouteImport
+      parentRoute: typeof OnboardingRoute
     }
     '/auth/set-password': {
       id: '/auth/set-password'
@@ -382,6 +459,22 @@ const AuthRouteChildren: AuthRouteChildren = {
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
+interface OnboardingRouteChildren {
+  OnboardingOrganizationRoute: typeof OnboardingOrganizationRoute
+  OnboardingSuccessRoute: typeof OnboardingSuccessRoute
+  OnboardingUserRoute: typeof OnboardingUserRoute
+}
+
+const OnboardingRouteChildren: OnboardingRouteChildren = {
+  OnboardingOrganizationRoute: OnboardingOrganizationRoute,
+  OnboardingSuccessRoute: OnboardingSuccessRoute,
+  OnboardingUserRoute: OnboardingUserRoute,
+}
+
+const OnboardingRouteWithChildren = OnboardingRoute._addFileChildren(
+  OnboardingRouteChildren,
+)
+
 interface VerifyRouteChildren {
   VerifyEmailRoute: typeof VerifyEmailRoute
 }
@@ -397,6 +490,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   OrganizationProtectedRoute: OrganizationProtectedRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
+  OnboardingRoute: OnboardingRouteWithChildren,
   VerifyRoute: VerifyRouteWithChildren,
 }
 export const routeTree = rootRouteImport

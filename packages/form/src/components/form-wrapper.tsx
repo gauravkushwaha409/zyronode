@@ -8,7 +8,7 @@ import {
 interface FormWrapperProps<T extends FieldValues> {
 	children: ReactNode;
 	useFormMethods: UseFormReturn<T>;
-	formProps?: React.ComponentProps<"form">;
+	formProps?: Pick<React.ComponentProps<"form">,"className" | "onSubmit">;
 }
 
 export const FormWrapper = <T extends FieldValues>({
