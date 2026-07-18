@@ -14,8 +14,6 @@ export class OnboardingGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
 
-    console.log('OnboardingGuard: canActivate called with user:', user);
-
     if (!user?.id) {
       throw new UnauthorizedException({
         message: 'Authentication required',
@@ -35,7 +33,7 @@ export class OnboardingGuard implements CanActivate {
       });
     }
 
-    if (!dbUser.firstName || !dbUser.lastName || !dbUser.profile) {
+    if (!dbUser.isOnboarded) {
       throw new UnauthorizedException({
         message: 'User onboarding is required',
         error_code: 'USER_ONBOARDING_REQUIRED',

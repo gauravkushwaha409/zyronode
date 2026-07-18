@@ -8,6 +8,10 @@ export const ROUTES = {
         REGISTER: '/auth/register',
         FORGOT_PASSWORD: '/auth/forgot-password',
         SET_PASSWORD: '/auth/set-password',
+    },
+    ONBOARDING: {
+        USER: '/onboarding/user',
+        ORGANIZATION: '/onboarding/organization',
+        SUCCESS: '/onboarding/success',
     }
-
 }

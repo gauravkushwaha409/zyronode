@@ -9,6 +9,7 @@ export const ENDPOINTS = {
         VERIFY_FORGOT_PASSWORD: '/auth/password/forgot/verify',
         VERIFY_EMAIL: '/auth/verify-email',
         RESEND_EMAIL: '/auth/resend-verification',
+        USER_ONBOARDING: '/auth/user-onboarding',
     },
     ORGANIZATION: {
         CREATE: '/organization',

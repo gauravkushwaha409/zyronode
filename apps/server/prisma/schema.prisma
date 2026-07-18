@@ -19,6 +19,10 @@ model User {
   authProvider String @default("email")
   isEmailVerified Boolean @default(false)
 
+  theme          String?  @default("light")
+  referralSource String?
+  isOnboarded    Boolean  @default(false)
+
   // relation with organization 
   organizations OrganizationMember[]
   lastOrgId     String?

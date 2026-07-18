@@ -19,7 +19,7 @@ export interface RouterContext {
 export const Route = createRootRouteWithContext<RouterContext>()({
 	component: RootComponent,
 
-	beforeLoad: async ({ context }) => {
+		beforeLoad: async ({ context }) => {
 
 		const { queryClient } = context;
 		try {

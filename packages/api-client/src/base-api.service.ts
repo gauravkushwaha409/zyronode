@@ -13,7 +13,7 @@ export class BaseAPIService {
 	 * TBody: The request payload shape
 	 */
 	async post<
-		TResponseData = unknown,
+		TResponseData,
 		TAxiosResponse extends
 			ApiResponse<TResponseData> = ApiResponse<TResponseData>,
 		TPayload = unknown,

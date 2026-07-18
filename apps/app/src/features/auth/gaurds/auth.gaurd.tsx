@@ -41,15 +41,15 @@ export function emailVerifyGuard(user: RouterContext["auth"]) {
 }
 
 export function onboardingGuard(user: RouterContext["auth"]) {
-	if (user.isError && user.error_code === "ONBOARDING_REQUIRED") {
-		window.location.href = `${ENV.APP_URL}/verify/onboarding?onboarding=user`;
+	if (user.isError && user.error_code === "USER_ONBOARDING_REQUIRED") {
+		window.location.href = `${ENV.APP_URL}/onboarding/user`;
 		return;
 	}
 }
 
 export function organizationOnboardingGaurd(user: RouterContext["auth"]) {
-	if (user?.isError && user?.error_code === "ORGANIZATION_NOT_FOUND") {
-		window.location.href = `${ENV.APP_URL}/verify/onboarding?onboarding=organization`;
+	if (user?.isError && user?.error_code === "ORGANIZATION_ONBOARDING_REQUIRED") {
+		window.location.href = `${ENV.APP_URL}/onboarding/organization`;
 		return;
 	}
 }
