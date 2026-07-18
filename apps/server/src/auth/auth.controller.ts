@@ -68,6 +68,14 @@ export class AuthController {
 		return this.authService.setPassword(dto);
 	}
 
+	@Post("resend-verification")
+	@HttpCode(HttpStatus.OK)
+	@UseGuards(JwtAuthGuard)
+	resendVerification(@CurrentUser() user: { id: string }) {
+		console.log("Resend verification request received from user:", user);
+		return this.authService.resendVerification(user.id);
+	}
+
 	@Get("google")
 	@UseGuards(AuthGuard("google"))
 	googleAuth() {}

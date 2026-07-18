@@ -5,7 +5,6 @@ import type { ResendEmailMutation } from '../../types';
 export function useResendEmailVerificationMutation() {
 	return useMutation<
 		ResendEmailMutation.ResendEmailMutationAxiosResponse,
-		ResendEmailMutation.ResendEmailMutationError,
-		ResendEmailMutation.ResendEmailMutationPayload
-	>((data) => authApiService.resendEmail(data));
+		ResendEmailMutation.ResendEmailMutationError
+	>(() => authApiService.resendEmail());
 }

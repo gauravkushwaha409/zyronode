@@ -1,6 +1,7 @@
 export {
 	AuthGaurd,
-	authenticatedGuard,
+	authenticationGuard,
+	authGaurds,
 	domainGuard,
 	emailVerifyGuard,
 	onboardingGuard,

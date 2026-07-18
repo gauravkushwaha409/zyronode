@@ -8,7 +8,7 @@ export const ENDPOINTS = {
         FORGOT_PASSWORD: '/auth/password/forgot',
         VERIFY_FORGOT_PASSWORD: '/auth/password/forgot/verify',
         VERIFY_EMAIL: '/otp/verify',
-        RESEND_EMAIL: '/otp/send',
+        RESEND_EMAIL: '/auth/resend-verification',
     },
     ORGANIZATION: {
         CREATE: '/organization',

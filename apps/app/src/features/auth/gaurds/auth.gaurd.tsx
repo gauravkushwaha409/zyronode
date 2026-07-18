@@ -15,7 +15,7 @@ export function domainGuard() {
 	return false;
 }
 
-export function authenticatedGuard(user: RouterContext["auth"]) {
+export function authenticationGuard(user: RouterContext["auth"]) {
 	if (
 		user.isError &&
 		(user.error_code === "UNAUTHENTICATED" ||
@@ -61,4 +61,8 @@ export function redirectAuthenticatedUserToApp(auth: RouterContext["auth"]) {
 	// if (user?.uuid && currentOrganization?.uuid) {
 	// 	window.location.href = `${ENV.APP_URL}/${currentOrganization.uuid}/dashboard`;
 	// }
+}
+
+export const authGaurds = {
+	authentication: authenticationGuard,
 }

@@ -99,8 +99,7 @@ export function VerifyEmailPage() {
 
 	const handleResend = () => {
 		if (isRunning) return;
-		resendEmailVerificationMutation.mutate(
-			{ email },
+		resendEmailVerificationMutation.mutate(undefined,
 			{
 				onSuccess: (data) => {
 					toast.success(data?.data?.message || "Verification email resent");

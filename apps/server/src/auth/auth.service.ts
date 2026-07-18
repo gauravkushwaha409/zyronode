@@ -11,6 +11,7 @@ import { randomBytes } from "crypto";
 import type { Response } from "express";
 import { Resend } from "resend";
 import { OtpService } from "../otp/otp.service";
+import { OtpPurpose } from "../otp/types/otp-purpose.type";
 import { PrismaService } from "../prisma/prisma.service";
 import { RedisService } from "../redis/redis.service";
 import { ForgotPasswordDto } from "./dto/forgot-password.dto";
@@ -342,6 +343,37 @@ export class AuthService {
 		return {
 			message: "Password reset successfully",
 			data: { success: true },
+		};
+	}
+
+	async resendVerification(userId: string) {
+		const user = await this.prisma.user.findUnique({
+			where: { id: userId },
+			select: { id: true, email: true, isEmailVerified: true },
+		});
+
+		if (!user) {
+			throw new NotFoundException({
+				message: "User not found",
+				error_code: "USER_NOT_FOUND",
+			});
+		}
+
+		if (user.isEmailVerified) {
+			return {
+				message: "Email is already verified",
+				data: { alreadyVerified: true },
+			};
+		}
+
+		await this.otpService.generateAndSendOtp(
+			user.email,
+			OtpPurpose.EMAIL_VERIFICATION,
+		);
+
+		return {
+			message: "Verification code sent successfully",
+			data: { alreadyVerified: false },
 		};
 	}
 }

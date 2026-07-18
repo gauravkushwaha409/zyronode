@@ -6,6 +6,7 @@ import {
 import { Resend } from "resend";
 import { PrismaService } from "../prisma/prisma.service";
 import { RedisService } from "../redis/redis.service";
+import { OtpPurpose } from "./types/otp-purpose.type";
 
 const OTP_KEY_PREFIX = "otp:";
 const OTP_TTL_SECONDS = 5 * 60; // 5 minutes
@@ -30,18 +31,20 @@ export class OtpService {
 			.padStart(OTP_LENGTH, "0");
 	}
 
-	private redisKey(email: string): string {
-		return `${OTP_KEY_PREFIX}${email}`;
+	private redisKey(email: string, purpose: OtpPurpose): string {
+		return `${OTP_KEY_PREFIX}${purpose}:${email}`;
 	}
 
 	private async sendEmail(to: string, code: string): Promise<void> {
 		const from = process.env.RESEND_FROM_EMAIL || "noreply@example.com";
+		try {
 
-		await this.resend.emails.send({
-			from,
-			to,
-			subject: "Your verification code",
-			html: `
+
+			await this.resend.emails.send({
+				from,
+				to,
+				subject: "Your verification code",
+				html: `
 				<div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 24px;">
 					<h2 style="color: #333;">Verify your email</h2>
 					<p style="color: #555; font-size: 16px;">
@@ -58,25 +61,35 @@ export class OtpService {
 					</p>
 				</div>
 			`,
-		});
+			});
+
+			this.logger.log(`OTP email sent to ${to}`);
+		} catch (error) {
+			this.logger.error(`Failed to send OTP email:`, { error });
+		}
 	}
 
-	async generateAndSendOtp(email: string): Promise<{ message: string }> {
+	async generateAndSendOtp(
+		email: string,
+		purpose: OtpPurpose = OtpPurpose.EMAIL_VERIFICATION,
+	): Promise<{ message: string }> {
 		const code = this.generateCode();
 
-		await this.redis.set(this.redisKey(email), code, OTP_TTL_SECONDS);
+		await this.redis.set(this.redisKey(email, purpose), code, OTP_TTL_SECONDS);
+		console.log(`Generated OTP [${purpose}] for ${email}: ${code}`);
 
 		await this.sendEmail(email, code);
 
-		this.logger.log(`OTP sent to ${email}`);
+		this.logger.log(`OTP [${purpose}] sent to ${email}`);
 		return { message: "Verification code sent successfully" };
 	}
 
 	async verifyOtp(
 		email: string,
 		code: string,
+		purpose: OtpPurpose = OtpPurpose.EMAIL_VERIFICATION,
 	): Promise<{ message: string }> {
-		const stored = await this.redis.get(this.redisKey(email));
+		const stored = await this.redis.get(this.redisKey(email, purpose));
 
 		if (!stored) {
 			throw new BadRequestException({
@@ -92,14 +105,16 @@ export class OtpService {
 			});
 		}
 
-		await this.redis.del(this.redisKey(email));
+		await this.redis.del(this.redisKey(email, purpose));
 
-		await this.prisma.user.update({
-			where: { email },
-			data: { isEmailVerified: true },
-		});
+		if (purpose === OtpPurpose.EMAIL_VERIFICATION) {
+			await this.prisma.user.update({
+				where: { email },
+				data: { isEmailVerified: true },
+			});
+		}
 
-		this.logger.log(`Email verified for ${email}`);
-		return { message: "Email verified successfully" };
+		this.logger.log(`OTP [${purpose}] verified for ${email}`);
+		return { message: "Code verified successfully" };
 	}
 }
