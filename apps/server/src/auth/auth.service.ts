@@ -1,23 +1,41 @@
 // apps/server/src/auth/auth.service.ts
-import { ConflictException, Injectable, Logger, UnauthorizedException } from "@nestjs/common";
+import {
+	ConflictException,
+	Injectable,
+	Logger,
+	NotFoundException,
+	UnauthorizedException,
+} from "@nestjs/common";
 import * as bcryptjs from "bcryptjs";
+import { randomBytes } from "crypto";
 import type { Response } from "express";
-import { PrismaService } from "../prisma/prisma.service";
+import { Resend } from "resend";
 import { OtpService } from "../otp/otp.service";
+import { PrismaService } from "../prisma/prisma.service";
+import { RedisService } from "../redis/redis.service";
+import { ForgotPasswordDto } from "./dto/forgot-password.dto";
 import { GoogleProfileDto } from "./dto/google-login.dto";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
+import { SetPasswordDto } from "./dto/set-password.dto";
 import { AuthJwtService } from "./jwt.service";
+
+const RESET_TOKEN_PREFIX = "password-reset:";
+const RESET_TOKEN_TTL_SECONDS = 15 * 60; // 15 minutes
 
 @Injectable()
 export class AuthService {
 	private readonly logger = new Logger(AuthService.name);
+	private readonly resend: Resend;
 
 	constructor(
 		private prisma: PrismaService,
 		private authJwtService: AuthJwtService,
 		private otpService: OtpService,
-	) {}
+		private redis: RedisService,
+	) {
+		this.resend = new Resend(process.env.RESEND_API_KEY);
+	}
 
 	private async hashPassword(password: string) {
 		return await bcryptjs.hash(password, 10);
@@ -33,7 +51,10 @@ export class AuthService {
 			},
 		});
 		if (existingUser) {
-			throw new ConflictException({error: "User already exists with this email", error_code: "USER_ALREADY_EXISTS"});
+			throw new ConflictException({
+				error: "User already exists with this email",
+				error_code: "USER_ALREADY_EXISTS",
+			});
 		}
 
 		const user = await this.prisma.user.create({
@@ -80,6 +101,7 @@ export class AuthService {
 
 	async login(dto: LoginDto, response: Response) {
 		const isValidUser = await this.verifyTurnstileToken(dto.turnstile);
+
 		if (!isValidUser) {
 			throw new UnauthorizedException("Turnstile verification failed");
 		}
@@ -89,15 +111,20 @@ export class AuthService {
 				email: dto.email,
 			},
 		});
-		if (!user) {
-			throw new UnauthorizedException("No user found!");
+		if (!user || !user.password) {
+			throw new UnauthorizedException({
+				error: "Invalid credentials",
+				error_code: "INVALID_CREDENTIALS",
+			});
 		}
-		if (!user.password) {
-			throw new UnauthorizedException("Invalid credentials");
-		}
+
 		const isPasswordValid = await bcryptjs.compare(dto.password, user.password);
+
 		if (!isPasswordValid) {
-			throw new UnauthorizedException("Invalid credentials");
+			throw new UnauthorizedException({
+				error: "Invalid credentials",
+				error_code: "INVALID_CREDENTIALS",
+			});
 		}
 
 		const tokens = await this.authJwtService.generateAuthTokens({ id: user.id });
@@ -236,6 +263,85 @@ export class AuthService {
 			message: "User logged out successfully",
 			success: true,
 			statusCode: 200,
+		};
+	}
+
+	async forgotPassword(dto: ForgotPasswordDto) {
+		const user = await this.prisma.user.findUnique({
+			where: { email: dto.email },
+		});
+
+		// Always return success to prevent email enumeration
+		if (!user) {
+			return {
+				message:
+					"If an account exists with this email, a reset link has been sent.",
+				data: { email: dto.email },
+			};
+		}
+
+		const token = randomBytes(32).toString("hex");
+		await this.redis.set(
+			`${RESET_TOKEN_PREFIX}${token}`,
+			user.id,
+			RESET_TOKEN_TTL_SECONDS,
+		);
+
+		const resetUrl = `${process.env.VITE_APP_URL}/auth/set-password?token=${token}`;
+		const from = process.env.RESEND_FROM_EMAIL || "noreply@example.com";
+
+		const { data, error, headers } = await this.resend.emails.send({
+			from: "onboarding@resend.dev",
+			to: dto.email,
+			subject: "Reset your password",
+			html: `
+					<div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 24px;">
+						<h2 style="color: #333;">Reset Your Password</h2>
+						<p style="color: #555; font-size: 16px;">
+							You requested a password reset. Click the link below to set a new password:
+						</p>
+						<div style="margin: 16px 0;">
+							<a href="${resetUrl}" style="display: inline-block; background: #111; color: #fff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold;">
+								Reset Password
+							</a>
+						</div>
+						<p style="color: #777; font-size: 14px;">
+							This link expires in 15 minutes.
+							If you did not request this, you can safely ignore this email.
+						</p>
+					</div>
+				`,
+		});
+		if (data) {
+			console.log(`Password reset email sent to ${dto.email}`);
+		}
+		if (error) {
+			this.logger.error(`Failed to send reset email:`, { error });
+		}
+	}
+
+	async setPassword(dto: SetPasswordDto) {
+		const userId = await this.redis.get(`${RESET_TOKEN_PREFIX}${dto.token}`);
+
+		if (!userId) {
+			throw new NotFoundException({
+				message: "Invalid or expired reset token",
+				error_code: "INVALID_TOKEN",
+			});
+		}
+
+		await this.redis.del(`${RESET_TOKEN_PREFIX}${dto.token}`);
+
+		const hashedPassword = await bcryptjs.hash(dto.new_password, 10);
+
+		await this.prisma.user.update({
+			where: { id: userId },
+			data: { password: hashedPassword },
+		});
+
+		return {
+			message: "Password reset successfully",
+			data: { success: true },
 		};
 	}
 }

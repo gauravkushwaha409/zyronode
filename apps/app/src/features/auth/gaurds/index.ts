@@ -1,2 +1,10 @@
-export { AuthGaurd } from './auth.gaurd'
-export { redirectAuthenticatedUserToApp } from './redirect-auth.gaurd'
+export {
+  AuthGaurd,
+  domainGuard,
+  authenticatedGuard,
+  sessionGuard,
+  emailVerifiedGuard,
+  onboardingGuard,
+  organizationOnboardingGaurd,
+  redirectAuthenticatedUserToApp,
+} from './auth.gaurd';

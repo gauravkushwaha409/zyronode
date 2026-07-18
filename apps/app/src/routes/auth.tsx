@@ -11,8 +11,9 @@ export const Route = createFileRoute("/auth")({
 			context.queryClient.getQueryData<MeQuery.MeQueryAxiosResponse>(
 				CONFIG.QUERY_KEY.AUTH.ME,
 			);
+			console.log("user---------->", user);
+			redirectAuthenticatedUserToApp(user);
 
-		redirectAuthenticatedUserToApp(user);
 	},
 });
 

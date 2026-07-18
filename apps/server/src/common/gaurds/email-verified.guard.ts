@@ -36,7 +36,7 @@ export class EmailVerifiedGuard implements CanActivate {
     if (!dbUser.isEmailVerified) {
       throw new UnauthorizedException({
         message: 'Email verification is required',
-        error_code: 'EMAIL_VERIFICATION_REQUIRED',
+        error_code: 'EMAIL_UNVERIFIED',
       });
     }
 

@@ -6,8 +6,8 @@ export const Route = createFileRoute(
 )({
 	component: RouteComponent,
 	beforeLoad: ({ context }) => {
-		console.log(context.user);
-		if (!context.user?.data?.data?.id) {
+		const auth = context.auth;
+		if (auth.isError || !auth.user?.data?.id) {
 			throw redirect({ to: "/auth/login" });
 		}
 	},

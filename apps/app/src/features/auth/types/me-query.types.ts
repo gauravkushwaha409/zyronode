@@ -1,4 +1,4 @@
-import type { ApiResponse, ServerResponse } from "@package/api-client";
+import type { APIError, ApiResponse, ServerResponse } from "@package/api-client";
 
 export interface MeQueryData {
 	id: string;
@@ -14,3 +14,5 @@ export interface MeQueryData {
 export type MeQueryResponse = ServerResponse<MeQueryData>;
 
 export type MeQueryAxiosResponse = ApiResponse<MeQueryData>;
+
+export type MeQueryErrorResponse = APIError

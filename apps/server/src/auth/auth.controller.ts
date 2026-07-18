@@ -19,6 +19,8 @@ import { EmailVerifiedGuard } from "../common/gaurds/email-verified.guard";
 import { AuthService } from "./auth.service";
 import type { LoginDto } from "./dto/login.dto";
 import type { RegisterDto } from "./dto/register.dto";
+import type { ForgotPasswordDto } from "./dto/forgot-password.dto";
+import type { SetPasswordDto } from "./dto/set-password.dto";
 
 @Controller("auth")
 export class AuthController {
@@ -52,6 +54,18 @@ export class AuthController {
 	) {
 		console.log("Logout request received from user:", request);
 		return this.authService.logout(response);
+	}
+
+	@Post("password/forgot")
+	@HttpCode(HttpStatus.OK)
+	forgotPassword(@Body() dto: ForgotPasswordDto) {
+		return this.authService.forgotPassword(dto);
+	}
+
+	@Post("password/forgot/verify")
+	@HttpCode(HttpStatus.OK)
+	setPassword(@Body() dto: SetPasswordDto) {
+		return this.authService.setPassword(dto);
 	}
 
 	@Get("google")

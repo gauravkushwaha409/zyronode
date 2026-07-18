@@ -10,7 +10,6 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AboutRouteImport } from './routes/about'
 import { Route as VerifyRouteImport } from './routes/_verify'
 import { Route as OrganizationProtectedRouteImport } from './routes/_organization-protected'
 import { Route as IndexRouteImport } from './routes/index'
@@ -30,11 +29,6 @@ import { Route as OrganizationProtectedOrganizationDashboardRouteImport } from '
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AboutRoute = AboutRouteImport.update({
-  id: '/about',
-  path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VerifyRoute = VerifyRouteImport.update({
@@ -119,7 +113,6 @@ const OrganizationProtectedOrganizationDashboardRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
   '/auth': typeof AuthRouteWithChildren
   '/$organization': typeof OrganizationProtectedOrganizationRouteWithChildren
   '/select-organization': typeof OrganizationProtectedSelectOrganizationRoute
@@ -136,7 +129,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
   '/auth': typeof AuthRouteWithChildren
   '/$organization': typeof OrganizationProtectedOrganizationRouteWithChildren
   '/select-organization': typeof OrganizationProtectedSelectOrganizationRoute
@@ -156,7 +148,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_organization-protected': typeof OrganizationProtectedRouteWithChildren
   '/_verify': typeof VerifyRouteWithChildren
-  '/about': typeof AboutRoute
   '/auth': typeof AuthRouteWithChildren
   '/_organization-protected/$organization': typeof OrganizationProtectedOrganizationRouteWithChildren
   '/_organization-protected/select-organization': typeof OrganizationProtectedSelectOrganizationRoute
@@ -175,7 +166,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/about'
     | '/auth'
     | '/$organization'
     | '/select-organization'
@@ -192,7 +182,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/about'
     | '/auth'
     | '/$organization'
     | '/select-organization'
@@ -211,7 +200,6 @@ export interface FileRouteTypes {
     | '/'
     | '/_organization-protected'
     | '/_verify'
-    | '/about'
     | '/auth'
     | '/_organization-protected/$organization'
     | '/_organization-protected/select-organization'
@@ -231,7 +219,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   OrganizationProtectedRoute: typeof OrganizationProtectedRouteWithChildren
   VerifyRoute: typeof VerifyRouteWithChildren
-  AboutRoute: typeof AboutRoute
   AuthRoute: typeof AuthRouteWithChildren
 }
 
@@ -242,13 +229,6 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_verify': {
@@ -433,7 +413,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   OrganizationProtectedRoute: OrganizationProtectedRouteWithChildren,
   VerifyRoute: VerifyRouteWithChildren,
-  AboutRoute: AboutRoute,
   AuthRoute: AuthRouteWithChildren,
 }
 export const routeTree = rootRouteImport
