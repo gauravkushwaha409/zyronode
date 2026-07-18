@@ -1,7 +1,6 @@
 import type { APIError, ApiResponse } from '@package/api-client';
 
 export interface VerifyEmailMutationPayload {
-  email: string;
   code: string;
 }
 

@@ -36,15 +36,14 @@ export class OtpService {
 	}
 
 	private async sendEmail(to: string, code: string): Promise<void> {
-		const from = process.env.RESEND_FROM_EMAIL || "noreply@example.com";
-		try {
+		const from = process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev";
 
 
-			await this.resend.emails.send({
-				from,
-				to,
-				subject: "Your verification code",
-				html: `
+		const { data, error } = await this.resend.emails.send({
+			from,
+			to,
+			subject: "Your verification code",
+			html: `
 				<div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 24px;">
 					<h2 style="color: #333;">Verify your email</h2>
 					<p style="color: #555; font-size: 16px;">
@@ -61,12 +60,10 @@ export class OtpService {
 					</p>
 				</div>
 			`,
-			});
+		});
+		console.log(`OTP email sent to ${to}: ${code}`);
+		console.log(`Resend API response:`, { data, error });
 
-			this.logger.log(`OTP email sent to ${to}`);
-		} catch (error) {
-			this.logger.error(`Failed to send OTP email:`, { error });
-		}
 	}
 
 	async generateAndSendOtp(

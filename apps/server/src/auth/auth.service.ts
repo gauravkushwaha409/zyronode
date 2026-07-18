@@ -19,6 +19,7 @@ import { GoogleProfileDto } from "./dto/google-login.dto";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
 import { SetPasswordDto } from "./dto/set-password.dto";
+import { VerifyEmailDto } from "./dto/verify-email.dto";
 import { AuthJwtService } from "./jwt.service";
 
 const RESET_TOKEN_PREFIX = "password-reset:";
@@ -375,5 +376,25 @@ export class AuthService {
 			message: "Verification code sent successfully",
 			data: { alreadyVerified: false },
 		};
+	}
+
+	async verifyEmail(userId: string, code: string) {
+		const user = await this.prisma.user.findUnique({
+			where: { id: userId },
+			select: { id: true, email: true },
+		});
+
+		if (!user) {
+			throw new NotFoundException({
+				message: "User not found",
+				error_code: "USER_NOT_FOUND",
+			});
+		}
+
+		return this.otpService.verifyOtp(
+			user.email,
+			code,
+			OtpPurpose.EMAIL_VERIFICATION,
+		);
 	}
 }

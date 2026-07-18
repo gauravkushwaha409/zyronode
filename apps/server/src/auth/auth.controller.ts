@@ -21,6 +21,7 @@ import type { ForgotPasswordDto } from "./dto/forgot-password.dto";
 import type { LoginDto } from "./dto/login.dto";
 import type { RegisterDto } from "./dto/register.dto";
 import type { SetPasswordDto } from "./dto/set-password.dto";
+import type { VerifyEmailDto } from "./dto/verify-email.dto";
 
 @Controller("auth")
 export class AuthController {
@@ -74,6 +75,13 @@ export class AuthController {
 	resendVerification(@CurrentUser() user: { id: string }) {
 		console.log("Resend verification request received from user:", user);
 		return this.authService.resendVerification(user.id);
+	}
+
+	@Post("verify-email")
+	@HttpCode(HttpStatus.OK)
+	@UseGuards(JwtAuthGuard)
+	verifyEmail(@CurrentUser() user: { id: string }, @Body() dto: VerifyEmailDto) {
+		return this.authService.verifyEmail(user.id, dto.code);
 	}
 
 	@Get("google")

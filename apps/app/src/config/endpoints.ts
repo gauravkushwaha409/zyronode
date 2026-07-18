@@ -7,7 +7,7 @@ export const ENDPOINTS = {
         LOGOUT: '/auth/logout',
         FORGOT_PASSWORD: '/auth/password/forgot',
         VERIFY_FORGOT_PASSWORD: '/auth/password/forgot/verify',
-        VERIFY_EMAIL: '/otp/verify',
+        VERIFY_EMAIL: '/auth/verify-email',
         RESEND_EMAIL: '/auth/resend-verification',
     },
     ORGANIZATION: {
