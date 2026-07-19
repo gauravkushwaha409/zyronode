@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { Request } from "express";
 import { ExtractJwt, Strategy } from 'passport-jwt';
@@ -10,7 +10,9 @@ export class JwtStrategy extends PassportStrategy(Strategy,"jwt") {
         super({
             jwtFromRequest: ExtractJwt.fromExtractors([
                 (req:Request) => { 
-                    return req?.cookies?.access
+                    const token = req?.cookies?.access;
+                    if(!token) throw new UnauthorizedException({error_code: "UNAUTHENTICATED", message: "Token is missing"},{cause: "",description: ""});
+                    return token;
                 }
             ]),
             secretOrKey: process.env['JWT_SECRET'] ?? "sec",

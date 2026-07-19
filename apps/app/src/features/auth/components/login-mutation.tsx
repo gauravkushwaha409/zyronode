@@ -1,10 +1,7 @@
 import { FormWrapper } from "@package/form";
 import { toast } from "@package/ui";
 import { useRouter } from "@tanstack/react-router";
-import { CONFIG } from "@/config";
-import { queryClient } from "@/lib/query-client";
 import { useLoginForm, useLoginMutation } from "../hooks";
-import { authApiService } from "../services";
 import { LoginForm } from "./login-form";
 
 export function LoginMutation() {

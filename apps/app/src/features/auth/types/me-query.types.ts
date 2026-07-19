@@ -28,8 +28,6 @@ export interface MeQueryData {
 	referralSource: string | null;
 	createdAt: string;
 	updatedAt: string;
-	current_organization: string | null;
-	organizations: MeQueryOrganization[];
 }
 export type MeQueryResponse = ServerResponse<MeQueryData>;
 

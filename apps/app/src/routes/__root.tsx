@@ -1,6 +1,7 @@
 import type { QueryClient } from "@package/query";
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import { CONFIG } from "@/config";
+import { useMeQuery } from "@/features/auth/hooks";
 import { authApiService } from "@/features/auth/services/auth.services";
 import type { MeQuery } from "@/features/auth/types";
 import type { ApiErrorCode } from "@/types";
@@ -19,8 +20,7 @@ export interface RouterContext {
 export const Route = createRootRouteWithContext<RouterContext>()({
 	component: RootComponent,
 
-		beforeLoad: async ({ context }) => {
-
+	beforeLoad: async ({ context }) => {
 		const { queryClient } = context;
 		try {
 			const currentUser = await context.queryClient.fetchQuery({
@@ -53,10 +53,10 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 			};
 		}
 	},
-	loader: async ({ context }) => {
-	}
+	loader: async ({ context }) => {},
 });
 
 function RootComponent() {
+	useMeQuery();
 	return <Outlet />;
 }

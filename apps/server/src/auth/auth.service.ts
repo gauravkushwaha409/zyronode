@@ -162,21 +162,10 @@ export class AuthService {
 			where: { id: userId },
 			omit: {
 				password: true,
-			},
-			include: {
-				organizations: {
-					select: {
-						id: true,
-						organizationId: true,
-						joinedAt: true,
-						organization: {
-							select: {
-								id: true,
-								name: true,
-							},
-						},
-					},
-				},
+				googleId: true,
+				authProvider: true,
+				isOnboarded: true,
+				
 			},
 		});
 

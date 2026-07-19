@@ -55,12 +55,12 @@ export function organizationOnboardingGaurd(user: RouterContext["auth"]) {
 }
 
 export function redirectAuthenticatedUserToApp(auth: RouterContext["auth"]) {
-	// const currentOrganization = auth.user?.data?.data?.current_organization;
-	// const user = auth.user?.data?.user;
+	const lastOrdId = auth.user?.data?.data?.lastOrgId
+	const user = auth.user?.data?.data
 
-	// if (user?.uuid && currentOrganization?.uuid) {
-	// 	window.location.href = `${ENV.APP_URL}/${currentOrganization.uuid}/dashboard`;
-	// }
+	if (user?.id && lastOrdId) {
+		window.location.href = `${ENV.APP_URL}/${lastOrdId}/dashboard`;
+	}
 }
 
 export const authGaurds = {
