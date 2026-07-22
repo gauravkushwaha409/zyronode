@@ -29,6 +29,9 @@ importers:
       '@package/form':
         specifier: workspace:*
         version: link:../../packages/form
+      '@package/icons':
+        specifier: workspace:*
+        version: link:../../packages/icons
       '@package/query':
         specifier: workspace:*
         version: link:../../packages/query
