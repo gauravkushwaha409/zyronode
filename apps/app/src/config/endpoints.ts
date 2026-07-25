@@ -14,5 +14,11 @@ export const ENDPOINTS = {
     ORGANIZATION: {
         CREATE: '/organization',
         GET_MY: '/organization/my',
-    }
+    },
+    INBOX: {
+        SESSIONS: '/inbox/sessions',
+        SESSION: '/inbox/sessions',
+        SEND_MESSAGE: '/sessions',
+        MARK_READ: '/sessions',
+    },
 }

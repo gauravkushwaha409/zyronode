@@ -2,40 +2,40 @@ import { Avatar, Icon, Typography } from '@package/ui';
 import { cn } from '@package/ui';
 import { formatDistanceToNowStrict } from 'date-fns';
 import { useConversationItem } from '../../hooks';
-import type { ConversationListTypes } from '../../types';
+import type { InboxSessionListItem } from '../../types/inbox-api.types';
 
-interface ConversationListItemProps extends ConversationListTypes.ConversationListItem {}
+type ConversationListItemProps = InboxSessionListItem;
 
 export function ConversationListItem(props: ConversationListItemProps) {
   const { value: selectedId, onChange: selectConversation } = useConversationItem();
-  const isSelected = selectedId === props.uuid;
+  const isSelected = selectedId === props.id;
+
+  const senderLabel =
+    props.lastMessage?.senderType === 'VISITOR'
+      ? props.visitorName ?? 'Visitor'
+      : props.lastMessage?.senderType === 'AGENT'
+        ? 'Agent'
+        : 'System';
 
   return (
     <button
       type="button"
-      onClick={() => selectConversation(props.uuid)}
+      onClick={() => selectConversation(props.id)}
       className={cn(
         'w-full px-3 py-3.5 flex items-center gap-x-2.5 rounded-lg transition-colors cursor-pointer',
         isSelected ? 'bg-primary-50' : 'hover:bg-gray-50',
       )}
     >
       <div className="size-11 relative rounded-full shrink-0">
-        {props?.visitor?.name ? (
-          <Avatar
-            className="shrink-0"
-            size="xl"
-            fallbackType="text"
-            fallbackText={props?.visitor?.name?.charAt(0) ?? 'U'}
-          />
-        ) : (
-          <Avatar className="shrink-0" size="xl" fallbackType="icon" />
-        )}
-        <div className="absolute bottom-0 right-0 size-2.5 bg-green-500 border-2 border-white rounded-full" />
-        <Icon
-          size={14}
-          name="vip"
-          className="absolute left-1/2 -translate-x-1/2 bottom-0 translate-y-1/2 rounded-full"
+        <Avatar
+          className="shrink-0"
+          size="xl"
+          fallbackType="text"
+          fallbackText={props.visitorName?.charAt(0) ?? 'U'}
         />
+        {props.status === 'ACTIVE' && (
+          <div className="absolute bottom-0 right-0 size-2.5 bg-green-500 border-2 border-white rounded-full" />
+        )}
         <Icon
           size={16}
           name="messenger"
@@ -47,12 +47,12 @@ export function ConversationListItem(props: ConversationListItemProps) {
         <div className="flex-1 flex items-center gap-x-2.5 justify-between">
           <div className="flex items-center gap-2.5">
             <Typography.T3 weight="semibold" className="text-gray-950 truncate">
-              {props?.visitor?.name ?? 'Unknown'}
+              {props.visitorName ?? 'Unknown Visitor'}
             </Typography.T3>
           </div>
           <div className="flex items-center gap-x-2">
             <Typography.T6>
-              {formatDistanceToNowStrict(new Date(props.last_message_at), { addSuffix: false })
+              {formatDistanceToNowStrict(new Date(props.lastMessageAt), { addSuffix: false })
                 .replace(/ seconds?/, 's')
                 .replace(/ minutes?/, 'm')
                 .replace(/ hours?/, 'h')
@@ -60,22 +60,18 @@ export function ConversationListItem(props: ConversationListItemProps) {
                 .replace(/ months?/, 'mo')
                 .replace(/ years?/, 'y')}
             </Typography.T6>
-            {props.unread_count_agent > 0 && (
+            {props.unreadCount > 0 && (
               <div className="size-1.5 bg-primary-500 drop-shadow-[0_3px_22.5px_rgba(0,0,0,0.04)] backdrop-blur-[18px] rounded-full" />
             )}
           </div>
         </div>
 
         <div className="flex items-center justify-between gap-x-2.5">
-          <Typography.T5
-            className="text-gray-500 line-clamp-1"
-            dangerouslySetInnerHTML={{ __html: props.last_message_snippet ?? 'No message yet' }}
-          />
-          {props?.ai_status ? (
-            <Icon name="chatboq-ai" size={16} />
-          ) : (
-            <Icon name="assignee" size={16} />
-          )}
+          <Typography.T5 className="text-gray-500 line-clamp-1">
+            {props.lastMessage
+              ? `${senderLabel}: ${props.lastMessage.content}`
+              : 'No messages yet'}
+          </Typography.T5>
         </div>
       </div>
     </button>

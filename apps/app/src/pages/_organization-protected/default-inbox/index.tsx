@@ -1,10 +1,14 @@
 import { Conversation, ConversationDetails, ConversationList, InboxLayout } from '@/features/default-inbox';
 
-export function DefaultInboxPage() {
+interface DefaultInboxPageProps {
+  organizationId: string;
+}
+
+export function DefaultInboxPage({ organizationId }: DefaultInboxPageProps) {
   return (
     <InboxLayout>
-      <ConversationList />
-      <Conversation />
+      <ConversationList organizationId={organizationId} />
+      <Conversation organizationId={organizationId} />
       <ConversationDetails />
     </InboxLayout>
   );

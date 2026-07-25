@@ -15,10 +15,14 @@ export default defineConfig(({ mode }) => {
 			port: 3000,
 			host: true,
 			proxy: {
-				"/api/v1": {
+				"/v1": {
 					target: serverUrl,
 					changeOrigin: true,
-					rewrite: (path) => path.replace(/^\/api\/v1/, ""),
+				},
+				"/socket.io": {
+					target: serverUrl,
+					changeOrigin: true,
+					ws: true,
 				},
 			},
 		},

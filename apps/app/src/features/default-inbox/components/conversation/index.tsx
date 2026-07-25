@@ -1,10 +1,17 @@
 import { Typography } from '@package/ui';
-import { useConversationItem } from '../../hooks';
+import { useConversationItem, useInboxSessionDetailQuery } from '../../hooks';
 import { ConversationBody } from '../conversation-body';
 import { ConversationHeader } from './conversation-header';
 
-export function Conversation() {
+interface ConversationProps {
+  organizationId: string;
+}
+
+export function Conversation({ organizationId }: ConversationProps) {
   const { value: conversationUUID } = useConversationItem();
+
+  const { data: sessionData } = useInboxSessionDetailQuery(conversationUUID, organizationId);
+  const session = sessionData?.data?.data;
 
   if (!conversationUUID) {
     return (
@@ -18,8 +25,13 @@ export function Conversation() {
 
   return (
     <div className="h-full flex flex-col bg-gray-active-1 inbox-bg-dot-grid">
-      <ConversationHeader conversationUUID={conversationUUID} />
-      <ConversationBody conversationUUID={conversationUUID} />
+      <ConversationHeader
+        conversationUUID={conversationUUID}
+        visitorName={session?.visitorName ?? null}
+        channel={session?.channel ?? null}
+        status={session?.status ?? null}
+      />
+      <ConversationBody conversationUUID={conversationUUID} organizationId={organizationId} />
     </div>
   );
 }

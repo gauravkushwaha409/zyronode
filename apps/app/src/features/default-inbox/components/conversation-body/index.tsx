@@ -1,5 +1,7 @@
 import type React from 'react';
 import { useRef } from 'react';
+import { useInboxSessionDetailQuery } from '../../hooks';
+import type { InboxMessage } from '../../types/inbox-api.types';
 import {
   groupConsecutiveMessages,
   groupMessagesByDate,
@@ -11,85 +13,42 @@ import { TextEditor } from './text-editor';
 
 interface ConversationBodyProps {
   conversationUUID: string | null;
+  organizationId: string;
 }
 
-export function ConversationBody({ conversationUUID }: ConversationBodyProps) {
+export function ConversationBody({ conversationUUID, organizationId }: ConversationBodyProps) {
   const textEditorContainerRef = useRef<HTMLDivElement>(null);
 
-  const MOCK_MESSAGES = [
-    {
-      uuid: 'msg-1',
-      conversation_uuid: conversationUUID ?? '',
-      sender_type: 'visitor' as const,
-      content: 'Hello, I need help with my order',
-      message_type: 'text' as const,
-      sender: { id: 1, type: 'visitor' as const, full_name: 'John Doe', avatar: null, bg_color: null, email: null },
-      reply_to: null,
-      attachments: null,
-      is_edited: false,
-      edited_at: null,
-      status: 'read' as const,
-      created_at: new Date(Date.now() - 3600000).toISOString(),
-    },
-    {
-      uuid: 'msg-2',
-      conversation_uuid: conversationUUID ?? '',
-      sender_type: 'agent' as const,
-      content: 'Hi John! I can help you with that. Can you share your order number?',
-      message_type: 'text' as const,
-      sender: { id: 2, type: 'agent' as const, full_name: 'Agent Smith', avatar: null, bg_color: null, email: null },
-      reply_to: null,
-      attachments: null,
-      is_edited: false,
-      edited_at: null,
-      status: 'read' as const,
-      created_at: new Date(Date.now() - 3500000).toISOString(),
-    },
-    {
-      uuid: 'msg-3',
-      conversation_uuid: conversationUUID ?? '',
-      sender_type: 'visitor' as const,
-      content: 'My order number is #12345',
-      message_type: 'text' as const,
-      sender: { id: 1, type: 'visitor' as const, full_name: 'John Doe', avatar: null, bg_color: null, email: null },
-      reply_to: null,
-      attachments: null,
-      is_edited: false,
-      edited_at: null,
-      status: 'read' as const,
-      created_at: new Date(Date.now() - 3400000).toISOString(),
-    },
-    {
-      uuid: 'msg-4',
-      conversation_uuid: conversationUUID ?? '',
-      sender_type: 'agent' as const,
-      content: 'Internal note: Check the warehouse for this order',
-      message_type: 'internal_note' as const,
-      sender: { id: 2, type: 'agent' as const, full_name: 'Agent Smith', avatar: null, bg_color: null, email: null },
-      reply_to: null,
-      attachments: null,
-      is_edited: false,
-      edited_at: null,
-      status: 'read' as const,
-      created_at: new Date(Date.now() - 3300000).toISOString(),
-    },
-    {
-      uuid: 'msg-5',
-      conversation_uuid: conversationUUID ?? '',
-      sender_type: 'agent' as const,
-      content: 'I found your order. It will be delivered tomorrow.',
-      message_type: 'text' as const,
-      sender: { id: 2, type: 'agent' as const, full_name: 'Agent Smith', avatar: null, bg_color: null, email: null },
-      reply_to: null,
-      attachments: null,
-      is_edited: false,
-      edited_at: null,
-      status: 'sent' as const,
-      created_at: new Date(Date.now() - 3200000).toISOString(),
-    },
-  ];
+  const { data, isLoading } = useInboxSessionDetailQuery(conversationUUID, organizationId);
 
-  const messages = MOCK_MESSAGES;
+  const messages = (data?.data?.data?.messages ?? []).map((msg: InboxMessage) => ({
+    uuid: msg.id,
+    conversation_uuid: msg.sessionId,
+    sender_type: msg.senderType.toLowerCase() as 'visitor' | 'agent' | 'system',
+    content: msg.content,
+    message_type: msg.messageType.toLowerCase().replace('INTERNAL_NOTE', 'internal_note') as 'text' | 'file' | 'internal_note',
+    sender: {
+      id: 0,
+      type: msg.senderType.toLowerCase() as 'visitor' | 'agent' | 'system',
+      full_name: msg.senderType === 'VISITOR' ? 'Visitor' : msg.senderType === 'AGENT' ? 'Agent' : 'System',
+      avatar: null,
+      bg_color: null,
+      email: null,
+    },
+    reply_to: msg.replyTo
+      ? {
+          uuid: msg.replyTo.id,
+          content: msg.replyTo.content,
+          sender: { id: 0, type: msg.replyTo.senderType.toLowerCase() as 'visitor' | 'agent' | 'system', full_name: '', avatar: null, bg_color: null, email: null },
+        }
+      : null,
+    attachments: null,
+    is_edited: msg.isEdited,
+    edited_at: msg.editedAt,
+    status: msg.status.toLowerCase() as 'sent' | 'delivered' | 'read',
+    created_at: msg.createdAt,
+  }));
+
   const messageGroups = groupMessagesByDate(messages);
 
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -97,14 +56,20 @@ export function ConversationBody({ conversationUUID }: ConversationBodyProps) {
 
   return (
     <div className="relative flex-1 flex flex-col overflow-hidden px-4 pt-4">
-      <ConversationMessage
-        groups={messageGroups}
-        className="flex-1 overflow-y-auto scrollbar-none"
-        textEditorHeight={textEditorContainerRef.current?.clientHeight ?? 0}
-        scrollRef={scrollRef}
-        topSentinelRef={topSentinelRef}
-        isFetchingNextPage={false}
-      />
+      {isLoading ? (
+        <div className="flex-1 flex items-center justify-center">
+          <div className="size-5 animate-spin rounded-full border-2 border-gray-300 border-t-primary-500" />
+        </div>
+      ) : (
+        <ConversationMessage
+          groups={messageGroups}
+          className="flex-1 overflow-y-auto scrollbar-none"
+          textEditorHeight={textEditorContainerRef.current?.clientHeight ?? 0}
+          scrollRef={scrollRef}
+          topSentinelRef={topSentinelRef}
+          isFetchingNextPage={false}
+        />
+      )}
 
       {conversationUUID && (
         <TextEditor ref={textEditorContainerRef} />
@@ -138,6 +103,12 @@ function ConversationMessage({
       {isFetchingNextPage && (
         <div className="flex justify-center py-3">
           <div className="size-5 animate-spin rounded-full border-2 border-gray-300 border-t-primary-500" />
+        </div>
+      )}
+
+      {groups.length === 0 && (
+        <div className="flex items-center justify-center py-8">
+          <p className="text-sm text-gray-400">No messages yet</p>
         </div>
       )}
 

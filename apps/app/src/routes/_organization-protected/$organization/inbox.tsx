@@ -8,5 +8,6 @@ export const Route = createFileRoute('/_organization-protected/$organization/inb
 });
 
 function RouteComponent() {
-  return <DefaultInboxPage />;
+  const { organization } = Route.useParams();
+  return <DefaultInboxPage organizationId={organization} />;
 }
