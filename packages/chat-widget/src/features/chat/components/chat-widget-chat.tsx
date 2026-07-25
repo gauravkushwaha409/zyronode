@@ -76,7 +76,7 @@ export default function ChatWidgetChat({ sessionId }: ChatWidgetChatProps) {
                   : "bg-gray-100 text-gray-900 rounded-bl-none"
               }`}
             >
-              <p>{msg.content}</p>
+              <p dangerouslySetInnerHTML={{ __html: msg.content }} />
               <p className="text-[10px] opacity-70 mt-1">
                 {new Date(msg.createdAt).toLocaleTimeString([], {
                   hour: "2-digit",
