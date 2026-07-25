@@ -1,42 +1,95 @@
-import { Icon } from '@package/ui';
-import { forwardRef } from 'react';
+import { Editor } from '@package/text-editor';
+import type React from 'react';
+import { useTextEditor } from '../../hooks/text-editor';
+import { EnterToSendPlugin } from './enter-to-send-plugin';
 import { InternalNotesBanner } from './internal-notes-banner';
 
-interface TextEditorProps {
-  className?: string;
+type TextEditorWrapperProps = Pick<
+  React.ComponentPropsWithRef<'div'>,
+  'className' | 'ref'
+>;
+interface TextEditorProps extends TextEditorWrapperProps {
+  conversationUUID: string;
+  organizationId: string;
 }
 
-export const TextEditor = forwardRef<HTMLDivElement, TextEditorProps>(
-  function TextEditor({ className }, ref) {
-    return (
+export function TextEditor({
+  conversationUUID,
+  organizationId,
+  className,
+  ref,
+}: TextEditorProps) {
+  const {
+    effectiveMessageType,
+    replyMessage,
+    isReplyingToMessage,
+    replyInternalNote,
+    isReplyingToNote,
+    setMessageType,
+    editorRef,
+    handleSend,
+    handleClose,
+    isPending,
+  } = useTextEditor({ conversationUUID, organizationId });
+
+  return (
+    <div
+      ref={ref}
+      className={`absolute bottom-0 inset-x-0 px-4 py-3 shrink-0 ${className}`}
+    >
       <div
-        ref={ref}
-        className={`absolute bottom-0 inset-x-0 px-4 py-3 shrink-0 ${className}`}
+        className={`${effectiveMessageType === 'notes' ? 'bg-warning-50' : 'bg-transparent'}`}
       >
-        <div className="border border-gray-200 rounded-lg bg-white shadow-sm">
-          <InternalNotesBanner />
-          <div className="px-4 py-3">
-            <div
-              contentEditable
-              className="min-h-[40px] max-h-[200px] overflow-y-auto text-sm text-gray-800 outline-none"
-              data-placeholder="Type a message..."
-            />
-          </div>
-          <div className="px-4 py-2 flex items-center justify-between border-t border-gray-100">
-            <div className="flex items-center gap-2">
-              <button type="button" className="p-1.5 rounded-md hover:bg-gray-100 text-gray-500">
-                <Icon name="add-attatchments" size={18} />
-              </button>
-              <button type="button" className="p-1.5 rounded-md hover:bg-gray-100 text-gray-500">
-                <Icon name="send-emojis" size={18} />
-              </button>
-            </div>
-            <button type="button" className="p-1.5 rounded-md bg-primary-500 text-white hover:bg-primary-600">
-              <Icon name="send" size={18} />
-            </button>
-          </div>
-        </div>
+        {effectiveMessageType === 'notes' && <InternalNotesBanner />}
+
+        <Editor
+          onChange={(_editorState, editor) => {
+            editorRef.current = editor;
+          }}
+          plugins={<EnterToSendPlugin onSubmit={handleSend} />}
+          rightToolbarProps={{
+            replyMenuPopoverProps: {
+              requestEmail: { onClick: () => {} },
+              workUpdate: { onClick: () => {} },
+              requestFeedback: { onClick: () => {} },
+              sendEmoji: { onClick: () => {} },
+              addAttachment: { onClick: () => {} },
+              knowledgeBase: { onClick: () => {} },
+              autoComplete: { onClick: () => {} },
+              shortcuts: { onClick: () => {} },
+            },
+            sendButtonProps: {
+              onClick: handleSend,
+              disabled: isPending,
+            },
+          }}
+          replyMessageProps={{
+            message:
+              replyMessage?.content ?? replyInternalNote?.content ?? '',
+            isReplying: isReplyingToMessage || isReplyingToNote,
+            onClick: handleClose,
+          }}
+          footerProps={{
+            replyDropdownProps: {
+              onNotesProps: {
+                onClick: () => setMessageType('notes'),
+              },
+              onReplyProps: {
+                onClick: () => setMessageType('reply'),
+              },
+              onValueChange: (value) => setMessageType(value),
+              value: effectiveMessageType,
+            },
+            aiToolsDropdownProps: {
+              onElaborateClick: { onClick: () => {} },
+              onFixGrammarClick: { onClick: () => {} },
+              onFormalToneClick: { onClick: () => {} },
+              onFriendlyToneClick: { onClick: () => {} },
+              onRephraseClick: { onClick: () => {} },
+            },
+          }}
+        />
       </div>
-    );
-  },
-);
+    </div>
+  );
+}

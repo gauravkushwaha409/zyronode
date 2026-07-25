@@ -35,6 +35,9 @@ importers:
       '@package/query':
         specifier: workspace:*
         version: link:../../packages/query
+      '@package/text-editor':
+        specifier: workspace:*
+        version: link:../../packages/text-editor
       '@package/ui':
         specifier: workspace:*
         version: link:../../packages/ui

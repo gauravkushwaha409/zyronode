@@ -72,7 +72,11 @@ export function ConversationBody({ conversationUUID, organizationId }: Conversat
       )}
 
       {conversationUUID && (
-        <TextEditor ref={textEditorContainerRef} />
+        <TextEditor
+          ref={textEditorContainerRef}
+          conversationUUID={conversationUUID}
+          organizationId={organizationId}
+        />
       )}
 
       <MessageDeleteDialog conversationUUID={conversationUUID} />

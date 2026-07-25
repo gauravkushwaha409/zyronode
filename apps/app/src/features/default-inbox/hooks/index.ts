@@ -1,3 +1,4 @@
 export * from './custom';
-export * from './queries';
 export * from './mutations';
+export * from './queries';
+export * from './text-editor';
