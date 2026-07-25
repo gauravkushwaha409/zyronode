@@ -1,5 +1,6 @@
 import { Typography } from '@package/ui';
 import { useConversationItem, useInboxSessionDetailQuery } from '../../hooks';
+import { SessionSocketEvents } from '../../hooks/use-session-socket-events';
 import { ConversationBody } from '../conversation-body';
 import { ConversationHeader } from './conversation-header';
 
@@ -25,6 +26,7 @@ export function Conversation({ organizationId }: ConversationProps) {
 
   return (
     <div className="h-full flex flex-col bg-gray-active-1 inbox-bg-dot-grid">
+      <SessionSocketEvents sessionId={conversationUUID} organizationId={organizationId} />
       <ConversationHeader
         conversationUUID={conversationUUID}
         visitorName={session?.visitorName ?? null}

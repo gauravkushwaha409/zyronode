@@ -24,7 +24,8 @@
       "@package/ui": ["../../packages/ui/src/index.ts"],
       "@package/form": ["../../packages/form/src/index.ts"],
       "@package/query": ["../../packages/query/src/index.ts"],
-      "@package/api-client": ["../../packages/api-client/src/index.ts"]
+      "@package/api-client": ["../../packages/api-client/src/index.ts"],
+      "@package/websocket": ["../../packages/websocket/src/index.ts"]
     }
   },
   "include": ["src", "vite.config.ts"]

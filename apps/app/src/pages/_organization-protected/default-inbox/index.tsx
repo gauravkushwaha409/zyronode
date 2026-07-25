@@ -1,4 +1,5 @@
 import { Conversation, ConversationDetails, ConversationList, InboxLayout } from '@/features/default-inbox';
+import { InboxSocketProvider } from '@/features/default-inbox/providers';
 
 interface DefaultInboxPageProps {
   organizationId: string;
@@ -6,10 +7,12 @@ interface DefaultInboxPageProps {
 
 export function DefaultInboxPage({ organizationId }: DefaultInboxPageProps) {
   return (
-    <InboxLayout>
-      <ConversationList organizationId={organizationId} />
-      <Conversation organizationId={organizationId} />
-      <ConversationDetails />
-    </InboxLayout>
+    <InboxSocketProvider organizationId={organizationId}>
+      <InboxLayout>
+        <ConversationList organizationId={organizationId} />
+        <Conversation organizationId={organizationId} />
+        <ConversationDetails />
+      </InboxLayout>
+    </InboxSocketProvider>
   );
 }
