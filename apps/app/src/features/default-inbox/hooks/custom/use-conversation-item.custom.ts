@@ -1,18 +1,26 @@
-import { useCallback, useState } from 'react';
-
-let _conversationValue: string | null = null;
+import { useNavigate, useSearch } from '@tanstack/react-router';
+import { useCallback, useMemo } from 'react';
 
 export function useConversationItem() {
-  const [, setTick] = useState(0);
+  const navigate = useNavigate();
+  const search = useSearch({ strict: false }) as Record<string, unknown>;
 
-  const value = _conversationValue;
+  const value = useMemo(() => {
+    const raw = search.conversation;
+    return typeof raw === 'string' && raw.length > 0 ? raw : null;
+  }, [search.conversation]);
 
   const onChange = useCallback(
     (conversationId: string | null) => {
-      _conversationValue = conversationId;
-      setTick((t) => t + 1);
+      navigate({
+        search: (prev: Record<string, unknown>) => ({
+          ...prev,
+          conversation: conversationId,
+        }),
+        replace: true,
+      } as never);
     },
-    [],
+    [navigate],
   );
 
   return { value, onChange } as const;

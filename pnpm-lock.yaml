@@ -375,6 +375,27 @@ importers:
         specifier: 3.25.3
         version: 3.25.3
 
+  packages/hooks:
+    devDependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.14)
+      react:
+        specifier: ^19.2.6
+        version: 19.2.6
+      react-dom:
+        specifier: ^19.2.6
+        version: 19.2.6(react@19.2.6)
+      typescript:
+        specifier: 6.0.3
+        version: 6.0.3
+
   packages/icons:
     dependencies:
       clsx:
@@ -481,6 +502,9 @@ importers:
       '@lexical/utils':
         specifier: ^0.45.0
         version: 0.45.0
+      '@package/hooks':
+        specifier: workspace:*
+        version: link:../hooks
       '@package/icons':
         specifier: workspace:*
         version: link:../icons

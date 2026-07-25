@@ -1,3 +1,4 @@
+import { useAudioWaveform } from '@package/hooks';
 import { Button, Icon, cn } from '@package/ui';
 import { useCallback, useRef, useState } from 'react';
 import type { Attachment } from '../editor';
@@ -7,19 +8,11 @@ interface VoicePreviewProps {
   onRemove: () => void;
 }
 
-function useSimpleWaveform(): number[] {
-  const bars = 30;
-  return Array.from({ length: bars }, (_, i) => {
-    const x = i / (bars - 1);
-    return 0.2 + 0.6 * Math.sin(x * Math.PI);
-  });
-}
-
 export function VoicePreview({ attachment, onRemove }: VoicePreviewProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const amplitudeHistory = useSimpleWaveform();
+  const amplitudeHistory = useAudioWaveform(attachment.url);
 
   const createAudio = useCallback(() => {
     const audio = new Audio(attachment.url);
