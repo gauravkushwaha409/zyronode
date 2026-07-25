@@ -1,15 +1,20 @@
 import { getConfig } from "@/config";
 import { createApiClient } from "@package/api-client";
 
-export const apiClient = createApiClient(getConfig().serverUrl + "/v1");
+let _apiClient: ReturnType<typeof createApiClient> | null = null;
 
-apiClient.interceptors.request.use((config) => {
-  return config;
-});
-
-apiClient.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    return Promise.reject(error);
-  },
-);
+export function getApiClient() {
+  if (!_apiClient) {
+    _apiClient = createApiClient(getConfig().serverUrl + "/v1");
+    _apiClient.interceptors.request.use((config) => {
+      return config;
+    });
+    _apiClient.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        return Promise.reject(error);
+      },
+    );
+  }
+  return _apiClient;
+}

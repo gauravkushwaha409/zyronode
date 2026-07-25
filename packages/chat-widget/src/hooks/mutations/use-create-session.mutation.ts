@@ -1,5 +1,5 @@
 import { useMutation } from "@package/query";
-import { widgetApi } from "../../services/widget-api.service";
+import { getWidgetApi } from "../../services/widget-api.service";
 import type {
   CreateSessionAxiosResponse,
   CreateSessionError,
@@ -11,5 +11,5 @@ export function useCreateSessionMutation() {
     CreateSessionAxiosResponse,
     CreateSessionError,
     CreateSessionPayload
-  >((payload: CreateSessionPayload) => widgetApi.createSession(payload));
+  >((payload: CreateSessionPayload) => getWidgetApi().createSession(payload));
 }

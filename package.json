@@ -6,6 +6,7 @@
     "dev": "turbo dev",
     "dev:app": "turbo dev --filter app",
     "dev:server": "turbo dev --filter server",
+    "dev:chat-widget": "turbo dev --filter chat-widget-test",
     "build": "turbo build",
     "check-types": "turbo run check-types",
     "lint": "biome lint .",

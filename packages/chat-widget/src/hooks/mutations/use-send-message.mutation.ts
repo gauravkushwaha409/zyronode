@@ -1,5 +1,5 @@
 import { useMutation } from "@package/query";
-import { widgetApi } from "../../services/widget-api.service";
+import { getWidgetApi } from "../../services/widget-api.service";
 import type {
   SendMessageAxiosResponse,
   SendMessageError,
@@ -11,5 +11,5 @@ export function useSendMessageMutation(sessionId: string) {
     SendMessageAxiosResponse,
     SendMessageError,
     SendMessagePayload
-  >((payload: SendMessagePayload) => widgetApi.sendVisitorMessage(sessionId, payload));
+  >((payload: SendMessagePayload) => getWidgetApi().sendVisitorMessage(sessionId, payload));
 }

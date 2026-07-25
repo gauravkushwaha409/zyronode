@@ -10,7 +10,7 @@ import type {
   SendMessagePayload,
   ChatMessage,
 } from "../types";
-import { apiClient } from "./api-client";
+import { getApiClient } from "./api-client";
 
 export class WidgetApiService extends BaseAPIService {
   async createSession(payload: CreateSessionPayload) {
@@ -34,4 +34,11 @@ export class WidgetApiService extends BaseAPIService {
   }
 }
 
-export const widgetApi = new WidgetApiService(apiClient as never);
+let _widgetApi: WidgetApiService | null = null;
+
+export function getWidgetApi() {
+  if (!_widgetApi) {
+    _widgetApi = new WidgetApiService(getApiClient());
+  }
+  return _widgetApi;
+}
