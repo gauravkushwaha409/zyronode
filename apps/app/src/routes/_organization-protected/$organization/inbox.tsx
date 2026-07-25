@@ -1,9 +1,12 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router';
+import { DefaultInboxPage } from '@/pages/_organization-protected/default-inbox';
+import { defaultInboxSearchSchema } from '@/features/default-inbox/schemas';
 
 export const Route = createFileRoute('/_organization-protected/$organization/inbox')({
   component: RouteComponent,
-})
+  validateSearch: defaultInboxSearchSchema,
+});
 
 function RouteComponent() {
-  return <div>Hello "/_organization-protected/$organization/inbox"!</div>
+  return <DefaultInboxPage />;
 }

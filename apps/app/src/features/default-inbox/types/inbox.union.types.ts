@@ -1,0 +1,9 @@
+export type ConversationStatus = 'open' | 'closed' | 'pending';
+export type ConversationPriority = 'low' | 'medium' | 'high';
+export type ConversationChannel = 'web' | 'mobile' | 'email' | 'whatsapp' | 'messenger';
+export type AIStatus = 'waiting' | 'processing' | 'completed' | 'failed';
+export type MessageSenderType = 'visitor' | 'agent' | 'system';
+export type MessageType = 'text' | 'file' | 'audio' | 'internal_note';
+export type SenderType = 'visitor' | 'agent' | 'system' | 'bot';
+export type MessageDeliveryStatus = 'sent' | 'delivered' | 'read' | 'deleted';
+export type AttachmentMimeType = 'image/jpeg' | 'image/png' | 'application/pdf' | 'audio/mpeg' | 'video/mp4';
