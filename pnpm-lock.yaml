@@ -240,6 +240,58 @@ importers:
         specifier: 5.9.2
         version: 5.9.2
 
+  packages/chat-widget:
+    dependencies:
+      '@package/api-client':
+        specifier: workspace:*
+        version: link:../api-client
+      '@package/icons':
+        specifier: workspace:*
+        version: link:../icons
+      '@package/query':
+        specifier: workspace:*
+        version: link:../query
+      '@package/sse':
+        specifier: workspace:*
+        version: link:../sse
+      '@package/ui':
+        specifier: workspace:*
+        version: link:../ui
+      '@package/websocket':
+        specifier: workspace:*
+        version: link:../websocket
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
+      tailwind-merge:
+        specifier: ^3.5.0
+        version: 3.6.0
+      zustand:
+        specifier: ^5.0.14
+        version: 5.0.14(@types/react@19.2.14)(react@19.2.6)(use-sync-external-store@1.6.0(react@19.2.6))
+    devDependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/react':
+        specifier: ^19.2.2
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.2.2
+        version: 19.2.3(@types/react@19.2.14)
+      react:
+        specifier: ^19.2.6
+        version: 19.2.6
+      react-dom:
+        specifier: ^19.2.6
+        version: 19.2.6(react@19.2.6)
+      typescript:
+        specifier: 6.0.3
+        version: 6.0.3
+      vite:
+        specifier: ^8.0.16
+        version: 8.0.16(@types/node@25.9.1)(jiti@2.7.0)(terser@5.48.0)
+
   packages/form:
     dependencies:
       '@hookform/resolvers':

@@ -1,0 +1,36 @@
+{
+  "name": "@package/chat-widget",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "check-types": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "dependencies": {
+    "@package/api-client": "workspace:*",
+    "@package/icons": "workspace:*",
+    "@package/query": "workspace:*",
+    "@package/sse": "workspace:*",
+    "@package/ui": "workspace:*",
+    "@package/websocket": "workspace:*",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.5.0",
+    "zustand": "^5.0.14"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "typescript": "6.0.3",
+    "vite": "^8.0.16"
+  }
+}

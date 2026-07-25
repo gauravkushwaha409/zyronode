@@ -22,7 +22,8 @@
       "@package/api-client": ["../api-client/src/index.ts"],
       "@package/icons": ["../icons/src/index.ts"],
       "@package/websocket": ["../websocket/src/index.ts"],
-      "@package/sse": ["../sse/src/index.ts"]
+      "@package/sse": ["../sse/src/index.ts"],
+      "@package/chat-widget": ["../chat-widget/src/index.ts"]
     }
   }
 }
