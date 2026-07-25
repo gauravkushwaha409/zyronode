@@ -20,7 +20,9 @@
       "@package/form": ["../form/src/index.ts"],
       "@package/query": ["../query/src/index.ts"],
       "@package/api-client": ["../api-client/src/index.ts"],
-      "@package/icons": ["../icons/src/index.ts"]
+      "@package/icons": ["../icons/src/index.ts"],
+      "@package/websocket": ["../websocket/src/index.ts"],
+      "@package/sse": ["../sse/src/index.ts"]
     }
   }
 }
