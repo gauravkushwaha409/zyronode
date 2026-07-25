@@ -30,7 +30,7 @@ interface TypingPayload {
 
 @WebSocketGateway({
   cors: {
-    origin: ["http://localhost:3000"],
+    origin: ["http://localhost:3000", "http://localhost:4000"],
     credentials: true,
   },
 })

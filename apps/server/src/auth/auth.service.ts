@@ -103,7 +103,7 @@ export class AuthService {
 	}
 
 	async login(dto: LoginDto, response: Response) {
-		const isValidUser = await this.verifyTurnstileToken(dto.turnstile);
+		const isValidUser = await this.verifyTurnstileToken(dto.captcha_token);
 
 		if (!isValidUser) {
 			throw new UnauthorizedException("Turnstile verification failed");

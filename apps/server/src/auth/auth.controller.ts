@@ -17,12 +17,12 @@ import { EmailVerifiedGuard } from "../common/gaurds/email-verified.guard";
 import { JwtAuthGuard } from "../common/gaurds/jwt-auth.guard";
 import { OnboardingGuard } from "../common/gaurds/onboarding.guard";
 import { AuthService } from "./auth.service";
-import type { ForgotPasswordDto } from "./dto/forgot-password.dto";
-import type { LoginDto } from "./dto/login.dto";
-import type { RegisterDto } from "./dto/register.dto";
-import type { SetPasswordDto } from "./dto/set-password.dto";
-import type { UserOnboardingDto } from "./dto/user-onboarding.dto";
-import type { VerifyEmailDto } from "./dto/verify-email.dto";
+import { ForgotPasswordDto } from "./dto/forgot-password.dto";
+import { LoginDto } from "./dto/login.dto";
+import { RegisterDto } from "./dto/register.dto";
+import { SetPasswordDto } from "./dto/set-password.dto";
+import { UserOnboardingDto } from "./dto/user-onboarding.dto";
+import { VerifyEmailDto } from "./dto/verify-email.dto";
 
 @Controller("auth")
 export class AuthController {
