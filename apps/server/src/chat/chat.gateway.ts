@@ -5,11 +5,13 @@ import {
   MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
+  OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
+import { EventBridge } from "../common/services/event-bridge.service";
 import { MessageService } from "../message/message.service";
 import { SessionService } from "../session/session.service";
 
@@ -34,7 +36,7 @@ interface TypingPayload {
     credentials: true,
   },
 })
-export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server!: Server;
 
@@ -44,7 +46,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private readonly jwtService: JwtService,
     private readonly messageService: MessageService,
     private readonly sessionService: SessionService,
+    private readonly eventBridge: EventBridge,
   ) {}
+
+  afterInit() {
+    this.eventBridge.setServer(this.server);
+  }
 
   async handleConnection(client: Socket) {
     try {

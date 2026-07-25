@@ -10,9 +10,11 @@ import { SessionModule } from './session/session.module';
 import { MessageModule } from './message/message.module';
 import { ChatModule } from './chat/chat.module';
 import { InboxModule } from './inbox/inbox.module';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
+    CommonModule,
     PrismaModule,
     RedisModule,
     AuthModule,

@@ -1,5 +1,4 @@
 import { createQueryClient, TanstackQueryProvider } from "@package/query";
-import { SseProvider } from "@package/sse";
 import { WebSocketProvider } from "@package/websocket";
 import { type ReactNode, useEffect, useState } from "react";
 import { getConfig } from "./config";
@@ -64,16 +63,7 @@ function WidgetInner({
 			}}
 			auth={{ sessionId }}
 		>
-			<SseProvider
-				options={{
-					url: `${config.websocketUrl}/events/session/${sessionId}`,
-					withCredentials: false,
-					retry: 5000,
-					maxRetries: 10,
-				}}
-			>
-				{children}
-			</SseProvider>
+			{children}
 		</WebSocketProvider>
 	);
 }

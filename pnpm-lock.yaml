@@ -99,6 +99,9 @@ importers:
       '@package/chat-widget':
         specifier: workspace:*
         version: link:../../packages/chat-widget
+      '@package/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       react:
         specifier: ^19.2.6
         version: 19.2.6

@@ -9,30 +9,62 @@ import {
 } from "@nestjs/common";
 import { JwtAuthGuard } from "../common/gaurds/jwt-auth.guard";
 import { CurrentUser } from "../common/decorator/current-user.decorator";
+import { EventBridge } from "../common/services/event-bridge.service";
+import { PrismaService } from "../prisma/prisma.service";
 import { SendMessageDto } from "./dto/send-message.dto";
 import { ListMessagesDto } from "./dto/list-messages.dto";
 import { MessageService } from "./message.service";
 
 @Controller("sessions/:sessionId/messages")
 export class MessageController {
-  constructor(private readonly messageService: MessageService) {}
+  constructor(
+    private readonly messageService: MessageService,
+    private readonly eventBridge: EventBridge,
+    private readonly prisma: PrismaService,
+  ) {}
+
+  private async broadcastMessage(sessionId: string, message: unknown) {
+    const data = { session: { id: sessionId }, message };
+    this.eventBridge.emitToSession(sessionId, "message:new", data);
+
+    const session = await this.prisma.session.findUnique({
+      where: { id: sessionId },
+      select: { organizationId: true },
+    });
+    if (session?.organizationId) {
+      this.eventBridge.emitToOrg(session.organizationId, "message:new", data);
+    }
+  }
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  sendAsAgent(
+  async sendAsAgent(
     @Param("sessionId") sessionId: string,
     @Body() dto: SendMessageDto,
     @CurrentUser("id") userId: string,
   ) {
-    return this.messageService.create(sessionId, dto, "AGENT", userId);
+    const result = await this.messageService.create(
+      sessionId,
+      dto,
+      "AGENT",
+      userId,
+    );
+    await this.broadcastMessage(sessionId, result.data);
+    return result;
   }
 
   @Post("visitor")
-  sendAsVisitor(
+  async sendAsVisitor(
     @Param("sessionId") sessionId: string,
     @Body() dto: SendMessageDto,
   ) {
-    return this.messageService.create(sessionId, dto, "VISITOR");
+    const result = await this.messageService.create(
+      sessionId,
+      dto,
+      "VISITOR",
+    );
+    await this.broadcastMessage(sessionId, result.data);
+    return result;
   }
 
   @Get()

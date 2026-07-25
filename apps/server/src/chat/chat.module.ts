@@ -13,5 +13,6 @@ import { MessageModule } from "../message/message.module";
     MessageModule,
   ],
   providers: [ChatGateway],
+  exports: [ChatGateway],
 })
 export class ChatModule {}
