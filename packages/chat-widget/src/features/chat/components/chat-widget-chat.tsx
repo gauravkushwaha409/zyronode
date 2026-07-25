@@ -1,7 +1,9 @@
+import { useQueryClient } from "@package/query";
 import { Button } from "@package/ui";
 import { useEffect, useRef, useState } from "react";
 import { useGetMessagesQuery, useSendMessageMutation } from "@/hooks";
-import { useTypingIndicator } from "@/hooks/events";
+import { useOnMessageNew, useTypingIndicator } from "@/hooks/events";
+import { WIDGET_QUERY_KEYS } from "@/hooks/query-keys";
 import { useChatWidgetStore } from "@/store";
 import type { ChatMessage } from "@/types";
 
@@ -12,6 +14,7 @@ interface ChatWidgetChatProps {
 export default function ChatWidgetChat({ sessionId }: ChatWidgetChatProps) {
   const [content, setContent] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
+  const queryClient = useQueryClient();
 
   const { data: messagesData, isLoading } = useGetMessagesQuery(
     sessionId ?? undefined,
@@ -22,6 +25,13 @@ export default function ChatWidgetChat({ sessionId }: ChatWidgetChatProps) {
 
   const { startTyping, stopTyping, isAgentTyping } = useTypingIndicator({
     sessionId,
+  });
+
+  useOnMessageNew(sessionId ?? "", () => {
+    if (!sessionId) return;
+    queryClient.invalidateQueries({
+      queryKey: WIDGET_QUERY_KEYS.MESSAGES(sessionId),
+    });
   });
 
   const messages = messagesData?.data?.data?.messages ?? [];
