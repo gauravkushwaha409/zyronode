@@ -1,4 +1,5 @@
 import "dotenv/config";
+import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import cookieParser from "cookie-parser";
 import { AppModule } from "./app.module";
@@ -18,6 +19,9 @@ async function bootstrap() {
 
 	app.useGlobalInterceptors(new ResponseInterceptor());
 	app.useGlobalFilters(new HttpExceptionFilter());
+	app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
+
+	app.setGlobalPrefix("v1");
 
 	await app.listen(8000, "0.0.0.0");
 }

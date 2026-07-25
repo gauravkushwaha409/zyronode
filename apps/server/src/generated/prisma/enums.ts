@@ -27,3 +27,40 @@ export const VisitorStatus = {
 } as const
 
 export type VisitorStatus = (typeof VisitorStatus)[keyof typeof VisitorStatus]
+
+
+export const SessionStatus = {
+  ACTIVE: 'ACTIVE',
+  IDLE: 'IDLE',
+  CLOSED: 'CLOSED',
+  PENDING: 'PENDING'
+} as const
+
+export type SessionStatus = (typeof SessionStatus)[keyof typeof SessionStatus]
+
+
+export const MessageSenderType = {
+  VISITOR: 'VISITOR',
+  AGENT: 'AGENT',
+  SYSTEM: 'SYSTEM'
+} as const
+
+export type MessageSenderType = (typeof MessageSenderType)[keyof typeof MessageSenderType]
+
+
+export const MessageType = {
+  TEXT: 'TEXT',
+  FILE: 'FILE',
+  INTERNAL_NOTE: 'INTERNAL_NOTE'
+} as const
+
+export type MessageType = (typeof MessageType)[keyof typeof MessageType]
+
+
+export const MessageDeliveryStatus = {
+  SENT: 'SENT',
+  DELIVERED: 'DELIVERED',
+  READ: 'READ'
+} as const
+
+export type MessageDeliveryStatus = (typeof MessageDeliveryStatus)[keyof typeof MessageDeliveryStatus]

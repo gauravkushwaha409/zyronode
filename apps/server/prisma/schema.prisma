@@ -42,6 +42,7 @@ model Organization {
   isActive Boolean              @default(true)
   visitors Visitor[]
   members  OrganizationMember[]
+  sessions Session[]
 
   // back-relation for lastOrg
   lastOrgUsers User[] @relation("UserLastOrg")
@@ -105,4 +106,82 @@ enum VisitorStatus {
   REVIEWED // sales rep has seen them
   CONVERTED // became a lead
   IGNORED // not a fit, dismissed
+}
+
+enum SessionStatus {
+  ACTIVE
+  IDLE
+  CLOSED
+  PENDING
+}
+
+enum MessageSenderType {
+  VISITOR
+  AGENT
+  SYSTEM
+}
+
+enum MessageType {
+  TEXT
+  FILE
+  INTERNAL_NOTE
+}
+
+enum MessageDeliveryStatus {
+  SENT
+  DELIVERED
+  READ
+}
+
+model Session {
+  id             String        @id @default(cuid())
+  organizationId String
+  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  status         SessionStatus @default(ACTIVE)
+  channel        String        @default("web")
+  visitorName    String?
+  visitorEmail   String?
+  visitorPhone   String?
+  ipAddress      String?
+  userAgent      String?
+  sourceUrl      String?
+  metadata       Json?
+
+  messages       Message[]
+
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+
+  @@index([organizationId])
+  @@index([organizationId, status])
+  @@index([organizationId, updatedAt(sort: Desc)])
+  @@map("sessions")
+}
+
+model Message {
+  id             String                @id @default(cuid())
+  sessionId      String
+  session        Session               @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  senderType     MessageSenderType
+  senderId       String?
+  messageType    MessageType           @default(TEXT)
+  content        String
+
+  replyToId      String?
+  replyTo        Message?              @relation("MessageReplies", fields: [replyToId], references: [id])
+  replies        Message[]             @relation("MessageReplies")
+
+  status         MessageDeliveryStatus @default(SENT)
+  isEdited       Boolean               @default(false)
+  editedAt       DateTime?
+
+  createdAt      DateTime              @default(now()) @map("created_at")
+  updatedAt      DateTime              @updatedAt @map("updated_at")
+
+  @@index([sessionId])
+  @@index([sessionId, createdAt(sort: Desc)])
+  @@index([senderId])
+  @@map("messages")
 }

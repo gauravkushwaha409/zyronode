@@ -6,6 +6,10 @@ import { AuthModule } from './auth/auth.module';
 import { OrganizationModule } from './organization/organization.module';
 import { OtpModule } from './otp/otp.module';
 import { RedisModule } from './redis/redis.module';
+import { SessionModule } from './session/session.module';
+import { MessageModule } from './message/message.module';
+import { ChatModule } from './chat/chat.module';
+import { InboxModule } from './inbox/inbox.module';
 
 @Module({
   imports: [
@@ -14,6 +18,10 @@ import { RedisModule } from './redis/redis.module';
     AuthModule,
     OrganizationModule,
     OtpModule,
+    SessionModule,
+    MessageModule,
+    ChatModule,
+    InboxModule,
   ],
   controllers: [AppController],
   providers: [AppService],

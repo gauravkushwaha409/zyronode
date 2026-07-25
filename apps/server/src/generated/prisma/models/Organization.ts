@@ -216,6 +216,7 @@ export type OrganizationWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Organization"> | Date | string
   visitors?: Prisma.VisitorListRelationFilter
   members?: Prisma.OrganizationMemberListRelationFilter
+  sessions?: Prisma.SessionListRelationFilter
   lastOrgUsers?: Prisma.UserListRelationFilter
 }
 
@@ -231,6 +232,7 @@ export type OrganizationOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   visitors?: Prisma.VisitorOrderByRelationAggregateInput
   members?: Prisma.OrganizationMemberOrderByRelationAggregateInput
+  sessions?: Prisma.SessionOrderByRelationAggregateInput
   lastOrgUsers?: Prisma.UserOrderByRelationAggregateInput
 }
 
@@ -249,6 +251,7 @@ export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Organization"> | Date | string
   visitors?: Prisma.VisitorListRelationFilter
   members?: Prisma.OrganizationMemberListRelationFilter
+  sessions?: Prisma.SessionListRelationFilter
   lastOrgUsers?: Prisma.UserListRelationFilter
 }, "id">
 
@@ -294,6 +297,7 @@ export type OrganizationCreateInput = {
   updatedAt?: Date | string
   visitors?: Prisma.VisitorCreateNestedManyWithoutOrganizationInput
   members?: Prisma.OrganizationMemberCreateNestedManyWithoutOrganizationInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutOrganizationInput
   lastOrgUsers?: Prisma.UserCreateNestedManyWithoutLastOrgInput
 }
 
@@ -309,6 +313,7 @@ export type OrganizationUncheckedCreateInput = {
   updatedAt?: Date | string
   visitors?: Prisma.VisitorUncheckedCreateNestedManyWithoutOrganizationInput
   members?: Prisma.OrganizationMemberUncheckedCreateNestedManyWithoutOrganizationInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutOrganizationInput
   lastOrgUsers?: Prisma.UserUncheckedCreateNestedManyWithoutLastOrgInput
 }
 
@@ -324,6 +329,7 @@ export type OrganizationUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   visitors?: Prisma.VisitorUpdateManyWithoutOrganizationNestedInput
   members?: Prisma.OrganizationMemberUpdateManyWithoutOrganizationNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutOrganizationNestedInput
   lastOrgUsers?: Prisma.UserUpdateManyWithoutLastOrgNestedInput
 }
 
@@ -339,6 +345,7 @@ export type OrganizationUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   visitors?: Prisma.VisitorUncheckedUpdateManyWithoutOrganizationNestedInput
   members?: Prisma.OrganizationMemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutOrganizationNestedInput
   lastOrgUsers?: Prisma.UserUncheckedUpdateManyWithoutLastOrgNestedInput
 }
 
@@ -472,6 +479,20 @@ export type OrganizationUpdateOneRequiredWithoutVisitorsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutVisitorsInput, Prisma.OrganizationUpdateWithoutVisitorsInput>, Prisma.OrganizationUncheckedUpdateWithoutVisitorsInput>
 }
 
+export type OrganizationCreateNestedOneWithoutSessionsInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutSessionsInput, Prisma.OrganizationUncheckedCreateWithoutSessionsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutSessionsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutSessionsNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutSessionsInput, Prisma.OrganizationUncheckedCreateWithoutSessionsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutSessionsInput
+  upsert?: Prisma.OrganizationUpsertWithoutSessionsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutSessionsInput, Prisma.OrganizationUpdateWithoutSessionsInput>, Prisma.OrganizationUncheckedUpdateWithoutSessionsInput>
+}
+
 export type OrganizationCreateWithoutLastOrgUsersInput = {
   id?: string
   name: string
@@ -484,6 +505,7 @@ export type OrganizationCreateWithoutLastOrgUsersInput = {
   updatedAt?: Date | string
   visitors?: Prisma.VisitorCreateNestedManyWithoutOrganizationInput
   members?: Prisma.OrganizationMemberCreateNestedManyWithoutOrganizationInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutLastOrgUsersInput = {
@@ -498,6 +520,7 @@ export type OrganizationUncheckedCreateWithoutLastOrgUsersInput = {
   updatedAt?: Date | string
   visitors?: Prisma.VisitorUncheckedCreateNestedManyWithoutOrganizationInput
   members?: Prisma.OrganizationMemberUncheckedCreateNestedManyWithoutOrganizationInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutLastOrgUsersInput = {
@@ -528,6 +551,7 @@ export type OrganizationUpdateWithoutLastOrgUsersInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   visitors?: Prisma.VisitorUpdateManyWithoutOrganizationNestedInput
   members?: Prisma.OrganizationMemberUpdateManyWithoutOrganizationNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutLastOrgUsersInput = {
@@ -542,6 +566,7 @@ export type OrganizationUncheckedUpdateWithoutLastOrgUsersInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   visitors?: Prisma.VisitorUncheckedUpdateManyWithoutOrganizationNestedInput
   members?: Prisma.OrganizationMemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutMembersInput = {
@@ -555,6 +580,7 @@ export type OrganizationCreateWithoutMembersInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   visitors?: Prisma.VisitorCreateNestedManyWithoutOrganizationInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutOrganizationInput
   lastOrgUsers?: Prisma.UserCreateNestedManyWithoutLastOrgInput
 }
 
@@ -569,6 +595,7 @@ export type OrganizationUncheckedCreateWithoutMembersInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   visitors?: Prisma.VisitorUncheckedCreateNestedManyWithoutOrganizationInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutOrganizationInput
   lastOrgUsers?: Prisma.UserUncheckedCreateNestedManyWithoutLastOrgInput
 }
 
@@ -599,6 +626,7 @@ export type OrganizationUpdateWithoutMembersInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   visitors?: Prisma.VisitorUpdateManyWithoutOrganizationNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutOrganizationNestedInput
   lastOrgUsers?: Prisma.UserUpdateManyWithoutLastOrgNestedInput
 }
 
@@ -613,6 +641,7 @@ export type OrganizationUncheckedUpdateWithoutMembersInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   visitors?: Prisma.VisitorUncheckedUpdateManyWithoutOrganizationNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutOrganizationNestedInput
   lastOrgUsers?: Prisma.UserUncheckedUpdateManyWithoutLastOrgNestedInput
 }
 
@@ -627,6 +656,7 @@ export type OrganizationCreateWithoutVisitorsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   members?: Prisma.OrganizationMemberCreateNestedManyWithoutOrganizationInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutOrganizationInput
   lastOrgUsers?: Prisma.UserCreateNestedManyWithoutLastOrgInput
 }
 
@@ -641,6 +671,7 @@ export type OrganizationUncheckedCreateWithoutVisitorsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   members?: Prisma.OrganizationMemberUncheckedCreateNestedManyWithoutOrganizationInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutOrganizationInput
   lastOrgUsers?: Prisma.UserUncheckedCreateNestedManyWithoutLastOrgInput
 }
 
@@ -671,6 +702,7 @@ export type OrganizationUpdateWithoutVisitorsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.OrganizationMemberUpdateManyWithoutOrganizationNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutOrganizationNestedInput
   lastOrgUsers?: Prisma.UserUpdateManyWithoutLastOrgNestedInput
 }
 
@@ -685,6 +717,83 @@ export type OrganizationUncheckedUpdateWithoutVisitorsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.OrganizationMemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutOrganizationNestedInput
+  lastOrgUsers?: Prisma.UserUncheckedUpdateManyWithoutLastOrgNestedInput
+}
+
+export type OrganizationCreateWithoutSessionsInput = {
+  id?: string
+  name: string
+  website?: string | null
+  phone?: string | null
+  industry?: string | null
+  plan?: $Enums.PlanType
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  visitors?: Prisma.VisitorCreateNestedManyWithoutOrganizationInput
+  members?: Prisma.OrganizationMemberCreateNestedManyWithoutOrganizationInput
+  lastOrgUsers?: Prisma.UserCreateNestedManyWithoutLastOrgInput
+}
+
+export type OrganizationUncheckedCreateWithoutSessionsInput = {
+  id?: string
+  name: string
+  website?: string | null
+  phone?: string | null
+  industry?: string | null
+  plan?: $Enums.PlanType
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  visitors?: Prisma.VisitorUncheckedCreateNestedManyWithoutOrganizationInput
+  members?: Prisma.OrganizationMemberUncheckedCreateNestedManyWithoutOrganizationInput
+  lastOrgUsers?: Prisma.UserUncheckedCreateNestedManyWithoutLastOrgInput
+}
+
+export type OrganizationCreateOrConnectWithoutSessionsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutSessionsInput, Prisma.OrganizationUncheckedCreateWithoutSessionsInput>
+}
+
+export type OrganizationUpsertWithoutSessionsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutSessionsInput, Prisma.OrganizationUncheckedUpdateWithoutSessionsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutSessionsInput, Prisma.OrganizationUncheckedCreateWithoutSessionsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutSessionsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutSessionsInput, Prisma.OrganizationUncheckedUpdateWithoutSessionsInput>
+}
+
+export type OrganizationUpdateWithoutSessionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  industry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  visitors?: Prisma.VisitorUpdateManyWithoutOrganizationNestedInput
+  members?: Prisma.OrganizationMemberUpdateManyWithoutOrganizationNestedInput
+  lastOrgUsers?: Prisma.UserUpdateManyWithoutLastOrgNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutSessionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  industry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  visitors?: Prisma.VisitorUncheckedUpdateManyWithoutOrganizationNestedInput
+  members?: Prisma.OrganizationMemberUncheckedUpdateManyWithoutOrganizationNestedInput
   lastOrgUsers?: Prisma.UserUncheckedUpdateManyWithoutLastOrgNestedInput
 }
 
@@ -696,12 +805,14 @@ export type OrganizationUncheckedUpdateWithoutVisitorsInput = {
 export type OrganizationCountOutputType = {
   visitors: number
   members: number
+  sessions: number
   lastOrgUsers: number
 }
 
 export type OrganizationCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   visitors?: boolean | OrganizationCountOutputTypeCountVisitorsArgs
   members?: boolean | OrganizationCountOutputTypeCountMembersArgs
+  sessions?: boolean | OrganizationCountOutputTypeCountSessionsArgs
   lastOrgUsers?: boolean | OrganizationCountOutputTypeCountLastOrgUsersArgs
 }
 
@@ -732,6 +843,13 @@ export type OrganizationCountOutputTypeCountMembersArgs<ExtArgs extends runtime.
 /**
  * OrganizationCountOutputType without action
  */
+export type OrganizationCountOutputTypeCountSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SessionWhereInput
+}
+
+/**
+ * OrganizationCountOutputType without action
+ */
 export type OrganizationCountOutputTypeCountLastOrgUsersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.UserWhereInput
 }
@@ -749,6 +867,7 @@ export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   updatedAt?: boolean
   visitors?: boolean | Prisma.Organization$visitorsArgs<ExtArgs>
   members?: boolean | Prisma.Organization$membersArgs<ExtArgs>
+  sessions?: boolean | Prisma.Organization$sessionsArgs<ExtArgs>
   lastOrgUsers?: boolean | Prisma.Organization$lastOrgUsersArgs<ExtArgs>
   _count?: boolean | Prisma.OrganizationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["organization"]>
@@ -793,6 +912,7 @@ export type OrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalAr
 export type OrganizationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   visitors?: boolean | Prisma.Organization$visitorsArgs<ExtArgs>
   members?: boolean | Prisma.Organization$membersArgs<ExtArgs>
+  sessions?: boolean | Prisma.Organization$sessionsArgs<ExtArgs>
   lastOrgUsers?: boolean | Prisma.Organization$lastOrgUsersArgs<ExtArgs>
   _count?: boolean | Prisma.OrganizationCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -804,6 +924,7 @@ export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.Intern
   objects: {
     visitors: Prisma.$VisitorPayload<ExtArgs>[]
     members: Prisma.$OrganizationMemberPayload<ExtArgs>[]
+    sessions: Prisma.$SessionPayload<ExtArgs>[]
     lastOrgUsers: Prisma.$UserPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1212,6 +1333,7 @@ export interface Prisma__OrganizationClient<T, Null = never, ExtArgs extends run
   readonly [Symbol.toStringTag]: "PrismaPromise"
   visitors<T extends Prisma.Organization$visitorsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$visitorsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VisitorPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   members<T extends Prisma.Organization$membersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$membersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrganizationMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  sessions<T extends Prisma.Organization$sessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   lastOrgUsers<T extends Prisma.Organization$lastOrgUsersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$lastOrgUsersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1689,6 +1811,30 @@ export type Organization$membersArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.OrganizationMemberScalarFieldEnum | Prisma.OrganizationMemberScalarFieldEnum[]
+}
+
+/**
+ * Organization.sessions
+ */
+export type Organization$sessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Session
+   */
+  select?: Prisma.SessionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Session
+   */
+  omit?: Prisma.SessionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SessionInclude<ExtArgs> | null
+  where?: Prisma.SessionWhereInput
+  orderBy?: Prisma.SessionOrderByWithRelationInput | Prisma.SessionOrderByWithRelationInput[]
+  cursor?: Prisma.SessionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SessionScalarFieldEnum | Prisma.SessionScalarFieldEnum[]
 }
 
 /**

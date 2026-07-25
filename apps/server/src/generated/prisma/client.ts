@@ -59,3 +59,13 @@ export type OrganizationMember = Prisma.OrganizationMemberModel
  * 
  */
 export type Visitor = Prisma.VisitorModel
+/**
+ * Model Session
+ * 
+ */
+export type Session = Prisma.SessionModel
+/**
+ * Model Message
+ * 
+ */
+export type Message = Prisma.MessageModel
