@@ -8,9 +8,9 @@ export const QUERY_KEY = {
         MY: ['organization', 'my']
     },
     INBOX: {
-        SESSIONS: (organizationId: string, filters?: Record<string, unknown>) =>
-            ['inbox', 'sessions', organizationId, filters] as const,
-        SESSION_DETAIL: (sessionId: string | null, organizationId: string) =>
-            ['inbox', 'session', sessionId, organizationId] as const,
+        CONVERSATIONS: (organizationId: string, filters?: Record<string, unknown>) =>
+            ['inbox', 'conversations', organizationId, filters] as const,
+        CONVERSATION_DETAIL: (conversationId: string | null, organizationId: string) =>
+            ['inbox', 'conversation', conversationId, organizationId] as const,
     },
 }

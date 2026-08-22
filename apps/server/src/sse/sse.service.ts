@@ -44,7 +44,7 @@ export class SseService implements OnModuleDestroy {
 
   /**
    * Publish an event to every connected client whose keys intersect
-   * with the target keys (e.g. ["org:<id>", "session:<id>"]).
+   * with the target keys (e.g. ["org:<id>", "conversation:<id>"]).
    * Fanout goes through Redis pub/sub so it reaches clients
    * connected to any server instance.
    */

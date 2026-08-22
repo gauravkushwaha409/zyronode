@@ -4,7 +4,7 @@ export type { ConnectionStatus };
 
 export interface SseMessage {
   id: string;
-  sessionId: string;
+  conversationId: string;
   senderType: "VISITOR" | "AGENT" | "SYSTEM";
   senderId: string | null;
   messageType: "TEXT" | "FILE" | "INTERNAL_NOTE";
@@ -15,7 +15,7 @@ export interface SseMessage {
 }
 
 export interface SseMessageCreatedEvent {
-  session: { id: string };
+  conversation: { id: string };
   message: SseMessage;
 }
 

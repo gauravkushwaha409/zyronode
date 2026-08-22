@@ -60,10 +60,10 @@ export type OrganizationMember = Prisma.OrganizationMemberModel
  */
 export type Visitor = Prisma.VisitorModel
 /**
- * Model Session
+ * Model Conversation
  * 
  */
-export type Session = Prisma.SessionModel
+export type Conversation = Prisma.ConversationModel
 /**
  * Model Message
  * 

@@ -3,42 +3,42 @@ import { useQueryClient } from "@package/query";
 import { useEvent, useChannel } from "@package/websocket";
 import { CONFIG } from "@/config";
 
-interface SessionSocketEventsProps {
-  sessionId: string;
+interface ConversationSocketEventsProps {
+  conversationId: string;
   organizationId: string;
 }
 
 interface MessageNewEvent {
-  session: { id: string };
+  conversation: { id: string };
   message: { id: string; senderType: string };
 }
 
 interface TypingUpdateEvent {
-  sessionId: string;
+  conversationId: string;
   isTyping: boolean;
   senderType: string;
 }
 
-export function SessionSocketEvents({ sessionId, organizationId }: SessionSocketEventsProps) {
+export function ConversationSocketEvents({ conversationId, organizationId }: ConversationSocketEventsProps) {
   const queryClient = useQueryClient();
   const [visitorTyping, setVisitorTyping] = useState(false);
 
-  useChannel("session:join", { sessionId });
+  useChannel("conversation:join", { conversationId });
 
   useEvent<MessageNewEvent>(
     "message:new",
     useCallback(
       (data) => {
-        if (data.session.id === sessionId) {
+        if (data.conversation.id === conversationId) {
           queryClient.invalidateQueries({
-            queryKey: CONFIG.QUERY_KEY.INBOX.SESSION_DETAIL(sessionId, organizationId),
+            queryKey: CONFIG.QUERY_KEY.INBOX.CONVERSATION_DETAIL(conversationId, organizationId),
           });
         }
         queryClient.invalidateQueries({
-          queryKey: CONFIG.QUERY_KEY.INBOX.SESSIONS(organizationId),
+          queryKey: CONFIG.QUERY_KEY.INBOX.CONVERSATIONS(organizationId),
         });
       },
-      [queryClient, sessionId, organizationId],
+      [queryClient, conversationId, organizationId],
     ),
   );
 
@@ -46,11 +46,11 @@ export function SessionSocketEvents({ sessionId, organizationId }: SessionSocket
     "typing:update",
     useCallback(
       (data) => {
-        if (data.sessionId === sessionId && data.senderType === "VISITOR") {
+        if (data.conversationId === conversationId && data.senderType === "VISITOR") {
           setVisitorTyping(data.isTyping);
         }
       },
-      [sessionId],
+      [conversationId],
     ),
   );
 

@@ -5,7 +5,7 @@ export type MessageType = "TEXT" | "FILE" | "INTERNAL_NOTE";
 
 export interface ChatMessage {
   id: string;
-  sessionId: string;
+  conversationId: string;
   senderType: MessageSenderType;
   senderId: string | null;
   messageType: MessageType;

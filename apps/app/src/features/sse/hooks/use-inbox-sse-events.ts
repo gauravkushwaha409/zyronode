@@ -22,13 +22,13 @@ export function useInboxSseEvents({
 		useCallback(
 			(data) => {
 				void queryClient.invalidateQueries({
-					queryKey: CONFIG.QUERY_KEY.INBOX.SESSION_DETAIL(
-						data.session.id,
+					queryKey: CONFIG.QUERY_KEY.INBOX.CONVERSATION_DETAIL(
+						data.conversation.id,
 						organizationId,
 					),
 				});
 				void queryClient.invalidateQueries({
-					queryKey: CONFIG.QUERY_KEY.INBOX.SESSIONS(organizationId),
+					queryKey: CONFIG.QUERY_KEY.INBOX.CONVERSATIONS(organizationId),
 				});
 			},
 			[queryClient, organizationId],

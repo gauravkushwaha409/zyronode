@@ -2,14 +2,14 @@ import { type AxiosRequestConfig, BaseAPIService } from "@package/api-client";
 import { CONFIG } from "@/config";
 import { apiClient } from "@/lib";
 import type {
-  InboxSessionsData,
-  InboxSessionDetail,
+  InboxConversationsData,
+  InboxConversationDetail,
   InboxSendAgentMessagePayload,
   InboxMessage,
 } from "../types/inbox-api.types";
 
 class InboxApiService extends BaseAPIService {
-  async getSessions(
+  async getConversations(
     organizationId: string,
     filters?: {
       status?: string;
@@ -19,8 +19,8 @@ class InboxApiService extends BaseAPIService {
     },
     axiosConfiguration?: AxiosRequestConfig,
   ) {
-    return super.get<InboxSessionsData>(
-      CONFIG.ENDPOINTS.INBOX.SESSIONS,
+    return super.get<InboxConversationsData>(
+      CONFIG.ENDPOINTS.INBOX.CONVERSATIONS,
       {
         params: {
           organizationId,
@@ -31,13 +31,13 @@ class InboxApiService extends BaseAPIService {
     );
   }
 
-  async getSessionDetail(
-    sessionId: string,
+  async getConversationDetail(
+    conversationId: string,
     organizationId: string,
     axiosConfiguration?: AxiosRequestConfig,
   ) {
-    return super.get<InboxSessionDetail>(
-      `${CONFIG.ENDPOINTS.INBOX.SESSION}/${sessionId}`,
+    return super.get<InboxConversationDetail>(
+      `${CONFIG.ENDPOINTS.INBOX.CONVERSATION}/${conversationId}`,
       {
         params: { organizationId },
         ...axiosConfiguration,
@@ -46,47 +46,47 @@ class InboxApiService extends BaseAPIService {
   }
 
   async sendAgentMessage(
-    sessionId: string,
+    conversationId: string,
     payload: InboxSendAgentMessagePayload,
     axiosConfiguration?: AxiosRequestConfig,
   ) {
     return super.post<InboxMessage>(
-      `${CONFIG.ENDPOINTS.INBOX.SEND_MESSAGE}/${sessionId}/messages`,
+      `${CONFIG.ENDPOINTS.INBOX.SEND_MESSAGE}/${conversationId}/messages`,
       payload,
       axiosConfiguration,
     );
   }
 
-  async closeSession(
-    sessionId: string,
+  async closeConversation(
+    conversationId: string,
     organizationId: string,
     axiosConfiguration?: AxiosRequestConfig,
   ) {
     return super.post<{ id: string; status: string }>(
-      `${CONFIG.ENDPOINTS.INBOX.SESSION}/${sessionId}/close`,
+      `${CONFIG.ENDPOINTS.INBOX.CONVERSATION}/${conversationId}/close`,
       { organizationId },
       axiosConfiguration,
     );
   }
 
-  async reopenSession(
-    sessionId: string,
+  async reopenConversation(
+    conversationId: string,
     organizationId: string,
     axiosConfiguration?: AxiosRequestConfig,
   ) {
     return super.post<{ id: string; status: string }>(
-      `${CONFIG.ENDPOINTS.INBOX.SESSION}/${sessionId}/reopen`,
+      `${CONFIG.ENDPOINTS.INBOX.CONVERSATION}/${conversationId}/reopen`,
       { organizationId },
       axiosConfiguration,
     );
   }
 
   async markAsRead(
-    sessionId: string,
+    conversationId: string,
     axiosConfiguration?: AxiosRequestConfig,
   ) {
     return super.post<{ message: string }>(
-      `${CONFIG.ENDPOINTS.INBOX.MARK_READ}/${sessionId}/messages/read`,
+      `${CONFIG.ENDPOINTS.INBOX.MARK_READ}/${conversationId}/messages/read`,
       undefined,
       axiosConfiguration,
     );

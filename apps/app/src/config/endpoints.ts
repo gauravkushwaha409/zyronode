@@ -16,9 +16,9 @@ export const ENDPOINTS = {
         GET_MY: '/organization/my',
     },
     INBOX: {
-        SESSIONS: '/inbox/sessions',
-        SESSION: '/inbox/sessions',
-        SEND_MESSAGE: '/sessions',
-        MARK_READ: '/sessions',
+        CONVERSATIONS: '/inbox/conversations',
+        CONVERSATION: '/inbox/conversations',
+        SEND_MESSAGE: '/conversations',
+        MARK_READ: '/conversations',
     },
 }

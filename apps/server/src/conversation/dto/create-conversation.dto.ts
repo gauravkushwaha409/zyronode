@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsOptional, IsString } from "class-validator";
 
-export class CreateSessionDto {
+export class CreateConversationDto {
   @IsString()
   @IsNotEmpty()
   organizationId!: string;
@@ -21,7 +21,6 @@ export class CreateSessionDto {
   @IsOptional()
   visitorPhone?: string;
 
-  @IsString()
   @IsOptional()
   channel?: string;
 

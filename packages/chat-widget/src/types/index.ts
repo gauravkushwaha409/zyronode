@@ -1,10 +1,11 @@
-export type { ChatWidgetTab, ChatWidgetTabConfig } from "./chat-widget-tabs.types";
+import type { APIError, ApiResponse } from "@package/api-client";
+
+export type { ConversationData } from "./conversation.types";
 export type {
-  CreateSessionPayload,
-  SessionData,
-  CreateSessionAxiosResponse,
-  CreateSessionError,
-} from "./session.types";
+  CreateConversationPayload,
+  CreateConversationAxiosResponse,
+  CreateConversationError,
+} from "./conversation.types";
 export type {
   ChatMessage,
   MessageSenderType,

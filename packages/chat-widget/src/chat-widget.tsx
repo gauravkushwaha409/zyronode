@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ChatWidgetProvider } from "./chat-widget-provider";
 import { ChatWidgetChat, WidgetHeader, WidgetToggle } from "./features";
-import { getSessionId } from "./lib/storage";
+import { getConversationId } from "./lib/storage";
 import { useChatWidgetStore } from "./store";
 
 interface ChatWidgetProps {
@@ -18,7 +18,7 @@ export default function ChatWidget({
 	const [isWidgetOpen, setWidgetOpen] = useState(false);
 	const { activeTab } = useChatWidgetStore();
 
-	const sessionId = getSessionId();
+	const conversationId = getConversationId();
 
 	return (
 		<ChatWidgetProvider
@@ -31,7 +31,9 @@ export default function ChatWidget({
 					<section className="h-full flex flex-col">
 						<WidgetHeader onClose={() => setWidgetOpen(false)} />
 						<section className="flex-1 flex flex-col overflow-hidden">
-							{activeTab === "chat" && <ChatWidgetChat sessionId={sessionId} />}
+							{activeTab === "chat" && (
+								<ChatWidgetChat conversationId={conversationId} />
+							)}
 							<p className="py-3 text-gray-500 text-xs text-center">
 								Powered by <span className="font-semibold text-blue-600">ChatApp</span>
 							</p>

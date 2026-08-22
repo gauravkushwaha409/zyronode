@@ -7,12 +7,14 @@ import type {
   SendMessagePayload,
 } from "../../types";
 
-export function useSendMessageMutation(sessionId: string) {
+export function useSendMessageMutation(conversationId: string) {
   return useMutation<
     SendMessageAxiosResponse,
     SendMessageError,
     SendMessagePayload
-  >((payload: SendMessagePayload) => getWidgetApi().sendVisitorMessage(sessionId, payload), {
-    invalidateKeys: [WIDGET_QUERY_KEYS.MESSAGES(sessionId)],
+  >((
+    payload: SendMessagePayload,
+  ) => getWidgetApi().sendVisitorMessage(conversationId, payload), {
+    invalidateKeys: [WIDGET_QUERY_KEYS.MESSAGES(conversationId)],
   });
 }

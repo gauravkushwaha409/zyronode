@@ -2,8 +2,8 @@ import { createQueryClient, TanstackQueryProvider } from "@package/query";
 import { WebSocketProvider } from "@package/websocket";
 import { type ReactNode, useEffect, useState } from "react";
 import { getConfig } from "./config";
-import { useCreateSessionMutation } from "./hooks";
-import { getSessionId, setSessionId } from "./lib/storage";
+import { useCreateConversationMutation } from "./hooks";
+import { getConversationId, setConversationId } from "./lib/storage";
 
 const queryClient = createQueryClient();
 
@@ -22,13 +22,15 @@ function WidgetInner({
 	const config = getConfig();
 	const orgId = organizationId ?? config.organizationId;
 
-	const [sessionId, setSessionIdState] = useState<string | null>(getSessionId);
+	const [conversationId, setConversationIdState] = useState<string | null>(
+		getConversationId,
+	);
 
-	const { mutate: createSession } = useCreateSessionMutation();
+	const { mutate: createConversation } = useCreateConversationMutation();
 
 	useEffect(() => {
-		if (sessionId) return;
-		createSession(
+		if (conversationId) return;
+		createConversation(
 			{
 				organizationId: orgId,
 				sourceUrl: page ?? window.location.href,
@@ -38,18 +40,18 @@ function WidgetInner({
 				onSuccess: (res: { data?: { data?: { id?: string } } }) => {
 					const id = res.data?.data?.id;
 					if (id) {
-						setSessionId(id);
-						setSessionIdState(id);
+						setConversationId(id);
+						setConversationIdState(id);
 					}
 				},
 				onError: (err: unknown) => {
-					console.error("[chat-widget] Session creation failed:", err);
+					console.error("[chat-widget] Conversation creation failed:", err);
 				},
 			},
 		);
-	}, [sessionId, orgId, page, createSession]);
+	}, [conversationId, orgId, page, createConversation]);
 
-	if (!sessionId) return <>{children}</>;
+	if (!conversationId) return <>{children}</>;
 
 	return (
 		<WebSocketProvider
@@ -61,7 +63,7 @@ function WidgetInner({
 				reconnectionDelay: 1000,
 				withCredentials: false,
 			}}
-			auth={{ sessionId }}
+			auth={{ conversationId }}
 		>
 			{children}
 		</WebSocketProvider>

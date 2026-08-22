@@ -10,12 +10,12 @@ export class EventBridge {
     this.server = server;
   }
 
-  emitToSession(sessionId: string, event: string, data: Record<string, unknown>) {
+  emitToConversation(conversationId: string, event: string, data: Record<string, unknown>) {
     if (!this.server) {
       this.logger.warn("Server not set, cannot emit event");
       return;
     }
-    this.server.to(`session:${sessionId}`).emit(event, data);
+    this.server.to(`conversation:${conversationId}`).emit(event, data);
   }
 
   emitToOrg(organizationId: string, event: string, data: Record<string, unknown>) {

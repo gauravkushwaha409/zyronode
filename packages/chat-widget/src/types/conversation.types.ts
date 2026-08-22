@@ -1,6 +1,6 @@
 import type { APIError, ApiResponse } from "@package/api-client";
 
-export interface CreateSessionPayload {
+export interface CreateConversationPayload {
   organizationId: string;
   sourceUrl?: string;
   visitorName?: string;
@@ -8,7 +8,7 @@ export interface CreateSessionPayload {
   channel?: string;
 }
 
-export interface SessionData {
+export interface ConversationData {
   id: string;
   organizationId: string;
   status: "ACTIVE" | "IDLE" | "CLOSED" | "PENDING";
@@ -24,5 +24,5 @@ export interface SessionData {
   };
 }
 
-export type CreateSessionAxiosResponse = ApiResponse<SessionData>;
-export type CreateSessionError = APIError;
+export type CreateConversationAxiosResponse = ApiResponse<ConversationData>;
+export type CreateConversationError = APIError;

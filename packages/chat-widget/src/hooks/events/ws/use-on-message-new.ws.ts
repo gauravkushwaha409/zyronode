@@ -1,9 +1,9 @@
 import { useChannel, useEvent } from "@package/websocket";
 
 export function useOnMessageNew(
-  sessionId: string,
+  conversationId: string,
   handler: (data: unknown) => void,
 ) {
-  useChannel("session:join", { sessionId });
+  useChannel("conversation:join", { conversationId });
   useEvent("message:new", handler);
 }

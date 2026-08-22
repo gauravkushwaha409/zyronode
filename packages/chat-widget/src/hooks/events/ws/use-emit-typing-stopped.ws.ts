@@ -2,7 +2,7 @@ import { useWebSocket } from "@package/websocket";
 import { useCallback } from "react";
 
 interface EmitPayload {
-  sessionId: string;
+  conversationId: string;
 }
 
 export function useEmitTypingStopped() {

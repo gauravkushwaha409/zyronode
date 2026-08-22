@@ -7,17 +7,17 @@ import type {
   InboxMessage,
 } from "../../types/inbox-api.types";
 
-export function useSendAgentMessageMutation(sessionId: string, organizationId: string) {
+export function useSendAgentMessageMutation(conversationId: string, organizationId: string) {
   return useMutation<
     ApiResponse<InboxMessage>,
     APIError,
     InboxSendAgentMessagePayload
   >(
-    (payload) => inboxApiService.sendAgentMessage(sessionId, payload),
+    (payload) => inboxApiService.sendAgentMessage(conversationId, payload),
     {
       invalidateKeys: [
-        CONFIG.QUERY_KEY.INBOX.SESSION_DETAIL(sessionId, organizationId),
-        CONFIG.QUERY_KEY.INBOX.SESSIONS(organizationId),
+        CONFIG.QUERY_KEY.INBOX.CONVERSATION_DETAIL(conversationId, organizationId),
+        CONFIG.QUERY_KEY.INBOX.CONVERSATIONS(organizationId),
       ],
     },
   );

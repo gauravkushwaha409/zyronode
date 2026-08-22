@@ -49,26 +49,26 @@ export class SseController {
 		this.openStream(res, [`org:${organizationId}`]);
 	}
 
-	/**
-	 * Visitor stream: public, but scoped strictly to a single session so
-	 * a visitor can never receive another tenant's events. No org id is
-	 * accepted from the client - it is always derived from the session row.
-	 */
-	@Get("session/:sessionId")
-	async visitorStream(
-		@Param("sessionId") sessionId: string,
-		@Res() res: Response,
-	) {
-		const session = await this.prisma.session.findUnique({
-			where: { id: sessionId },
-			select: { id: true },
-		});
-		if (!session) {
-			throw new NotFoundException("Session not found");
-		}
+  /**
+   * Visitor stream: public, but scoped strictly to a single conversation so
+   * a visitor can never receive another tenant's events. No org id is
+   * accepted from the client - it is always derived from the conversation row.
+   */
+  @Get("conversation/:conversationId")
+  async visitorStream(
+    @Param("conversationId") conversationId: string,
+    @Res() res: Response,
+  ) {
+    const conversation = await this.prisma.conversation.findUnique({
+      where: { id: conversationId },
+      select: { id: true },
+    });
+    if (!conversation) {
+      throw new NotFoundException("Conversation not found");
+    }
 
-		this.openStream(res, [`session:${sessionId}`]);
-	}
+    this.openStream(res, [`conversation:${conversationId}`]);
+  }
 
 	private openStream(res: Response, keys: string[]): void {
 		res.setHeader("Content-Type", "text/event-stream");

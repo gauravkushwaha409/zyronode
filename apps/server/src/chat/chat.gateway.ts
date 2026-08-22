@@ -13,7 +13,7 @@ import {
 import { Server, Socket } from "socket.io";
 import { EventBridge } from "../common/services/event-bridge.service";
 import { MessageService } from "../message/message.service";
-import { SessionService } from "../session/session.service";
+import { ConversationService } from "../conversation/conversation.service";
 import { SseService } from "../sse/sse.service";
 
 interface AuthPayload {
@@ -21,14 +21,14 @@ interface AuthPayload {
 }
 
 interface SendMessagePayload {
-  sessionId: string;
+  conversationId: string;
   content: string;
   messageType?: "TEXT" | "FILE" | "INTERNAL_NOTE";
   replyToId?: string;
 }
 
 interface TypingPayload {
-  sessionId: string;
+  conversationId: string;
 }
 
 @WebSocketGateway({
@@ -46,7 +46,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   constructor(
     private readonly jwtService: JwtService,
     private readonly messageService: MessageService,
-    private readonly sessionService: SessionService,
+    private readonly conversationService: ConversationService,
     private readonly eventBridge: EventBridge,
     private readonly sseService: SseService,
   ) {}
@@ -84,15 +84,15 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.logger.log(`Client disconnected: ${client.id}`);
   }
 
-  @SubscribeMessage("session:join")
-  async handleSessionJoin(
+  @SubscribeMessage("conversation:join")
+  async handleConversationJoin(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: { sessionId: string },
+    @MessageBody() data: { conversationId: string },
   ) {
-    const room = `session:${data.sessionId}`;
+    const room = `conversation:${data.conversationId}`;
     client.join(room);
     this.logger.log(`Client ${client.id} joined room ${room}`);
-    return { event: "session:joined", data: { sessionId: data.sessionId } };
+    return { event: "conversation:joined", data: { conversationId: data.conversationId } };
   }
 
   @SubscribeMessage("agent:join")
@@ -121,7 +121,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     const senderId = user?.type === "AGENT" ? user.id : undefined;
 
     const result = await this.messageService.create(
-      data.sessionId,
+      data.conversationId,
       {
         content: data.content,
         messageType: data.messageType ?? "TEXT",
@@ -131,25 +131,28 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       senderId,
     );
 
-    const room = `session:${data.sessionId}`;
+    const room = `conversation:${data.conversationId}`;
     this.server.to(room).emit("message:new", {
-      session: { id: data.sessionId },
+      conversation: { id: data.conversationId },
       message: result.data,
     });
 
-    const session = await this.sessionService.findById(data.sessionId);
-    if (session.data?.organizationId) {
+    const conversation = await this.conversationService.findById(data.conversationId);
+    if (conversation.data?.organizationId) {
       this.server
-        .to(`org:${session.data.organizationId}`)
+        .to(`org:${conversation.data.organizationId}`)
         .emit("message:new", {
-          session: session.data,
+          conversation: conversation.data,
           message: result.data,
         });
 
       void this.sseService.publish(
-        [`org:${session.data.organizationId}`, `session:${data.sessionId}`],
+        [
+          `org:${conversation.data.organizationId}`,
+          `conversation:${data.conversationId}`,
+        ],
         "message.created",
-        { session: { id: data.sessionId }, message: result.data },
+        { conversation: { id: data.conversationId }, message: result.data },
       );
     }
 
@@ -162,9 +165,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     @MessageBody() data: TypingPayload,
   ) {
     const user = client.data.user;
-    const room = `session:${data.sessionId}`;
+    const room = `conversation:${data.conversationId}`;
     client.to(room).emit("typing:update", {
-      sessionId: data.sessionId,
+      conversationId: data.conversationId,
       senderType: user?.type ?? "VISITOR",
       isTyping: true,
     });
@@ -176,38 +179,38 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     @MessageBody() data: TypingPayload,
   ) {
     const user = client.data.user;
-    const room = `session:${data.sessionId}`;
+    const room = `conversation:${data.conversationId}`;
     client.to(room).emit("typing:update", {
-      sessionId: data.sessionId,
+      conversationId: data.conversationId,
       senderType: user?.type ?? "VISITOR",
       isTyping: false,
     });
   }
 
-  @SubscribeMessage("session:status")
-  async handleSessionStatus(
+  @SubscribeMessage("conversation:status")
+  async handleConversationStatus(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: { sessionId: string; status: string },
+    @MessageBody() data: { conversationId: string; status: string },
   ) {
     const user = client.data.user;
     if (user?.type !== "AGENT") {
       return { event: "error", data: { message: "Unauthorized" } };
     }
 
-    const result = await this.sessionService.updateStatus(
-      data.sessionId,
+    const result = await this.conversationService.updateStatus(
+      data.conversationId,
       data.status as "ACTIVE" | "IDLE" | "CLOSED" | "PENDING",
     );
 
-    const room = `session:${data.sessionId}`;
-    this.server.to(room).emit("session:updated", { session: result.data });
+    const room = `conversation:${data.conversationId}`;
+    this.server.to(room).emit("conversation:updated", { conversation: result.data });
 
     if (result.data?.organizationId) {
       this.server
         .to(`org:${result.data.organizationId}`)
-        .emit("session:updated", { session: result.data });
+        .emit("conversation:updated", { conversation: result.data });
     }
 
-    return { event: "session:status:updated", data: result.data };
+    return { event: "conversation:status:updated", data: result.data };
   }
 }

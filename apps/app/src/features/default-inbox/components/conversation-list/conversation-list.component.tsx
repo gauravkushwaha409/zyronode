@@ -1,8 +1,8 @@
 import { cn } from '@package/ui';
 import type React from 'react';
 import { useRef } from 'react';
-import { useInboxSessionsQuery } from '../../hooks';
-import type { InboxSessionListItem } from '../../types/inbox-api.types';
+import { useInboxConversationsQuery } from '../../hooks';
+import type { InboxConversationListItem } from '../../types/inbox-api.types';
 import { ConversationListItem } from './conversation-list-item';
 
 type ConversationListWrapperProps = Pick<React.ComponentProps<'div'>, 'className'>;
@@ -14,9 +14,9 @@ interface ConversationListComponentProps extends ConversationListWrapperProps {
 export function ConversationListComponent({ className, organizationId }: ConversationListComponentProps) {
   const sentinelRef = useRef<HTMLDivElement>(null);
 
-  const { data, isLoading, error } = useInboxSessionsQuery(organizationId);
+  const { data, isLoading, error } = useInboxConversationsQuery(organizationId);
 
-  const sessions: InboxSessionListItem[] = data?.data?.data?.sessions ?? [];
+  const conversations: InboxConversationListItem[] = data?.data?.data?.conversations ?? [];
 
   if (isLoading) {
     return (
@@ -34,7 +34,7 @@ export function ConversationListComponent({ className, organizationId }: Convers
     );
   }
 
-  if (sessions.length === 0) {
+  if (conversations.length === 0) {
     return (
       <div className={cn('px-3 py-8 text-center', className)}>
         <p className="text-sm text-gray-500">No conversations yet</p>
@@ -44,8 +44,8 @@ export function ConversationListComponent({ className, organizationId }: Convers
 
   return (
     <div className={cn('px-3', className)}>
-      {sessions.map((session) => (
-        <ConversationListItem key={session.id} {...session} />
+      {conversations.map((conversation) => (
+        <ConversationListItem key={conversation.id} {...conversation} />
       ))}
       <div ref={sentinelRef} className="h-1" />
     </div>

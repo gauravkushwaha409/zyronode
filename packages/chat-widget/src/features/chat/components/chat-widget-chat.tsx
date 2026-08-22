@@ -8,29 +8,29 @@ import { useChatWidgetStore } from "@/store";
 import type { ChatMessage } from "@/types";
 
 interface ChatWidgetChatProps {
-  sessionId: string | null;
+  conversationId: string | null;
 }
 
-export default function ChatWidgetChat({ sessionId }: ChatWidgetChatProps) {
+export default function ChatWidgetChat({ conversationId }: ChatWidgetChatProps) {
   const [content, setContent] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
 
   const { data: messagesData, isLoading } = useGetMessagesQuery(
-    sessionId ?? undefined,
+    conversationId ?? undefined,
   );
   const { mutate: sendMessage, isPending: isSending } = useSendMessageMutation(
-    sessionId ?? "",
+    conversationId ?? "",
   );
 
   const { startTyping, stopTyping, isAgentTyping } = useTypingIndicator({
-    sessionId,
+    conversationId,
   });
 
-  useOnMessageNew(sessionId ?? "", () => {
-    if (!sessionId) return;
+  useOnMessageNew(conversationId ?? "", () => {
+    if (!conversationId) return;
     queryClient.invalidateQueries({
-      queryKey: WIDGET_QUERY_KEYS.MESSAGES(sessionId),
+      queryKey: WIDGET_QUERY_KEYS.MESSAGES(conversationId),
     });
   });
 
@@ -42,7 +42,7 @@ export default function ChatWidgetChat({ sessionId }: ChatWidgetChatProps) {
   }, [messages]);
 
   const handleSend = () => {
-    if (!content.trim() || !sessionId || isSending) return;
+    if (!content.trim() || !conversationId || isSending) return;
     stopTyping();
     sendMessage(
       { content: content.trim(), messageType: "TEXT" },

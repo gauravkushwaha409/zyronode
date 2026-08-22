@@ -1,2 +1,2 @@
-export { useInboxSessionsQuery } from "./use-inbox-sessions.query";
-export { useInboxSessionDetailQuery } from "./use-inbox-session-detail.query";
+export { useInboxConversationsQuery } from "./use-inbox-conversations.query";
+export { useInboxConversationDetailQuery } from "./use-inbox-conversation-detail.query";

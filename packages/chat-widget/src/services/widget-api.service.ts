@@ -1,9 +1,9 @@
 import { BaseAPIService } from "@package/api-client";
 import { CHAT_WIDGET_API } from "../config";
 import type {
-  CreateSessionAxiosResponse,
-  CreateSessionPayload,
-  SessionData,
+  CreateConversationAxiosResponse,
+  CreateConversationPayload,
+  ConversationData,
   GetMessagesAxiosResponse,
   MessagesData,
   SendMessageAxiosResponse,
@@ -13,22 +13,22 @@ import type {
 import { getApiClient } from "./api-client";
 
 export class WidgetApiService extends BaseAPIService {
-  async createSession(payload: CreateSessionPayload) {
-    return super.post<SessionData, CreateSessionAxiosResponse>(
-      CHAT_WIDGET_API.SESSIONS,
+  async createConversation(payload: CreateConversationPayload) {
+    return super.post<ConversationData, CreateConversationAxiosResponse>(
+      CHAT_WIDGET_API.CONVERSATIONS,
       payload,
     );
   }
 
-  async getMessages(sessionId: string, page = 1, limit = 50) {
+  async getMessages(conversationId: string, page = 1, limit = 50) {
     return super.get<MessagesData, GetMessagesAxiosResponse>(
-      `${CHAT_WIDGET_API.SESSION_MESSAGES(sessionId)}?page=${page}&limit=${limit}`,
+      `${CHAT_WIDGET_API.CONVERSATION_MESSAGES(conversationId)}?page=${page}&limit=${limit}`,
     );
   }
 
-  async sendVisitorMessage(sessionId: string, payload: SendMessagePayload) {
+  async sendVisitorMessage(conversationId: string, payload: SendMessagePayload) {
     return super.post<ChatMessage, SendMessageAxiosResponse>(
-      CHAT_WIDGET_API.SESSION_VISITOR_MESSAGES(sessionId),
+      CHAT_WIDGET_API.CONVERSATION_VISITOR_MESSAGES(conversationId),
       payload,
     );
   }

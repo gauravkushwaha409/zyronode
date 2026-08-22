@@ -11,24 +11,24 @@ import {
 import type { Request } from "express";
 import { JwtAuthGuard } from "../common/gaurds/jwt-auth.guard";
 import { CurrentUser } from "../common/decorator/current-user.decorator";
-import { CreateSessionDto } from "./dto/create-session.dto";
-import { SessionService } from "./session.service";
+import { CreateConversationDto } from "./dto/create-conversation.dto";
+import { ConversationService } from "./conversation.service";
 
-@Controller("sessions")
-export class SessionController {
-  constructor(private readonly sessionService: SessionService) {}
+@Controller("conversations")
+export class ConversationController {
+  constructor(private readonly conversationService: ConversationService) {}
 
   @Post()
-  create(@Body() dto: CreateSessionDto, @Req() req: Request) {
+  create(@Body() dto: CreateConversationDto, @Req() req: Request) {
     const ip =
       (req.headers["x-forwarded-for"] as string) ?? req.socket.remoteAddress;
     const userAgent = req.headers["user-agent"];
-    return this.sessionService.create(dto, ip, userAgent);
+    return this.conversationService.create(dto, ip, userAgent);
   }
 
   @Get(":id")
   findById(@Param("id") id: string) {
-    return this.sessionService.findById(id);
+    return this.conversationService.findById(id);
   }
 
   @Get("org/:organizationId")
@@ -37,7 +37,7 @@ export class SessionController {
     @Param("organizationId") organizationId: string,
     @CurrentUser("id") userId: string,
   ) {
-    return this.sessionService.findByOrganizationId(organizationId);
+    return this.conversationService.findByOrganizationId(organizationId);
   }
 
   @Patch(":id/status")
@@ -47,6 +47,6 @@ export class SessionController {
     @Body("status") status: "ACTIVE" | "IDLE" | "CLOSED" | "PENDING",
     @CurrentUser("id") userId: string,
   ) {
-    return this.sessionService.updateStatus(id, status);
+    return this.conversationService.updateStatus(id, status);
   }
 }

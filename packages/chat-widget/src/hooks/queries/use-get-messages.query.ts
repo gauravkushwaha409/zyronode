@@ -6,11 +6,11 @@ import type {
 } from "../../types";
 import { WIDGET_QUERY_KEYS } from "../query-keys";
 
-export function useGetMessagesQuery(sessionId: string | undefined) {
+export function useGetMessagesQuery(conversationId: string | undefined) {
   return useQuery<GetMessagesAxiosResponse, GetMessagesError>(
-    WIDGET_QUERY_KEYS.MESSAGES(sessionId ?? ""),
-    () => getWidgetApi().getMessages(sessionId!),
+    WIDGET_QUERY_KEYS.MESSAGES(conversationId ?? ""),
+    () => getWidgetApi().getMessages(conversationId!),
     undefined,
-    { enabled: !!sessionId },
+    { enabled: !!conversationId },
   );
 }

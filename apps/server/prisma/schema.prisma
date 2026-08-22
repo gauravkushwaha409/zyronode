@@ -42,7 +42,7 @@ model Organization {
   isActive Boolean              @default(true)
   visitors Visitor[]
   members  OrganizationMember[]
-  sessions Session[]
+  conversations Conversation[]
 
   // back-relation for lastOrg
   lastOrgUsers User[] @relation("UserLastOrg")
@@ -108,7 +108,7 @@ enum VisitorStatus {
   IGNORED // not a fit, dismissed
 }
 
-enum SessionStatus {
+enum ConversationStatus {
   ACTIVE
   IDLE
   CLOSED
@@ -133,13 +133,13 @@ enum MessageDeliveryStatus {
   READ
 }
 
-model Session {
-  id             String        @id @default(cuid())
+model Conversation {
+  id             String             @id @default(cuid())
   organizationId String
-  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organization   Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
-  status         SessionStatus @default(ACTIVE)
-  channel        String        @default("web")
+  status         ConversationStatus @default(ACTIVE)
+  channel        String             @default("web")
   visitorName    String?
   visitorEmail   String?
   visitorPhone   String?
@@ -150,38 +150,38 @@ model Session {
 
   messages       Message[]
 
-  createdAt      DateTime      @default(now()) @map("created_at")
-  updatedAt      DateTime      @updatedAt @map("updated_at")
+  createdAt      DateTime           @default(now()) @map("created_at")
+  updatedAt      DateTime           @updatedAt @map("updated_at")
 
   @@index([organizationId])
   @@index([organizationId, status])
   @@index([organizationId, updatedAt(sort: Desc)])
-  @@map("sessions")
+  @@map("conversations")
 }
 
 model Message {
-  id             String                @id @default(cuid())
-  sessionId      String
-  session        Session               @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  id             String        @id @default(cuid())
+  conversationId String
+  conversation   Conversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
   senderType     MessageSenderType
   senderId       String?
-  messageType    MessageType           @default(TEXT)
+  messageType    MessageType         @default(TEXT)
   content        String
 
   replyToId      String?
-  replyTo        Message?              @relation("MessageReplies", fields: [replyToId], references: [id])
-  replies        Message[]             @relation("MessageReplies")
+  replyTo        Message?            @relation("MessageReplies", fields: [replyToId], references: [id])
+  replies        Message[]           @relation("MessageReplies")
 
   status         MessageDeliveryStatus @default(SENT)
-  isEdited       Boolean               @default(false)
+  isEdited       Boolean             @default(false)
   editedAt       DateTime?
 
-  createdAt      DateTime              @default(now()) @map("created_at")
-  updatedAt      DateTime              @updatedAt @map("updated_at")
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
 
-  @@index([sessionId])
-  @@index([sessionId, createdAt(sort: Desc)])
+  @@index([conversationId])
+  @@index([conversationId, createdAt(sort: Desc)])
   @@index([senderId])
   @@map("messages")
 }

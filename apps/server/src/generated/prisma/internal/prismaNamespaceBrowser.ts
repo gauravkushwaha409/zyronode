@@ -55,7 +55,7 @@ export const ModelName = {
   Organization: 'Organization',
   OrganizationMember: 'OrganizationMember',
   Visitor: 'Visitor',
-  Session: 'Session',
+  Conversation: 'Conversation',
   Message: 'Message'
 } as const
 
@@ -140,7 +140,7 @@ export const VisitorScalarFieldEnum = {
 export type VisitorScalarFieldEnum = (typeof VisitorScalarFieldEnum)[keyof typeof VisitorScalarFieldEnum]
 
 
-export const SessionScalarFieldEnum = {
+export const ConversationScalarFieldEnum = {
   id: 'id',
   organizationId: 'organizationId',
   status: 'status',
@@ -156,12 +156,12 @@ export const SessionScalarFieldEnum = {
   updatedAt: 'updatedAt'
 } as const
 
-export type SessionScalarFieldEnum = (typeof SessionScalarFieldEnum)[keyof typeof SessionScalarFieldEnum]
+export type ConversationScalarFieldEnum = (typeof ConversationScalarFieldEnum)[keyof typeof ConversationScalarFieldEnum]
 
 
 export const MessageScalarFieldEnum = {
   id: 'id',
-  sessionId: 'sessionId',
+  conversationId: 'conversationId',
   senderType: 'senderType',
   senderId: 'senderId',
   messageType: 'messageType',

@@ -11,12 +11,12 @@ interface InboxSocketProviderProps {
 }
 
 interface MessageNewEvent {
-  session: { id: string };
+  conversation: { id: string };
   message: unknown;
 }
 
-interface SessionUpdatedEvent {
-  session: { id: string };
+interface ConversationUpdatedEvent {
+  conversation: { id: string };
 }
 
 function InboxSocketEvents({ organizationId }: { organizationId: string }) {
@@ -26,13 +26,13 @@ function InboxSocketEvents({ organizationId }: { organizationId: string }) {
 
   useEvent<MessageNewEvent>("message:new", useCallback(() => {
     queryClient.invalidateQueries({
-      queryKey: CONFIG.QUERY_KEY.INBOX.SESSIONS(organizationId),
+      queryKey: CONFIG.QUERY_KEY.INBOX.CONVERSATIONS(organizationId),
     });
   }, [queryClient, organizationId]));
 
-  useEvent<SessionUpdatedEvent>("session:updated", useCallback(() => {
+  useEvent<ConversationUpdatedEvent>("conversation:updated", useCallback(() => {
     queryClient.invalidateQueries({
-      queryKey: CONFIG.QUERY_KEY.INBOX.SESSIONS(organizationId),
+      queryKey: CONFIG.QUERY_KEY.INBOX.CONVERSATIONS(organizationId),
     });
   }, [queryClient, organizationId]));
 

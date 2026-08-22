@@ -1,14 +1,14 @@
 export interface TypingUpdateEventData {
-  sessionId: string;
+  conversationId: string;
   senderType: "VISITOR" | "AGENT";
   isTyping: boolean;
 }
 
 export interface MessageNewEventData {
-  session: { id: string };
+  conversation: { id: string };
   message: {
     id: string;
-    sessionId: string;
+    conversationId: string;
     senderType: "VISITOR" | "AGENT" | "SYSTEM";
     content: string;
     messageType: string;
@@ -16,8 +16,8 @@ export interface MessageNewEventData {
   };
 }
 
-export interface SessionUpdatedEventData {
-  session: {
+export interface ConversationUpdatedEventData {
+  conversation: {
     id: string;
     status: string;
   };

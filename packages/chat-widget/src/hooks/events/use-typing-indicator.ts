@@ -6,7 +6,7 @@ const DEBOUNCE_MS = 300;
 const STOP_DELAY_MS = 5000;
 
 interface UseTypingIndicatorOptions {
-  sessionId: string | null;
+  conversationId: string | null;
 }
 
 interface TypingState {
@@ -14,16 +14,16 @@ interface TypingState {
   senderType: "VISITOR" | "AGENT" | null;
 }
 
-export function useTypingIndicator({ sessionId }: UseTypingIndicatorOptions) {
+export function useTypingIndicator({ conversationId }: UseTypingIndicatorOptions) {
   const [typingState, setTypingState] = useState<TypingState>({
     isTyping: false,
     senderType: null,
   });
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
   const stopTimeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
-  const sessionIdRef = useRef(sessionId);
+  const conversationIdRef = useRef(conversationId);
 
-  sessionIdRef.current = sessionId;
+  conversationIdRef.current = conversationId;
 
   const { emitTypingStarted } = useEmitTypingStarted();
   const { emitTypingStopped } = useEmitTypingStopped();
@@ -39,17 +39,17 @@ export function useTypingIndicator({ sessionId }: UseTypingIndicatorOptions) {
   });
 
   const emitStop = useCallback(() => {
-    const sid = sessionIdRef.current;
-    if (!sid) return;
-    emitTypingStopped({ sessionId: sid });
+    const cid = conversationIdRef.current;
+    if (!cid) return;
+    emitTypingStopped({ conversationId: cid });
   }, [emitTypingStopped]);
 
   const startTyping = useCallback(() => {
-    const sid = sessionIdRef.current;
-    if (!sid) return;
+    const cid = conversationIdRef.current;
+    if (!cid) return;
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
-      emitTypingStarted({ sessionId: sid });
+      emitTypingStarted({ conversationId: cid });
     }, DEBOUNCE_MS);
     if (stopTimeoutRef.current) clearTimeout(stopTimeoutRef.current);
     stopTimeoutRef.current = setTimeout(() => {

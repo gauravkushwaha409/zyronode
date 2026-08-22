@@ -10,19 +10,19 @@ import {
 import { JwtAuthGuard } from "../common/gaurds/jwt-auth.guard";
 import { CurrentUser } from "../common/decorator/current-user.decorator";
 import { InboxService } from "./inbox.service";
-import { ListInboxSessionsDto } from "./dto/list-inbox-sessions.dto";
+import { ListInboxConversationsDto } from "./dto/list-inbox-conversations.dto";
 
 @Controller("inbox")
 @UseGuards(JwtAuthGuard)
 export class InboxController {
   constructor(private readonly inboxService: InboxService) {}
 
-  @Get("sessions")
-  getSessions(
-    @Query() query: ListInboxSessionsDto,
+  @Get("conversations")
+  getConversations(
+    @Query() query: ListInboxConversationsDto,
     @CurrentUser("id") userId: string,
   ) {
-    return this.inboxService.getSessions(query.organizationId, {
+    return this.inboxService.getConversations(query.organizationId, {
       status: query.status,
       search: query.search,
       page: query.page,
@@ -30,30 +30,30 @@ export class InboxController {
     });
   }
 
-  @Get("sessions/:id")
-  getSessionDetails(
+  @Get("conversations/:id")
+  getConversationDetails(
     @Param("id") id: string,
     @Query("organizationId") organizationId: string,
     @CurrentUser("id") userId: string,
   ) {
-    return this.inboxService.getSessionDetails(organizationId, id);
+    return this.inboxService.getConversationDetails(organizationId, id);
   }
 
-  @Post("sessions/:id/close")
-  closeSession(
+  @Post("conversations/:id/close")
+  closeConversation(
     @Param("id") id: string,
     @Body("organizationId") organizationId: string,
     @CurrentUser("id") userId: string,
   ) {
-    return this.inboxService.closeSession(organizationId, id);
+    return this.inboxService.closeConversation(organizationId, id);
   }
 
-  @Post("sessions/:id/reopen")
-  reopenSession(
+  @Post("conversations/:id/reopen")
+  reopenConversation(
     @Param("id") id: string,
     @Body("organizationId") organizationId: string,
     @CurrentUser("id") userId: string,
   ) {
-    return this.inboxService.reopenSession(organizationId, id);
+    return this.inboxService.reopenConversation(organizationId, id);
   }
 }

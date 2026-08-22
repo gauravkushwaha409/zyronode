@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 import { JwtModule } from "@nestjs/jwt";
+import { ConversationModule } from "../conversation/conversation.module";
 import { MessageModule } from "../message/message.module";
-import { SessionModule } from "../session/session.module";
 import { SseModule } from "../sse/sse.module";
 import { ChatGateway } from "./chat.gateway";
 
@@ -10,7 +10,7 @@ import { ChatGateway } from "./chat.gateway";
 		JwtModule.register({
 			secret: process.env.JWT_SECRET,
 		}),
-		SessionModule,
+		ConversationModule,
 		MessageModule,
 		SseModule,
 	],

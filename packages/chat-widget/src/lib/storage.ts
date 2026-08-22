@@ -1,24 +1,24 @@
-const SESSION_KEY = "chat-widget-session-id";
+const CONVERSATION_KEY = "chat-widget-conversation-id";
 
-export function getSessionId(): string | null {
+export function getConversationId(): string | null {
   try {
-    return localStorage.getItem(SESSION_KEY);
+    return localStorage.getItem(CONVERSATION_KEY);
   } catch {
     return null;
   }
 }
 
-export function setSessionId(id: string): void {
+export function setConversationId(id: string): void {
   try {
-    localStorage.setItem(SESSION_KEY, id);
+    localStorage.setItem(CONVERSATION_KEY, id);
   } catch {
     /* noop */
   }
 }
 
-export function removeSessionId(): void {
+export function removeConversationId(): void {
   try {
-    localStorage.removeItem(SESSION_KEY);
+    localStorage.removeItem(CONVERSATION_KEY);
   } catch {
     /* noop */
   }

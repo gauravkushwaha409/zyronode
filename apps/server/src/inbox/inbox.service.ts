@@ -5,7 +5,7 @@ import { PrismaService } from "../prisma/prisma.service";
 export class InboxService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getSessions(
+  async getConversations(
     organizationId: string,
     filters?: {
       status?: string;
@@ -31,8 +31,8 @@ export class InboxService {
       ];
     }
 
-    const [sessions, total] = await Promise.all([
-      this.prisma.session.findMany({
+    const [conversations, total] = await Promise.all([
+      this.prisma.conversation.findMany({
         where,
         orderBy: { updatedAt: "desc" },
         skip,
@@ -58,19 +58,19 @@ export class InboxService {
           },
         },
       }),
-      this.prisma.session.count({ where }),
+      this.prisma.conversation.count({ where }),
     ]);
 
-    const data = sessions.map((session) => {
-      const lastMessage = session.messages[0] ?? null;
+    const data = conversations.map((conversation) => {
+      const lastMessage = conversation.messages[0] ?? null;
       return {
-        id: session.id,
-        status: session.status,
-        channel: session.channel,
-        visitorName: session.visitorName,
-        visitorEmail: session.visitorEmail,
-        lastMessageAt: session.updatedAt,
-        createdAt: session.createdAt,
+        id: conversation.id,
+        status: conversation.status,
+        channel: conversation.channel,
+        visitorName: conversation.visitorName,
+        visitorEmail: conversation.visitorEmail,
+        lastMessageAt: conversation.updatedAt,
+        createdAt: conversation.createdAt,
         lastMessage: lastMessage
           ? {
               content: lastMessage.content,
@@ -79,14 +79,14 @@ export class InboxService {
               createdAt: lastMessage.createdAt,
             }
           : null,
-        unreadCount: session._count.messages,
+        unreadCount: conversation._count.messages,
       };
     });
 
     return {
-      message: "Inbox sessions fetched successfully",
+      message: "Inbox conversations fetched successfully",
       data: {
-        sessions: data,
+        conversations: data,
         pagination: {
           page,
           limit,
@@ -97,9 +97,9 @@ export class InboxService {
     };
   }
 
-  async getSessionDetails(organizationId: string, sessionId: string) {
-    const session = await this.prisma.session.findFirst({
-      where: { id: sessionId, organizationId },
+  async getConversationDetails(organizationId: string, conversationId: string) {
+    const conversation = await this.prisma.conversation.findFirst({
+      where: { id: conversationId, organizationId },
       include: {
         messages: {
           orderBy: { createdAt: "asc" },
@@ -117,52 +117,52 @@ export class InboxService {
       },
     });
 
-    if (!session) {
-      throw new NotFoundException("Session not found");
+    if (!conversation) {
+      throw new NotFoundException("Conversation not found");
     }
 
     return {
-      message: "Session details fetched successfully",
-      data: session,
+      message: "Conversation details fetched successfully",
+      data: conversation,
     };
   }
 
-  async closeSession(organizationId: string, sessionId: string) {
-    const session = await this.prisma.session.findFirst({
-      where: { id: sessionId, organizationId },
+  async closeConversation(organizationId: string, conversationId: string) {
+    const conversation = await this.prisma.conversation.findFirst({
+      where: { id: conversationId, organizationId },
     });
 
-    if (!session) {
-      throw new NotFoundException("Session not found");
+    if (!conversation) {
+      throw new NotFoundException("Conversation not found");
     }
 
-    const updated = await this.prisma.session.update({
-      where: { id: sessionId },
+    const updated = await this.prisma.conversation.update({
+      where: { id: conversationId },
       data: { status: "CLOSED" },
     });
 
     return {
-      message: "Session closed successfully",
+      message: "Conversation closed successfully",
       data: updated,
     };
   }
 
-  async reopenSession(organizationId: string, sessionId: string) {
-    const session = await this.prisma.session.findFirst({
-      where: { id: sessionId, organizationId },
+  async reopenConversation(organizationId: string, conversationId: string) {
+    const conversation = await this.prisma.conversation.findFirst({
+      where: { id: conversationId, organizationId },
     });
 
-    if (!session) {
-      throw new NotFoundException("Session not found");
+    if (!conversation) {
+      throw new NotFoundException("Conversation not found");
     }
 
-    const updated = await this.prisma.session.update({
-      where: { id: sessionId },
+    const updated = await this.prisma.conversation.update({
+      where: { id: conversationId },
       data: { status: "ACTIVE" },
     });
 
     return {
-      message: "Session reopened successfully",
+      message: "Conversation reopened successfully",
       data: updated,
     };
   }

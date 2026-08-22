@@ -1,6 +1,6 @@
 import type React from 'react';
 import { useRef } from 'react';
-import { useInboxSessionDetailQuery } from '../../hooks';
+import { useInboxConversationDetailQuery } from '../../hooks';
 import type { InboxMessage } from '../../types/inbox-api.types';
 import {
   groupConsecutiveMessages,
@@ -19,11 +19,11 @@ interface ConversationBodyProps {
 export function ConversationBody({ conversationUUID, organizationId }: ConversationBodyProps) {
   const textEditorContainerRef = useRef<HTMLDivElement>(null);
 
-  const { data, isLoading } = useInboxSessionDetailQuery(conversationUUID, organizationId);
+  const { data, isLoading } = useInboxConversationDetailQuery(conversationUUID, organizationId);
 
   const messages = (data?.data?.data?.messages ?? []).map((msg: InboxMessage) => ({
     uuid: msg.id,
-    conversation_uuid: msg.sessionId,
+    conversation_uuid: msg.conversationId,
     sender_type: msg.senderType.toLowerCase() as 'visitor' | 'agent' | 'system',
     content: msg.content,
     message_type: msg.messageType.toLowerCase().replace('INTERNAL_NOTE', 'internal_note') as 'text' | 'file' | 'internal_note',

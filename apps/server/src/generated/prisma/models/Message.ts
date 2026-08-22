@@ -26,7 +26,7 @@ export type AggregateMessage = {
 
 export type MessageMinAggregateOutputType = {
   id: string | null
-  sessionId: string | null
+  conversationId: string | null
   senderType: $Enums.MessageSenderType | null
   senderId: string | null
   messageType: $Enums.MessageType | null
@@ -41,7 +41,7 @@ export type MessageMinAggregateOutputType = {
 
 export type MessageMaxAggregateOutputType = {
   id: string | null
-  sessionId: string | null
+  conversationId: string | null
   senderType: $Enums.MessageSenderType | null
   senderId: string | null
   messageType: $Enums.MessageType | null
@@ -56,7 +56,7 @@ export type MessageMaxAggregateOutputType = {
 
 export type MessageCountAggregateOutputType = {
   id: number
-  sessionId: number
+  conversationId: number
   senderType: number
   senderId: number
   messageType: number
@@ -73,7 +73,7 @@ export type MessageCountAggregateOutputType = {
 
 export type MessageMinAggregateInputType = {
   id?: true
-  sessionId?: true
+  conversationId?: true
   senderType?: true
   senderId?: true
   messageType?: true
@@ -88,7 +88,7 @@ export type MessageMinAggregateInputType = {
 
 export type MessageMaxAggregateInputType = {
   id?: true
-  sessionId?: true
+  conversationId?: true
   senderType?: true
   senderId?: true
   messageType?: true
@@ -103,7 +103,7 @@ export type MessageMaxAggregateInputType = {
 
 export type MessageCountAggregateInputType = {
   id?: true
-  sessionId?: true
+  conversationId?: true
   senderType?: true
   senderId?: true
   messageType?: true
@@ -191,7 +191,7 @@ export type MessageGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
 
 export type MessageGroupByOutputType = {
   id: string
-  sessionId: string
+  conversationId: string
   senderType: $Enums.MessageSenderType
   senderId: string | null
   messageType: $Enums.MessageType
@@ -227,7 +227,7 @@ export type MessageWhereInput = {
   OR?: Prisma.MessageWhereInput[]
   NOT?: Prisma.MessageWhereInput | Prisma.MessageWhereInput[]
   id?: Prisma.StringFilter<"Message"> | string
-  sessionId?: Prisma.StringFilter<"Message"> | string
+  conversationId?: Prisma.StringFilter<"Message"> | string
   senderType?: Prisma.EnumMessageSenderTypeFilter<"Message"> | $Enums.MessageSenderType
   senderId?: Prisma.StringNullableFilter<"Message"> | string | null
   messageType?: Prisma.EnumMessageTypeFilter<"Message"> | $Enums.MessageType
@@ -238,14 +238,14 @@ export type MessageWhereInput = {
   editedAt?: Prisma.DateTimeNullableFilter<"Message"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Message"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Message"> | Date | string
-  session?: Prisma.XOR<Prisma.SessionScalarRelationFilter, Prisma.SessionWhereInput>
+  conversation?: Prisma.XOR<Prisma.ConversationScalarRelationFilter, Prisma.ConversationWhereInput>
   replyTo?: Prisma.XOR<Prisma.MessageNullableScalarRelationFilter, Prisma.MessageWhereInput> | null
   replies?: Prisma.MessageListRelationFilter
 }
 
 export type MessageOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  sessionId?: Prisma.SortOrder
+  conversationId?: Prisma.SortOrder
   senderType?: Prisma.SortOrder
   senderId?: Prisma.SortOrderInput | Prisma.SortOrder
   messageType?: Prisma.SortOrder
@@ -256,7 +256,7 @@ export type MessageOrderByWithRelationInput = {
   editedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  session?: Prisma.SessionOrderByWithRelationInput
+  conversation?: Prisma.ConversationOrderByWithRelationInput
   replyTo?: Prisma.MessageOrderByWithRelationInput
   replies?: Prisma.MessageOrderByRelationAggregateInput
 }
@@ -266,7 +266,7 @@ export type MessageWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.MessageWhereInput | Prisma.MessageWhereInput[]
   OR?: Prisma.MessageWhereInput[]
   NOT?: Prisma.MessageWhereInput | Prisma.MessageWhereInput[]
-  sessionId?: Prisma.StringFilter<"Message"> | string
+  conversationId?: Prisma.StringFilter<"Message"> | string
   senderType?: Prisma.EnumMessageSenderTypeFilter<"Message"> | $Enums.MessageSenderType
   senderId?: Prisma.StringNullableFilter<"Message"> | string | null
   messageType?: Prisma.EnumMessageTypeFilter<"Message"> | $Enums.MessageType
@@ -277,14 +277,14 @@ export type MessageWhereUniqueInput = Prisma.AtLeast<{
   editedAt?: Prisma.DateTimeNullableFilter<"Message"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Message"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Message"> | Date | string
-  session?: Prisma.XOR<Prisma.SessionScalarRelationFilter, Prisma.SessionWhereInput>
+  conversation?: Prisma.XOR<Prisma.ConversationScalarRelationFilter, Prisma.ConversationWhereInput>
   replyTo?: Prisma.XOR<Prisma.MessageNullableScalarRelationFilter, Prisma.MessageWhereInput> | null
   replies?: Prisma.MessageListRelationFilter
 }, "id">
 
 export type MessageOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  sessionId?: Prisma.SortOrder
+  conversationId?: Prisma.SortOrder
   senderType?: Prisma.SortOrder
   senderId?: Prisma.SortOrderInput | Prisma.SortOrder
   messageType?: Prisma.SortOrder
@@ -305,7 +305,7 @@ export type MessageScalarWhereWithAggregatesInput = {
   OR?: Prisma.MessageScalarWhereWithAggregatesInput[]
   NOT?: Prisma.MessageScalarWhereWithAggregatesInput | Prisma.MessageScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Message"> | string
-  sessionId?: Prisma.StringWithAggregatesFilter<"Message"> | string
+  conversationId?: Prisma.StringWithAggregatesFilter<"Message"> | string
   senderType?: Prisma.EnumMessageSenderTypeWithAggregatesFilter<"Message"> | $Enums.MessageSenderType
   senderId?: Prisma.StringNullableWithAggregatesFilter<"Message"> | string | null
   messageType?: Prisma.EnumMessageTypeWithAggregatesFilter<"Message"> | $Enums.MessageType
@@ -329,14 +329,14 @@ export type MessageCreateInput = {
   editedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  session: Prisma.SessionCreateNestedOneWithoutMessagesInput
+  conversation: Prisma.ConversationCreateNestedOneWithoutMessagesInput
   replyTo?: Prisma.MessageCreateNestedOneWithoutRepliesInput
   replies?: Prisma.MessageCreateNestedManyWithoutReplyToInput
 }
 
 export type MessageUncheckedCreateInput = {
   id?: string
-  sessionId: string
+  conversationId: string
   senderType: $Enums.MessageSenderType
   senderId?: string | null
   messageType?: $Enums.MessageType
@@ -361,14 +361,14 @@ export type MessageUpdateInput = {
   editedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  session?: Prisma.SessionUpdateOneRequiredWithoutMessagesNestedInput
+  conversation?: Prisma.ConversationUpdateOneRequiredWithoutMessagesNestedInput
   replyTo?: Prisma.MessageUpdateOneWithoutRepliesNestedInput
   replies?: Prisma.MessageUpdateManyWithoutReplyToNestedInput
 }
 
 export type MessageUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  sessionId?: Prisma.StringFieldUpdateOperationsInput | string
+  conversationId?: Prisma.StringFieldUpdateOperationsInput | string
   senderType?: Prisma.EnumMessageSenderTypeFieldUpdateOperationsInput | $Enums.MessageSenderType
   senderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   messageType?: Prisma.EnumMessageTypeFieldUpdateOperationsInput | $Enums.MessageType
@@ -384,7 +384,7 @@ export type MessageUncheckedUpdateInput = {
 
 export type MessageCreateManyInput = {
   id?: string
-  sessionId: string
+  conversationId: string
   senderType: $Enums.MessageSenderType
   senderId?: string | null
   messageType?: $Enums.MessageType
@@ -412,7 +412,7 @@ export type MessageUpdateManyMutationInput = {
 
 export type MessageUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  sessionId?: Prisma.StringFieldUpdateOperationsInput | string
+  conversationId?: Prisma.StringFieldUpdateOperationsInput | string
   senderType?: Prisma.EnumMessageSenderTypeFieldUpdateOperationsInput | $Enums.MessageSenderType
   senderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   messageType?: Prisma.EnumMessageTypeFieldUpdateOperationsInput | $Enums.MessageType
@@ -442,7 +442,7 @@ export type MessageNullableScalarRelationFilter = {
 
 export type MessageCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  sessionId?: Prisma.SortOrder
+  conversationId?: Prisma.SortOrder
   senderType?: Prisma.SortOrder
   senderId?: Prisma.SortOrder
   messageType?: Prisma.SortOrder
@@ -457,7 +457,7 @@ export type MessageCountOrderByAggregateInput = {
 
 export type MessageMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  sessionId?: Prisma.SortOrder
+  conversationId?: Prisma.SortOrder
   senderType?: Prisma.SortOrder
   senderId?: Prisma.SortOrder
   messageType?: Prisma.SortOrder
@@ -472,7 +472,7 @@ export type MessageMaxOrderByAggregateInput = {
 
 export type MessageMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  sessionId?: Prisma.SortOrder
+  conversationId?: Prisma.SortOrder
   senderType?: Prisma.SortOrder
   senderId?: Prisma.SortOrder
   messageType?: Prisma.SortOrder
@@ -485,45 +485,45 @@ export type MessageMinOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
 }
 
-export type MessageCreateNestedManyWithoutSessionInput = {
-  create?: Prisma.XOR<Prisma.MessageCreateWithoutSessionInput, Prisma.MessageUncheckedCreateWithoutSessionInput> | Prisma.MessageCreateWithoutSessionInput[] | Prisma.MessageUncheckedCreateWithoutSessionInput[]
-  connectOrCreate?: Prisma.MessageCreateOrConnectWithoutSessionInput | Prisma.MessageCreateOrConnectWithoutSessionInput[]
-  createMany?: Prisma.MessageCreateManySessionInputEnvelope
+export type MessageCreateNestedManyWithoutConversationInput = {
+  create?: Prisma.XOR<Prisma.MessageCreateWithoutConversationInput, Prisma.MessageUncheckedCreateWithoutConversationInput> | Prisma.MessageCreateWithoutConversationInput[] | Prisma.MessageUncheckedCreateWithoutConversationInput[]
+  connectOrCreate?: Prisma.MessageCreateOrConnectWithoutConversationInput | Prisma.MessageCreateOrConnectWithoutConversationInput[]
+  createMany?: Prisma.MessageCreateManyConversationInputEnvelope
   connect?: Prisma.MessageWhereUniqueInput | Prisma.MessageWhereUniqueInput[]
 }
 
-export type MessageUncheckedCreateNestedManyWithoutSessionInput = {
-  create?: Prisma.XOR<Prisma.MessageCreateWithoutSessionInput, Prisma.MessageUncheckedCreateWithoutSessionInput> | Prisma.MessageCreateWithoutSessionInput[] | Prisma.MessageUncheckedCreateWithoutSessionInput[]
-  connectOrCreate?: Prisma.MessageCreateOrConnectWithoutSessionInput | Prisma.MessageCreateOrConnectWithoutSessionInput[]
-  createMany?: Prisma.MessageCreateManySessionInputEnvelope
+export type MessageUncheckedCreateNestedManyWithoutConversationInput = {
+  create?: Prisma.XOR<Prisma.MessageCreateWithoutConversationInput, Prisma.MessageUncheckedCreateWithoutConversationInput> | Prisma.MessageCreateWithoutConversationInput[] | Prisma.MessageUncheckedCreateWithoutConversationInput[]
+  connectOrCreate?: Prisma.MessageCreateOrConnectWithoutConversationInput | Prisma.MessageCreateOrConnectWithoutConversationInput[]
+  createMany?: Prisma.MessageCreateManyConversationInputEnvelope
   connect?: Prisma.MessageWhereUniqueInput | Prisma.MessageWhereUniqueInput[]
 }
 
-export type MessageUpdateManyWithoutSessionNestedInput = {
-  create?: Prisma.XOR<Prisma.MessageCreateWithoutSessionInput, Prisma.MessageUncheckedCreateWithoutSessionInput> | Prisma.MessageCreateWithoutSessionInput[] | Prisma.MessageUncheckedCreateWithoutSessionInput[]
-  connectOrCreate?: Prisma.MessageCreateOrConnectWithoutSessionInput | Prisma.MessageCreateOrConnectWithoutSessionInput[]
-  upsert?: Prisma.MessageUpsertWithWhereUniqueWithoutSessionInput | Prisma.MessageUpsertWithWhereUniqueWithoutSessionInput[]
-  createMany?: Prisma.MessageCreateManySessionInputEnvelope
+export type MessageUpdateManyWithoutConversationNestedInput = {
+  create?: Prisma.XOR<Prisma.MessageCreateWithoutConversationInput, Prisma.MessageUncheckedCreateWithoutConversationInput> | Prisma.MessageCreateWithoutConversationInput[] | Prisma.MessageUncheckedCreateWithoutConversationInput[]
+  connectOrCreate?: Prisma.MessageCreateOrConnectWithoutConversationInput | Prisma.MessageCreateOrConnectWithoutConversationInput[]
+  upsert?: Prisma.MessageUpsertWithWhereUniqueWithoutConversationInput | Prisma.MessageUpsertWithWhereUniqueWithoutConversationInput[]
+  createMany?: Prisma.MessageCreateManyConversationInputEnvelope
   set?: Prisma.MessageWhereUniqueInput | Prisma.MessageWhereUniqueInput[]
   disconnect?: Prisma.MessageWhereUniqueInput | Prisma.MessageWhereUniqueInput[]
   delete?: Prisma.MessageWhereUniqueInput | Prisma.MessageWhereUniqueInput[]
   connect?: Prisma.MessageWhereUniqueInput | Prisma.MessageWhereUniqueInput[]
-  update?: Prisma.MessageUpdateWithWhereUniqueWithoutSessionInput | Prisma.MessageUpdateWithWhereUniqueWithoutSessionInput[]
-  updateMany?: Prisma.MessageUpdateManyWithWhereWithoutSessionInput | Prisma.MessageUpdateManyWithWhereWithoutSessionInput[]
+  update?: Prisma.MessageUpdateWithWhereUniqueWithoutConversationInput | Prisma.MessageUpdateWithWhereUniqueWithoutConversationInput[]
+  updateMany?: Prisma.MessageUpdateManyWithWhereWithoutConversationInput | Prisma.MessageUpdateManyWithWhereWithoutConversationInput[]
   deleteMany?: Prisma.MessageScalarWhereInput | Prisma.MessageScalarWhereInput[]
 }
 
-export type MessageUncheckedUpdateManyWithoutSessionNestedInput = {
-  create?: Prisma.XOR<Prisma.MessageCreateWithoutSessionInput, Prisma.MessageUncheckedCreateWithoutSessionInput> | Prisma.MessageCreateWithoutSessionInput[] | Prisma.MessageUncheckedCreateWithoutSessionInput[]
-  connectOrCreate?: Prisma.MessageCreateOrConnectWithoutSessionInput | Prisma.MessageCreateOrConnectWithoutSessionInput[]
-  upsert?: Prisma.MessageUpsertWithWhereUniqueWithoutSessionInput | Prisma.MessageUpsertWithWhereUniqueWithoutSessionInput[]
-  createMany?: Prisma.MessageCreateManySessionInputEnvelope
+export type MessageUncheckedUpdateManyWithoutConversationNestedInput = {
+  create?: Prisma.XOR<Prisma.MessageCreateWithoutConversationInput, Prisma.MessageUncheckedCreateWithoutConversationInput> | Prisma.MessageCreateWithoutConversationInput[] | Prisma.MessageUncheckedCreateWithoutConversationInput[]
+  connectOrCreate?: Prisma.MessageCreateOrConnectWithoutConversationInput | Prisma.MessageCreateOrConnectWithoutConversationInput[]
+  upsert?: Prisma.MessageUpsertWithWhereUniqueWithoutConversationInput | Prisma.MessageUpsertWithWhereUniqueWithoutConversationInput[]
+  createMany?: Prisma.MessageCreateManyConversationInputEnvelope
   set?: Prisma.MessageWhereUniqueInput | Prisma.MessageWhereUniqueInput[]
   disconnect?: Prisma.MessageWhereUniqueInput | Prisma.MessageWhereUniqueInput[]
   delete?: Prisma.MessageWhereUniqueInput | Prisma.MessageWhereUniqueInput[]
   connect?: Prisma.MessageWhereUniqueInput | Prisma.MessageWhereUniqueInput[]
-  update?: Prisma.MessageUpdateWithWhereUniqueWithoutSessionInput | Prisma.MessageUpdateWithWhereUniqueWithoutSessionInput[]
-  updateMany?: Prisma.MessageUpdateManyWithWhereWithoutSessionInput | Prisma.MessageUpdateManyWithWhereWithoutSessionInput[]
+  update?: Prisma.MessageUpdateWithWhereUniqueWithoutConversationInput | Prisma.MessageUpdateWithWhereUniqueWithoutConversationInput[]
+  updateMany?: Prisma.MessageUpdateManyWithWhereWithoutConversationInput | Prisma.MessageUpdateManyWithWhereWithoutConversationInput[]
   deleteMany?: Prisma.MessageScalarWhereInput | Prisma.MessageScalarWhereInput[]
 }
 
@@ -601,7 +601,7 @@ export type MessageUncheckedUpdateManyWithoutReplyToNestedInput = {
   deleteMany?: Prisma.MessageScalarWhereInput | Prisma.MessageScalarWhereInput[]
 }
 
-export type MessageCreateWithoutSessionInput = {
+export type MessageCreateWithoutConversationInput = {
   id?: string
   senderType: $Enums.MessageSenderType
   senderId?: string | null
@@ -616,7 +616,7 @@ export type MessageCreateWithoutSessionInput = {
   replies?: Prisma.MessageCreateNestedManyWithoutReplyToInput
 }
 
-export type MessageUncheckedCreateWithoutSessionInput = {
+export type MessageUncheckedCreateWithoutConversationInput = {
   id?: string
   senderType: $Enums.MessageSenderType
   senderId?: string | null
@@ -631,30 +631,30 @@ export type MessageUncheckedCreateWithoutSessionInput = {
   replies?: Prisma.MessageUncheckedCreateNestedManyWithoutReplyToInput
 }
 
-export type MessageCreateOrConnectWithoutSessionInput = {
+export type MessageCreateOrConnectWithoutConversationInput = {
   where: Prisma.MessageWhereUniqueInput
-  create: Prisma.XOR<Prisma.MessageCreateWithoutSessionInput, Prisma.MessageUncheckedCreateWithoutSessionInput>
+  create: Prisma.XOR<Prisma.MessageCreateWithoutConversationInput, Prisma.MessageUncheckedCreateWithoutConversationInput>
 }
 
-export type MessageCreateManySessionInputEnvelope = {
-  data: Prisma.MessageCreateManySessionInput | Prisma.MessageCreateManySessionInput[]
+export type MessageCreateManyConversationInputEnvelope = {
+  data: Prisma.MessageCreateManyConversationInput | Prisma.MessageCreateManyConversationInput[]
   skipDuplicates?: boolean
 }
 
-export type MessageUpsertWithWhereUniqueWithoutSessionInput = {
+export type MessageUpsertWithWhereUniqueWithoutConversationInput = {
   where: Prisma.MessageWhereUniqueInput
-  update: Prisma.XOR<Prisma.MessageUpdateWithoutSessionInput, Prisma.MessageUncheckedUpdateWithoutSessionInput>
-  create: Prisma.XOR<Prisma.MessageCreateWithoutSessionInput, Prisma.MessageUncheckedCreateWithoutSessionInput>
+  update: Prisma.XOR<Prisma.MessageUpdateWithoutConversationInput, Prisma.MessageUncheckedUpdateWithoutConversationInput>
+  create: Prisma.XOR<Prisma.MessageCreateWithoutConversationInput, Prisma.MessageUncheckedCreateWithoutConversationInput>
 }
 
-export type MessageUpdateWithWhereUniqueWithoutSessionInput = {
+export type MessageUpdateWithWhereUniqueWithoutConversationInput = {
   where: Prisma.MessageWhereUniqueInput
-  data: Prisma.XOR<Prisma.MessageUpdateWithoutSessionInput, Prisma.MessageUncheckedUpdateWithoutSessionInput>
+  data: Prisma.XOR<Prisma.MessageUpdateWithoutConversationInput, Prisma.MessageUncheckedUpdateWithoutConversationInput>
 }
 
-export type MessageUpdateManyWithWhereWithoutSessionInput = {
+export type MessageUpdateManyWithWhereWithoutConversationInput = {
   where: Prisma.MessageScalarWhereInput
-  data: Prisma.XOR<Prisma.MessageUpdateManyMutationInput, Prisma.MessageUncheckedUpdateManyWithoutSessionInput>
+  data: Prisma.XOR<Prisma.MessageUpdateManyMutationInput, Prisma.MessageUncheckedUpdateManyWithoutConversationInput>
 }
 
 export type MessageScalarWhereInput = {
@@ -662,7 +662,7 @@ export type MessageScalarWhereInput = {
   OR?: Prisma.MessageScalarWhereInput[]
   NOT?: Prisma.MessageScalarWhereInput | Prisma.MessageScalarWhereInput[]
   id?: Prisma.StringFilter<"Message"> | string
-  sessionId?: Prisma.StringFilter<"Message"> | string
+  conversationId?: Prisma.StringFilter<"Message"> | string
   senderType?: Prisma.EnumMessageSenderTypeFilter<"Message"> | $Enums.MessageSenderType
   senderId?: Prisma.StringNullableFilter<"Message"> | string | null
   messageType?: Prisma.EnumMessageTypeFilter<"Message"> | $Enums.MessageType
@@ -686,13 +686,13 @@ export type MessageCreateWithoutRepliesInput = {
   editedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  session: Prisma.SessionCreateNestedOneWithoutMessagesInput
+  conversation: Prisma.ConversationCreateNestedOneWithoutMessagesInput
   replyTo?: Prisma.MessageCreateNestedOneWithoutRepliesInput
 }
 
 export type MessageUncheckedCreateWithoutRepliesInput = {
   id?: string
-  sessionId: string
+  conversationId: string
   senderType: $Enums.MessageSenderType
   senderId?: string | null
   messageType?: $Enums.MessageType
@@ -721,13 +721,13 @@ export type MessageCreateWithoutReplyToInput = {
   editedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  session: Prisma.SessionCreateNestedOneWithoutMessagesInput
+  conversation: Prisma.ConversationCreateNestedOneWithoutMessagesInput
   replies?: Prisma.MessageCreateNestedManyWithoutReplyToInput
 }
 
 export type MessageUncheckedCreateWithoutReplyToInput = {
   id?: string
-  sessionId: string
+  conversationId: string
   senderType: $Enums.MessageSenderType
   senderId?: string | null
   messageType?: $Enums.MessageType
@@ -772,13 +772,13 @@ export type MessageUpdateWithoutRepliesInput = {
   editedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  session?: Prisma.SessionUpdateOneRequiredWithoutMessagesNestedInput
+  conversation?: Prisma.ConversationUpdateOneRequiredWithoutMessagesNestedInput
   replyTo?: Prisma.MessageUpdateOneWithoutRepliesNestedInput
 }
 
 export type MessageUncheckedUpdateWithoutRepliesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  sessionId?: Prisma.StringFieldUpdateOperationsInput | string
+  conversationId?: Prisma.StringFieldUpdateOperationsInput | string
   senderType?: Prisma.EnumMessageSenderTypeFieldUpdateOperationsInput | $Enums.MessageSenderType
   senderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   messageType?: Prisma.EnumMessageTypeFieldUpdateOperationsInput | $Enums.MessageType
@@ -807,7 +807,7 @@ export type MessageUpdateManyWithWhereWithoutReplyToInput = {
   data: Prisma.XOR<Prisma.MessageUpdateManyMutationInput, Prisma.MessageUncheckedUpdateManyWithoutReplyToInput>
 }
 
-export type MessageCreateManySessionInput = {
+export type MessageCreateManyConversationInput = {
   id?: string
   senderType: $Enums.MessageSenderType
   senderId?: string | null
@@ -821,7 +821,7 @@ export type MessageCreateManySessionInput = {
   updatedAt?: Date | string
 }
 
-export type MessageUpdateWithoutSessionInput = {
+export type MessageUpdateWithoutConversationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   senderType?: Prisma.EnumMessageSenderTypeFieldUpdateOperationsInput | $Enums.MessageSenderType
   senderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -836,7 +836,7 @@ export type MessageUpdateWithoutSessionInput = {
   replies?: Prisma.MessageUpdateManyWithoutReplyToNestedInput
 }
 
-export type MessageUncheckedUpdateWithoutSessionInput = {
+export type MessageUncheckedUpdateWithoutConversationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   senderType?: Prisma.EnumMessageSenderTypeFieldUpdateOperationsInput | $Enums.MessageSenderType
   senderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -851,7 +851,7 @@ export type MessageUncheckedUpdateWithoutSessionInput = {
   replies?: Prisma.MessageUncheckedUpdateManyWithoutReplyToNestedInput
 }
 
-export type MessageUncheckedUpdateManyWithoutSessionInput = {
+export type MessageUncheckedUpdateManyWithoutConversationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   senderType?: Prisma.EnumMessageSenderTypeFieldUpdateOperationsInput | $Enums.MessageSenderType
   senderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -867,7 +867,7 @@ export type MessageUncheckedUpdateManyWithoutSessionInput = {
 
 export type MessageCreateManyReplyToInput = {
   id?: string
-  sessionId: string
+  conversationId: string
   senderType: $Enums.MessageSenderType
   senderId?: string | null
   messageType?: $Enums.MessageType
@@ -890,13 +890,13 @@ export type MessageUpdateWithoutReplyToInput = {
   editedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  session?: Prisma.SessionUpdateOneRequiredWithoutMessagesNestedInput
+  conversation?: Prisma.ConversationUpdateOneRequiredWithoutMessagesNestedInput
   replies?: Prisma.MessageUpdateManyWithoutReplyToNestedInput
 }
 
 export type MessageUncheckedUpdateWithoutReplyToInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  sessionId?: Prisma.StringFieldUpdateOperationsInput | string
+  conversationId?: Prisma.StringFieldUpdateOperationsInput | string
   senderType?: Prisma.EnumMessageSenderTypeFieldUpdateOperationsInput | $Enums.MessageSenderType
   senderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   messageType?: Prisma.EnumMessageTypeFieldUpdateOperationsInput | $Enums.MessageType
@@ -911,7 +911,7 @@ export type MessageUncheckedUpdateWithoutReplyToInput = {
 
 export type MessageUncheckedUpdateManyWithoutReplyToInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  sessionId?: Prisma.StringFieldUpdateOperationsInput | string
+  conversationId?: Prisma.StringFieldUpdateOperationsInput | string
   senderType?: Prisma.EnumMessageSenderTypeFieldUpdateOperationsInput | $Enums.MessageSenderType
   senderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   messageType?: Prisma.EnumMessageTypeFieldUpdateOperationsInput | $Enums.MessageType
@@ -956,7 +956,7 @@ export type MessageCountOutputTypeCountRepliesArgs<ExtArgs extends runtime.Types
 
 export type MessageSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  sessionId?: boolean
+  conversationId?: boolean
   senderType?: boolean
   senderId?: boolean
   messageType?: boolean
@@ -967,7 +967,7 @@ export type MessageSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   editedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  session?: boolean | Prisma.SessionDefaultArgs<ExtArgs>
+  conversation?: boolean | Prisma.ConversationDefaultArgs<ExtArgs>
   replyTo?: boolean | Prisma.Message$replyToArgs<ExtArgs>
   replies?: boolean | Prisma.Message$repliesArgs<ExtArgs>
   _count?: boolean | Prisma.MessageCountOutputTypeDefaultArgs<ExtArgs>
@@ -975,7 +975,7 @@ export type MessageSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
 
 export type MessageSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  sessionId?: boolean
+  conversationId?: boolean
   senderType?: boolean
   senderId?: boolean
   messageType?: boolean
@@ -986,13 +986,13 @@ export type MessageSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   editedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  session?: boolean | Prisma.SessionDefaultArgs<ExtArgs>
+  conversation?: boolean | Prisma.ConversationDefaultArgs<ExtArgs>
   replyTo?: boolean | Prisma.Message$replyToArgs<ExtArgs>
 }, ExtArgs["result"]["message"]>
 
 export type MessageSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  sessionId?: boolean
+  conversationId?: boolean
   senderType?: boolean
   senderId?: boolean
   messageType?: boolean
@@ -1003,13 +1003,13 @@ export type MessageSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   editedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  session?: boolean | Prisma.SessionDefaultArgs<ExtArgs>
+  conversation?: boolean | Prisma.ConversationDefaultArgs<ExtArgs>
   replyTo?: boolean | Prisma.Message$replyToArgs<ExtArgs>
 }, ExtArgs["result"]["message"]>
 
 export type MessageSelectScalar = {
   id?: boolean
-  sessionId?: boolean
+  conversationId?: boolean
   senderType?: boolean
   senderId?: boolean
   messageType?: boolean
@@ -1022,32 +1022,32 @@ export type MessageSelectScalar = {
   updatedAt?: boolean
 }
 
-export type MessageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "sessionId" | "senderType" | "senderId" | "messageType" | "content" | "replyToId" | "status" | "isEdited" | "editedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["message"]>
+export type MessageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "conversationId" | "senderType" | "senderId" | "messageType" | "content" | "replyToId" | "status" | "isEdited" | "editedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["message"]>
 export type MessageInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  session?: boolean | Prisma.SessionDefaultArgs<ExtArgs>
+  conversation?: boolean | Prisma.ConversationDefaultArgs<ExtArgs>
   replyTo?: boolean | Prisma.Message$replyToArgs<ExtArgs>
   replies?: boolean | Prisma.Message$repliesArgs<ExtArgs>
   _count?: boolean | Prisma.MessageCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type MessageIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  session?: boolean | Prisma.SessionDefaultArgs<ExtArgs>
+  conversation?: boolean | Prisma.ConversationDefaultArgs<ExtArgs>
   replyTo?: boolean | Prisma.Message$replyToArgs<ExtArgs>
 }
 export type MessageIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  session?: boolean | Prisma.SessionDefaultArgs<ExtArgs>
+  conversation?: boolean | Prisma.ConversationDefaultArgs<ExtArgs>
   replyTo?: boolean | Prisma.Message$replyToArgs<ExtArgs>
 }
 
 export type $MessagePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Message"
   objects: {
-    session: Prisma.$SessionPayload<ExtArgs>
+    conversation: Prisma.$ConversationPayload<ExtArgs>
     replyTo: Prisma.$MessagePayload<ExtArgs> | null
     replies: Prisma.$MessagePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    sessionId: string
+    conversationId: string
     senderType: $Enums.MessageSenderType
     senderId: string | null
     messageType: $Enums.MessageType
@@ -1452,7 +1452,7 @@ readonly fields: MessageFieldRefs;
  */
 export interface Prisma__MessageClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  session<T extends Prisma.SessionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SessionDefaultArgs<ExtArgs>>): Prisma.Prisma__SessionClient<runtime.Types.Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  conversation<T extends Prisma.ConversationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ConversationDefaultArgs<ExtArgs>>): Prisma.Prisma__ConversationClient<runtime.Types.Result.GetResult<Prisma.$ConversationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   replyTo<T extends Prisma.Message$replyToArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Message$replyToArgs<ExtArgs>>): Prisma.Prisma__MessageClient<runtime.Types.Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   replies<T extends Prisma.Message$repliesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Message$repliesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -1485,7 +1485,7 @@ export interface Prisma__MessageClient<T, Null = never, ExtArgs extends runtime.
  */
 export interface MessageFieldRefs {
   readonly id: Prisma.FieldRef<"Message", 'String'>
-  readonly sessionId: Prisma.FieldRef<"Message", 'String'>
+  readonly conversationId: Prisma.FieldRef<"Message", 'String'>
   readonly senderType: Prisma.FieldRef<"Message", 'MessageSenderType'>
   readonly senderId: Prisma.FieldRef<"Message", 'String'>
   readonly messageType: Prisma.FieldRef<"Message", 'MessageType'>

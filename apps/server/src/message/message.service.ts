@@ -11,22 +11,22 @@ export class MessageService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(
-    sessionId: string,
+    conversationId: string,
     dto: SendMessageDto,
     senderType: "VISITOR" | "AGENT" | "SYSTEM",
     senderId?: string,
   ) {
-    const session = await this.prisma.session.findUnique({
-      where: { id: sessionId },
+    const conversation = await this.prisma.conversation.findUnique({
+      where: { id: conversationId },
     });
 
-    if (!session) {
-      throw new NotFoundException("Session not found");
+    if (!conversation) {
+      throw new NotFoundException("Conversation not found");
     }
 
-    if (session.status === "CLOSED" && senderType === "VISITOR") {
-      await this.prisma.session.update({
-        where: { id: sessionId },
+    if (conversation.status === "CLOSED" && senderType === "VISITOR") {
+      await this.prisma.conversation.update({
+        where: { id: conversationId },
         data: { status: "ACTIVE" },
       });
     }
@@ -37,7 +37,7 @@ export class MessageService {
 
     const message = await this.prisma.message.create({
       data: {
-        sessionId,
+        conversationId,
         senderType,
         senderId: senderId ?? null,
         messageType: dto.messageType ?? "TEXT",
@@ -56,8 +56,8 @@ export class MessageService {
       },
     });
 
-    await this.prisma.session.update({
-      where: { id: sessionId },
+    await this.prisma.conversation.update({
+      where: { id: conversationId },
       data: { updatedAt: new Date() },
     });
 
@@ -67,20 +67,20 @@ export class MessageService {
     };
   }
 
-  async findBySession(sessionId: string, page = 1, limit = 50) {
-    const session = await this.prisma.session.findUnique({
-      where: { id: sessionId },
+  async findByConversation(conversationId: string, page = 1, limit = 50) {
+    const conversation = await this.prisma.conversation.findUnique({
+      where: { id: conversationId },
     });
 
-    if (!session) {
-      throw new NotFoundException("Session not found");
+    if (!conversation) {
+      throw new NotFoundException("Conversation not found");
     }
 
     const skip = (page - 1) * limit;
 
     const [messages, total] = await Promise.all([
       this.prisma.message.findMany({
-        where: { sessionId },
+        where: { conversationId },
         orderBy: { createdAt: "desc" },
         skip,
         take: limit,
@@ -95,7 +95,7 @@ export class MessageService {
           },
         },
       }),
-      this.prisma.message.count({ where: { sessionId } }),
+      this.prisma.message.count({ where: { conversationId } }),
     ]);
 
     return {
@@ -112,13 +112,10 @@ export class MessageService {
     };
   }
 
-  async markAsRead(sessionId: string, senderType: "VISITOR" | "AGENT") {
-    const statusField =
-      senderType === "AGENT" ? "status" : "status";
-
+  async markAsRead(conversationId: string, senderType: "VISITOR" | "AGENT") {
     await this.prisma.message.updateMany({
       where: {
-        sessionId,
+        conversationId,
         senderType: senderType === "AGENT" ? "VISITOR" : "AGENT",
         status: { not: "READ" },
       },

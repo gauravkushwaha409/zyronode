@@ -29,14 +29,14 @@ export const VisitorStatus = {
 export type VisitorStatus = (typeof VisitorStatus)[keyof typeof VisitorStatus]
 
 
-export const SessionStatus = {
+export const ConversationStatus = {
   ACTIVE: 'ACTIVE',
   IDLE: 'IDLE',
   CLOSED: 'CLOSED',
   PENDING: 'PENDING'
 } as const
 
-export type SessionStatus = (typeof SessionStatus)[keyof typeof SessionStatus]
+export type ConversationStatus = (typeof ConversationStatus)[keyof typeof ConversationStatus]
 
 
 export const MessageSenderType = {

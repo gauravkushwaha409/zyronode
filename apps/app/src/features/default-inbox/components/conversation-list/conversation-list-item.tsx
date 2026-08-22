@@ -2,9 +2,9 @@ import { Avatar, Icon, Typography } from '@package/ui';
 import { cn } from '@package/ui';
 import { formatDistanceToNowStrict } from 'date-fns';
 import { useConversationItem } from '../../hooks';
-import type { InboxSessionListItem } from '../../types/inbox-api.types';
+import type { InboxConversationListItem } from '../../types/inbox-api.types';
 
-type ConversationListItemProps = InboxSessionListItem;
+type ConversationListItemProps = InboxConversationListItem;
 
 export function ConversationListItem(props: ConversationListItemProps) {
   const { value: selectedId, onChange: selectConversation } = useConversationItem();

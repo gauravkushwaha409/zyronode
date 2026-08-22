@@ -1,6 +1,6 @@
 export const SSE_ENDPOINTS = {
-	AGENT_STREAM: "/sse-event/agent",
-	SESSION_STREAM: "/sse-event/session",
+	AGENT_STREAM: "/events/agent",
+	CONVERSATION_STREAM: "/events/conversation",
 } as const;
 
 /**

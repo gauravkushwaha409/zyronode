@@ -1,4 +1,4 @@
-export interface InboxSessionListItem {
+export interface InboxConversationListItem {
   id: string;
   status: "ACTIVE" | "CLOSED" | "IDLE" | "PENDING";
   channel: string;
@@ -15,26 +15,26 @@ export interface InboxSessionListItem {
   unreadCount: number;
 }
 
-export interface InboxSessionsPagination {
+export interface InboxConversationsPagination {
   page: number;
   limit: number;
   total: number;
   totalPages: number;
 }
 
-export interface InboxSessionsData {
-  sessions: InboxSessionListItem[];
-  pagination: InboxSessionsPagination;
+export interface InboxConversationsData {
+  conversations: InboxConversationListItem[];
+  pagination: InboxConversationsPagination;
 }
 
-export interface InboxSessionsResponse {
+export interface InboxConversationsResponse {
   message: string;
-  data: InboxSessionsData;
+  data: InboxConversationsData;
 }
 
 export interface InboxMessage {
   id: string;
-  sessionId: string;
+  conversationId: string;
   senderType: "VISITOR" | "AGENT" | "SYSTEM";
   senderId: string | null;
   messageType: "TEXT" | "FILE" | "INTERNAL_NOTE" | "AUDIO" | "VIDEO";
@@ -53,7 +53,7 @@ export interface InboxMessage {
   updatedAt: string;
 }
 
-export interface InboxSessionDetail {
+export interface InboxConversationDetail {
   id: string;
   organizationId: string;
   status: "ACTIVE" | "CLOSED" | "IDLE" | "PENDING";
@@ -70,9 +70,9 @@ export interface InboxSessionDetail {
   updatedAt: string;
 }
 
-export interface InboxSessionDetailResponse {
+export interface InboxConversationDetailResponse {
   message: string;
-  data: InboxSessionDetail;
+  data: InboxConversationDetail;
 }
 
 export interface InboxSendAgentMessagePayload {
@@ -86,12 +86,12 @@ export interface InboxSendAgentMessageResponse {
   data: InboxMessage;
 }
 
-export interface InboxCloseSessionResponse {
+export interface InboxCloseConversationResponse {
   message: string;
   data: { id: string; status: string };
 }
 
-export interface InboxReopenSessionResponse {
+export interface InboxReopenConversationResponse {
   message: string;
   data: { id: string; status: string };
 }

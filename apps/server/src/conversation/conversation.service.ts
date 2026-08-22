@@ -1,13 +1,13 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import { CreateSessionDto } from "./dto/create-session.dto";
+import { CreateConversationDto } from "./dto/create-conversation.dto";
 
 @Injectable()
-export class SessionService {
+export class ConversationService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(dto: CreateSessionDto, ip?: string, userAgent?: string) {
-    const session = await this.prisma.session.create({
+  async create(dto: CreateConversationDto, ip?: string, userAgent?: string) {
+    const conversation = await this.prisma.conversation.create({
       data: {
         organizationId: dto.organizationId,
         sourceUrl: dto.sourceUrl,
@@ -27,14 +27,14 @@ export class SessionService {
     });
 
     return {
-      message: "Session created successfully",
-      data: session,
+      message: "Conversation created successfully",
+      data: conversation,
     };
   }
 
-  async findById(sessionId: string) {
-    const session = await this.prisma.session.findUnique({
-      where: { id: sessionId },
+  async findById(conversationId: string) {
+    const conversation = await this.prisma.conversation.findUnique({
+      where: { id: conversationId },
       include: {
         messages: {
           orderBy: { createdAt: "desc" },
@@ -56,18 +56,18 @@ export class SessionService {
       },
     });
 
-    if (!session) {
-      throw new NotFoundException("Session not found");
+    if (!conversation) {
+      throw new NotFoundException("Conversation not found");
     }
 
     return {
-      message: "Session fetched successfully",
-      data: session,
+      message: "Conversation fetched successfully",
+      data: conversation,
     };
   }
 
   async findByOrganizationId(organizationId: string) {
-    const sessions = await this.prisma.session.findMany({
+    const conversations = await this.prisma.conversation.findMany({
       where: { organizationId },
       orderBy: { updatedAt: "desc" },
       include: {
@@ -79,30 +79,30 @@ export class SessionService {
     });
 
     return {
-      message: "Sessions fetched successfully",
-      data: sessions,
+      message: "Conversations fetched successfully",
+      data: conversations,
     };
   }
 
   async updateStatus(
-    sessionId: string,
+    conversationId: string,
     status: "ACTIVE" | "IDLE" | "CLOSED" | "PENDING",
   ) {
-    const session = await this.prisma.session.findUnique({
-      where: { id: sessionId },
+    const conversation = await this.prisma.conversation.findUnique({
+      where: { id: conversationId },
     });
 
-    if (!session) {
-      throw new NotFoundException("Session not found");
+    if (!conversation) {
+      throw new NotFoundException("Conversation not found");
     }
 
-    const updated = await this.prisma.session.update({
-      where: { id: sessionId },
+    const updated = await this.prisma.conversation.update({
+      where: { id: conversationId },
       data: { status },
     });
 
     return {
-      message: "Session status updated",
+      message: "Conversation status updated",
       data: updated,
     };
   }
