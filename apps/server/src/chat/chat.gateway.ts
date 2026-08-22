@@ -14,6 +14,7 @@ import { Server, Socket } from "socket.io";
 import { EventBridge } from "../common/services/event-bridge.service";
 import { MessageService } from "../message/message.service";
 import { SessionService } from "../session/session.service";
+import { SseService } from "../sse/sse.service";
 
 interface AuthPayload {
   id: string;
@@ -47,6 +48,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     private readonly messageService: MessageService,
     private readonly sessionService: SessionService,
     private readonly eventBridge: EventBridge,
+    private readonly sseService: SseService,
   ) {}
 
   afterInit() {
@@ -143,6 +145,12 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
           session: session.data,
           message: result.data,
         });
+
+      void this.sseService.publish(
+        [`org:${session.data.organizationId}`, `session:${data.sessionId}`],
+        "message.created",
+        { session: { id: data.sessionId }, message: result.data },
+      );
     }
 
     return { event: "message:sent", data: result.data };

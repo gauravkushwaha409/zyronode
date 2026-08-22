@@ -11,6 +11,7 @@ import { MessageModule } from './message/message.module';
 import { ChatModule } from './chat/chat.module';
 import { InboxModule } from './inbox/inbox.module';
 import { CommonModule } from './common/common.module';
+import { SseModule } from './sse/sse.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { CommonModule } from './common/common.module';
     MessageModule,
     ChatModule,
     InboxModule,
+    SseModule,
   ],
   controllers: [AppController],
   providers: [AppService],

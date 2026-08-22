@@ -11,6 +11,7 @@ import { JwtAuthGuard } from "../common/gaurds/jwt-auth.guard";
 import { CurrentUser } from "../common/decorator/current-user.decorator";
 import { EventBridge } from "../common/services/event-bridge.service";
 import { PrismaService } from "../prisma/prisma.service";
+import { SseService } from "../sse/sse.service";
 import { SendMessageDto } from "./dto/send-message.dto";
 import { ListMessagesDto } from "./dto/list-messages.dto";
 import { MessageService } from "./message.service";
@@ -20,6 +21,7 @@ export class MessageController {
   constructor(
     private readonly messageService: MessageService,
     private readonly eventBridge: EventBridge,
+    private readonly sseService: SseService,
     private readonly prisma: PrismaService,
   ) {}
 
@@ -33,6 +35,13 @@ export class MessageController {
     });
     if (session?.organizationId) {
       this.eventBridge.emitToOrg(session.organizationId, "message:new", data);
+
+      // SSE fanout: agents of the tenant + visitors of this session
+      await this.sseService.publish(
+        [`org:${session.organizationId}`, `session:${sessionId}`],
+        "message.created",
+        data,
+      );
     }
   }
 
