@@ -15,6 +15,7 @@
     "@package/form": "workspace:*",
     "@package/icons": "workspace:*",
     "@package/query": "workspace:*",
+    "@package/sse": "workspace:*",
     "@package/text-editor": "workspace:*",
     "@package/ui": "workspace:*",
     "@tanstack/react-router": "^1.169.2",

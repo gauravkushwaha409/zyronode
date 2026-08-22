@@ -26,6 +26,7 @@
       "@package/query": ["../../packages/query/src/index.ts"],
       "@package/api-client": ["../../packages/api-client/src/index.ts"],
       "@package/websocket": ["../../packages/websocket/src/index.ts"],
+      "@package/sse": ["../../packages/sse/src/index.ts"],
       "@package/text-editor": ["../../packages/text-editor/src/index.ts"]
     }
   },
