@@ -1,8 +1,15 @@
 import { Icon, Input } from '@package/ui';
 import { createFileRoute, Outlet } from '@tanstack/react-router';
 import { Sidebar } from '@/components';
+import { activeOrganizationGuard } from '@/features/auth/gaurds';
 
 export const Route = createFileRoute('/_organization-protected/$organization')({
+  beforeLoad: ({ context, params }) => {
+    activeOrganizationGuard({
+      auth: context.auth,
+      organizationId: params.organization,
+    });
+  },
   component: RouteComponent,
 });
 

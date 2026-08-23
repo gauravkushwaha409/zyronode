@@ -1,9 +1,9 @@
 import { createQueryClient, TanstackQueryProvider } from "@package/query";
 import { WebSocketProvider } from "@package/websocket";
 import { type ReactNode, useEffect, useState } from "react";
-import { getConfig } from "./config";
-import { useCreateConversationMutation } from "./hooks";
-import { getConversationId, setConversationId } from "./lib/storage";
+import { getConfig } from "../config";
+import { useCreateConversationMutation } from "../hooks";
+import { getConversationId, setConversationId } from "../lib/storage";
 
 const queryClient = createQueryClient();
 

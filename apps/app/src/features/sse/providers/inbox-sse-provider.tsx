@@ -19,7 +19,6 @@ export function InboxSseProvider({
 	organizationId,
 	children,
 }: InboxSseProviderProps) {
-  console.log("sse endpoints--->", buildSseUrl(CONFIG.SSE.AGENT_STREAM, { organizationId }));
 	return (
 		<SseProvider
 			options={{

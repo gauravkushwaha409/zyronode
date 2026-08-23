@@ -9,11 +9,11 @@ export function useSuccessOnboarding() {
 	}
 
 	// const organizationId = data?.data?.lastOrgId;
-	const organizationId = "test-org-id"; // Replace with actual logic to get the organization ID
+	const organizationId = data?.data?.data?.lastOrgId;
 
 
 	if (!organizationId) {
-		throw new Error("Organization not found");
+		throw new Error("Organization not found");// Replace with actual logic to get the organization ID
 	}
 
 	const handleStart = () => {

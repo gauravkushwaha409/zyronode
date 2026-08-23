@@ -7,7 +7,9 @@ import { defineConfig, loadEnv } from "vite";
 export default defineConfig(({ mode }) => {
 	const env = loadEnv(mode, "../../", "VITE_");
 
+
 	const serverUrl = env.VITE_SERVER_URL;
+	console.log("serverUrl", serverUrl);
 
 	return {
 		envDir: "../../",
@@ -15,7 +17,7 @@ export default defineConfig(({ mode }) => {
 			port: 3000,
 			host: true,
 			proxy: {
-				"/v1": {
+				"/api/v1": {
 					target: serverUrl,
 					changeOrigin: true,
 				},

@@ -21,7 +21,9 @@ async function bootstrap() {
 	app.useGlobalFilters(new HttpExceptionFilter());
 	app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
 
-	app.setGlobalPrefix("v1");
+	app.setGlobalPrefix("/api/v1",{
+		exclude: []
+	});
 
 	await app.listen(8000, "0.0.0.0");
 }

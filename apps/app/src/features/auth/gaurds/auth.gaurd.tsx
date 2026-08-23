@@ -1,4 +1,5 @@
 import type React from "react";
+import { redirect } from "@tanstack/react-router";
 import { ENV } from "@/config/env";
 import type { RouterContext } from "@/routes/__root";
 import { useMeQuery } from "../hooks";
@@ -60,6 +61,35 @@ export function redirectAuthenticatedUserToApp(auth: RouterContext["auth"]) {
 
 	if (user?.id && lastOrdId) {
 		window.location.href = `${ENV.APP_URL}/${lastOrdId}/dashboard`;
+	}
+}
+
+/**
+ * Keeps the org id in the URL in sync with the user's active
+ * organization (lastOrgId from the me query). If they diverge,
+ * redirects to the same location with the org id replaced -
+ * query params are preserved.
+ *
+ * Call from beforeLoad of the /_organization-protected/$organization
+ * route (parent auth guards run first).
+ */
+export function activeOrganizationGuard({
+	auth,
+	organizationId,
+}: {
+	auth: RouterContext["auth"];
+	organizationId: string;
+}) {
+	const lastOrgId = auth.user?.data?.data?.lastOrgId;
+
+	if (!auth.isError && lastOrgId && lastOrgId !== organizationId) {
+		throw redirect({
+			to: "/$organization",
+			params: { organization: lastOrgId },
+			// keep whatever query params the current URL carries
+			search: true,
+			replace: true,
+		});
 	}
 }
 

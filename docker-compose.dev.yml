@@ -41,6 +41,18 @@ services:
     restart: unless-stopped
     ports:
       - "8000:8000"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://localhost:8000/v1').then((r) => process.exit(0)).catch(() => process.exit(1))",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
     volumes:
       - ./apps/server/src:/app/apps/server/src
       - ./apps/server/prisma:/app/apps/server/prisma
@@ -76,8 +88,13 @@ services:
       - ./apps/app/src:/app/apps/app/src
       - ./packages/api-client/src:/app/packages/api-client/src
       - ./packages/form/src:/app/packages/form/src
+      - ./packages/hooks/src:/app/packages/hooks/src
+      - ./packages/icons/src:/app/packages/icons/src
       - ./packages/query/src:/app/packages/query/src
+      - ./packages/sse/src:/app/packages/sse/src
+      - ./packages/text-editor/src:/app/packages/text-editor/src
       - ./packages/ui/src:/app/packages/ui/src
+      - ./packages/websocket/src:/app/packages/websocket/src
       - ./packages/typescript-config:/app/packages/typescript-config
 
 volumes:

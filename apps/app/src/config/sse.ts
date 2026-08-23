@@ -1,6 +1,8 @@
+import { CONFIG } from ".";
+
 export const SSE_ENDPOINTS = {
-	AGENT_STREAM: "/events/agent",
-	CONVERSATION_STREAM: "/events/conversation",
+	AGENT_STREAM: "/sse-event/agent",
+	CONVERSATION_STREAM: "/sse-event/conversation",
 } as const;
 
 /**
@@ -8,7 +10,13 @@ export const SSE_ENDPOINTS = {
  * and origin are applied here.
  */
 export function buildSseUrl(path: string, params?: Record<string, string>): string {
-	const url = new URL(`${window.location.origin}/v1${path}`);
+	const isDev = CONFIG.APP.dev
+	const origin = isDev ? CONFIG.ENV.SERVER_URL : window.location.origin;
+	
+	const url = new URL(`${origin}/api/v1${path}`);
+
+
+
 	for (const [key, value] of Object.entries(params ?? {})) {
 		url.searchParams.set(key, value);
 	}

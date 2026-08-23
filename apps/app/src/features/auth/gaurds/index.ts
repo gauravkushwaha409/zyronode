@@ -1,5 +1,6 @@
 export {
 	AuthGaurd,
+	activeOrganizationGuard,
 	authenticationGuard,
 	authGaurds,
 	domainGuard,
