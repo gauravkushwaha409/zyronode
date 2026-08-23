@@ -7,6 +7,10 @@ export type {
   CreateConversationError,
 } from "./conversation.types";
 export type {
+  ChatWidgetTab,
+  ChatWidgetTabConfig,
+} from "./chat-widget-tabs.types";
+export type {
   ChatMessage,
   MessageSenderType,
   MessageType,

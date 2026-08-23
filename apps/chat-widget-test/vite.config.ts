@@ -7,7 +7,9 @@ export default defineConfig(({ mode }) => {
   const rootDir = resolve(__dirname, "../../");
   const env = loadEnv(mode, rootDir, "VITE_");
 
-  const serverUrl = env.VITE_SERVER_URL || "http://localhost:8000";
+  const serverUrl = env.VITE_CHAT_WIDGET_SERVER_URL || "http://localhost:8000";
+  const websocketUrl = env.VITE_CHAT_WIDGET_WEBSOCKET_URL || "http://localhost:8000";
+  const organizationId = env.VITE_ORGANIZATION_ID
 
   return {
     plugins: [react(), tailwindcss()],
@@ -59,8 +61,8 @@ export default defineConfig(({ mode }) => {
     define: {
       __APP_CONFIG__: JSON.stringify({
         server_url: serverUrl,
-        websocket_url: serverUrl,
-        organization_id: env.VITE_ORGANIZATION_ID || "",
+        websocket_url: websocketUrl,
+        organization_id: organizationId,
       }),
     },
     envDir: rootDir,

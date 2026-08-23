@@ -4,14 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import { useGetMessagesQuery, useSendMessageMutation } from "@/hooks";
 import { useOnMessageNew, useTypingIndicator } from "@/hooks/events";
 import { WIDGET_QUERY_KEYS } from "@/hooks/query-keys";
+import { useConversation } from "@/provider";
 import { useChatWidgetStore } from "@/store";
 import type { ChatMessage } from "@/types";
 
-interface ChatWidgetChatProps {
-  conversationId: string | null;
-}
-
-export default function ChatWidgetChat({ conversationId }: ChatWidgetChatProps) {
+export default function ChatWidgetChat() {
+  const { conversationId } = useConversation();
   const [content, setContent] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();

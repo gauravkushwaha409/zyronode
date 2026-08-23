@@ -1,24 +1,37 @@
-import { createQueryClient, TanstackQueryProvider } from "@package/query";
-import { WebSocketProvider } from "@package/websocket";
-import { type ReactNode, useEffect, useState } from "react";
+import {
+	createContext,
+	type ReactNode,
+	useContext,
+	useEffect,
+	useState,
+} from "react";
 import { getConfig } from "../config";
 import { useCreateConversationMutation } from "../hooks";
 import { getConversationId, setConversationId } from "../lib/storage";
 
-const queryClient = createQueryClient();
+interface ConversationContextValue {
+	conversationId: string | null;
+}
 
-interface ChatWidgetProviderProps {
+const ConversationContext = createContext<ConversationContextValue>({
+	conversationId: null,
+});
+
+interface ConversationProviderProps {
 	children: ReactNode;
 	organizationId?: string;
 	page?: string;
-	referrer?: string;
 }
 
-function WidgetInner({
+/**
+ * Creates a visitor conversation on first mount (or restores the
+ * existing one from localStorage) and exposes it via context.
+ */
+export function ConversationProvider({
 	children,
 	organizationId,
 	page,
-}: ChatWidgetProviderProps) {
+}: ConversationProviderProps) {
 	const config = getConfig();
 	const orgId = organizationId ?? config.organizationId;
 
@@ -51,29 +64,13 @@ function WidgetInner({
 		);
 	}, [conversationId, orgId, page, createConversation]);
 
-	if (!conversationId) return <>{children}</>;
-
 	return (
-		<WebSocketProvider
-			options={{
-				url: config.websocketUrl,
-				transports: ["websocket"],
-				reconnection: true,
-				reconnectionAttempts: 10,
-				reconnectionDelay: 1000,
-				withCredentials: false,
-			}}
-			auth={{ conversationId }}
-		>
+		<ConversationContext.Provider value={{ conversationId }}>
 			{children}
-		</WebSocketProvider>
+		</ConversationContext.Provider>
 	);
 }
 
-export function ChatWidgetProvider(props: ChatWidgetProviderProps) {
-	return (
-		<TanstackQueryProvider client={queryClient}>
-			<WidgetInner {...props} />
-		</TanstackQueryProvider>
-	);
+export function useConversation(): ConversationContextValue {
+	return useContext(ConversationContext);
 }
