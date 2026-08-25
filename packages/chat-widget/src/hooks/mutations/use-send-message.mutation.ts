@@ -1,20 +1,31 @@
-import { useMutation } from "@package/query";
+import { useMutation, useQueryClient } from "@package/query";
 import { getWidgetApi } from "../../services/widget-api.service";
-import { WIDGET_QUERY_KEYS } from "../query-keys";
 import type {
-  SendMessageAxiosResponse,
-  SendMessageError,
-  SendMessagePayload,
+	SendMessageAxiosResponse,
+	SendMessageError,
+	SendMessagePayload,
 } from "../../types";
+import { applyChatMessageEvent } from "../../utility";
 
 export function useSendMessageMutation(conversationId: string) {
-  return useMutation<
-    SendMessageAxiosResponse,
-    SendMessageError,
-    SendMessagePayload
-  >((
-    payload: SendMessagePayload,
-  ) => getWidgetApi().sendVisitorMessage(conversationId, payload), {
-    invalidateKeys: [WIDGET_QUERY_KEYS.MESSAGES(conversationId)],
-  });
+	const queryClient = useQueryClient();
+
+	return useMutation<
+		SendMessageAxiosResponse,
+		SendMessageError,
+		SendMessagePayload
+	>(
+		(payload: SendMessagePayload) =>
+			getWidgetApi().sendVisitorMessage(conversationId, payload),
+		{
+			onSuccess: (response) => {
+				const message = response.data?.data;
+				if (!message) return;
+				applyChatMessageEvent(queryClient, conversationId, {
+					conversation: { id: conversationId },
+					message,
+				});
+			},
+		},
+	);
 }

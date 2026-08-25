@@ -1,7 +1,7 @@
 import { useQueryClient } from "@package/query";
 import { useSseEvent } from "@package/sse";
 import { useCallback } from "react";
-import { CONFIG } from "@/config";
+import { applyInboxMessageEvent } from "@/features/default-inbox/utility";
 import type { SseMessageCreatedEvent } from "../types";
 
 interface UseInboxSseEventsOptions {
@@ -21,15 +21,7 @@ export function useInboxSseEvents({
 		"message.created",
 		useCallback(
 			(data) => {
-				void queryClient.invalidateQueries({
-					queryKey: CONFIG.QUERY_KEY.INBOX.CONVERSATION_DETAIL(
-						data.conversation.id,
-						organizationId,
-					),
-				});
-				void queryClient.invalidateQueries({
-					queryKey: CONFIG.QUERY_KEY.INBOX.CONVERSATIONS(organizationId),
-				});
+				applyInboxMessageEvent(queryClient, organizationId, data);
 			},
 			[queryClient, organizationId],
 		),
