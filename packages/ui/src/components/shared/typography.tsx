@@ -2,6 +2,8 @@ import type React from 'react';
 import type { ElementType, HTMLAttributes } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+// ─── Token map ────────────────────────────────────────────────────────────────
+
 const tokens = {
   d1: {
     tag: 'h1',
@@ -67,6 +69,8 @@ const tokens = {
 
 type VariantKey = keyof typeof tokens;
 
+// ─── Font-weight → Tailwind class map ────────────────────────────────────────
+
 const weightMap = {
   regular: 'font-normal',
   medium: 'font-medium',
@@ -76,15 +80,34 @@ const weightMap = {
 
 export type FontWeight = keyof typeof weightMap;
 
+// ─── Minimal cn() ─────────────────────────────────────────────────────────────
+// Already using clsx / tailwind-merge? Swap this out:
+//   import { cn } from '@/lib/utils';
+
 function cn(...inputs: (string | undefined | null | false)[]) {
   return twMerge(inputs.filter(Boolean).join(' '));
 }
 
+// ─── Shared props ─────────────────────────────────────────────────────────────
+
 interface TypographyProps extends HTMLAttributes<HTMLElement> {
+  /** Override the default semantic tag */
   as?: ElementType;
+  /**
+   * Override the variant's default font-weight with a numeric value.
+   * Mapped internally to the correct Tailwind utility class.
+   *
+   *   weight="regular" → font-normal
+   *   weight="medium" → font-medium
+   *   weight="semibold" → font-semibold
+   *   weight="bold" → font-bold
+
+   */
   weight?: FontWeight;
   children?: React.ReactNode;
 }
+
+// ─── Factory ──────────────────────────────────────────────────────────────────
 
 function createVariant(variant: VariantKey) {
   const { tag, classes } = tokens[variant];
@@ -97,6 +120,7 @@ function createVariant(variant: VariantKey) {
     ...rest
   }: TypographyProps) => {
     const Tag = (as ?? tag) as ElementType;
+    // Merge order: base tokens → weight override → consumer className (wins last)
     const composedClass = cn(classes, weight && weightMap[weight], className);
     return (
       <Tag className={composedClass} {...rest}>
@@ -109,21 +133,27 @@ function createVariant(variant: VariantKey) {
   return Component;
 }
 
+// ─── Typography namespace ─────────────────────────────────────────────────────
+
 export const Typography = {
+  // Display
   D1: createVariant('d1'),
   D2: createVariant('d2'),
+  // Heading
   H1: createVariant('h1'),
   H2: createVariant('h2'),
   H3: createVariant('h3'),
   H4: createVariant('h4'),
   H5: createVariant('h5'),
   H6: createVariant('h6'),
+  // Text
   T1: createVariant('t1'),
   T2: createVariant('t2'),
   T3: createVariant('t3'),
   T4: createVariant('t4'),
   T5: createVariant('t5'),
   T6: createVariant('t6'),
+  // Caption
   Cap: createVariant('cap'),
 };
 

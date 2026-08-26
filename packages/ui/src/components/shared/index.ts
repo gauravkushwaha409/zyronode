@@ -7,3 +7,8 @@ export { GlobalSearch } from './global-search';
 export { OnboardingSlider } from './onboarding-slider';
 export { PopoverWrapper } from './popover-wrapper';
 export { Typography } from './typography';
+export { PageBreadcrumb } from './page-breadcrumb';
+export { PageHeader } from './page-header';
+export { TabbedDashboard } from './tabbed-dashboard';
+export { StatsCard } from './stats-card';
+export { SectionHeader } from './section-header';

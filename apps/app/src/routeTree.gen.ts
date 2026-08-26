@@ -26,8 +26,25 @@ import { Route as OrganizationProtectedSelectOrganizationRouteImport } from './r
 import { Route as OrganizationProtectedOrganizationRouteImport } from './routes/_organization-protected/$organization'
 import { Route as OrganizationProtectedOrganizationVisitorRouteImport } from './routes/_organization-protected/$organization/visitor'
 import { Route as OrganizationProtectedOrganizationTicketRouteImport } from './routes/_organization-protected/$organization/ticket'
+import { Route as OrganizationProtectedOrganizationSettingsRouteImport } from './routes/_organization-protected/$organization/settings'
 import { Route as OrganizationProtectedOrganizationInboxRouteImport } from './routes/_organization-protected/$organization/inbox'
 import { Route as OrganizationProtectedOrganizationDashboardRouteImport } from './routes/_organization-protected/$organization/dashboard'
+import { Route as OrganizationProtectedOrganizationSettingsTeamManagementRouteImport } from './routes/_organization-protected/$organization/settings/team-management'
+import { Route as OrganizationProtectedOrganizationSettingsQuickRepliesRouteImport } from './routes/_organization-protected/$organization/settings/quick-replies'
+import { Route as OrganizationProtectedOrganizationSettingsMotivationCelebrationRouteImport } from './routes/_organization-protected/$organization/settings/motivation-celebration'
+import { Route as OrganizationProtectedOrganizationSettingsBillingSubscriptionIndexRouteImport } from './routes/_organization-protected/$organization/settings/billing-subscription/index'
+import { Route as OrganizationProtectedOrganizationSettingsOrganizationSettingsSetupAndIntegrationsRouteImport } from './routes/_organization-protected/$organization/settings/organization-settings/setup-and-integrations'
+import { Route as OrganizationProtectedOrganizationSettingsOrganizationSettingsOrganizationInformationRouteImport } from './routes/_organization-protected/$organization/settings/organization-settings/organization-information'
+import { Route as OrganizationProtectedOrganizationSettingsOrganizationSettingsOperatingHoursRouteImport } from './routes/_organization-protected/$organization/settings/organization-settings/operating-hours'
+import { Route as OrganizationProtectedOrganizationSettingsMotivationCelebrationManageCustomQuoteRouteImport } from './routes/_organization-protected/$organization/settings/motivation-celebration/manage-custom-quote'
+import { Route as OrganizationProtectedOrganizationSettingsMotivationCelebrationConfettiEffectRouteImport } from './routes/_organization-protected/$organization/settings/motivation-celebration/confetti-effect'
+import { Route as OrganizationProtectedOrganizationSettingsChatboqSettingsPreChatSurveyRouteImport } from './routes/_organization-protected/$organization/settings/chatboq-settings/pre-chat-survey'
+import { Route as OrganizationProtectedOrganizationSettingsChatboqSettingsChatboqBehaviourRouteImport } from './routes/_organization-protected/$organization/settings/chatboq-settings/chatboq-behaviour'
+import { Route as OrganizationProtectedOrganizationSettingsChatboqSettingsChatboqAppearanceRouteImport } from './routes/_organization-protected/$organization/settings/chatboq-settings/chatboq-appearance'
+import { Route as OrganizationProtectedOrganizationSettingsBillingSubscriptionChoosePlanRouteImport } from './routes/_organization-protected/$organization/settings/billing-subscription/choose-plan'
+import { Route as OrganizationProtectedOrganizationSettingsAccountSettingsSecurityRouteImport } from './routes/_organization-protected/$organization/settings/account-settings/security'
+import { Route as OrganizationProtectedOrganizationSettingsAccountSettingsInterfaceSetupRouteImport } from './routes/_organization-protected/$organization/settings/account-settings/interface-setup'
+import { Route as OrganizationProtectedOrganizationSettingsAccountSettingsAccountInformationRouteImport } from './routes/_organization-protected/$organization/settings/account-settings/account-information'
 
 const VerifyRoute = VerifyRouteImport.update({
   id: '/verify',
@@ -117,6 +134,12 @@ const OrganizationProtectedOrganizationTicketRoute =
     path: '/ticket',
     getParentRoute: () => OrganizationProtectedOrganizationRoute,
   } as any)
+const OrganizationProtectedOrganizationSettingsRoute =
+  OrganizationProtectedOrganizationSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => OrganizationProtectedOrganizationRoute,
+  } as any)
 const OrganizationProtectedOrganizationInboxRoute =
   OrganizationProtectedOrganizationInboxRouteImport.update({
     id: '/inbox',
@@ -129,6 +152,132 @@ const OrganizationProtectedOrganizationDashboardRoute =
     path: '/dashboard',
     getParentRoute: () => OrganizationProtectedOrganizationRoute,
   } as any)
+const OrganizationProtectedOrganizationSettingsTeamManagementRoute =
+  OrganizationProtectedOrganizationSettingsTeamManagementRouteImport.update({
+    id: '/team-management',
+    path: '/team-management',
+    getParentRoute: () => OrganizationProtectedOrganizationSettingsRoute,
+  } as any)
+const OrganizationProtectedOrganizationSettingsQuickRepliesRoute =
+  OrganizationProtectedOrganizationSettingsQuickRepliesRouteImport.update({
+    id: '/quick-replies',
+    path: '/quick-replies',
+    getParentRoute: () => OrganizationProtectedOrganizationSettingsRoute,
+  } as any)
+const OrganizationProtectedOrganizationSettingsMotivationCelebrationRoute =
+  OrganizationProtectedOrganizationSettingsMotivationCelebrationRouteImport.update(
+    {
+      id: '/motivation-celebration',
+      path: '/motivation-celebration',
+      getParentRoute: () => OrganizationProtectedOrganizationSettingsRoute,
+    } as any,
+  )
+const OrganizationProtectedOrganizationSettingsBillingSubscriptionIndexRoute =
+  OrganizationProtectedOrganizationSettingsBillingSubscriptionIndexRouteImport.update(
+    {
+      id: '/billing-subscription/',
+      path: '/billing-subscription/',
+      getParentRoute: () => OrganizationProtectedOrganizationSettingsRoute,
+    } as any,
+  )
+const OrganizationProtectedOrganizationSettingsOrganizationSettingsSetupAndIntegrationsRoute =
+  OrganizationProtectedOrganizationSettingsOrganizationSettingsSetupAndIntegrationsRouteImport.update(
+    {
+      id: '/organization-settings/setup-and-integrations',
+      path: '/organization-settings/setup-and-integrations',
+      getParentRoute: () => OrganizationProtectedOrganizationSettingsRoute,
+    } as any,
+  )
+const OrganizationProtectedOrganizationSettingsOrganizationSettingsOrganizationInformationRoute =
+  OrganizationProtectedOrganizationSettingsOrganizationSettingsOrganizationInformationRouteImport.update(
+    {
+      id: '/organization-settings/organization-information',
+      path: '/organization-settings/organization-information',
+      getParentRoute: () => OrganizationProtectedOrganizationSettingsRoute,
+    } as any,
+  )
+const OrganizationProtectedOrganizationSettingsOrganizationSettingsOperatingHoursRoute =
+  OrganizationProtectedOrganizationSettingsOrganizationSettingsOperatingHoursRouteImport.update(
+    {
+      id: '/organization-settings/operating-hours',
+      path: '/organization-settings/operating-hours',
+      getParentRoute: () => OrganizationProtectedOrganizationSettingsRoute,
+    } as any,
+  )
+const OrganizationProtectedOrganizationSettingsMotivationCelebrationManageCustomQuoteRoute =
+  OrganizationProtectedOrganizationSettingsMotivationCelebrationManageCustomQuoteRouteImport.update(
+    {
+      id: '/manage-custom-quote',
+      path: '/manage-custom-quote',
+      getParentRoute: () =>
+        OrganizationProtectedOrganizationSettingsMotivationCelebrationRoute,
+    } as any,
+  )
+const OrganizationProtectedOrganizationSettingsMotivationCelebrationConfettiEffectRoute =
+  OrganizationProtectedOrganizationSettingsMotivationCelebrationConfettiEffectRouteImport.update(
+    {
+      id: '/confetti-effect',
+      path: '/confetti-effect',
+      getParentRoute: () =>
+        OrganizationProtectedOrganizationSettingsMotivationCelebrationRoute,
+    } as any,
+  )
+const OrganizationProtectedOrganizationSettingsChatboqSettingsPreChatSurveyRoute =
+  OrganizationProtectedOrganizationSettingsChatboqSettingsPreChatSurveyRouteImport.update(
+    {
+      id: '/chatboq-settings/pre-chat-survey',
+      path: '/chatboq-settings/pre-chat-survey',
+      getParentRoute: () => OrganizationProtectedOrganizationSettingsRoute,
+    } as any,
+  )
+const OrganizationProtectedOrganizationSettingsChatboqSettingsChatboqBehaviourRoute =
+  OrganizationProtectedOrganizationSettingsChatboqSettingsChatboqBehaviourRouteImport.update(
+    {
+      id: '/chatboq-settings/chatboq-behaviour',
+      path: '/chatboq-settings/chatboq-behaviour',
+      getParentRoute: () => OrganizationProtectedOrganizationSettingsRoute,
+    } as any,
+  )
+const OrganizationProtectedOrganizationSettingsChatboqSettingsChatboqAppearanceRoute =
+  OrganizationProtectedOrganizationSettingsChatboqSettingsChatboqAppearanceRouteImport.update(
+    {
+      id: '/chatboq-settings/chatboq-appearance',
+      path: '/chatboq-settings/chatboq-appearance',
+      getParentRoute: () => OrganizationProtectedOrganizationSettingsRoute,
+    } as any,
+  )
+const OrganizationProtectedOrganizationSettingsBillingSubscriptionChoosePlanRoute =
+  OrganizationProtectedOrganizationSettingsBillingSubscriptionChoosePlanRouteImport.update(
+    {
+      id: '/billing-subscription/choose-plan',
+      path: '/billing-subscription/choose-plan',
+      getParentRoute: () => OrganizationProtectedOrganizationSettingsRoute,
+    } as any,
+  )
+const OrganizationProtectedOrganizationSettingsAccountSettingsSecurityRoute =
+  OrganizationProtectedOrganizationSettingsAccountSettingsSecurityRouteImport.update(
+    {
+      id: '/account-settings/security',
+      path: '/account-settings/security',
+      getParentRoute: () => OrganizationProtectedOrganizationSettingsRoute,
+    } as any,
+  )
+const OrganizationProtectedOrganizationSettingsAccountSettingsInterfaceSetupRoute =
+  OrganizationProtectedOrganizationSettingsAccountSettingsInterfaceSetupRouteImport.update(
+    {
+      id: '/account-settings/interface-setup',
+      path: '/account-settings/interface-setup',
+      getParentRoute: () => OrganizationProtectedOrganizationSettingsRoute,
+    } as any,
+  )
+const OrganizationProtectedOrganizationSettingsAccountSettingsAccountInformationRoute =
+  OrganizationProtectedOrganizationSettingsAccountSettingsAccountInformationRouteImport.update(
+    {
+      id: '/account-settings/account-information',
+      path: '/account-settings/account-information',
+      getParentRoute: () => OrganizationProtectedOrganizationSettingsRoute,
+    } as any,
+  )
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -147,8 +296,25 @@ export interface FileRoutesByFullPath {
   '/verify/email': typeof VerifyEmailRoute
   '/$organization/dashboard': typeof OrganizationProtectedOrganizationDashboardRoute
   '/$organization/inbox': typeof OrganizationProtectedOrganizationInboxRoute
+  '/$organization/settings': typeof OrganizationProtectedOrganizationSettingsRouteWithChildren
   '/$organization/ticket': typeof OrganizationProtectedOrganizationTicketRoute
   '/$organization/visitor': typeof OrganizationProtectedOrganizationVisitorRoute
+  '/$organization/settings/motivation-celebration': typeof OrganizationProtectedOrganizationSettingsMotivationCelebrationRouteWithChildren
+  '/$organization/settings/quick-replies': typeof OrganizationProtectedOrganizationSettingsQuickRepliesRoute
+  '/$organization/settings/team-management': typeof OrganizationProtectedOrganizationSettingsTeamManagementRoute
+  '/$organization/settings/account-settings/account-information': typeof OrganizationProtectedOrganizationSettingsAccountSettingsAccountInformationRoute
+  '/$organization/settings/account-settings/interface-setup': typeof OrganizationProtectedOrganizationSettingsAccountSettingsInterfaceSetupRoute
+  '/$organization/settings/account-settings/security': typeof OrganizationProtectedOrganizationSettingsAccountSettingsSecurityRoute
+  '/$organization/settings/billing-subscription/choose-plan': typeof OrganizationProtectedOrganizationSettingsBillingSubscriptionChoosePlanRoute
+  '/$organization/settings/chatboq-settings/chatboq-appearance': typeof OrganizationProtectedOrganizationSettingsChatboqSettingsChatboqAppearanceRoute
+  '/$organization/settings/chatboq-settings/chatboq-behaviour': typeof OrganizationProtectedOrganizationSettingsChatboqSettingsChatboqBehaviourRoute
+  '/$organization/settings/chatboq-settings/pre-chat-survey': typeof OrganizationProtectedOrganizationSettingsChatboqSettingsPreChatSurveyRoute
+  '/$organization/settings/motivation-celebration/confetti-effect': typeof OrganizationProtectedOrganizationSettingsMotivationCelebrationConfettiEffectRoute
+  '/$organization/settings/motivation-celebration/manage-custom-quote': typeof OrganizationProtectedOrganizationSettingsMotivationCelebrationManageCustomQuoteRoute
+  '/$organization/settings/organization-settings/operating-hours': typeof OrganizationProtectedOrganizationSettingsOrganizationSettingsOperatingHoursRoute
+  '/$organization/settings/organization-settings/organization-information': typeof OrganizationProtectedOrganizationSettingsOrganizationSettingsOrganizationInformationRoute
+  '/$organization/settings/organization-settings/setup-and-integrations': typeof OrganizationProtectedOrganizationSettingsOrganizationSettingsSetupAndIntegrationsRoute
+  '/$organization/settings/billing-subscription/': typeof OrganizationProtectedOrganizationSettingsBillingSubscriptionIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -167,8 +333,25 @@ export interface FileRoutesByTo {
   '/verify/email': typeof VerifyEmailRoute
   '/$organization/dashboard': typeof OrganizationProtectedOrganizationDashboardRoute
   '/$organization/inbox': typeof OrganizationProtectedOrganizationInboxRoute
+  '/$organization/settings': typeof OrganizationProtectedOrganizationSettingsRouteWithChildren
   '/$organization/ticket': typeof OrganizationProtectedOrganizationTicketRoute
   '/$organization/visitor': typeof OrganizationProtectedOrganizationVisitorRoute
+  '/$organization/settings/motivation-celebration': typeof OrganizationProtectedOrganizationSettingsMotivationCelebrationRouteWithChildren
+  '/$organization/settings/quick-replies': typeof OrganizationProtectedOrganizationSettingsQuickRepliesRoute
+  '/$organization/settings/team-management': typeof OrganizationProtectedOrganizationSettingsTeamManagementRoute
+  '/$organization/settings/account-settings/account-information': typeof OrganizationProtectedOrganizationSettingsAccountSettingsAccountInformationRoute
+  '/$organization/settings/account-settings/interface-setup': typeof OrganizationProtectedOrganizationSettingsAccountSettingsInterfaceSetupRoute
+  '/$organization/settings/account-settings/security': typeof OrganizationProtectedOrganizationSettingsAccountSettingsSecurityRoute
+  '/$organization/settings/billing-subscription/choose-plan': typeof OrganizationProtectedOrganizationSettingsBillingSubscriptionChoosePlanRoute
+  '/$organization/settings/chatboq-settings/chatboq-appearance': typeof OrganizationProtectedOrganizationSettingsChatboqSettingsChatboqAppearanceRoute
+  '/$organization/settings/chatboq-settings/chatboq-behaviour': typeof OrganizationProtectedOrganizationSettingsChatboqSettingsChatboqBehaviourRoute
+  '/$organization/settings/chatboq-settings/pre-chat-survey': typeof OrganizationProtectedOrganizationSettingsChatboqSettingsPreChatSurveyRoute
+  '/$organization/settings/motivation-celebration/confetti-effect': typeof OrganizationProtectedOrganizationSettingsMotivationCelebrationConfettiEffectRoute
+  '/$organization/settings/motivation-celebration/manage-custom-quote': typeof OrganizationProtectedOrganizationSettingsMotivationCelebrationManageCustomQuoteRoute
+  '/$organization/settings/organization-settings/operating-hours': typeof OrganizationProtectedOrganizationSettingsOrganizationSettingsOperatingHoursRoute
+  '/$organization/settings/organization-settings/organization-information': typeof OrganizationProtectedOrganizationSettingsOrganizationSettingsOrganizationInformationRoute
+  '/$organization/settings/organization-settings/setup-and-integrations': typeof OrganizationProtectedOrganizationSettingsOrganizationSettingsSetupAndIntegrationsRoute
+  '/$organization/settings/billing-subscription': typeof OrganizationProtectedOrganizationSettingsBillingSubscriptionIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -189,8 +372,25 @@ export interface FileRoutesById {
   '/verify/email': typeof VerifyEmailRoute
   '/_organization-protected/$organization/dashboard': typeof OrganizationProtectedOrganizationDashboardRoute
   '/_organization-protected/$organization/inbox': typeof OrganizationProtectedOrganizationInboxRoute
+  '/_organization-protected/$organization/settings': typeof OrganizationProtectedOrganizationSettingsRouteWithChildren
   '/_organization-protected/$organization/ticket': typeof OrganizationProtectedOrganizationTicketRoute
   '/_organization-protected/$organization/visitor': typeof OrganizationProtectedOrganizationVisitorRoute
+  '/_organization-protected/$organization/settings/motivation-celebration': typeof OrganizationProtectedOrganizationSettingsMotivationCelebrationRouteWithChildren
+  '/_organization-protected/$organization/settings/quick-replies': typeof OrganizationProtectedOrganizationSettingsQuickRepliesRoute
+  '/_organization-protected/$organization/settings/team-management': typeof OrganizationProtectedOrganizationSettingsTeamManagementRoute
+  '/_organization-protected/$organization/settings/account-settings/account-information': typeof OrganizationProtectedOrganizationSettingsAccountSettingsAccountInformationRoute
+  '/_organization-protected/$organization/settings/account-settings/interface-setup': typeof OrganizationProtectedOrganizationSettingsAccountSettingsInterfaceSetupRoute
+  '/_organization-protected/$organization/settings/account-settings/security': typeof OrganizationProtectedOrganizationSettingsAccountSettingsSecurityRoute
+  '/_organization-protected/$organization/settings/billing-subscription/choose-plan': typeof OrganizationProtectedOrganizationSettingsBillingSubscriptionChoosePlanRoute
+  '/_organization-protected/$organization/settings/chatboq-settings/chatboq-appearance': typeof OrganizationProtectedOrganizationSettingsChatboqSettingsChatboqAppearanceRoute
+  '/_organization-protected/$organization/settings/chatboq-settings/chatboq-behaviour': typeof OrganizationProtectedOrganizationSettingsChatboqSettingsChatboqBehaviourRoute
+  '/_organization-protected/$organization/settings/chatboq-settings/pre-chat-survey': typeof OrganizationProtectedOrganizationSettingsChatboqSettingsPreChatSurveyRoute
+  '/_organization-protected/$organization/settings/motivation-celebration/confetti-effect': typeof OrganizationProtectedOrganizationSettingsMotivationCelebrationConfettiEffectRoute
+  '/_organization-protected/$organization/settings/motivation-celebration/manage-custom-quote': typeof OrganizationProtectedOrganizationSettingsMotivationCelebrationManageCustomQuoteRoute
+  '/_organization-protected/$organization/settings/organization-settings/operating-hours': typeof OrganizationProtectedOrganizationSettingsOrganizationSettingsOperatingHoursRoute
+  '/_organization-protected/$organization/settings/organization-settings/organization-information': typeof OrganizationProtectedOrganizationSettingsOrganizationSettingsOrganizationInformationRoute
+  '/_organization-protected/$organization/settings/organization-settings/setup-and-integrations': typeof OrganizationProtectedOrganizationSettingsOrganizationSettingsSetupAndIntegrationsRoute
+  '/_organization-protected/$organization/settings/billing-subscription/': typeof OrganizationProtectedOrganizationSettingsBillingSubscriptionIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -211,8 +411,25 @@ export interface FileRouteTypes {
     | '/verify/email'
     | '/$organization/dashboard'
     | '/$organization/inbox'
+    | '/$organization/settings'
     | '/$organization/ticket'
     | '/$organization/visitor'
+    | '/$organization/settings/motivation-celebration'
+    | '/$organization/settings/quick-replies'
+    | '/$organization/settings/team-management'
+    | '/$organization/settings/account-settings/account-information'
+    | '/$organization/settings/account-settings/interface-setup'
+    | '/$organization/settings/account-settings/security'
+    | '/$organization/settings/billing-subscription/choose-plan'
+    | '/$organization/settings/chatboq-settings/chatboq-appearance'
+    | '/$organization/settings/chatboq-settings/chatboq-behaviour'
+    | '/$organization/settings/chatboq-settings/pre-chat-survey'
+    | '/$organization/settings/motivation-celebration/confetti-effect'
+    | '/$organization/settings/motivation-celebration/manage-custom-quote'
+    | '/$organization/settings/organization-settings/operating-hours'
+    | '/$organization/settings/organization-settings/organization-information'
+    | '/$organization/settings/organization-settings/setup-and-integrations'
+    | '/$organization/settings/billing-subscription/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -231,8 +448,25 @@ export interface FileRouteTypes {
     | '/verify/email'
     | '/$organization/dashboard'
     | '/$organization/inbox'
+    | '/$organization/settings'
     | '/$organization/ticket'
     | '/$organization/visitor'
+    | '/$organization/settings/motivation-celebration'
+    | '/$organization/settings/quick-replies'
+    | '/$organization/settings/team-management'
+    | '/$organization/settings/account-settings/account-information'
+    | '/$organization/settings/account-settings/interface-setup'
+    | '/$organization/settings/account-settings/security'
+    | '/$organization/settings/billing-subscription/choose-plan'
+    | '/$organization/settings/chatboq-settings/chatboq-appearance'
+    | '/$organization/settings/chatboq-settings/chatboq-behaviour'
+    | '/$organization/settings/chatboq-settings/pre-chat-survey'
+    | '/$organization/settings/motivation-celebration/confetti-effect'
+    | '/$organization/settings/motivation-celebration/manage-custom-quote'
+    | '/$organization/settings/organization-settings/operating-hours'
+    | '/$organization/settings/organization-settings/organization-information'
+    | '/$organization/settings/organization-settings/setup-and-integrations'
+    | '/$organization/settings/billing-subscription'
   id:
     | '__root__'
     | '/'
@@ -252,8 +486,25 @@ export interface FileRouteTypes {
     | '/verify/email'
     | '/_organization-protected/$organization/dashboard'
     | '/_organization-protected/$organization/inbox'
+    | '/_organization-protected/$organization/settings'
     | '/_organization-protected/$organization/ticket'
     | '/_organization-protected/$organization/visitor'
+    | '/_organization-protected/$organization/settings/motivation-celebration'
+    | '/_organization-protected/$organization/settings/quick-replies'
+    | '/_organization-protected/$organization/settings/team-management'
+    | '/_organization-protected/$organization/settings/account-settings/account-information'
+    | '/_organization-protected/$organization/settings/account-settings/interface-setup'
+    | '/_organization-protected/$organization/settings/account-settings/security'
+    | '/_organization-protected/$organization/settings/billing-subscription/choose-plan'
+    | '/_organization-protected/$organization/settings/chatboq-settings/chatboq-appearance'
+    | '/_organization-protected/$organization/settings/chatboq-settings/chatboq-behaviour'
+    | '/_organization-protected/$organization/settings/chatboq-settings/pre-chat-survey'
+    | '/_organization-protected/$organization/settings/motivation-celebration/confetti-effect'
+    | '/_organization-protected/$organization/settings/motivation-celebration/manage-custom-quote'
+    | '/_organization-protected/$organization/settings/organization-settings/operating-hours'
+    | '/_organization-protected/$organization/settings/organization-settings/organization-information'
+    | '/_organization-protected/$organization/settings/organization-settings/setup-and-integrations'
+    | '/_organization-protected/$organization/settings/billing-subscription/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -385,6 +636,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrganizationProtectedOrganizationTicketRouteImport
       parentRoute: typeof OrganizationProtectedOrganizationRoute
     }
+    '/_organization-protected/$organization/settings': {
+      id: '/_organization-protected/$organization/settings'
+      path: '/settings'
+      fullPath: '/$organization/settings'
+      preLoaderRoute: typeof OrganizationProtectedOrganizationSettingsRouteImport
+      parentRoute: typeof OrganizationProtectedOrganizationRoute
+    }
     '/_organization-protected/$organization/inbox': {
       id: '/_organization-protected/$organization/inbox'
       path: '/inbox'
@@ -399,12 +657,197 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrganizationProtectedOrganizationDashboardRouteImport
       parentRoute: typeof OrganizationProtectedOrganizationRoute
     }
+    '/_organization-protected/$organization/settings/team-management': {
+      id: '/_organization-protected/$organization/settings/team-management'
+      path: '/team-management'
+      fullPath: '/$organization/settings/team-management'
+      preLoaderRoute: typeof OrganizationProtectedOrganizationSettingsTeamManagementRouteImport
+      parentRoute: typeof OrganizationProtectedOrganizationSettingsRoute
+    }
+    '/_organization-protected/$organization/settings/quick-replies': {
+      id: '/_organization-protected/$organization/settings/quick-replies'
+      path: '/quick-replies'
+      fullPath: '/$organization/settings/quick-replies'
+      preLoaderRoute: typeof OrganizationProtectedOrganizationSettingsQuickRepliesRouteImport
+      parentRoute: typeof OrganizationProtectedOrganizationSettingsRoute
+    }
+    '/_organization-protected/$organization/settings/motivation-celebration': {
+      id: '/_organization-protected/$organization/settings/motivation-celebration'
+      path: '/motivation-celebration'
+      fullPath: '/$organization/settings/motivation-celebration'
+      preLoaderRoute: typeof OrganizationProtectedOrganizationSettingsMotivationCelebrationRouteImport
+      parentRoute: typeof OrganizationProtectedOrganizationSettingsRoute
+    }
+    '/_organization-protected/$organization/settings/billing-subscription/': {
+      id: '/_organization-protected/$organization/settings/billing-subscription/'
+      path: '/billing-subscription'
+      fullPath: '/$organization/settings/billing-subscription/'
+      preLoaderRoute: typeof OrganizationProtectedOrganizationSettingsBillingSubscriptionIndexRouteImport
+      parentRoute: typeof OrganizationProtectedOrganizationSettingsRoute
+    }
+    '/_organization-protected/$organization/settings/organization-settings/setup-and-integrations': {
+      id: '/_organization-protected/$organization/settings/organization-settings/setup-and-integrations'
+      path: '/organization-settings/setup-and-integrations'
+      fullPath: '/$organization/settings/organization-settings/setup-and-integrations'
+      preLoaderRoute: typeof OrganizationProtectedOrganizationSettingsOrganizationSettingsSetupAndIntegrationsRouteImport
+      parentRoute: typeof OrganizationProtectedOrganizationSettingsRoute
+    }
+    '/_organization-protected/$organization/settings/organization-settings/organization-information': {
+      id: '/_organization-protected/$organization/settings/organization-settings/organization-information'
+      path: '/organization-settings/organization-information'
+      fullPath: '/$organization/settings/organization-settings/organization-information'
+      preLoaderRoute: typeof OrganizationProtectedOrganizationSettingsOrganizationSettingsOrganizationInformationRouteImport
+      parentRoute: typeof OrganizationProtectedOrganizationSettingsRoute
+    }
+    '/_organization-protected/$organization/settings/organization-settings/operating-hours': {
+      id: '/_organization-protected/$organization/settings/organization-settings/operating-hours'
+      path: '/organization-settings/operating-hours'
+      fullPath: '/$organization/settings/organization-settings/operating-hours'
+      preLoaderRoute: typeof OrganizationProtectedOrganizationSettingsOrganizationSettingsOperatingHoursRouteImport
+      parentRoute: typeof OrganizationProtectedOrganizationSettingsRoute
+    }
+    '/_organization-protected/$organization/settings/motivation-celebration/manage-custom-quote': {
+      id: '/_organization-protected/$organization/settings/motivation-celebration/manage-custom-quote'
+      path: '/manage-custom-quote'
+      fullPath: '/$organization/settings/motivation-celebration/manage-custom-quote'
+      preLoaderRoute: typeof OrganizationProtectedOrganizationSettingsMotivationCelebrationManageCustomQuoteRouteImport
+      parentRoute: typeof OrganizationProtectedOrganizationSettingsMotivationCelebrationRoute
+    }
+    '/_organization-protected/$organization/settings/motivation-celebration/confetti-effect': {
+      id: '/_organization-protected/$organization/settings/motivation-celebration/confetti-effect'
+      path: '/confetti-effect'
+      fullPath: '/$organization/settings/motivation-celebration/confetti-effect'
+      preLoaderRoute: typeof OrganizationProtectedOrganizationSettingsMotivationCelebrationConfettiEffectRouteImport
+      parentRoute: typeof OrganizationProtectedOrganizationSettingsMotivationCelebrationRoute
+    }
+    '/_organization-protected/$organization/settings/chatboq-settings/pre-chat-survey': {
+      id: '/_organization-protected/$organization/settings/chatboq-settings/pre-chat-survey'
+      path: '/chatboq-settings/pre-chat-survey'
+      fullPath: '/$organization/settings/chatboq-settings/pre-chat-survey'
+      preLoaderRoute: typeof OrganizationProtectedOrganizationSettingsChatboqSettingsPreChatSurveyRouteImport
+      parentRoute: typeof OrganizationProtectedOrganizationSettingsRoute
+    }
+    '/_organization-protected/$organization/settings/chatboq-settings/chatboq-behaviour': {
+      id: '/_organization-protected/$organization/settings/chatboq-settings/chatboq-behaviour'
+      path: '/chatboq-settings/chatboq-behaviour'
+      fullPath: '/$organization/settings/chatboq-settings/chatboq-behaviour'
+      preLoaderRoute: typeof OrganizationProtectedOrganizationSettingsChatboqSettingsChatboqBehaviourRouteImport
+      parentRoute: typeof OrganizationProtectedOrganizationSettingsRoute
+    }
+    '/_organization-protected/$organization/settings/chatboq-settings/chatboq-appearance': {
+      id: '/_organization-protected/$organization/settings/chatboq-settings/chatboq-appearance'
+      path: '/chatboq-settings/chatboq-appearance'
+      fullPath: '/$organization/settings/chatboq-settings/chatboq-appearance'
+      preLoaderRoute: typeof OrganizationProtectedOrganizationSettingsChatboqSettingsChatboqAppearanceRouteImport
+      parentRoute: typeof OrganizationProtectedOrganizationSettingsRoute
+    }
+    '/_organization-protected/$organization/settings/billing-subscription/choose-plan': {
+      id: '/_organization-protected/$organization/settings/billing-subscription/choose-plan'
+      path: '/billing-subscription/choose-plan'
+      fullPath: '/$organization/settings/billing-subscription/choose-plan'
+      preLoaderRoute: typeof OrganizationProtectedOrganizationSettingsBillingSubscriptionChoosePlanRouteImport
+      parentRoute: typeof OrganizationProtectedOrganizationSettingsRoute
+    }
+    '/_organization-protected/$organization/settings/account-settings/security': {
+      id: '/_organization-protected/$organization/settings/account-settings/security'
+      path: '/account-settings/security'
+      fullPath: '/$organization/settings/account-settings/security'
+      preLoaderRoute: typeof OrganizationProtectedOrganizationSettingsAccountSettingsSecurityRouteImport
+      parentRoute: typeof OrganizationProtectedOrganizationSettingsRoute
+    }
+    '/_organization-protected/$organization/settings/account-settings/interface-setup': {
+      id: '/_organization-protected/$organization/settings/account-settings/interface-setup'
+      path: '/account-settings/interface-setup'
+      fullPath: '/$organization/settings/account-settings/interface-setup'
+      preLoaderRoute: typeof OrganizationProtectedOrganizationSettingsAccountSettingsInterfaceSetupRouteImport
+      parentRoute: typeof OrganizationProtectedOrganizationSettingsRoute
+    }
+    '/_organization-protected/$organization/settings/account-settings/account-information': {
+      id: '/_organization-protected/$organization/settings/account-settings/account-information'
+      path: '/account-settings/account-information'
+      fullPath: '/$organization/settings/account-settings/account-information'
+      preLoaderRoute: typeof OrganizationProtectedOrganizationSettingsAccountSettingsAccountInformationRouteImport
+      parentRoute: typeof OrganizationProtectedOrganizationSettingsRoute
+    }
   }
 }
+
+interface OrganizationProtectedOrganizationSettingsMotivationCelebrationRouteChildren {
+  OrganizationProtectedOrganizationSettingsMotivationCelebrationConfettiEffectRoute: typeof OrganizationProtectedOrganizationSettingsMotivationCelebrationConfettiEffectRoute
+  OrganizationProtectedOrganizationSettingsMotivationCelebrationManageCustomQuoteRoute: typeof OrganizationProtectedOrganizationSettingsMotivationCelebrationManageCustomQuoteRoute
+}
+
+const OrganizationProtectedOrganizationSettingsMotivationCelebrationRouteChildren: OrganizationProtectedOrganizationSettingsMotivationCelebrationRouteChildren =
+  {
+    OrganizationProtectedOrganizationSettingsMotivationCelebrationConfettiEffectRoute:
+      OrganizationProtectedOrganizationSettingsMotivationCelebrationConfettiEffectRoute,
+    OrganizationProtectedOrganizationSettingsMotivationCelebrationManageCustomQuoteRoute:
+      OrganizationProtectedOrganizationSettingsMotivationCelebrationManageCustomQuoteRoute,
+  }
+
+const OrganizationProtectedOrganizationSettingsMotivationCelebrationRouteWithChildren =
+  OrganizationProtectedOrganizationSettingsMotivationCelebrationRoute._addFileChildren(
+    OrganizationProtectedOrganizationSettingsMotivationCelebrationRouteChildren,
+  )
+
+interface OrganizationProtectedOrganizationSettingsRouteChildren {
+  OrganizationProtectedOrganizationSettingsMotivationCelebrationRoute: typeof OrganizationProtectedOrganizationSettingsMotivationCelebrationRouteWithChildren
+  OrganizationProtectedOrganizationSettingsQuickRepliesRoute: typeof OrganizationProtectedOrganizationSettingsQuickRepliesRoute
+  OrganizationProtectedOrganizationSettingsTeamManagementRoute: typeof OrganizationProtectedOrganizationSettingsTeamManagementRoute
+  OrganizationProtectedOrganizationSettingsAccountSettingsAccountInformationRoute: typeof OrganizationProtectedOrganizationSettingsAccountSettingsAccountInformationRoute
+  OrganizationProtectedOrganizationSettingsAccountSettingsInterfaceSetupRoute: typeof OrganizationProtectedOrganizationSettingsAccountSettingsInterfaceSetupRoute
+  OrganizationProtectedOrganizationSettingsAccountSettingsSecurityRoute: typeof OrganizationProtectedOrganizationSettingsAccountSettingsSecurityRoute
+  OrganizationProtectedOrganizationSettingsBillingSubscriptionChoosePlanRoute: typeof OrganizationProtectedOrganizationSettingsBillingSubscriptionChoosePlanRoute
+  OrganizationProtectedOrganizationSettingsChatboqSettingsChatboqAppearanceRoute: typeof OrganizationProtectedOrganizationSettingsChatboqSettingsChatboqAppearanceRoute
+  OrganizationProtectedOrganizationSettingsChatboqSettingsChatboqBehaviourRoute: typeof OrganizationProtectedOrganizationSettingsChatboqSettingsChatboqBehaviourRoute
+  OrganizationProtectedOrganizationSettingsChatboqSettingsPreChatSurveyRoute: typeof OrganizationProtectedOrganizationSettingsChatboqSettingsPreChatSurveyRoute
+  OrganizationProtectedOrganizationSettingsOrganizationSettingsOperatingHoursRoute: typeof OrganizationProtectedOrganizationSettingsOrganizationSettingsOperatingHoursRoute
+  OrganizationProtectedOrganizationSettingsOrganizationSettingsOrganizationInformationRoute: typeof OrganizationProtectedOrganizationSettingsOrganizationSettingsOrganizationInformationRoute
+  OrganizationProtectedOrganizationSettingsOrganizationSettingsSetupAndIntegrationsRoute: typeof OrganizationProtectedOrganizationSettingsOrganizationSettingsSetupAndIntegrationsRoute
+  OrganizationProtectedOrganizationSettingsBillingSubscriptionIndexRoute: typeof OrganizationProtectedOrganizationSettingsBillingSubscriptionIndexRoute
+}
+
+const OrganizationProtectedOrganizationSettingsRouteChildren: OrganizationProtectedOrganizationSettingsRouteChildren =
+  {
+    OrganizationProtectedOrganizationSettingsMotivationCelebrationRoute:
+      OrganizationProtectedOrganizationSettingsMotivationCelebrationRouteWithChildren,
+    OrganizationProtectedOrganizationSettingsQuickRepliesRoute:
+      OrganizationProtectedOrganizationSettingsQuickRepliesRoute,
+    OrganizationProtectedOrganizationSettingsTeamManagementRoute:
+      OrganizationProtectedOrganizationSettingsTeamManagementRoute,
+    OrganizationProtectedOrganizationSettingsAccountSettingsAccountInformationRoute:
+      OrganizationProtectedOrganizationSettingsAccountSettingsAccountInformationRoute,
+    OrganizationProtectedOrganizationSettingsAccountSettingsInterfaceSetupRoute:
+      OrganizationProtectedOrganizationSettingsAccountSettingsInterfaceSetupRoute,
+    OrganizationProtectedOrganizationSettingsAccountSettingsSecurityRoute:
+      OrganizationProtectedOrganizationSettingsAccountSettingsSecurityRoute,
+    OrganizationProtectedOrganizationSettingsBillingSubscriptionChoosePlanRoute:
+      OrganizationProtectedOrganizationSettingsBillingSubscriptionChoosePlanRoute,
+    OrganizationProtectedOrganizationSettingsChatboqSettingsChatboqAppearanceRoute:
+      OrganizationProtectedOrganizationSettingsChatboqSettingsChatboqAppearanceRoute,
+    OrganizationProtectedOrganizationSettingsChatboqSettingsChatboqBehaviourRoute:
+      OrganizationProtectedOrganizationSettingsChatboqSettingsChatboqBehaviourRoute,
+    OrganizationProtectedOrganizationSettingsChatboqSettingsPreChatSurveyRoute:
+      OrganizationProtectedOrganizationSettingsChatboqSettingsPreChatSurveyRoute,
+    OrganizationProtectedOrganizationSettingsOrganizationSettingsOperatingHoursRoute:
+      OrganizationProtectedOrganizationSettingsOrganizationSettingsOperatingHoursRoute,
+    OrganizationProtectedOrganizationSettingsOrganizationSettingsOrganizationInformationRoute:
+      OrganizationProtectedOrganizationSettingsOrganizationSettingsOrganizationInformationRoute,
+    OrganizationProtectedOrganizationSettingsOrganizationSettingsSetupAndIntegrationsRoute:
+      OrganizationProtectedOrganizationSettingsOrganizationSettingsSetupAndIntegrationsRoute,
+    OrganizationProtectedOrganizationSettingsBillingSubscriptionIndexRoute:
+      OrganizationProtectedOrganizationSettingsBillingSubscriptionIndexRoute,
+  }
+
+const OrganizationProtectedOrganizationSettingsRouteWithChildren =
+  OrganizationProtectedOrganizationSettingsRoute._addFileChildren(
+    OrganizationProtectedOrganizationSettingsRouteChildren,
+  )
 
 interface OrganizationProtectedOrganizationRouteChildren {
   OrganizationProtectedOrganizationDashboardRoute: typeof OrganizationProtectedOrganizationDashboardRoute
   OrganizationProtectedOrganizationInboxRoute: typeof OrganizationProtectedOrganizationInboxRoute
+  OrganizationProtectedOrganizationSettingsRoute: typeof OrganizationProtectedOrganizationSettingsRouteWithChildren
   OrganizationProtectedOrganizationTicketRoute: typeof OrganizationProtectedOrganizationTicketRoute
   OrganizationProtectedOrganizationVisitorRoute: typeof OrganizationProtectedOrganizationVisitorRoute
 }
@@ -415,6 +858,8 @@ const OrganizationProtectedOrganizationRouteChildren: OrganizationProtectedOrgan
       OrganizationProtectedOrganizationDashboardRoute,
     OrganizationProtectedOrganizationInboxRoute:
       OrganizationProtectedOrganizationInboxRoute,
+    OrganizationProtectedOrganizationSettingsRoute:
+      OrganizationProtectedOrganizationSettingsRouteWithChildren,
     OrganizationProtectedOrganizationTicketRoute:
       OrganizationProtectedOrganizationTicketRoute,
     OrganizationProtectedOrganizationVisitorRoute:
