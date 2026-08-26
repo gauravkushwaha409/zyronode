@@ -36,8 +36,7 @@ services:
       context: .
       dockerfile: apps/server/Dockerfile.dev
     container_name: server
-    # command: sh -c "pnpm prisma:generate && pnpm prisma:deploy && pnpm dev:server"
-    command: sh -c "pnpm dev:server"
+    command: sh -c "pnpm prisma:generate && pnpm prisma:deploy && pnpm dev:server"
     restart: unless-stopped
     ports:
       - "8000:8000"
@@ -77,8 +76,9 @@ services:
     env_file:
       - .env
     environment:
-      # Vite proxy runs inside this container; localhost would point here, not at the server service.
-      - VITE_SERVER_URL=http://server:8000
+      # Overrides .env for Docker networking; change PROXY in .env to toggle single source of truth.
+      - VITE_SERVER_URL=${VITE_SERVER_URL:-http://server:8000}
+      - PROXY=${PROXY:-true}
     ports:
       - "3000:3000"
     depends_on:

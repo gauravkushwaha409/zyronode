@@ -8,3 +8,6 @@ interface ImportMetaEnv {
   interface ImportMeta {
     readonly env: ImportMetaEnv
   }
+
+  declare const __PROXY_ENABLED__: boolean;
+  declare const __SERVER_URL__: string;

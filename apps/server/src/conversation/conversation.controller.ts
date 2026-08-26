@@ -23,6 +23,7 @@ export class ConversationController {
 		const ip =
 			(req.headers["x-forwarded-for"] as string) ?? req.socket.remoteAddress;
 		const userAgent = req.headers["user-agent"];
+		console.log("ip===================>", ip);
 		return this.conversationService.create(dto, ip, userAgent);
 	}
 

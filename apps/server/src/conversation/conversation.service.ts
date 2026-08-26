@@ -1,109 +1,125 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import {
+	BadRequestException,
+	Injectable,
+	NotFoundException,
+} from "@nestjs/common";
+import { Prisma } from "../generated/prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateConversationDto } from "./dto/create-conversation.dto";
 
 @Injectable()
 export class ConversationService {
-  constructor(private readonly prisma: PrismaService) {}
+	constructor(private readonly prisma: PrismaService) {}
 
-  async create(dto: CreateConversationDto, ip?: string, userAgent?: string) {
-    const conversation = await this.prisma.conversation.create({
-      data: {
-        organizationId: dto.organizationId,
-        sourceUrl: dto.sourceUrl,
-        visitorName: dto.visitorName,
-        visitorEmail: dto.visitorEmail,
-        visitorPhone: dto.visitorPhone,
-        channel: dto.channel ?? "web",
-        metadata: dto.metadata as never,
-        ipAddress: ip,
-        userAgent,
-      },
-      include: {
-        organization: {
-          select: { id: true, name: true },
-        },
-      },
-    });
+	async create(dto: CreateConversationDto, ip?: string, userAgent?: string) {
+		try {
+			const conversation = await this.prisma.conversation.create({
+				data: {
+					organizationId: dto.organizationId,
+					sourceUrl: dto.sourceUrl,
+					visitorName: dto.visitorName,
+					visitorEmail: dto.visitorEmail,
+					visitorPhone: dto.visitorPhone,
+					channel: dto.channel ?? "web",
+					metadata: dto.metadata as never,
+					ipAddress: ip,
+					userAgent,
+				},
+				include: {
+					organization: {
+						select: { id: true, name: true },
+					},
+				},
+			});
 
-    return {
-      message: "Conversation created successfully",
-      data: conversation,
-    };
-  }
+			return {
+				message: "Conversation created successfully",
+				data: conversation,
+			};
+		} catch (err) {
+			const error = err as Prisma.PrismaClientKnownRequestError;
+			if (error.code === "P2003") {
+				throw new BadRequestException(
+					"Invalid organization. Please provide a valid organization ID.",
+				);
+			}
 
-  async findById(conversationId: string) {
-    const conversation = await this.prisma.conversation.findUnique({
-      where: { id: conversationId },
-      include: {
-        messages: {
-          orderBy: { createdAt: "desc" },
-          take: 50,
-          include: {
-            replyTo: {
-              select: {
-                id: true,
-                content: true,
-                senderType: true,
-                senderId: true,
-              },
-            },
-          },
-        },
-        organization: {
-          select: { id: true, name: true },
-        },
-      },
-    });
+			throw error;
+		}
+	}
 
-    if (!conversation) {
-      throw new NotFoundException("Conversation not found");
-    }
+	async findById(conversationId: string) {
+		const conversation = await this.prisma.conversation.findUnique({
+			where: { id: conversationId },
+			include: {
+				messages: {
+					orderBy: { createdAt: "desc" },
+					take: 50,
+					include: {
+						replyTo: {
+							select: {
+								id: true,
+								content: true,
+								senderType: true,
+								senderId: true,
+							},
+						},
+					},
+				},
+				organization: {
+					select: { id: true, name: true },
+				},
+			},
+		});
 
-    return {
-      message: "Conversation fetched successfully",
-      data: conversation,
-    };
-  }
+		if (!conversation) {
+			throw new NotFoundException("Conversation not found");
+		}
 
-  async findByOrganizationId(organizationId: string) {
-    const conversations = await this.prisma.conversation.findMany({
-      where: { organizationId },
-      orderBy: { updatedAt: "desc" },
-      include: {
-        messages: {
-          orderBy: { createdAt: "desc" },
-          take: 1,
-        },
-      },
-    });
+		return {
+			message: "Conversation fetched successfully",
+			data: conversation,
+		};
+	}
 
-    return {
-      message: "Conversations fetched successfully",
-      data: conversations,
-    };
-  }
+	async findByOrganizationId(organizationId: string) {
+		const conversations = await this.prisma.conversation.findMany({
+			where: { organizationId },
+			orderBy: { updatedAt: "desc" },
+			include: {
+				messages: {
+					orderBy: { createdAt: "desc" },
+					take: 1,
+				},
+			},
+		});
 
-  async updateStatus(
-    conversationId: string,
-    status: "ACTIVE" | "IDLE" | "CLOSED" | "PENDING",
-  ) {
-    const conversation = await this.prisma.conversation.findUnique({
-      where: { id: conversationId },
-    });
+		return {
+			message: "Conversations fetched successfully",
+			data: conversations,
+		};
+	}
 
-    if (!conversation) {
-      throw new NotFoundException("Conversation not found");
-    }
+	async updateStatus(
+		conversationId: string,
+		status: "ACTIVE" | "IDLE" | "CLOSED" | "PENDING",
+	) {
+		const conversation = await this.prisma.conversation.findUnique({
+			where: { id: conversationId },
+		});
 
-    const updated = await this.prisma.conversation.update({
-      where: { id: conversationId },
-      data: { status },
-    });
+		if (!conversation) {
+			throw new NotFoundException("Conversation not found");
+		}
 
-    return {
-      message: "Conversation status updated",
-      data: updated,
-    };
-  }
+		const updated = await this.prisma.conversation.update({
+			where: { id: conversationId },
+			data: { status },
+		});
+
+		return {
+			message: "Conversation status updated",
+			data: updated,
+		};
+	}
 }
