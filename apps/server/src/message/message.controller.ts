@@ -7,6 +7,13 @@ import {
 	Query,
 	UseGuards,
 } from "@nestjs/common";
+import {
+	ApiTags,
+	ApiOperation,
+	ApiResponse,
+	ApiBearerAuth,
+	ApiParam,
+} from "@nestjs/swagger";
 import { CurrentUser } from "../common/decorator/current-user.decorator";
 import { JwtAuthGuard } from "../common/gaurds/jwt-auth.guard";
 import { EventBridge } from "../common/services/event-bridge.service";
@@ -16,6 +23,7 @@ import { ListMessagesDto } from "./dto/list-messages.dto";
 import { SendMessageDto } from "./dto/send-message.dto";
 import { MessageService } from "./message.service";
 
+@ApiTags("Message")
 @Controller("conversations/:conversationId/messages")
 export class MessageController {
 	constructor(
@@ -62,6 +70,10 @@ export class MessageController {
 
 	@Post()
 	@UseGuards(JwtAuthGuard)
+	@ApiBearerAuth()
+	@ApiOperation({ summary: 'Send a message as an agent' })
+	@ApiParam({ name: 'conversationId', description: 'Conversation ID' })
+	@ApiResponse({ status: 201, description: 'Message sent' })
 	async sendAsAgent(
 		@Param("conversationId") conversationId: string,
 		@Body() dto: SendMessageDto,
@@ -82,6 +94,9 @@ export class MessageController {
 	}
 
 	@Post("visitor")
+	@ApiOperation({ summary: 'Send a message as a visitor' })
+	@ApiParam({ name: 'conversationId', description: 'Conversation ID' })
+	@ApiResponse({ status: 201, description: 'Message sent' })
 	async sendAsVisitor(
 		@Param("conversationId") conversationId: string,
 		@Body() dto: SendMessageDto,
@@ -100,6 +115,9 @@ export class MessageController {
 	}
 
 	@Get()
+	@ApiOperation({ summary: 'List messages in a conversation' })
+	@ApiParam({ name: 'conversationId', description: 'Conversation ID' })
+	@ApiResponse({ status: 200, description: 'Messages returned' })
 	findByConversation(
 		@Param("conversationId") conversationId: string,
 		@Query() query: ListMessagesDto,
@@ -113,6 +131,10 @@ export class MessageController {
 
 	@Post("read")
 	@UseGuards(JwtAuthGuard)
+	@ApiBearerAuth()
+	@ApiOperation({ summary: 'Mark conversation as read' })
+	@ApiParam({ name: 'conversationId', description: 'Conversation ID' })
+	@ApiResponse({ status: 200, description: 'Marked as read' })
 	markAsRead(
 		@Param("conversationId") conversationId: string,
 		@CurrentUser("id") userId: string,

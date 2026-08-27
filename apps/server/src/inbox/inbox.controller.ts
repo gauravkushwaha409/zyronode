@@ -7,17 +7,28 @@ import {
 	Query,
 	UseGuards,
 } from "@nestjs/common";
+import {
+	ApiTags,
+	ApiOperation,
+	ApiResponse,
+	ApiBearerAuth,
+	ApiParam,
+} from "@nestjs/swagger";
 import { CurrentUser } from "../common/decorator/current-user.decorator";
 import { JwtAuthGuard } from "../common/gaurds/jwt-auth.guard";
 import { ListInboxConversationsDto } from "./dto/list-inbox-conversations.dto";
 import { InboxService } from "./inbox.service";
 
+@ApiTags("Inbox")
 @Controller("inbox")
 @UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 export class InboxController {
 	constructor(private readonly inboxService: InboxService) {}
 
 	@Get("conversations")
+	@ApiOperation({ summary: 'List inbox conversations' })
+	@ApiResponse({ status: 200, description: 'Conversations returned' })
 	getConversations(
 		@Query() query: ListInboxConversationsDto,
 		@CurrentUser("id") userId: string,
@@ -31,6 +42,10 @@ export class InboxController {
 	}
 
 	@Get("conversations/:id")
+	@ApiOperation({ summary: 'Get conversation details' })
+	@ApiParam({ name: 'id', description: 'Conversation ID' })
+	@ApiResponse({ status: 200, description: 'Conversation details returned' })
+	@ApiResponse({ status: 404, description: 'Conversation not found' })
 	getConversationDetails(
 		@Param("id") id: string,
 		@Query("organizationId") organizationId: string,
@@ -40,6 +55,9 @@ export class InboxController {
 	}
 
 	@Post("conversations/:id/close")
+	@ApiOperation({ summary: 'Close a conversation' })
+	@ApiParam({ name: 'id', description: 'Conversation ID' })
+	@ApiResponse({ status: 200, description: 'Conversation closed' })
 	closeConversation(
 		@Param("id") id: string,
 		@Body("organizationId") organizationId: string,
@@ -49,6 +67,9 @@ export class InboxController {
 	}
 
 	@Post("conversations/:id/reopen")
+	@ApiOperation({ summary: 'Reopen a conversation' })
+	@ApiParam({ name: 'id', description: 'Conversation ID' })
+	@ApiResponse({ status: 200, description: 'Conversation reopened' })
 	reopenConversation(
 		@Param("id") id: string,
 		@Body("organizationId") organizationId: string,

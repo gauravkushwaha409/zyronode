@@ -16,6 +16,10 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, ApiResponse<T>
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
 
+    if (request.url.startsWith("/api/v1/docs")) {
+      return next.handle();
+    }
+
     return next.handle().pipe(
       map((data) => {
         // allow controller to override message via data.message

@@ -8,12 +8,21 @@ import {
 	Res,
 	UseGuards,
 } from "@nestjs/common";
+import {
+	ApiTags,
+	ApiOperation,
+	ApiResponse,
+	ApiBearerAuth,
+	ApiParam,
+	ApiQuery,
+} from "@nestjs/swagger";
 import type { Response } from "express";
 import { CurrentUser } from "../common/decorator/current-user.decorator";
 import { JwtAuthGuard } from "../common/gaurds/jwt-auth.guard";
 import { PrismaService } from "../prisma/prisma.service";
 import { SseService } from "./sse.service";
 
+@ApiTags("SSE")
 @Controller("sse-event")
 export class SseController {
 	constructor(
@@ -21,14 +30,13 @@ export class SseController {
 		private readonly prisma: PrismaService,
 	) {}
 
-	/**
-	 * Agent stream: receives every event for one organization (tenant).
-	 * Auth: JWT via Authorization header or the `access` cookie
-	 * (EventSource cannot set headers, so the cookie path is what the
-	 * browser will actually use).
-	 */
 	@Get("agent")
 	@UseGuards(JwtAuthGuard)
+	@ApiBearerAuth()
+	@ApiOperation({ summary: 'Agent SSE stream - receives events for one organization' })
+	@ApiQuery({ name: 'organizationId', description: 'Organization ID', required: true })
+	@ApiResponse({ status: 200, description: 'SSE stream opened' })
+	@ApiResponse({ status: 403, description: 'Not a member of this organization' })
 	async agentStream(
 		@Query("organizationId") organizationId: string,
 		@CurrentUser("id") userId: string,
@@ -49,32 +57,30 @@ export class SseController {
 		this.openStream(res, [`org:${organizationId}`]);
 	}
 
-  /**
-   * Visitor stream: public, but scoped strictly to a single conversation so
-   * a visitor can never receive another tenant's events. No org id is
-   * accepted from the client - it is always derived from the conversation row.
-   */
-  @Get("conversation/:conversationId")
-  async visitorStream(
-    @Param("conversationId") conversationId: string,
-    @Res() res: Response,
-  ) {
-    const conversation = await this.prisma.conversation.findUnique({
-      where: { id: conversationId },
-      select: { id: true },
-    });
-    if (!conversation) {
-      throw new NotFoundException("Conversation not found");
-    }
+	@Get("conversation/:conversationId")
+	@ApiOperation({ summary: 'Visitor SSE stream - scoped to a single conversation' })
+	@ApiParam({ name: 'conversationId', description: 'Conversation ID' })
+	@ApiResponse({ status: 200, description: 'SSE stream opened' })
+	@ApiResponse({ status: 404, description: 'Conversation not found' })
+	async visitorStream(
+		@Param("conversationId") conversationId: string,
+		@Res() res: Response,
+	) {
+		const conversation = await this.prisma.conversation.findUnique({
+			where: { id: conversationId },
+			select: { id: true },
+		});
+		if (!conversation) {
+			throw new NotFoundException("Conversation not found");
+		}
 
-    this.openStream(res, [`conversation:${conversationId}`]);
-  }
+		this.openStream(res, [`conversation:${conversationId}`]);
+	}
 
 	private openStream(res: Response, keys: string[]): void {
 		res.setHeader("Content-Type", "text/event-stream");
 		res.setHeader("Cache-Control", "no-cache, no-transform");
 		res.setHeader("Connection", "keep-alive");
-		// disable nginx buffering so events flush immediately
 		res.setHeader("X-Accel-Buffering", "no");
 		res.flushHeaders?.();
 
