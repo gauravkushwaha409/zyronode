@@ -20,6 +20,7 @@
     "prisma:migrate": "turbo run prisma:migrate --filter server",
     "prisma:generate": "pnpm --filter server prisma:generate",
     "prisma:deploy": "pnpm --filter server prisma:deploy",
+    "prisma:seed": "pnpm --filter server prisma:seed",
     "prisma:studio": "turbo run prisma:studio --filter server",
     "resource": "pnpm --filter server exec nest generate resource"
   },

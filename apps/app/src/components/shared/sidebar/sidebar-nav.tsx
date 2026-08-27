@@ -1,53 +1,57 @@
-import { cn } from '@package/ui';
-import { NavLink } from './sidebar-nav-link';
-import type { SidebarItems } from './sidebar.types';
+import { cn } from "@package/ui";
+import { Fragment } from "react";
+import type { SidebarItems } from "./sidebar.types";
+import { NavLink } from "./sidebar-nav-link";
+import { SidebarOtherInboxes } from "./sidebar-other-inboxes";
 
 interface SidebarNavProps {
-  sidebarData: SidebarItems;
-  pathname: string;
-  open: boolean;
-  isFloating: boolean;
-  collapsed: boolean;
-  hovered: boolean;
+	sidebarData: SidebarItems;
+	pathname: string;
+	open: boolean;
+	isFloating: boolean;
+	collapsed: boolean;
+	hovered: boolean;
 }
 
 export function SidebarNav({
-  sidebarData,
-  pathname,
-  open,
-  isFloating,
-  collapsed,
-  hovered,
+	sidebarData,
+	pathname,
+	open,
+	isFloating,
+	collapsed,
+	hovered,
 }: SidebarNavProps) {
-  return (
-    <section
-      className={cn(
-        'mt-3 flex-1 px-3 flex flex-col gap-5.5 2xl:gap-11 overflow-hidden overflow-y-auto scrollbar-thin scrollbar-thumb-transparent hover:scrollbar-thumb-gray-300 scrollbar-track-transparent scrollbar-gutter-stable',
-        collapsed && !hovered && 'w-fit',
-      )}
-    >
-      <section className="flex flex-col gap-1">
-        {sidebarData.UPPER.map((item) => (
-          <NavLink
-            key={item.label}
-            item={item}
-            pathname={pathname}
-            open={open}
-            isFloating={isFloating}
-          />
-        ))}
-      </section>
-      <section className="flex flex-col gap-1">
-        {sidebarData.LOWER.map((item) => (
-          <NavLink
-            key={item.label}
-            item={item}
-            pathname={pathname}
-            open={open}
-            isFloating={isFloating}
-          />
-        ))}
-      </section>
-    </section>
-  );
+	return (
+		<section
+			className={cn(
+				"mt-3 flex-1 px-3 flex flex-col gap-5.5 2xl:gap-11 overflow-hidden overflow-y-auto scrollbar-thin scrollbar-thumb-transparent hover:scrollbar-thumb-gray-300 scrollbar-track-transparent scrollbar-gutter-stable",
+				collapsed && !hovered && "w-fit",
+			)}
+		>
+			<section className="flex flex-col gap-1">
+				{sidebarData.UPPER.map((item) => (
+					<Fragment key={item.label}>
+						<NavLink
+							item={item}
+							pathname={pathname}
+							open={open}
+							isFloating={isFloating}
+						/>
+						{item.showOtherInboxesAfter && <SidebarOtherInboxes open={open} />}
+					</Fragment>
+				))}
+			</section>
+			<section className="flex flex-col gap-1">
+				{sidebarData.LOWER.map((item) => (
+					<NavLink
+						key={item.label}
+						item={item}
+						pathname={pathname}
+						open={open}
+						isFloating={isFloating}
+					/>
+				))}
+			</section>
+		</section>
+	);
 }

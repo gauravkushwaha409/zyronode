@@ -1,5 +1,5 @@
-import type React from "react";
 import { redirect } from "@tanstack/react-router";
+import type React from "react";
 import { ENV } from "@/config/env";
 import type { RouterContext } from "@/routes/__root";
 import { useMeQuery } from "../hooks";
@@ -56,8 +56,8 @@ export function organizationOnboardingGaurd(user: RouterContext["auth"]) {
 }
 
 export function redirectAuthenticatedUserToApp(auth: RouterContext["auth"]) {
-	const lastOrdId = auth.user?.data?.data?.lastOrgId
-	const user = auth.user?.data?.data
+	const lastOrdId = auth.user?.data?.data?.lastOrgId;
+	const user = auth.user?.data?.data;
 
 	if (user?.id && lastOrdId) {
 		window.location.href = `${ENV.APP_URL}/${lastOrdId}/dashboard`;
@@ -95,4 +95,4 @@ export function activeOrganizationGuard({
 
 export const authGaurds = {
 	authentication: authenticationGuard,
-}
+};

@@ -1,85 +1,109 @@
-import { Typography } from '@package/ui';
-import { cn } from '@package/ui';
+import {
+	cn,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+	Icon,
+	Typography,
+} from "@package/ui";
+import type { OrganizationList } from "@/features/organization/types";
 
 interface SidebarHeaderProps {
-  open: boolean;
-  collapsed: boolean;
-  hovered: boolean;
-  onPin: () => void;
-  onCollapse: () => void;
+	open: boolean;
+	hovered: boolean;
+	currentOrganization?: OrganizationList.OrganizationItem;
+	otherOrganizations: OrganizationList.OrganizationItem[];
+	onSwitchOrganization: (organizationId: string) => void;
+	onPin: () => void;
+	onCollapse: () => void;
 }
 
-function PinIcon() {
-  return (
-    <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-4.5">
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.562.562 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"
-      />
-    </svg>
-  );
+function getInitial(name: string) {
+	return name.trim().charAt(0).toUpperCase() || "?";
 }
 
-function SidebarCloseIcon() {
-  return (
-    <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-4.5">
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-      />
-    </svg>
-  );
+function OrgAvatar({ name, className }: { name: string; className?: string }) {
+	return (
+		<div
+			className={cn(
+				"flex size-8 shrink-0 items-center justify-center rounded-[6px] bg-linear-to-t from-primary-950 to-primary-500 text-white text-sm font-bold shadow-sm",
+				className,
+			)}
+		>
+			{getInitial(name)}
+		</div>
+	);
 }
 
 export function SidebarHeader({
-  open,
-  collapsed,
-  hovered,
-  onPin,
-  onCollapse,
+	open,
+	hovered,
+	currentOrganization,
+	otherOrganizations,
+	onSwitchOrganization,
+	onPin,
+	onCollapse,
 }: SidebarHeaderProps) {
-  return (
-    <section className="px-3">
-      <section className="flex justify-between gap-1">
-        <section className="flex items-center w-full gap-1">
-          <div className="flex size-8 shrink-0 items-center justify-center rounded-[6px] bg-linear-to-t from-primary-950 to-primary-500 text-white text-sm font-bold shadow-sm">
-            C
-          </div>
-          <div
-            className={cn(
-              'flex-1 overflow-hidden whitespace-nowrap',
-              open ? 'max-w-40 opacity-100' : 'max-w-0 opacity-0',
-            )}
-          >
-            <Typography.T3 className="font-medium text-start max-w-22.5 overflow-hidden line-clamp-1">
-              Chat App
-            </Typography.T3>
-          </div>
-        </section>
+	const orgName = currentOrganization?.name ?? "Chatboq";
+	const canSwitch = open && otherOrganizations.length > 0;
 
-        <div className="flex items-center gap-1 ml-auto shrink-0">
-          {hovered && (
-            <button
-              className="h-5 w-5 text-gray-400 hover:text-gray-600 cursor-pointer"
-              type="button"
-              onClick={onPin}
-            >
-              <PinIcon />
-            </button>
-          )}
-          {!collapsed && (
-            <button
-              type="button"
-              className="h-5 w-5 text-gray-400 hover:text-gray-600 cursor-pointer"
-              onClick={onCollapse}
-            >
-              <SidebarCloseIcon />
-            </button>
-          )}
-        </div>
-      </section>
-    </section>
-  );
+	return (
+		<section className="px-3">
+			<section className="flex items-center gap-1">
+				<DropdownMenu>
+					<DropdownMenuTrigger
+						disabled={!canSwitch}
+						className="group flex min-w-0 flex-1 items-center gap-1 rounded-[6px] p-1 -m-1 disabled:cursor-default enabled:hover:bg-gray-fill-50"
+					>
+						<OrgAvatar name={orgName} />
+						<div
+							className={cn(
+								"flex flex-1 items-center gap-1 overflow-hidden whitespace-nowrap",
+								open ? "max-w-40 opacity-100" : "max-w-0 opacity-0",
+							)}
+						>
+							<Typography.T3
+								weight="medium"
+								className="max-w-28 overflow-hidden text-ellipsis text-start text-gray-800"
+							>
+								{orgName}
+							</Typography.T3>
+							{otherOrganizations.length > 0 && (
+								<Icon
+									name="arrow-down"
+									size={12}
+									className="shrink-0 text-gray-400 transition-transform group-data-[state=open]:rotate-180"
+								/>
+							)}
+						</div>
+					</DropdownMenuTrigger>
+					{canSwitch && (
+						<DropdownMenuContent align="start" className="w-56">
+							{otherOrganizations.map((org) => (
+								<DropdownMenuItem
+									key={org.id}
+									onSelect={() => onSwitchOrganization(org.id)}
+								>
+									<OrgAvatar name={org.name} className="size-6 text-xs" />
+									<span className="truncate">{org.name}</span>
+								</DropdownMenuItem>
+							))}
+						</DropdownMenuContent>
+					)}
+				</DropdownMenu>
+
+				{open && (
+					<button
+						type="button"
+						className="flex size-6 shrink-0 items-center justify-center rounded-[6px] text-gray-400 hover:text-gray-600 cursor-pointer"
+						onClick={hovered ? onPin : onCollapse}
+						aria-label={hovered ? "Pin sidebar open" : "Collapse sidebar"}
+					>
+						<Icon name={hovered ? "sidebar-open" : "sidebar-close"} size={18} />
+					</button>
+				)}
+			</section>
+		</section>
+	);
 }

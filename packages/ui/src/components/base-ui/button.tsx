@@ -1,15 +1,15 @@
+import type { IconName } from "@package/icons";
 import { cva, type VariantProps } from "class-variance-authority";
 import { Slot } from "radix-ui";
 import * as React from "react";
 import { cn } from "#lib/utils";
 import { Icon } from "../icons";
-import type { IconName } from "@package/icons";
 import {
 	Tooltip,
 	TooltipContent,
+	type TooltipContentProps,
 	TooltipProvider,
 	TooltipTrigger,
-	type TooltipContentProps,
 } from "../shadcn";
 
 const buttonVariants = cva(
@@ -25,11 +25,11 @@ const buttonVariants = cva(
 					"border-primary-500 text-primary-500 hover:border-primary-600 hover:text-primary-600 disabled:border-primary-200 disabled:text-primary-200",
 				secondary:
 					"border-gray-border-200 text-gray-800 hover:bg-gray-fill-50 focus:border-gray-border-300 disabled:border-gray-border-100 disabled:text-gray-400",
-				gray: "bg-gray-700 text-white-base hover:bg-gray-800 disabled:border-gray-300 disabled:bg-gray-300",
+				gray:
+					"bg-gray-700 text-white-base hover:bg-gray-800 disabled:border-gray-300 disabled:bg-gray-300",
 				success:
 					"border-success-500 bg-success-500 text-white-base hover:border-success-600 hover:bg-success-600 disabled:border-success-200 disabled:bg-success-200",
-				ghost:
-					"text-gray-400 hover:text-gray-800 disabled:text-gray-300",
+				ghost: "text-gray-600 hover:text-gray-800 disabled:text-gray-300",
 				alert:
 					"border-alert-500 bg-alert-500 text-white-base hover:border-alert-600 hover:bg-alert-600 disabled:border-alert-100 disabled:bg-alert-100",
 				"alert-shade":
@@ -37,8 +37,7 @@ const buttonVariants = cva(
 				link: "text-primary-500 underline-offset-4 hover:underline",
 			},
 			size: {
-				default:
-					"typo-t1 h-10 gap-2.5 px-5",
+				default: "typo-t1 h-10 gap-2.5 px-5",
 				xs: "typo-t5 h-[34px] gap-2 px-[14px]",
 				sm: "typo-t3 h-[36px] gap-2.5 px-4",
 				lg: "typo-t1 h-11 gap-2.5 px-6",
@@ -125,11 +124,7 @@ const Button = React.forwardRef<
 		) : (
 			<>
 				{leftIcon && !isPending && (
-					<Icon
-						name={leftIcon}
-						size={iconSize}
-						data-icon="inline-start"
-					/>
+					<Icon name={leftIcon} size={iconSize} data-icon="inline-start" />
 				)}
 				{isPending && showLoading && (
 					<Icon
