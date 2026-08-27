@@ -13,10 +13,10 @@ export function buildSseUrl(
 	path: string,
 	params?: Record<string, string>,
 ): string {
-	const isDev = CONFIG.APP.dev;
-	const origin = isDev ? CONFIG.ENV.SERVER_URL : window.location.origin;
+	const isProxy = (typeof __PROXY_ENABLED__ !== "undefined" && __PROXY_ENABLED__);
+	const origin = isProxy ? "" : CONFIG.ENV.SERVER_URL;
 
-	const url = new URL(`${origin}/api/v1${path}`);
+	const url = new URL(`${origin || window.location.origin}/api/v1${path}`);
 
 	for (const [key, value] of Object.entries(params ?? {})) {
 		url.searchParams.set(key, value);

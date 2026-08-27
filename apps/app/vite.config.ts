@@ -7,6 +7,8 @@ import { defineConfig, loadEnv } from "vite";
 export default defineConfig(({ mode }) => {
 	const viteEnv = loadEnv(mode, "../../", "VITE_");
 	const allEnv = loadEnv(mode, "../../", "");
+	console.log("viteEnv", viteEnv);
+	console.log("allEnv", allEnv);
 
 	const serverUrl = viteEnv.VITE_SERVER_URL;
 	const enableProxy = (allEnv.PROXY ?? process.env.PROXY) === "true";

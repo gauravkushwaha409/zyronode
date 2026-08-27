@@ -38,6 +38,16 @@ export type OrganizationMember = Prisma.OrganizationMemberModel
  */
 export type Visitor = Prisma.VisitorModel
 /**
+ * Model VisitorNote
+ * 
+ */
+export type VisitorNote = Prisma.VisitorNoteModel
+/**
+ * Model VisitorPageVisit
+ * 
+ */
+export type VisitorPageVisit = Prisma.VisitorPageVisitModel
+/**
  * Model Conversation
  * 
  */
