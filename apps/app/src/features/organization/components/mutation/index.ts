@@ -1,1 +1,1 @@
-export { OrganizationMutation } from './organization-mutation'
+export { OrganizationMutation } from "./organization-mutation";

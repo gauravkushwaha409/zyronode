@@ -1,1 +1,1 @@
-export * from './use-create-organization.mutation';
+export * from "./use-create-organization.mutation";

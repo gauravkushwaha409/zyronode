@@ -90,23 +90,20 @@ export function useSignUpForm() {
 
 	const handleResendEmail = () => {
 		if (isRunning) return;
-		const email = form.getValues("email");
-		resendEmailVerificationMutation.mutate(
-			{ email },
-			{
-				onSuccess: (data) => {
-					toast.success(
-						data?.data?.message || "Verification email resent successfully",
-					);
-					start();
-				},
-				onError: (error) => {
-					toast.error(
-						error?.response?.data?.error || "Failed to resend verification email",
-					);
-				},
+		// the backend resolves the user from the JWT, so no payload is sent
+		resendEmailVerificationMutation.mutate(undefined, {
+			onSuccess: (data) => {
+				toast.success(
+					data?.data?.message || "Verification email resent successfully",
+				);
+				start();
 			},
-		);
+			onError: (error) => {
+				toast.error(
+					error?.response?.data?.error || "Failed to resend verification email",
+				);
+			},
+		});
 	};
 
 	const progress = ((30 - timeLeft) / 30) * 100;
@@ -140,9 +137,9 @@ export function useSignUpForm() {
 	};
 
 	const handleStep3 = async (data: { token: string }) => {
-		const email = form.getValues("email");
+		// only the code travels; the backend takes the user from the JWT
 		verifyEmailMutation.mutate(
-			{ email, code: data.token },
+			{ code: data.token },
 			{
 				onSuccess: (data) => {
 					toast.success(data?.data?.message);

@@ -4,10 +4,6 @@ import { ONBOARDING_STEPS } from "@/features/onboarding/config";
 
 export const Route = createFileRoute("/onboarding")({
 	component: RouteComponent,
-	beforeLoad: ({ context }) => {
-		const auth = context.auth;
-
-	},
 });
 
 function RouteComponent() {

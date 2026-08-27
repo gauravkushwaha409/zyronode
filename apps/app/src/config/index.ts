@@ -6,5 +6,10 @@ import { ROUTES } from "./routes";
 import { SSE_ENDPOINTS } from "./sse";
 
 export const CONFIG = {
-    ENDPOINTS, ENV, QUERY_KEY, ROUTES, SSE: SSE_ENDPOINTS, APP
-}
+	ENDPOINTS,
+	ENV,
+	QUERY_KEY,
+	ROUTES,
+	SSE: SSE_ENDPOINTS,
+	APP,
+};

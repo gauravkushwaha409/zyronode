@@ -15,7 +15,8 @@ export function useRegisterMutation() {
 			console.log("on success ", data);
 		},
 		onError: (error) => {
-			toast.error(error?.response?.data?.message || "Something went wrong");
+			// the error envelope carries `error`, not `message`
+			toast.error(error?.response?.data?.error || "Something went wrong");
 		},
 	});
 }

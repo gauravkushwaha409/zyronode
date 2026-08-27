@@ -1,7 +1,7 @@
 // packages/query/src/provider.tsx
 
 import type { QueryClient } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+// import { ReactQueryDevtools } from "@tanstack/react-query-devtools"; // re-enable with the block below
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { type ReactNode } from "react";
 import { asyncStoragePersister } from "./persister";

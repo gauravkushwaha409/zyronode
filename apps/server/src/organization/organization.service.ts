@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import {
+	ForbiddenException,
+	Injectable,
+	NotFoundException,
+} from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateOrganizationDto } from "./dto/create-organization.dto";
 import { UpdateOrganizationDto } from "./dto/update-organization.dto";
@@ -89,6 +93,44 @@ export class OrganizationService {
 			success: true,
 			statusCode: 200,
 			data: organizations,
+		};
+	}
+
+	/**
+	 * Members of one organization. The caller must be a member themselves,
+	 * so this cannot be used to enumerate another tenant's users.
+	 */
+	async getMembers(organizationId: string, userId: string) {
+		const callerMembership = await this.prisma.organizationMember.findUnique({
+			where: { userId_organizationId: { userId, organizationId } },
+		});
+		if (!callerMembership) {
+			throw new ForbiddenException({
+				message: "You are not a member of this organization",
+				error_code: "NOT_ORGANIZATION_MEMBER",
+			});
+		}
+
+		const members = await this.prisma.organizationMember.findMany({
+			where: { organizationId },
+			orderBy: { joinedAt: "asc" },
+			select: {
+				joinedAt: true,
+				user: {
+					select: {
+						id: true,
+						firstName: true,
+						lastName: true,
+						email: true,
+						profile: true,
+					},
+				},
+			},
+		});
+
+		return {
+			message: "Organization members fetched successfully",
+			data: members,
 		};
 	}
 }

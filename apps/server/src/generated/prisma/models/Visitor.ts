@@ -20,8 +20,24 @@ export type VisitorModel = runtime.Types.Result.DefaultSelection<Prisma.$Visitor
 
 export type AggregateVisitor = {
   _count: VisitorCountAggregateOutputType | null
+  _avg: VisitorAvgAggregateOutputType | null
+  _sum: VisitorSumAggregateOutputType | null
   _min: VisitorMinAggregateOutputType | null
   _max: VisitorMaxAggregateOutputType | null
+}
+
+export type VisitorAvgAggregateOutputType = {
+  visitCount: number | null
+  activeDuration: number | null
+  latitude: number | null
+  longitude: number | null
+}
+
+export type VisitorSumAggregateOutputType = {
+  visitCount: number | null
+  activeDuration: number | null
+  latitude: number | null
+  longitude: number | null
 }
 
 export type VisitorMinAggregateOutputType = {
@@ -36,6 +52,26 @@ export type VisitorMinAggregateOutputType = {
   utmMedium: string | null
   utmCampaign: string | null
   status: $Enums.VisitorStatus | null
+  externalId: string | null
+  visitCount: number | null
+  isIdentified: boolean | null
+  isOnline: boolean | null
+  currentPage: string | null
+  activeDuration: number | null
+  lastSeenAt: Date | null
+  device: string | null
+  deviceType: string | null
+  browser: string | null
+  os: string | null
+  country: string | null
+  countryCode: string | null
+  city: string | null
+  region: string | null
+  regionName: string | null
+  timezone: string | null
+  latitude: number | null
+  longitude: number | null
+  assignedAgentId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -52,6 +88,26 @@ export type VisitorMaxAggregateOutputType = {
   utmMedium: string | null
   utmCampaign: string | null
   status: $Enums.VisitorStatus | null
+  externalId: string | null
+  visitCount: number | null
+  isIdentified: boolean | null
+  isOnline: boolean | null
+  currentPage: string | null
+  activeDuration: number | null
+  lastSeenAt: Date | null
+  device: string | null
+  deviceType: string | null
+  browser: string | null
+  os: string | null
+  country: string | null
+  countryCode: string | null
+  city: string | null
+  region: string | null
+  regionName: string | null
+  timezone: string | null
+  latitude: number | null
+  longitude: number | null
+  assignedAgentId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -68,11 +124,45 @@ export type VisitorCountAggregateOutputType = {
   utmMedium: number
   utmCampaign: number
   status: number
+  externalId: number
+  visitCount: number
+  isIdentified: number
+  isOnline: number
+  currentPage: number
+  activeDuration: number
+  lastSeenAt: number
+  device: number
+  deviceType: number
+  browser: number
+  os: number
+  country: number
+  countryCode: number
+  city: number
+  region: number
+  regionName: number
+  timezone: number
+  latitude: number
+  longitude: number
+  assignedAgentId: number
   createdAt: number
   updatedAt: number
   _all: number
 }
 
+
+export type VisitorAvgAggregateInputType = {
+  visitCount?: true
+  activeDuration?: true
+  latitude?: true
+  longitude?: true
+}
+
+export type VisitorSumAggregateInputType = {
+  visitCount?: true
+  activeDuration?: true
+  latitude?: true
+  longitude?: true
+}
 
 export type VisitorMinAggregateInputType = {
   id?: true
@@ -86,6 +176,26 @@ export type VisitorMinAggregateInputType = {
   utmMedium?: true
   utmCampaign?: true
   status?: true
+  externalId?: true
+  visitCount?: true
+  isIdentified?: true
+  isOnline?: true
+  currentPage?: true
+  activeDuration?: true
+  lastSeenAt?: true
+  device?: true
+  deviceType?: true
+  browser?: true
+  os?: true
+  country?: true
+  countryCode?: true
+  city?: true
+  region?: true
+  regionName?: true
+  timezone?: true
+  latitude?: true
+  longitude?: true
+  assignedAgentId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -102,6 +212,26 @@ export type VisitorMaxAggregateInputType = {
   utmMedium?: true
   utmCampaign?: true
   status?: true
+  externalId?: true
+  visitCount?: true
+  isIdentified?: true
+  isOnline?: true
+  currentPage?: true
+  activeDuration?: true
+  lastSeenAt?: true
+  device?: true
+  deviceType?: true
+  browser?: true
+  os?: true
+  country?: true
+  countryCode?: true
+  city?: true
+  region?: true
+  regionName?: true
+  timezone?: true
+  latitude?: true
+  longitude?: true
+  assignedAgentId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -118,6 +248,26 @@ export type VisitorCountAggregateInputType = {
   utmMedium?: true
   utmCampaign?: true
   status?: true
+  externalId?: true
+  visitCount?: true
+  isIdentified?: true
+  isOnline?: true
+  currentPage?: true
+  activeDuration?: true
+  lastSeenAt?: true
+  device?: true
+  deviceType?: true
+  browser?: true
+  os?: true
+  country?: true
+  countryCode?: true
+  city?: true
+  region?: true
+  regionName?: true
+  timezone?: true
+  latitude?: true
+  longitude?: true
+  assignedAgentId?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -161,6 +311,18 @@ export type VisitorAggregateArgs<ExtArgs extends runtime.Types.Extensions.Intern
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: VisitorAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: VisitorSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: VisitorMinAggregateInputType
@@ -191,6 +353,8 @@ export type VisitorGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   _count?: VisitorCountAggregateInputType | true
+  _avg?: VisitorAvgAggregateInputType
+  _sum?: VisitorSumAggregateInputType
   _min?: VisitorMinAggregateInputType
   _max?: VisitorMaxAggregateInputType
 }
@@ -207,9 +371,31 @@ export type VisitorGroupByOutputType = {
   utmMedium: string | null
   utmCampaign: string | null
   status: $Enums.VisitorStatus
+  externalId: string | null
+  visitCount: number
+  isIdentified: boolean
+  isOnline: boolean
+  currentPage: string | null
+  activeDuration: number
+  lastSeenAt: Date | null
+  device: string | null
+  deviceType: string | null
+  browser: string | null
+  os: string | null
+  country: string | null
+  countryCode: string | null
+  city: string | null
+  region: string | null
+  regionName: string | null
+  timezone: string | null
+  latitude: number | null
+  longitude: number | null
+  assignedAgentId: string | null
   createdAt: Date
   updatedAt: Date
   _count: VisitorCountAggregateOutputType | null
+  _avg: VisitorAvgAggregateOutputType | null
+  _sum: VisitorSumAggregateOutputType | null
   _min: VisitorMinAggregateOutputType | null
   _max: VisitorMaxAggregateOutputType | null
 }
@@ -244,9 +430,33 @@ export type VisitorWhereInput = {
   utmMedium?: Prisma.StringNullableFilter<"Visitor"> | string | null
   utmCampaign?: Prisma.StringNullableFilter<"Visitor"> | string | null
   status?: Prisma.EnumVisitorStatusFilter<"Visitor"> | $Enums.VisitorStatus
+  externalId?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  visitCount?: Prisma.IntFilter<"Visitor"> | number
+  isIdentified?: Prisma.BoolFilter<"Visitor"> | boolean
+  isOnline?: Prisma.BoolFilter<"Visitor"> | boolean
+  currentPage?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  activeDuration?: Prisma.IntFilter<"Visitor"> | number
+  lastSeenAt?: Prisma.DateTimeNullableFilter<"Visitor"> | Date | string | null
+  device?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  deviceType?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  browser?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  os?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  country?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  countryCode?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  city?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  region?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  regionName?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  timezone?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  latitude?: Prisma.FloatNullableFilter<"Visitor"> | number | null
+  longitude?: Prisma.FloatNullableFilter<"Visitor"> | number | null
+  assignedAgentId?: Prisma.StringNullableFilter<"Visitor"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Visitor"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Visitor"> | Date | string
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
+  assignedAgent?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  notes?: Prisma.VisitorNoteListRelationFilter
+  pageVisits?: Prisma.VisitorPageVisitListRelationFilter
+  conversations?: Prisma.ConversationListRelationFilter
 }
 
 export type VisitorOrderByWithRelationInput = {
@@ -261,13 +471,38 @@ export type VisitorOrderByWithRelationInput = {
   utmMedium?: Prisma.SortOrderInput | Prisma.SortOrder
   utmCampaign?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  externalId?: Prisma.SortOrderInput | Prisma.SortOrder
+  visitCount?: Prisma.SortOrder
+  isIdentified?: Prisma.SortOrder
+  isOnline?: Prisma.SortOrder
+  currentPage?: Prisma.SortOrderInput | Prisma.SortOrder
+  activeDuration?: Prisma.SortOrder
+  lastSeenAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  device?: Prisma.SortOrderInput | Prisma.SortOrder
+  deviceType?: Prisma.SortOrderInput | Prisma.SortOrder
+  browser?: Prisma.SortOrderInput | Prisma.SortOrder
+  os?: Prisma.SortOrderInput | Prisma.SortOrder
+  country?: Prisma.SortOrderInput | Prisma.SortOrder
+  countryCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  city?: Prisma.SortOrderInput | Prisma.SortOrder
+  region?: Prisma.SortOrderInput | Prisma.SortOrder
+  regionName?: Prisma.SortOrderInput | Prisma.SortOrder
+  timezone?: Prisma.SortOrderInput | Prisma.SortOrder
+  latitude?: Prisma.SortOrderInput | Prisma.SortOrder
+  longitude?: Prisma.SortOrderInput | Prisma.SortOrder
+  assignedAgentId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   organization?: Prisma.OrganizationOrderByWithRelationInput
+  assignedAgent?: Prisma.UserOrderByWithRelationInput
+  notes?: Prisma.VisitorNoteOrderByRelationAggregateInput
+  pageVisits?: Prisma.VisitorPageVisitOrderByRelationAggregateInput
+  conversations?: Prisma.ConversationOrderByRelationAggregateInput
 }
 
 export type VisitorWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  organizationId_externalId?: Prisma.VisitorOrganizationIdExternalIdCompoundUniqueInput
   AND?: Prisma.VisitorWhereInput | Prisma.VisitorWhereInput[]
   OR?: Prisma.VisitorWhereInput[]
   NOT?: Prisma.VisitorWhereInput | Prisma.VisitorWhereInput[]
@@ -281,10 +516,34 @@ export type VisitorWhereUniqueInput = Prisma.AtLeast<{
   utmMedium?: Prisma.StringNullableFilter<"Visitor"> | string | null
   utmCampaign?: Prisma.StringNullableFilter<"Visitor"> | string | null
   status?: Prisma.EnumVisitorStatusFilter<"Visitor"> | $Enums.VisitorStatus
+  externalId?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  visitCount?: Prisma.IntFilter<"Visitor"> | number
+  isIdentified?: Prisma.BoolFilter<"Visitor"> | boolean
+  isOnline?: Prisma.BoolFilter<"Visitor"> | boolean
+  currentPage?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  activeDuration?: Prisma.IntFilter<"Visitor"> | number
+  lastSeenAt?: Prisma.DateTimeNullableFilter<"Visitor"> | Date | string | null
+  device?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  deviceType?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  browser?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  os?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  country?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  countryCode?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  city?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  region?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  regionName?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  timezone?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  latitude?: Prisma.FloatNullableFilter<"Visitor"> | number | null
+  longitude?: Prisma.FloatNullableFilter<"Visitor"> | number | null
+  assignedAgentId?: Prisma.StringNullableFilter<"Visitor"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Visitor"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Visitor"> | Date | string
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
-}, "id">
+  assignedAgent?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  notes?: Prisma.VisitorNoteListRelationFilter
+  pageVisits?: Prisma.VisitorPageVisitListRelationFilter
+  conversations?: Prisma.ConversationListRelationFilter
+}, "id" | "organizationId_externalId">
 
 export type VisitorOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -298,11 +557,33 @@ export type VisitorOrderByWithAggregationInput = {
   utmMedium?: Prisma.SortOrderInput | Prisma.SortOrder
   utmCampaign?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  externalId?: Prisma.SortOrderInput | Prisma.SortOrder
+  visitCount?: Prisma.SortOrder
+  isIdentified?: Prisma.SortOrder
+  isOnline?: Prisma.SortOrder
+  currentPage?: Prisma.SortOrderInput | Prisma.SortOrder
+  activeDuration?: Prisma.SortOrder
+  lastSeenAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  device?: Prisma.SortOrderInput | Prisma.SortOrder
+  deviceType?: Prisma.SortOrderInput | Prisma.SortOrder
+  browser?: Prisma.SortOrderInput | Prisma.SortOrder
+  os?: Prisma.SortOrderInput | Prisma.SortOrder
+  country?: Prisma.SortOrderInput | Prisma.SortOrder
+  countryCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  city?: Prisma.SortOrderInput | Prisma.SortOrder
+  region?: Prisma.SortOrderInput | Prisma.SortOrder
+  regionName?: Prisma.SortOrderInput | Prisma.SortOrder
+  timezone?: Prisma.SortOrderInput | Prisma.SortOrder
+  latitude?: Prisma.SortOrderInput | Prisma.SortOrder
+  longitude?: Prisma.SortOrderInput | Prisma.SortOrder
+  assignedAgentId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.VisitorCountOrderByAggregateInput
+  _avg?: Prisma.VisitorAvgOrderByAggregateInput
   _max?: Prisma.VisitorMaxOrderByAggregateInput
   _min?: Prisma.VisitorMinOrderByAggregateInput
+  _sum?: Prisma.VisitorSumOrderByAggregateInput
 }
 
 export type VisitorScalarWhereWithAggregatesInput = {
@@ -320,6 +601,26 @@ export type VisitorScalarWhereWithAggregatesInput = {
   utmMedium?: Prisma.StringNullableWithAggregatesFilter<"Visitor"> | string | null
   utmCampaign?: Prisma.StringNullableWithAggregatesFilter<"Visitor"> | string | null
   status?: Prisma.EnumVisitorStatusWithAggregatesFilter<"Visitor"> | $Enums.VisitorStatus
+  externalId?: Prisma.StringNullableWithAggregatesFilter<"Visitor"> | string | null
+  visitCount?: Prisma.IntWithAggregatesFilter<"Visitor"> | number
+  isIdentified?: Prisma.BoolWithAggregatesFilter<"Visitor"> | boolean
+  isOnline?: Prisma.BoolWithAggregatesFilter<"Visitor"> | boolean
+  currentPage?: Prisma.StringNullableWithAggregatesFilter<"Visitor"> | string | null
+  activeDuration?: Prisma.IntWithAggregatesFilter<"Visitor"> | number
+  lastSeenAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Visitor"> | Date | string | null
+  device?: Prisma.StringNullableWithAggregatesFilter<"Visitor"> | string | null
+  deviceType?: Prisma.StringNullableWithAggregatesFilter<"Visitor"> | string | null
+  browser?: Prisma.StringNullableWithAggregatesFilter<"Visitor"> | string | null
+  os?: Prisma.StringNullableWithAggregatesFilter<"Visitor"> | string | null
+  country?: Prisma.StringNullableWithAggregatesFilter<"Visitor"> | string | null
+  countryCode?: Prisma.StringNullableWithAggregatesFilter<"Visitor"> | string | null
+  city?: Prisma.StringNullableWithAggregatesFilter<"Visitor"> | string | null
+  region?: Prisma.StringNullableWithAggregatesFilter<"Visitor"> | string | null
+  regionName?: Prisma.StringNullableWithAggregatesFilter<"Visitor"> | string | null
+  timezone?: Prisma.StringNullableWithAggregatesFilter<"Visitor"> | string | null
+  latitude?: Prisma.FloatNullableWithAggregatesFilter<"Visitor"> | number | null
+  longitude?: Prisma.FloatNullableWithAggregatesFilter<"Visitor"> | number | null
+  assignedAgentId?: Prisma.StringNullableWithAggregatesFilter<"Visitor"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Visitor"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Visitor"> | Date | string
 }
@@ -335,9 +636,32 @@ export type VisitorCreateInput = {
   utmMedium?: string | null
   utmCampaign?: string | null
   status?: $Enums.VisitorStatus
+  externalId?: string | null
+  visitCount?: number
+  isIdentified?: boolean
+  isOnline?: boolean
+  currentPage?: string | null
+  activeDuration?: number
+  lastSeenAt?: Date | string | null
+  device?: string | null
+  deviceType?: string | null
+  browser?: string | null
+  os?: string | null
+  country?: string | null
+  countryCode?: string | null
+  city?: string | null
+  region?: string | null
+  regionName?: string | null
+  timezone?: string | null
+  latitude?: number | null
+  longitude?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutVisitorsInput
+  assignedAgent?: Prisma.UserCreateNestedOneWithoutAssignedVisitorsInput
+  notes?: Prisma.VisitorNoteCreateNestedManyWithoutVisitorInput
+  pageVisits?: Prisma.VisitorPageVisitCreateNestedManyWithoutVisitorInput
+  conversations?: Prisma.ConversationCreateNestedManyWithoutVisitorInput
 }
 
 export type VisitorUncheckedCreateInput = {
@@ -352,8 +676,31 @@ export type VisitorUncheckedCreateInput = {
   utmMedium?: string | null
   utmCampaign?: string | null
   status?: $Enums.VisitorStatus
+  externalId?: string | null
+  visitCount?: number
+  isIdentified?: boolean
+  isOnline?: boolean
+  currentPage?: string | null
+  activeDuration?: number
+  lastSeenAt?: Date | string | null
+  device?: string | null
+  deviceType?: string | null
+  browser?: string | null
+  os?: string | null
+  country?: string | null
+  countryCode?: string | null
+  city?: string | null
+  region?: string | null
+  regionName?: string | null
+  timezone?: string | null
+  latitude?: number | null
+  longitude?: number | null
+  assignedAgentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  notes?: Prisma.VisitorNoteUncheckedCreateNestedManyWithoutVisitorInput
+  pageVisits?: Prisma.VisitorPageVisitUncheckedCreateNestedManyWithoutVisitorInput
+  conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutVisitorInput
 }
 
 export type VisitorUpdateInput = {
@@ -367,9 +714,32 @@ export type VisitorUpdateInput = {
   utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumVisitorStatusFieldUpdateOperationsInput | $Enums.VisitorStatus
+  externalId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visitCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isIdentified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isOnline?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currentPage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activeDuration?: Prisma.IntFieldUpdateOperationsInput | number
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  device?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  browser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  os?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countryCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  regionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutVisitorsNestedInput
+  assignedAgent?: Prisma.UserUpdateOneWithoutAssignedVisitorsNestedInput
+  notes?: Prisma.VisitorNoteUpdateManyWithoutVisitorNestedInput
+  pageVisits?: Prisma.VisitorPageVisitUpdateManyWithoutVisitorNestedInput
+  conversations?: Prisma.ConversationUpdateManyWithoutVisitorNestedInput
 }
 
 export type VisitorUncheckedUpdateInput = {
@@ -384,8 +754,31 @@ export type VisitorUncheckedUpdateInput = {
   utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumVisitorStatusFieldUpdateOperationsInput | $Enums.VisitorStatus
+  externalId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visitCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isIdentified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isOnline?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currentPage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activeDuration?: Prisma.IntFieldUpdateOperationsInput | number
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  device?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  browser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  os?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countryCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  regionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  assignedAgentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notes?: Prisma.VisitorNoteUncheckedUpdateManyWithoutVisitorNestedInput
+  pageVisits?: Prisma.VisitorPageVisitUncheckedUpdateManyWithoutVisitorNestedInput
+  conversations?: Prisma.ConversationUncheckedUpdateManyWithoutVisitorNestedInput
 }
 
 export type VisitorCreateManyInput = {
@@ -400,6 +793,26 @@ export type VisitorCreateManyInput = {
   utmMedium?: string | null
   utmCampaign?: string | null
   status?: $Enums.VisitorStatus
+  externalId?: string | null
+  visitCount?: number
+  isIdentified?: boolean
+  isOnline?: boolean
+  currentPage?: string | null
+  activeDuration?: number
+  lastSeenAt?: Date | string | null
+  device?: string | null
+  deviceType?: string | null
+  browser?: string | null
+  os?: string | null
+  country?: string | null
+  countryCode?: string | null
+  city?: string | null
+  region?: string | null
+  regionName?: string | null
+  timezone?: string | null
+  latitude?: number | null
+  longitude?: number | null
+  assignedAgentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -415,6 +828,25 @@ export type VisitorUpdateManyMutationInput = {
   utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumVisitorStatusFieldUpdateOperationsInput | $Enums.VisitorStatus
+  externalId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visitCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isIdentified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isOnline?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currentPage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activeDuration?: Prisma.IntFieldUpdateOperationsInput | number
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  device?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  browser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  os?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countryCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  regionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -431,6 +863,26 @@ export type VisitorUncheckedUpdateManyInput = {
   utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumVisitorStatusFieldUpdateOperationsInput | $Enums.VisitorStatus
+  externalId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visitCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isIdentified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isOnline?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currentPage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activeDuration?: Prisma.IntFieldUpdateOperationsInput | number
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  device?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  browser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  os?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countryCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  regionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  assignedAgentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -445,6 +897,11 @@ export type VisitorOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
+export type VisitorOrganizationIdExternalIdCompoundUniqueInput = {
+  organizationId: string
+  externalId: string
+}
+
 export type VisitorCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
@@ -457,8 +914,35 @@ export type VisitorCountOrderByAggregateInput = {
   utmMedium?: Prisma.SortOrder
   utmCampaign?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  externalId?: Prisma.SortOrder
+  visitCount?: Prisma.SortOrder
+  isIdentified?: Prisma.SortOrder
+  isOnline?: Prisma.SortOrder
+  currentPage?: Prisma.SortOrder
+  activeDuration?: Prisma.SortOrder
+  lastSeenAt?: Prisma.SortOrder
+  device?: Prisma.SortOrder
+  deviceType?: Prisma.SortOrder
+  browser?: Prisma.SortOrder
+  os?: Prisma.SortOrder
+  country?: Prisma.SortOrder
+  countryCode?: Prisma.SortOrder
+  city?: Prisma.SortOrder
+  region?: Prisma.SortOrder
+  regionName?: Prisma.SortOrder
+  timezone?: Prisma.SortOrder
+  latitude?: Prisma.SortOrder
+  longitude?: Prisma.SortOrder
+  assignedAgentId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type VisitorAvgOrderByAggregateInput = {
+  visitCount?: Prisma.SortOrder
+  activeDuration?: Prisma.SortOrder
+  latitude?: Prisma.SortOrder
+  longitude?: Prisma.SortOrder
 }
 
 export type VisitorMaxOrderByAggregateInput = {
@@ -473,6 +957,26 @@ export type VisitorMaxOrderByAggregateInput = {
   utmMedium?: Prisma.SortOrder
   utmCampaign?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  externalId?: Prisma.SortOrder
+  visitCount?: Prisma.SortOrder
+  isIdentified?: Prisma.SortOrder
+  isOnline?: Prisma.SortOrder
+  currentPage?: Prisma.SortOrder
+  activeDuration?: Prisma.SortOrder
+  lastSeenAt?: Prisma.SortOrder
+  device?: Prisma.SortOrder
+  deviceType?: Prisma.SortOrder
+  browser?: Prisma.SortOrder
+  os?: Prisma.SortOrder
+  country?: Prisma.SortOrder
+  countryCode?: Prisma.SortOrder
+  city?: Prisma.SortOrder
+  region?: Prisma.SortOrder
+  regionName?: Prisma.SortOrder
+  timezone?: Prisma.SortOrder
+  latitude?: Prisma.SortOrder
+  longitude?: Prisma.SortOrder
+  assignedAgentId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -489,8 +993,87 @@ export type VisitorMinOrderByAggregateInput = {
   utmMedium?: Prisma.SortOrder
   utmCampaign?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  externalId?: Prisma.SortOrder
+  visitCount?: Prisma.SortOrder
+  isIdentified?: Prisma.SortOrder
+  isOnline?: Prisma.SortOrder
+  currentPage?: Prisma.SortOrder
+  activeDuration?: Prisma.SortOrder
+  lastSeenAt?: Prisma.SortOrder
+  device?: Prisma.SortOrder
+  deviceType?: Prisma.SortOrder
+  browser?: Prisma.SortOrder
+  os?: Prisma.SortOrder
+  country?: Prisma.SortOrder
+  countryCode?: Prisma.SortOrder
+  city?: Prisma.SortOrder
+  region?: Prisma.SortOrder
+  regionName?: Prisma.SortOrder
+  timezone?: Prisma.SortOrder
+  latitude?: Prisma.SortOrder
+  longitude?: Prisma.SortOrder
+  assignedAgentId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type VisitorSumOrderByAggregateInput = {
+  visitCount?: Prisma.SortOrder
+  activeDuration?: Prisma.SortOrder
+  latitude?: Prisma.SortOrder
+  longitude?: Prisma.SortOrder
+}
+
+export type VisitorScalarRelationFilter = {
+  is?: Prisma.VisitorWhereInput
+  isNot?: Prisma.VisitorWhereInput
+}
+
+export type VisitorNullableScalarRelationFilter = {
+  is?: Prisma.VisitorWhereInput | null
+  isNot?: Prisma.VisitorWhereInput | null
+}
+
+export type VisitorCreateNestedManyWithoutAssignedAgentInput = {
+  create?: Prisma.XOR<Prisma.VisitorCreateWithoutAssignedAgentInput, Prisma.VisitorUncheckedCreateWithoutAssignedAgentInput> | Prisma.VisitorCreateWithoutAssignedAgentInput[] | Prisma.VisitorUncheckedCreateWithoutAssignedAgentInput[]
+  connectOrCreate?: Prisma.VisitorCreateOrConnectWithoutAssignedAgentInput | Prisma.VisitorCreateOrConnectWithoutAssignedAgentInput[]
+  createMany?: Prisma.VisitorCreateManyAssignedAgentInputEnvelope
+  connect?: Prisma.VisitorWhereUniqueInput | Prisma.VisitorWhereUniqueInput[]
+}
+
+export type VisitorUncheckedCreateNestedManyWithoutAssignedAgentInput = {
+  create?: Prisma.XOR<Prisma.VisitorCreateWithoutAssignedAgentInput, Prisma.VisitorUncheckedCreateWithoutAssignedAgentInput> | Prisma.VisitorCreateWithoutAssignedAgentInput[] | Prisma.VisitorUncheckedCreateWithoutAssignedAgentInput[]
+  connectOrCreate?: Prisma.VisitorCreateOrConnectWithoutAssignedAgentInput | Prisma.VisitorCreateOrConnectWithoutAssignedAgentInput[]
+  createMany?: Prisma.VisitorCreateManyAssignedAgentInputEnvelope
+  connect?: Prisma.VisitorWhereUniqueInput | Prisma.VisitorWhereUniqueInput[]
+}
+
+export type VisitorUpdateManyWithoutAssignedAgentNestedInput = {
+  create?: Prisma.XOR<Prisma.VisitorCreateWithoutAssignedAgentInput, Prisma.VisitorUncheckedCreateWithoutAssignedAgentInput> | Prisma.VisitorCreateWithoutAssignedAgentInput[] | Prisma.VisitorUncheckedCreateWithoutAssignedAgentInput[]
+  connectOrCreate?: Prisma.VisitorCreateOrConnectWithoutAssignedAgentInput | Prisma.VisitorCreateOrConnectWithoutAssignedAgentInput[]
+  upsert?: Prisma.VisitorUpsertWithWhereUniqueWithoutAssignedAgentInput | Prisma.VisitorUpsertWithWhereUniqueWithoutAssignedAgentInput[]
+  createMany?: Prisma.VisitorCreateManyAssignedAgentInputEnvelope
+  set?: Prisma.VisitorWhereUniqueInput | Prisma.VisitorWhereUniqueInput[]
+  disconnect?: Prisma.VisitorWhereUniqueInput | Prisma.VisitorWhereUniqueInput[]
+  delete?: Prisma.VisitorWhereUniqueInput | Prisma.VisitorWhereUniqueInput[]
+  connect?: Prisma.VisitorWhereUniqueInput | Prisma.VisitorWhereUniqueInput[]
+  update?: Prisma.VisitorUpdateWithWhereUniqueWithoutAssignedAgentInput | Prisma.VisitorUpdateWithWhereUniqueWithoutAssignedAgentInput[]
+  updateMany?: Prisma.VisitorUpdateManyWithWhereWithoutAssignedAgentInput | Prisma.VisitorUpdateManyWithWhereWithoutAssignedAgentInput[]
+  deleteMany?: Prisma.VisitorScalarWhereInput | Prisma.VisitorScalarWhereInput[]
+}
+
+export type VisitorUncheckedUpdateManyWithoutAssignedAgentNestedInput = {
+  create?: Prisma.XOR<Prisma.VisitorCreateWithoutAssignedAgentInput, Prisma.VisitorUncheckedCreateWithoutAssignedAgentInput> | Prisma.VisitorCreateWithoutAssignedAgentInput[] | Prisma.VisitorUncheckedCreateWithoutAssignedAgentInput[]
+  connectOrCreate?: Prisma.VisitorCreateOrConnectWithoutAssignedAgentInput | Prisma.VisitorCreateOrConnectWithoutAssignedAgentInput[]
+  upsert?: Prisma.VisitorUpsertWithWhereUniqueWithoutAssignedAgentInput | Prisma.VisitorUpsertWithWhereUniqueWithoutAssignedAgentInput[]
+  createMany?: Prisma.VisitorCreateManyAssignedAgentInputEnvelope
+  set?: Prisma.VisitorWhereUniqueInput | Prisma.VisitorWhereUniqueInput[]
+  disconnect?: Prisma.VisitorWhereUniqueInput | Prisma.VisitorWhereUniqueInput[]
+  delete?: Prisma.VisitorWhereUniqueInput | Prisma.VisitorWhereUniqueInput[]
+  connect?: Prisma.VisitorWhereUniqueInput | Prisma.VisitorWhereUniqueInput[]
+  update?: Prisma.VisitorUpdateWithWhereUniqueWithoutAssignedAgentInput | Prisma.VisitorUpdateWithWhereUniqueWithoutAssignedAgentInput[]
+  updateMany?: Prisma.VisitorUpdateManyWithWhereWithoutAssignedAgentInput | Prisma.VisitorUpdateManyWithWhereWithoutAssignedAgentInput[]
+  deleteMany?: Prisma.VisitorScalarWhereInput | Prisma.VisitorScalarWhereInput[]
 }
 
 export type VisitorCreateNestedManyWithoutOrganizationInput = {
@@ -539,6 +1122,211 @@ export type EnumVisitorStatusFieldUpdateOperationsInput = {
   set?: $Enums.VisitorStatus
 }
 
+export type IntFieldUpdateOperationsInput = {
+  set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
+}
+
+export type NullableFloatFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
+export type VisitorCreateNestedOneWithoutNotesInput = {
+  create?: Prisma.XOR<Prisma.VisitorCreateWithoutNotesInput, Prisma.VisitorUncheckedCreateWithoutNotesInput>
+  connectOrCreate?: Prisma.VisitorCreateOrConnectWithoutNotesInput
+  connect?: Prisma.VisitorWhereUniqueInput
+}
+
+export type VisitorUpdateOneRequiredWithoutNotesNestedInput = {
+  create?: Prisma.XOR<Prisma.VisitorCreateWithoutNotesInput, Prisma.VisitorUncheckedCreateWithoutNotesInput>
+  connectOrCreate?: Prisma.VisitorCreateOrConnectWithoutNotesInput
+  upsert?: Prisma.VisitorUpsertWithoutNotesInput
+  connect?: Prisma.VisitorWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.VisitorUpdateToOneWithWhereWithoutNotesInput, Prisma.VisitorUpdateWithoutNotesInput>, Prisma.VisitorUncheckedUpdateWithoutNotesInput>
+}
+
+export type VisitorCreateNestedOneWithoutPageVisitsInput = {
+  create?: Prisma.XOR<Prisma.VisitorCreateWithoutPageVisitsInput, Prisma.VisitorUncheckedCreateWithoutPageVisitsInput>
+  connectOrCreate?: Prisma.VisitorCreateOrConnectWithoutPageVisitsInput
+  connect?: Prisma.VisitorWhereUniqueInput
+}
+
+export type VisitorUpdateOneRequiredWithoutPageVisitsNestedInput = {
+  create?: Prisma.XOR<Prisma.VisitorCreateWithoutPageVisitsInput, Prisma.VisitorUncheckedCreateWithoutPageVisitsInput>
+  connectOrCreate?: Prisma.VisitorCreateOrConnectWithoutPageVisitsInput
+  upsert?: Prisma.VisitorUpsertWithoutPageVisitsInput
+  connect?: Prisma.VisitorWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.VisitorUpdateToOneWithWhereWithoutPageVisitsInput, Prisma.VisitorUpdateWithoutPageVisitsInput>, Prisma.VisitorUncheckedUpdateWithoutPageVisitsInput>
+}
+
+export type VisitorCreateNestedOneWithoutConversationsInput = {
+  create?: Prisma.XOR<Prisma.VisitorCreateWithoutConversationsInput, Prisma.VisitorUncheckedCreateWithoutConversationsInput>
+  connectOrCreate?: Prisma.VisitorCreateOrConnectWithoutConversationsInput
+  connect?: Prisma.VisitorWhereUniqueInput
+}
+
+export type VisitorUpdateOneWithoutConversationsNestedInput = {
+  create?: Prisma.XOR<Prisma.VisitorCreateWithoutConversationsInput, Prisma.VisitorUncheckedCreateWithoutConversationsInput>
+  connectOrCreate?: Prisma.VisitorCreateOrConnectWithoutConversationsInput
+  upsert?: Prisma.VisitorUpsertWithoutConversationsInput
+  disconnect?: Prisma.VisitorWhereInput | boolean
+  delete?: Prisma.VisitorWhereInput | boolean
+  connect?: Prisma.VisitorWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.VisitorUpdateToOneWithWhereWithoutConversationsInput, Prisma.VisitorUpdateWithoutConversationsInput>, Prisma.VisitorUncheckedUpdateWithoutConversationsInput>
+}
+
+export type VisitorCreateWithoutAssignedAgentInput = {
+  id?: string
+  name?: string | null
+  email?: string | null
+  phone?: string | null
+  ipAddress?: string | null
+  sourceUrl?: string | null
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
+  status?: $Enums.VisitorStatus
+  externalId?: string | null
+  visitCount?: number
+  isIdentified?: boolean
+  isOnline?: boolean
+  currentPage?: string | null
+  activeDuration?: number
+  lastSeenAt?: Date | string | null
+  device?: string | null
+  deviceType?: string | null
+  browser?: string | null
+  os?: string | null
+  country?: string | null
+  countryCode?: string | null
+  city?: string | null
+  region?: string | null
+  regionName?: string | null
+  timezone?: string | null
+  latitude?: number | null
+  longitude?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutVisitorsInput
+  notes?: Prisma.VisitorNoteCreateNestedManyWithoutVisitorInput
+  pageVisits?: Prisma.VisitorPageVisitCreateNestedManyWithoutVisitorInput
+  conversations?: Prisma.ConversationCreateNestedManyWithoutVisitorInput
+}
+
+export type VisitorUncheckedCreateWithoutAssignedAgentInput = {
+  id?: string
+  organizationId: string
+  name?: string | null
+  email?: string | null
+  phone?: string | null
+  ipAddress?: string | null
+  sourceUrl?: string | null
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
+  status?: $Enums.VisitorStatus
+  externalId?: string | null
+  visitCount?: number
+  isIdentified?: boolean
+  isOnline?: boolean
+  currentPage?: string | null
+  activeDuration?: number
+  lastSeenAt?: Date | string | null
+  device?: string | null
+  deviceType?: string | null
+  browser?: string | null
+  os?: string | null
+  country?: string | null
+  countryCode?: string | null
+  city?: string | null
+  region?: string | null
+  regionName?: string | null
+  timezone?: string | null
+  latitude?: number | null
+  longitude?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  notes?: Prisma.VisitorNoteUncheckedCreateNestedManyWithoutVisitorInput
+  pageVisits?: Prisma.VisitorPageVisitUncheckedCreateNestedManyWithoutVisitorInput
+  conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutVisitorInput
+}
+
+export type VisitorCreateOrConnectWithoutAssignedAgentInput = {
+  where: Prisma.VisitorWhereUniqueInput
+  create: Prisma.XOR<Prisma.VisitorCreateWithoutAssignedAgentInput, Prisma.VisitorUncheckedCreateWithoutAssignedAgentInput>
+}
+
+export type VisitorCreateManyAssignedAgentInputEnvelope = {
+  data: Prisma.VisitorCreateManyAssignedAgentInput | Prisma.VisitorCreateManyAssignedAgentInput[]
+  skipDuplicates?: boolean
+}
+
+export type VisitorUpsertWithWhereUniqueWithoutAssignedAgentInput = {
+  where: Prisma.VisitorWhereUniqueInput
+  update: Prisma.XOR<Prisma.VisitorUpdateWithoutAssignedAgentInput, Prisma.VisitorUncheckedUpdateWithoutAssignedAgentInput>
+  create: Prisma.XOR<Prisma.VisitorCreateWithoutAssignedAgentInput, Prisma.VisitorUncheckedCreateWithoutAssignedAgentInput>
+}
+
+export type VisitorUpdateWithWhereUniqueWithoutAssignedAgentInput = {
+  where: Prisma.VisitorWhereUniqueInput
+  data: Prisma.XOR<Prisma.VisitorUpdateWithoutAssignedAgentInput, Prisma.VisitorUncheckedUpdateWithoutAssignedAgentInput>
+}
+
+export type VisitorUpdateManyWithWhereWithoutAssignedAgentInput = {
+  where: Prisma.VisitorScalarWhereInput
+  data: Prisma.XOR<Prisma.VisitorUpdateManyMutationInput, Prisma.VisitorUncheckedUpdateManyWithoutAssignedAgentInput>
+}
+
+export type VisitorScalarWhereInput = {
+  AND?: Prisma.VisitorScalarWhereInput | Prisma.VisitorScalarWhereInput[]
+  OR?: Prisma.VisitorScalarWhereInput[]
+  NOT?: Prisma.VisitorScalarWhereInput | Prisma.VisitorScalarWhereInput[]
+  id?: Prisma.StringFilter<"Visitor"> | string
+  organizationId?: Prisma.StringFilter<"Visitor"> | string
+  name?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  email?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  phone?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  ipAddress?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  sourceUrl?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  utmSource?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  utmMedium?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  utmCampaign?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  status?: Prisma.EnumVisitorStatusFilter<"Visitor"> | $Enums.VisitorStatus
+  externalId?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  visitCount?: Prisma.IntFilter<"Visitor"> | number
+  isIdentified?: Prisma.BoolFilter<"Visitor"> | boolean
+  isOnline?: Prisma.BoolFilter<"Visitor"> | boolean
+  currentPage?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  activeDuration?: Prisma.IntFilter<"Visitor"> | number
+  lastSeenAt?: Prisma.DateTimeNullableFilter<"Visitor"> | Date | string | null
+  device?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  deviceType?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  browser?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  os?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  country?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  countryCode?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  city?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  region?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  regionName?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  timezone?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  latitude?: Prisma.FloatNullableFilter<"Visitor"> | number | null
+  longitude?: Prisma.FloatNullableFilter<"Visitor"> | number | null
+  assignedAgentId?: Prisma.StringNullableFilter<"Visitor"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"Visitor"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Visitor"> | Date | string
+}
+
 export type VisitorCreateWithoutOrganizationInput = {
   id?: string
   name?: string | null
@@ -550,8 +1338,31 @@ export type VisitorCreateWithoutOrganizationInput = {
   utmMedium?: string | null
   utmCampaign?: string | null
   status?: $Enums.VisitorStatus
+  externalId?: string | null
+  visitCount?: number
+  isIdentified?: boolean
+  isOnline?: boolean
+  currentPage?: string | null
+  activeDuration?: number
+  lastSeenAt?: Date | string | null
+  device?: string | null
+  deviceType?: string | null
+  browser?: string | null
+  os?: string | null
+  country?: string | null
+  countryCode?: string | null
+  city?: string | null
+  region?: string | null
+  regionName?: string | null
+  timezone?: string | null
+  latitude?: number | null
+  longitude?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  assignedAgent?: Prisma.UserCreateNestedOneWithoutAssignedVisitorsInput
+  notes?: Prisma.VisitorNoteCreateNestedManyWithoutVisitorInput
+  pageVisits?: Prisma.VisitorPageVisitCreateNestedManyWithoutVisitorInput
+  conversations?: Prisma.ConversationCreateNestedManyWithoutVisitorInput
 }
 
 export type VisitorUncheckedCreateWithoutOrganizationInput = {
@@ -565,8 +1376,31 @@ export type VisitorUncheckedCreateWithoutOrganizationInput = {
   utmMedium?: string | null
   utmCampaign?: string | null
   status?: $Enums.VisitorStatus
+  externalId?: string | null
+  visitCount?: number
+  isIdentified?: boolean
+  isOnline?: boolean
+  currentPage?: string | null
+  activeDuration?: number
+  lastSeenAt?: Date | string | null
+  device?: string | null
+  deviceType?: string | null
+  browser?: string | null
+  os?: string | null
+  country?: string | null
+  countryCode?: string | null
+  city?: string | null
+  region?: string | null
+  regionName?: string | null
+  timezone?: string | null
+  latitude?: number | null
+  longitude?: number | null
+  assignedAgentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  notes?: Prisma.VisitorNoteUncheckedCreateNestedManyWithoutVisitorInput
+  pageVisits?: Prisma.VisitorPageVisitUncheckedCreateNestedManyWithoutVisitorInput
+  conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutVisitorInput
 }
 
 export type VisitorCreateOrConnectWithoutOrganizationInput = {
@@ -595,23 +1429,654 @@ export type VisitorUpdateManyWithWhereWithoutOrganizationInput = {
   data: Prisma.XOR<Prisma.VisitorUpdateManyMutationInput, Prisma.VisitorUncheckedUpdateManyWithoutOrganizationInput>
 }
 
-export type VisitorScalarWhereInput = {
-  AND?: Prisma.VisitorScalarWhereInput | Prisma.VisitorScalarWhereInput[]
-  OR?: Prisma.VisitorScalarWhereInput[]
-  NOT?: Prisma.VisitorScalarWhereInput | Prisma.VisitorScalarWhereInput[]
-  id?: Prisma.StringFilter<"Visitor"> | string
-  organizationId?: Prisma.StringFilter<"Visitor"> | string
-  name?: Prisma.StringNullableFilter<"Visitor"> | string | null
-  email?: Prisma.StringNullableFilter<"Visitor"> | string | null
-  phone?: Prisma.StringNullableFilter<"Visitor"> | string | null
-  ipAddress?: Prisma.StringNullableFilter<"Visitor"> | string | null
-  sourceUrl?: Prisma.StringNullableFilter<"Visitor"> | string | null
-  utmSource?: Prisma.StringNullableFilter<"Visitor"> | string | null
-  utmMedium?: Prisma.StringNullableFilter<"Visitor"> | string | null
-  utmCampaign?: Prisma.StringNullableFilter<"Visitor"> | string | null
-  status?: Prisma.EnumVisitorStatusFilter<"Visitor"> | $Enums.VisitorStatus
-  createdAt?: Prisma.DateTimeFilter<"Visitor"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"Visitor"> | Date | string
+export type VisitorCreateWithoutNotesInput = {
+  id?: string
+  name?: string | null
+  email?: string | null
+  phone?: string | null
+  ipAddress?: string | null
+  sourceUrl?: string | null
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
+  status?: $Enums.VisitorStatus
+  externalId?: string | null
+  visitCount?: number
+  isIdentified?: boolean
+  isOnline?: boolean
+  currentPage?: string | null
+  activeDuration?: number
+  lastSeenAt?: Date | string | null
+  device?: string | null
+  deviceType?: string | null
+  browser?: string | null
+  os?: string | null
+  country?: string | null
+  countryCode?: string | null
+  city?: string | null
+  region?: string | null
+  regionName?: string | null
+  timezone?: string | null
+  latitude?: number | null
+  longitude?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutVisitorsInput
+  assignedAgent?: Prisma.UserCreateNestedOneWithoutAssignedVisitorsInput
+  pageVisits?: Prisma.VisitorPageVisitCreateNestedManyWithoutVisitorInput
+  conversations?: Prisma.ConversationCreateNestedManyWithoutVisitorInput
+}
+
+export type VisitorUncheckedCreateWithoutNotesInput = {
+  id?: string
+  organizationId: string
+  name?: string | null
+  email?: string | null
+  phone?: string | null
+  ipAddress?: string | null
+  sourceUrl?: string | null
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
+  status?: $Enums.VisitorStatus
+  externalId?: string | null
+  visitCount?: number
+  isIdentified?: boolean
+  isOnline?: boolean
+  currentPage?: string | null
+  activeDuration?: number
+  lastSeenAt?: Date | string | null
+  device?: string | null
+  deviceType?: string | null
+  browser?: string | null
+  os?: string | null
+  country?: string | null
+  countryCode?: string | null
+  city?: string | null
+  region?: string | null
+  regionName?: string | null
+  timezone?: string | null
+  latitude?: number | null
+  longitude?: number | null
+  assignedAgentId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  pageVisits?: Prisma.VisitorPageVisitUncheckedCreateNestedManyWithoutVisitorInput
+  conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutVisitorInput
+}
+
+export type VisitorCreateOrConnectWithoutNotesInput = {
+  where: Prisma.VisitorWhereUniqueInput
+  create: Prisma.XOR<Prisma.VisitorCreateWithoutNotesInput, Prisma.VisitorUncheckedCreateWithoutNotesInput>
+}
+
+export type VisitorUpsertWithoutNotesInput = {
+  update: Prisma.XOR<Prisma.VisitorUpdateWithoutNotesInput, Prisma.VisitorUncheckedUpdateWithoutNotesInput>
+  create: Prisma.XOR<Prisma.VisitorCreateWithoutNotesInput, Prisma.VisitorUncheckedCreateWithoutNotesInput>
+  where?: Prisma.VisitorWhereInput
+}
+
+export type VisitorUpdateToOneWithWhereWithoutNotesInput = {
+  where?: Prisma.VisitorWhereInput
+  data: Prisma.XOR<Prisma.VisitorUpdateWithoutNotesInput, Prisma.VisitorUncheckedUpdateWithoutNotesInput>
+}
+
+export type VisitorUpdateWithoutNotesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumVisitorStatusFieldUpdateOperationsInput | $Enums.VisitorStatus
+  externalId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visitCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isIdentified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isOnline?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currentPage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activeDuration?: Prisma.IntFieldUpdateOperationsInput | number
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  device?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  browser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  os?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countryCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  regionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutVisitorsNestedInput
+  assignedAgent?: Prisma.UserUpdateOneWithoutAssignedVisitorsNestedInput
+  pageVisits?: Prisma.VisitorPageVisitUpdateManyWithoutVisitorNestedInput
+  conversations?: Prisma.ConversationUpdateManyWithoutVisitorNestedInput
+}
+
+export type VisitorUncheckedUpdateWithoutNotesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumVisitorStatusFieldUpdateOperationsInput | $Enums.VisitorStatus
+  externalId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visitCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isIdentified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isOnline?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currentPage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activeDuration?: Prisma.IntFieldUpdateOperationsInput | number
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  device?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  browser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  os?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countryCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  regionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  assignedAgentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pageVisits?: Prisma.VisitorPageVisitUncheckedUpdateManyWithoutVisitorNestedInput
+  conversations?: Prisma.ConversationUncheckedUpdateManyWithoutVisitorNestedInput
+}
+
+export type VisitorCreateWithoutPageVisitsInput = {
+  id?: string
+  name?: string | null
+  email?: string | null
+  phone?: string | null
+  ipAddress?: string | null
+  sourceUrl?: string | null
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
+  status?: $Enums.VisitorStatus
+  externalId?: string | null
+  visitCount?: number
+  isIdentified?: boolean
+  isOnline?: boolean
+  currentPage?: string | null
+  activeDuration?: number
+  lastSeenAt?: Date | string | null
+  device?: string | null
+  deviceType?: string | null
+  browser?: string | null
+  os?: string | null
+  country?: string | null
+  countryCode?: string | null
+  city?: string | null
+  region?: string | null
+  regionName?: string | null
+  timezone?: string | null
+  latitude?: number | null
+  longitude?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutVisitorsInput
+  assignedAgent?: Prisma.UserCreateNestedOneWithoutAssignedVisitorsInput
+  notes?: Prisma.VisitorNoteCreateNestedManyWithoutVisitorInput
+  conversations?: Prisma.ConversationCreateNestedManyWithoutVisitorInput
+}
+
+export type VisitorUncheckedCreateWithoutPageVisitsInput = {
+  id?: string
+  organizationId: string
+  name?: string | null
+  email?: string | null
+  phone?: string | null
+  ipAddress?: string | null
+  sourceUrl?: string | null
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
+  status?: $Enums.VisitorStatus
+  externalId?: string | null
+  visitCount?: number
+  isIdentified?: boolean
+  isOnline?: boolean
+  currentPage?: string | null
+  activeDuration?: number
+  lastSeenAt?: Date | string | null
+  device?: string | null
+  deviceType?: string | null
+  browser?: string | null
+  os?: string | null
+  country?: string | null
+  countryCode?: string | null
+  city?: string | null
+  region?: string | null
+  regionName?: string | null
+  timezone?: string | null
+  latitude?: number | null
+  longitude?: number | null
+  assignedAgentId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  notes?: Prisma.VisitorNoteUncheckedCreateNestedManyWithoutVisitorInput
+  conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutVisitorInput
+}
+
+export type VisitorCreateOrConnectWithoutPageVisitsInput = {
+  where: Prisma.VisitorWhereUniqueInput
+  create: Prisma.XOR<Prisma.VisitorCreateWithoutPageVisitsInput, Prisma.VisitorUncheckedCreateWithoutPageVisitsInput>
+}
+
+export type VisitorUpsertWithoutPageVisitsInput = {
+  update: Prisma.XOR<Prisma.VisitorUpdateWithoutPageVisitsInput, Prisma.VisitorUncheckedUpdateWithoutPageVisitsInput>
+  create: Prisma.XOR<Prisma.VisitorCreateWithoutPageVisitsInput, Prisma.VisitorUncheckedCreateWithoutPageVisitsInput>
+  where?: Prisma.VisitorWhereInput
+}
+
+export type VisitorUpdateToOneWithWhereWithoutPageVisitsInput = {
+  where?: Prisma.VisitorWhereInput
+  data: Prisma.XOR<Prisma.VisitorUpdateWithoutPageVisitsInput, Prisma.VisitorUncheckedUpdateWithoutPageVisitsInput>
+}
+
+export type VisitorUpdateWithoutPageVisitsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumVisitorStatusFieldUpdateOperationsInput | $Enums.VisitorStatus
+  externalId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visitCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isIdentified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isOnline?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currentPage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activeDuration?: Prisma.IntFieldUpdateOperationsInput | number
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  device?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  browser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  os?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countryCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  regionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutVisitorsNestedInput
+  assignedAgent?: Prisma.UserUpdateOneWithoutAssignedVisitorsNestedInput
+  notes?: Prisma.VisitorNoteUpdateManyWithoutVisitorNestedInput
+  conversations?: Prisma.ConversationUpdateManyWithoutVisitorNestedInput
+}
+
+export type VisitorUncheckedUpdateWithoutPageVisitsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumVisitorStatusFieldUpdateOperationsInput | $Enums.VisitorStatus
+  externalId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visitCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isIdentified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isOnline?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currentPage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activeDuration?: Prisma.IntFieldUpdateOperationsInput | number
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  device?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  browser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  os?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countryCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  regionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  assignedAgentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notes?: Prisma.VisitorNoteUncheckedUpdateManyWithoutVisitorNestedInput
+  conversations?: Prisma.ConversationUncheckedUpdateManyWithoutVisitorNestedInput
+}
+
+export type VisitorCreateWithoutConversationsInput = {
+  id?: string
+  name?: string | null
+  email?: string | null
+  phone?: string | null
+  ipAddress?: string | null
+  sourceUrl?: string | null
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
+  status?: $Enums.VisitorStatus
+  externalId?: string | null
+  visitCount?: number
+  isIdentified?: boolean
+  isOnline?: boolean
+  currentPage?: string | null
+  activeDuration?: number
+  lastSeenAt?: Date | string | null
+  device?: string | null
+  deviceType?: string | null
+  browser?: string | null
+  os?: string | null
+  country?: string | null
+  countryCode?: string | null
+  city?: string | null
+  region?: string | null
+  regionName?: string | null
+  timezone?: string | null
+  latitude?: number | null
+  longitude?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutVisitorsInput
+  assignedAgent?: Prisma.UserCreateNestedOneWithoutAssignedVisitorsInput
+  notes?: Prisma.VisitorNoteCreateNestedManyWithoutVisitorInput
+  pageVisits?: Prisma.VisitorPageVisitCreateNestedManyWithoutVisitorInput
+}
+
+export type VisitorUncheckedCreateWithoutConversationsInput = {
+  id?: string
+  organizationId: string
+  name?: string | null
+  email?: string | null
+  phone?: string | null
+  ipAddress?: string | null
+  sourceUrl?: string | null
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
+  status?: $Enums.VisitorStatus
+  externalId?: string | null
+  visitCount?: number
+  isIdentified?: boolean
+  isOnline?: boolean
+  currentPage?: string | null
+  activeDuration?: number
+  lastSeenAt?: Date | string | null
+  device?: string | null
+  deviceType?: string | null
+  browser?: string | null
+  os?: string | null
+  country?: string | null
+  countryCode?: string | null
+  city?: string | null
+  region?: string | null
+  regionName?: string | null
+  timezone?: string | null
+  latitude?: number | null
+  longitude?: number | null
+  assignedAgentId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  notes?: Prisma.VisitorNoteUncheckedCreateNestedManyWithoutVisitorInput
+  pageVisits?: Prisma.VisitorPageVisitUncheckedCreateNestedManyWithoutVisitorInput
+}
+
+export type VisitorCreateOrConnectWithoutConversationsInput = {
+  where: Prisma.VisitorWhereUniqueInput
+  create: Prisma.XOR<Prisma.VisitorCreateWithoutConversationsInput, Prisma.VisitorUncheckedCreateWithoutConversationsInput>
+}
+
+export type VisitorUpsertWithoutConversationsInput = {
+  update: Prisma.XOR<Prisma.VisitorUpdateWithoutConversationsInput, Prisma.VisitorUncheckedUpdateWithoutConversationsInput>
+  create: Prisma.XOR<Prisma.VisitorCreateWithoutConversationsInput, Prisma.VisitorUncheckedCreateWithoutConversationsInput>
+  where?: Prisma.VisitorWhereInput
+}
+
+export type VisitorUpdateToOneWithWhereWithoutConversationsInput = {
+  where?: Prisma.VisitorWhereInput
+  data: Prisma.XOR<Prisma.VisitorUpdateWithoutConversationsInput, Prisma.VisitorUncheckedUpdateWithoutConversationsInput>
+}
+
+export type VisitorUpdateWithoutConversationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumVisitorStatusFieldUpdateOperationsInput | $Enums.VisitorStatus
+  externalId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visitCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isIdentified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isOnline?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currentPage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activeDuration?: Prisma.IntFieldUpdateOperationsInput | number
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  device?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  browser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  os?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countryCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  regionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutVisitorsNestedInput
+  assignedAgent?: Prisma.UserUpdateOneWithoutAssignedVisitorsNestedInput
+  notes?: Prisma.VisitorNoteUpdateManyWithoutVisitorNestedInput
+  pageVisits?: Prisma.VisitorPageVisitUpdateManyWithoutVisitorNestedInput
+}
+
+export type VisitorUncheckedUpdateWithoutConversationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumVisitorStatusFieldUpdateOperationsInput | $Enums.VisitorStatus
+  externalId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visitCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isIdentified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isOnline?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currentPage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activeDuration?: Prisma.IntFieldUpdateOperationsInput | number
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  device?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  browser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  os?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countryCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  regionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  assignedAgentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notes?: Prisma.VisitorNoteUncheckedUpdateManyWithoutVisitorNestedInput
+  pageVisits?: Prisma.VisitorPageVisitUncheckedUpdateManyWithoutVisitorNestedInput
+}
+
+export type VisitorCreateManyAssignedAgentInput = {
+  id?: string
+  organizationId: string
+  name?: string | null
+  email?: string | null
+  phone?: string | null
+  ipAddress?: string | null
+  sourceUrl?: string | null
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
+  status?: $Enums.VisitorStatus
+  externalId?: string | null
+  visitCount?: number
+  isIdentified?: boolean
+  isOnline?: boolean
+  currentPage?: string | null
+  activeDuration?: number
+  lastSeenAt?: Date | string | null
+  device?: string | null
+  deviceType?: string | null
+  browser?: string | null
+  os?: string | null
+  country?: string | null
+  countryCode?: string | null
+  city?: string | null
+  region?: string | null
+  regionName?: string | null
+  timezone?: string | null
+  latitude?: number | null
+  longitude?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type VisitorUpdateWithoutAssignedAgentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumVisitorStatusFieldUpdateOperationsInput | $Enums.VisitorStatus
+  externalId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visitCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isIdentified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isOnline?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currentPage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activeDuration?: Prisma.IntFieldUpdateOperationsInput | number
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  device?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  browser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  os?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countryCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  regionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutVisitorsNestedInput
+  notes?: Prisma.VisitorNoteUpdateManyWithoutVisitorNestedInput
+  pageVisits?: Prisma.VisitorPageVisitUpdateManyWithoutVisitorNestedInput
+  conversations?: Prisma.ConversationUpdateManyWithoutVisitorNestedInput
+}
+
+export type VisitorUncheckedUpdateWithoutAssignedAgentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumVisitorStatusFieldUpdateOperationsInput | $Enums.VisitorStatus
+  externalId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visitCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isIdentified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isOnline?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currentPage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activeDuration?: Prisma.IntFieldUpdateOperationsInput | number
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  device?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  browser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  os?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countryCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  regionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notes?: Prisma.VisitorNoteUncheckedUpdateManyWithoutVisitorNestedInput
+  pageVisits?: Prisma.VisitorPageVisitUncheckedUpdateManyWithoutVisitorNestedInput
+  conversations?: Prisma.ConversationUncheckedUpdateManyWithoutVisitorNestedInput
+}
+
+export type VisitorUncheckedUpdateManyWithoutAssignedAgentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumVisitorStatusFieldUpdateOperationsInput | $Enums.VisitorStatus
+  externalId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visitCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isIdentified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isOnline?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currentPage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activeDuration?: Prisma.IntFieldUpdateOperationsInput | number
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  device?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  browser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  os?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countryCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  regionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type VisitorCreateManyOrganizationInput = {
@@ -625,6 +2090,26 @@ export type VisitorCreateManyOrganizationInput = {
   utmMedium?: string | null
   utmCampaign?: string | null
   status?: $Enums.VisitorStatus
+  externalId?: string | null
+  visitCount?: number
+  isIdentified?: boolean
+  isOnline?: boolean
+  currentPage?: string | null
+  activeDuration?: number
+  lastSeenAt?: Date | string | null
+  device?: string | null
+  deviceType?: string | null
+  browser?: string | null
+  os?: string | null
+  country?: string | null
+  countryCode?: string | null
+  city?: string | null
+  region?: string | null
+  regionName?: string | null
+  timezone?: string | null
+  latitude?: number | null
+  longitude?: number | null
+  assignedAgentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -640,8 +2125,31 @@ export type VisitorUpdateWithoutOrganizationInput = {
   utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumVisitorStatusFieldUpdateOperationsInput | $Enums.VisitorStatus
+  externalId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visitCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isIdentified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isOnline?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currentPage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activeDuration?: Prisma.IntFieldUpdateOperationsInput | number
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  device?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  browser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  os?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countryCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  regionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  assignedAgent?: Prisma.UserUpdateOneWithoutAssignedVisitorsNestedInput
+  notes?: Prisma.VisitorNoteUpdateManyWithoutVisitorNestedInput
+  pageVisits?: Prisma.VisitorPageVisitUpdateManyWithoutVisitorNestedInput
+  conversations?: Prisma.ConversationUpdateManyWithoutVisitorNestedInput
 }
 
 export type VisitorUncheckedUpdateWithoutOrganizationInput = {
@@ -655,8 +2163,31 @@ export type VisitorUncheckedUpdateWithoutOrganizationInput = {
   utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumVisitorStatusFieldUpdateOperationsInput | $Enums.VisitorStatus
+  externalId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visitCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isIdentified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isOnline?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currentPage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activeDuration?: Prisma.IntFieldUpdateOperationsInput | number
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  device?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  browser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  os?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countryCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  regionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  assignedAgentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notes?: Prisma.VisitorNoteUncheckedUpdateManyWithoutVisitorNestedInput
+  pageVisits?: Prisma.VisitorPageVisitUncheckedUpdateManyWithoutVisitorNestedInput
+  conversations?: Prisma.ConversationUncheckedUpdateManyWithoutVisitorNestedInput
 }
 
 export type VisitorUncheckedUpdateManyWithoutOrganizationInput = {
@@ -670,10 +2201,77 @@ export type VisitorUncheckedUpdateManyWithoutOrganizationInput = {
   utmMedium?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   utmCampaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumVisitorStatusFieldUpdateOperationsInput | $Enums.VisitorStatus
+  externalId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visitCount?: Prisma.IntFieldUpdateOperationsInput | number
+  isIdentified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isOnline?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currentPage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activeDuration?: Prisma.IntFieldUpdateOperationsInput | number
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  device?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deviceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  browser?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  os?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countryCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  regionName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  assignedAgentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+
+/**
+ * Count Type VisitorCountOutputType
+ */
+
+export type VisitorCountOutputType = {
+  notes: number
+  pageVisits: number
+  conversations: number
+}
+
+export type VisitorCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  notes?: boolean | VisitorCountOutputTypeCountNotesArgs
+  pageVisits?: boolean | VisitorCountOutputTypeCountPageVisitsArgs
+  conversations?: boolean | VisitorCountOutputTypeCountConversationsArgs
+}
+
+/**
+ * VisitorCountOutputType without action
+ */
+export type VisitorCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the VisitorCountOutputType
+   */
+  select?: Prisma.VisitorCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * VisitorCountOutputType without action
+ */
+export type VisitorCountOutputTypeCountNotesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.VisitorNoteWhereInput
+}
+
+/**
+ * VisitorCountOutputType without action
+ */
+export type VisitorCountOutputTypeCountPageVisitsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.VisitorPageVisitWhereInput
+}
+
+/**
+ * VisitorCountOutputType without action
+ */
+export type VisitorCountOutputTypeCountConversationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ConversationWhereInput
+}
 
 
 export type VisitorSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -688,9 +2286,34 @@ export type VisitorSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   utmMedium?: boolean
   utmCampaign?: boolean
   status?: boolean
+  externalId?: boolean
+  visitCount?: boolean
+  isIdentified?: boolean
+  isOnline?: boolean
+  currentPage?: boolean
+  activeDuration?: boolean
+  lastSeenAt?: boolean
+  device?: boolean
+  deviceType?: boolean
+  browser?: boolean
+  os?: boolean
+  country?: boolean
+  countryCode?: boolean
+  city?: boolean
+  region?: boolean
+  regionName?: boolean
+  timezone?: boolean
+  latitude?: boolean
+  longitude?: boolean
+  assignedAgentId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
+  assignedAgent?: boolean | Prisma.Visitor$assignedAgentArgs<ExtArgs>
+  notes?: boolean | Prisma.Visitor$notesArgs<ExtArgs>
+  pageVisits?: boolean | Prisma.Visitor$pageVisitsArgs<ExtArgs>
+  conversations?: boolean | Prisma.Visitor$conversationsArgs<ExtArgs>
+  _count?: boolean | Prisma.VisitorCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["visitor"]>
 
 export type VisitorSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -705,9 +2328,30 @@ export type VisitorSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   utmMedium?: boolean
   utmCampaign?: boolean
   status?: boolean
+  externalId?: boolean
+  visitCount?: boolean
+  isIdentified?: boolean
+  isOnline?: boolean
+  currentPage?: boolean
+  activeDuration?: boolean
+  lastSeenAt?: boolean
+  device?: boolean
+  deviceType?: boolean
+  browser?: boolean
+  os?: boolean
+  country?: boolean
+  countryCode?: boolean
+  city?: boolean
+  region?: boolean
+  regionName?: boolean
+  timezone?: boolean
+  latitude?: boolean
+  longitude?: boolean
+  assignedAgentId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
+  assignedAgent?: boolean | Prisma.Visitor$assignedAgentArgs<ExtArgs>
 }, ExtArgs["result"]["visitor"]>
 
 export type VisitorSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -722,9 +2366,30 @@ export type VisitorSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   utmMedium?: boolean
   utmCampaign?: boolean
   status?: boolean
+  externalId?: boolean
+  visitCount?: boolean
+  isIdentified?: boolean
+  isOnline?: boolean
+  currentPage?: boolean
+  activeDuration?: boolean
+  lastSeenAt?: boolean
+  device?: boolean
+  deviceType?: boolean
+  browser?: boolean
+  os?: boolean
+  country?: boolean
+  countryCode?: boolean
+  city?: boolean
+  region?: boolean
+  regionName?: boolean
+  timezone?: boolean
+  latitude?: boolean
+  longitude?: boolean
+  assignedAgentId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
+  assignedAgent?: boolean | Prisma.Visitor$assignedAgentArgs<ExtArgs>
 }, ExtArgs["result"]["visitor"]>
 
 export type VisitorSelectScalar = {
@@ -739,25 +2404,56 @@ export type VisitorSelectScalar = {
   utmMedium?: boolean
   utmCampaign?: boolean
   status?: boolean
+  externalId?: boolean
+  visitCount?: boolean
+  isIdentified?: boolean
+  isOnline?: boolean
+  currentPage?: boolean
+  activeDuration?: boolean
+  lastSeenAt?: boolean
+  device?: boolean
+  deviceType?: boolean
+  browser?: boolean
+  os?: boolean
+  country?: boolean
+  countryCode?: boolean
+  city?: boolean
+  region?: boolean
+  regionName?: boolean
+  timezone?: boolean
+  latitude?: boolean
+  longitude?: boolean
+  assignedAgentId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type VisitorOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "name" | "email" | "phone" | "ipAddress" | "sourceUrl" | "utmSource" | "utmMedium" | "utmCampaign" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["visitor"]>
+export type VisitorOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "name" | "email" | "phone" | "ipAddress" | "sourceUrl" | "utmSource" | "utmMedium" | "utmCampaign" | "status" | "externalId" | "visitCount" | "isIdentified" | "isOnline" | "currentPage" | "activeDuration" | "lastSeenAt" | "device" | "deviceType" | "browser" | "os" | "country" | "countryCode" | "city" | "region" | "regionName" | "timezone" | "latitude" | "longitude" | "assignedAgentId" | "createdAt" | "updatedAt", ExtArgs["result"]["visitor"]>
 export type VisitorInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
+  assignedAgent?: boolean | Prisma.Visitor$assignedAgentArgs<ExtArgs>
+  notes?: boolean | Prisma.Visitor$notesArgs<ExtArgs>
+  pageVisits?: boolean | Prisma.Visitor$pageVisitsArgs<ExtArgs>
+  conversations?: boolean | Prisma.Visitor$conversationsArgs<ExtArgs>
+  _count?: boolean | Prisma.VisitorCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type VisitorIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
+  assignedAgent?: boolean | Prisma.Visitor$assignedAgentArgs<ExtArgs>
 }
 export type VisitorIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
+  assignedAgent?: boolean | Prisma.Visitor$assignedAgentArgs<ExtArgs>
 }
 
 export type $VisitorPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Visitor"
   objects: {
     organization: Prisma.$OrganizationPayload<ExtArgs>
+    assignedAgent: Prisma.$UserPayload<ExtArgs> | null
+    notes: Prisma.$VisitorNotePayload<ExtArgs>[]
+    pageVisits: Prisma.$VisitorPageVisitPayload<ExtArgs>[]
+    conversations: Prisma.$ConversationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -771,6 +2467,26 @@ export type $VisitorPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     utmMedium: string | null
     utmCampaign: string | null
     status: $Enums.VisitorStatus
+    externalId: string | null
+    visitCount: number
+    isIdentified: boolean
+    isOnline: boolean
+    currentPage: string | null
+    activeDuration: number
+    lastSeenAt: Date | null
+    device: string | null
+    deviceType: string | null
+    browser: string | null
+    os: string | null
+    country: string | null
+    countryCode: string | null
+    city: string | null
+    region: string | null
+    regionName: string | null
+    timezone: string | null
+    latitude: number | null
+    longitude: number | null
+    assignedAgentId: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["visitor"]>
@@ -1168,6 +2884,10 @@ readonly fields: VisitorFieldRefs;
 export interface Prisma__VisitorClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   organization<T extends Prisma.OrganizationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OrganizationDefaultArgs<ExtArgs>>): Prisma.Prisma__OrganizationClient<runtime.Types.Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  assignedAgent<T extends Prisma.Visitor$assignedAgentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Visitor$assignedAgentArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  notes<T extends Prisma.Visitor$notesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Visitor$notesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VisitorNotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  pageVisits<T extends Prisma.Visitor$pageVisitsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Visitor$pageVisitsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VisitorPageVisitPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  conversations<T extends Prisma.Visitor$conversationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Visitor$conversationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConversationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1208,6 +2928,26 @@ export interface VisitorFieldRefs {
   readonly utmMedium: Prisma.FieldRef<"Visitor", 'String'>
   readonly utmCampaign: Prisma.FieldRef<"Visitor", 'String'>
   readonly status: Prisma.FieldRef<"Visitor", 'VisitorStatus'>
+  readonly externalId: Prisma.FieldRef<"Visitor", 'String'>
+  readonly visitCount: Prisma.FieldRef<"Visitor", 'Int'>
+  readonly isIdentified: Prisma.FieldRef<"Visitor", 'Boolean'>
+  readonly isOnline: Prisma.FieldRef<"Visitor", 'Boolean'>
+  readonly currentPage: Prisma.FieldRef<"Visitor", 'String'>
+  readonly activeDuration: Prisma.FieldRef<"Visitor", 'Int'>
+  readonly lastSeenAt: Prisma.FieldRef<"Visitor", 'DateTime'>
+  readonly device: Prisma.FieldRef<"Visitor", 'String'>
+  readonly deviceType: Prisma.FieldRef<"Visitor", 'String'>
+  readonly browser: Prisma.FieldRef<"Visitor", 'String'>
+  readonly os: Prisma.FieldRef<"Visitor", 'String'>
+  readonly country: Prisma.FieldRef<"Visitor", 'String'>
+  readonly countryCode: Prisma.FieldRef<"Visitor", 'String'>
+  readonly city: Prisma.FieldRef<"Visitor", 'String'>
+  readonly region: Prisma.FieldRef<"Visitor", 'String'>
+  readonly regionName: Prisma.FieldRef<"Visitor", 'String'>
+  readonly timezone: Prisma.FieldRef<"Visitor", 'String'>
+  readonly latitude: Prisma.FieldRef<"Visitor", 'Float'>
+  readonly longitude: Prisma.FieldRef<"Visitor", 'Float'>
+  readonly assignedAgentId: Prisma.FieldRef<"Visitor", 'String'>
   readonly createdAt: Prisma.FieldRef<"Visitor", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Visitor", 'DateTime'>
 }
@@ -1608,6 +3348,97 @@ export type VisitorDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Limit how many Visitors to delete.
    */
   limit?: number
+}
+
+/**
+ * Visitor.assignedAgent
+ */
+export type Visitor$assignedAgentArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
+}
+
+/**
+ * Visitor.notes
+ */
+export type Visitor$notesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the VisitorNote
+   */
+  select?: Prisma.VisitorNoteSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the VisitorNote
+   */
+  omit?: Prisma.VisitorNoteOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.VisitorNoteInclude<ExtArgs> | null
+  where?: Prisma.VisitorNoteWhereInput
+  orderBy?: Prisma.VisitorNoteOrderByWithRelationInput | Prisma.VisitorNoteOrderByWithRelationInput[]
+  cursor?: Prisma.VisitorNoteWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.VisitorNoteScalarFieldEnum | Prisma.VisitorNoteScalarFieldEnum[]
+}
+
+/**
+ * Visitor.pageVisits
+ */
+export type Visitor$pageVisitsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the VisitorPageVisit
+   */
+  select?: Prisma.VisitorPageVisitSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the VisitorPageVisit
+   */
+  omit?: Prisma.VisitorPageVisitOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.VisitorPageVisitInclude<ExtArgs> | null
+  where?: Prisma.VisitorPageVisitWhereInput
+  orderBy?: Prisma.VisitorPageVisitOrderByWithRelationInput | Prisma.VisitorPageVisitOrderByWithRelationInput[]
+  cursor?: Prisma.VisitorPageVisitWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.VisitorPageVisitScalarFieldEnum | Prisma.VisitorPageVisitScalarFieldEnum[]
+}
+
+/**
+ * Visitor.conversations
+ */
+export type Visitor$conversationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Conversation
+   */
+  select?: Prisma.ConversationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Conversation
+   */
+  omit?: Prisma.ConversationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ConversationInclude<ExtArgs> | null
+  where?: Prisma.ConversationWhereInput
+  orderBy?: Prisma.ConversationOrderByWithRelationInput | Prisma.ConversationOrderByWithRelationInput[]
+  cursor?: Prisma.ConversationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ConversationScalarFieldEnum | Prisma.ConversationScalarFieldEnum[]
 }
 
 /**

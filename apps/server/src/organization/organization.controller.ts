@@ -38,6 +38,19 @@ export class OrganizationController {
 		return this.organizationService.findAll();
 	}
 
+	/**
+	 * Members of one organization - used to populate assignee pickers.
+	 * Declared before ":id" so the static segment is not swallowed.
+	 */
+	@Get(":organizationId/members")
+	@UseGuards(JwtAuthGuard)
+	getMembers(
+		@Param("organizationId") organizationId: string,
+		@CurrentUser("id") userId: string,
+	) {
+		return this.organizationService.getMembers(organizationId, userId);
+	}
+
 	@Get(":id")
 	findOne(@Param("id") id: string) {
 		return this.organizationService.findOne(+id);

@@ -388,6 +388,8 @@ export const ModelName = {
   Organization: 'Organization',
   OrganizationMember: 'OrganizationMember',
   Visitor: 'Visitor',
+  VisitorNote: 'VisitorNote',
+  VisitorPageVisit: 'VisitorPageVisit',
   Conversation: 'Conversation',
   Message: 'Message'
 } as const
@@ -405,7 +407,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "organization" | "organizationMember" | "visitor" | "conversation" | "message"
+    modelProps: "user" | "organization" | "organizationMember" | "visitor" | "visitorNote" | "visitorPageVisit" | "conversation" | "message"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -705,6 +707,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    VisitorNote: {
+      payload: Prisma.$VisitorNotePayload<ExtArgs>
+      fields: Prisma.VisitorNoteFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.VisitorNoteFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VisitorNotePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.VisitorNoteFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VisitorNotePayload>
+        }
+        findFirst: {
+          args: Prisma.VisitorNoteFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VisitorNotePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.VisitorNoteFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VisitorNotePayload>
+        }
+        findMany: {
+          args: Prisma.VisitorNoteFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VisitorNotePayload>[]
+        }
+        create: {
+          args: Prisma.VisitorNoteCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VisitorNotePayload>
+        }
+        createMany: {
+          args: Prisma.VisitorNoteCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.VisitorNoteCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VisitorNotePayload>[]
+        }
+        delete: {
+          args: Prisma.VisitorNoteDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VisitorNotePayload>
+        }
+        update: {
+          args: Prisma.VisitorNoteUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VisitorNotePayload>
+        }
+        deleteMany: {
+          args: Prisma.VisitorNoteDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.VisitorNoteUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.VisitorNoteUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VisitorNotePayload>[]
+        }
+        upsert: {
+          args: Prisma.VisitorNoteUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VisitorNotePayload>
+        }
+        aggregate: {
+          args: Prisma.VisitorNoteAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateVisitorNote>
+        }
+        groupBy: {
+          args: Prisma.VisitorNoteGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.VisitorNoteGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.VisitorNoteCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.VisitorNoteCountAggregateOutputType> | number
+        }
+      }
+    }
+    VisitorPageVisit: {
+      payload: Prisma.$VisitorPageVisitPayload<ExtArgs>
+      fields: Prisma.VisitorPageVisitFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.VisitorPageVisitFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VisitorPageVisitPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.VisitorPageVisitFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VisitorPageVisitPayload>
+        }
+        findFirst: {
+          args: Prisma.VisitorPageVisitFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VisitorPageVisitPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.VisitorPageVisitFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VisitorPageVisitPayload>
+        }
+        findMany: {
+          args: Prisma.VisitorPageVisitFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VisitorPageVisitPayload>[]
+        }
+        create: {
+          args: Prisma.VisitorPageVisitCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VisitorPageVisitPayload>
+        }
+        createMany: {
+          args: Prisma.VisitorPageVisitCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.VisitorPageVisitCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VisitorPageVisitPayload>[]
+        }
+        delete: {
+          args: Prisma.VisitorPageVisitDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VisitorPageVisitPayload>
+        }
+        update: {
+          args: Prisma.VisitorPageVisitUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VisitorPageVisitPayload>
+        }
+        deleteMany: {
+          args: Prisma.VisitorPageVisitDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.VisitorPageVisitUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.VisitorPageVisitUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VisitorPageVisitPayload>[]
+        }
+        upsert: {
+          args: Prisma.VisitorPageVisitUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VisitorPageVisitPayload>
+        }
+        aggregate: {
+          args: Prisma.VisitorPageVisitAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateVisitorPageVisit>
+        }
+        groupBy: {
+          args: Prisma.VisitorPageVisitGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.VisitorPageVisitGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.VisitorPageVisitCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.VisitorPageVisitCountAggregateOutputType> | number
+        }
+      }
+    }
     Conversation: {
       payload: Prisma.$ConversationPayload<ExtArgs>
       fields: Prisma.ConversationFieldRefs
@@ -950,6 +1100,26 @@ export const VisitorScalarFieldEnum = {
   utmMedium: 'utmMedium',
   utmCampaign: 'utmCampaign',
   status: 'status',
+  externalId: 'externalId',
+  visitCount: 'visitCount',
+  isIdentified: 'isIdentified',
+  isOnline: 'isOnline',
+  currentPage: 'currentPage',
+  activeDuration: 'activeDuration',
+  lastSeenAt: 'lastSeenAt',
+  device: 'device',
+  deviceType: 'deviceType',
+  browser: 'browser',
+  os: 'os',
+  country: 'country',
+  countryCode: 'countryCode',
+  city: 'city',
+  region: 'region',
+  regionName: 'regionName',
+  timezone: 'timezone',
+  latitude: 'latitude',
+  longitude: 'longitude',
+  assignedAgentId: 'assignedAgentId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -957,9 +1127,36 @@ export const VisitorScalarFieldEnum = {
 export type VisitorScalarFieldEnum = (typeof VisitorScalarFieldEnum)[keyof typeof VisitorScalarFieldEnum]
 
 
+export const VisitorNoteScalarFieldEnum = {
+  id: 'id',
+  visitorId: 'visitorId',
+  authorId: 'authorId',
+  content: 'content',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type VisitorNoteScalarFieldEnum = (typeof VisitorNoteScalarFieldEnum)[keyof typeof VisitorNoteScalarFieldEnum]
+
+
+export const VisitorPageVisitScalarFieldEnum = {
+  id: 'id',
+  visitorId: 'visitorId',
+  url: 'url',
+  pageTitle: 'pageTitle',
+  enteredAt: 'enteredAt',
+  leftAt: 'leftAt',
+  durationSeconds: 'durationSeconds',
+  createdAt: 'createdAt'
+} as const
+
+export type VisitorPageVisitScalarFieldEnum = (typeof VisitorPageVisitScalarFieldEnum)[keyof typeof VisitorPageVisitScalarFieldEnum]
+
+
 export const ConversationScalarFieldEnum = {
   id: 'id',
   organizationId: 'organizationId',
+  visitorId: 'visitorId',
   status: 'status',
   channel: 'channel',
   visitorName: 'visitorName',
@@ -1105,6 +1302,34 @@ export type ListEnumVisitorStatusFieldRefInput<$PrismaModel> = FieldRefInputType
 
 
 /**
+ * Reference to a field of type 'Int'
+ */
+export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+/**
+ * Reference to a field of type 'Int[]'
+ */
+export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Float'
+ */
+export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+/**
+ * Reference to a field of type 'Float[]'
+ */
+export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
+
+
+/**
  * Reference to a field of type 'ConversationStatus'
  */
 export type EnumConversationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ConversationStatus'>
@@ -1171,20 +1396,6 @@ export type EnumMessageDeliveryStatusFieldRefInput<$PrismaModel> = FieldRefInput
  * Reference to a field of type 'MessageDeliveryStatus[]'
  */
 export type ListEnumMessageDeliveryStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MessageDeliveryStatus[]'>
-    
-
-
-/**
- * Reference to a field of type 'Int'
- */
-export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
-    
-
-
-/**
- * Reference to a field of type 'Int[]'
- */
-export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
 
 /**
@@ -1301,6 +1512,8 @@ export type GlobalOmitConfig = {
   organization?: Prisma.OrganizationOmit
   organizationMember?: Prisma.OrganizationMemberOmit
   visitor?: Prisma.VisitorOmit
+  visitorNote?: Prisma.VisitorNoteOmit
+  visitorPageVisit?: Prisma.VisitorPageVisitOmit
   conversation?: Prisma.ConversationOmit
   message?: Prisma.MessageOmit
 }

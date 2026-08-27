@@ -53,7 +53,6 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 			};
 		}
 	},
-	loader: async ({ context }) => {},
 });
 
 function RootComponent() {

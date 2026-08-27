@@ -55,6 +55,8 @@ export const ModelName = {
   Organization: 'Organization',
   OrganizationMember: 'OrganizationMember',
   Visitor: 'Visitor',
+  VisitorNote: 'VisitorNote',
+  VisitorPageVisit: 'VisitorPageVisit',
   Conversation: 'Conversation',
   Message: 'Message'
 } as const
@@ -133,6 +135,26 @@ export const VisitorScalarFieldEnum = {
   utmMedium: 'utmMedium',
   utmCampaign: 'utmCampaign',
   status: 'status',
+  externalId: 'externalId',
+  visitCount: 'visitCount',
+  isIdentified: 'isIdentified',
+  isOnline: 'isOnline',
+  currentPage: 'currentPage',
+  activeDuration: 'activeDuration',
+  lastSeenAt: 'lastSeenAt',
+  device: 'device',
+  deviceType: 'deviceType',
+  browser: 'browser',
+  os: 'os',
+  country: 'country',
+  countryCode: 'countryCode',
+  city: 'city',
+  region: 'region',
+  regionName: 'regionName',
+  timezone: 'timezone',
+  latitude: 'latitude',
+  longitude: 'longitude',
+  assignedAgentId: 'assignedAgentId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -140,9 +162,36 @@ export const VisitorScalarFieldEnum = {
 export type VisitorScalarFieldEnum = (typeof VisitorScalarFieldEnum)[keyof typeof VisitorScalarFieldEnum]
 
 
+export const VisitorNoteScalarFieldEnum = {
+  id: 'id',
+  visitorId: 'visitorId',
+  authorId: 'authorId',
+  content: 'content',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type VisitorNoteScalarFieldEnum = (typeof VisitorNoteScalarFieldEnum)[keyof typeof VisitorNoteScalarFieldEnum]
+
+
+export const VisitorPageVisitScalarFieldEnum = {
+  id: 'id',
+  visitorId: 'visitorId',
+  url: 'url',
+  pageTitle: 'pageTitle',
+  enteredAt: 'enteredAt',
+  leftAt: 'leftAt',
+  durationSeconds: 'durationSeconds',
+  createdAt: 'createdAt'
+} as const
+
+export type VisitorPageVisitScalarFieldEnum = (typeof VisitorPageVisitScalarFieldEnum)[keyof typeof VisitorPageVisitScalarFieldEnum]
+
+
 export const ConversationScalarFieldEnum = {
   id: 'id',
   organizationId: 'organizationId',
+  visitorId: 'visitorId',
   status: 'status',
   channel: 'channel',
   visitorName: 'visitorName',

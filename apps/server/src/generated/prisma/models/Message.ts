@@ -559,10 +559,6 @@ export type EnumMessageDeliveryStatusFieldUpdateOperationsInput = {
   set?: $Enums.MessageDeliveryStatus
 }
 
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
-}
-
 export type MessageUpdateOneWithoutRepliesNestedInput = {
   create?: Prisma.XOR<Prisma.MessageCreateWithoutRepliesInput, Prisma.MessageUncheckedCreateWithoutRepliesInput>
   connectOrCreate?: Prisma.MessageCreateOrConnectWithoutRepliesInput

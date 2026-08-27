@@ -74,7 +74,7 @@ export function VerifyEmailPage() {
 	const handleSubmit = form.handleSubmit(
 		(data) => {
 			verifyEmailMutation.mutate(
-				{ email, code: data.token },
+				{ code: data.token },
 				{
 					onSuccess: async (response) => {
 						toast.success(response?.data?.message || "Email verified successfully");

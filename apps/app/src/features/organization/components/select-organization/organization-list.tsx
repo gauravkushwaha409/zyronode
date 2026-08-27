@@ -23,9 +23,7 @@ function OrganizationCard({
 			</div>
 
 			<div className="min-w-0 flex-1">
-				<p className="truncate text-sm font-semibold text-foreground">
-					{org.name}
-				</p>
+				<p className="truncate text-sm font-semibold text-foreground">{org.name}</p>
 				<p className="truncate text-xs text-muted-foreground">{org.email}</p>
 				{member?.joinedAt && (
 					<p className="mt-0.5 text-[11px] text-muted-foreground/60">
@@ -129,9 +127,7 @@ export function OrganizationList() {
 						/>
 					</svg>
 				</div>
-				<p className="text-sm font-medium text-foreground">
-					No organizations yet
-				</p>
+				<p className="text-sm font-medium text-foreground">No organizations yet</p>
 				<p className="mt-1 text-xs text-muted-foreground">
 					Create your first organization to get started.
 				</p>
@@ -142,11 +138,7 @@ export function OrganizationList() {
 	return (
 		<div className="space-y-3">
 			{organizations.map((org) => (
-				<OrganizationCard
-					key={org.id}
-					org={org}
-					onSelect={handleSelect}
-				/>
+				<OrganizationCard key={org.id} org={org} onSelect={handleSelect} />
 			))}
 		</div>
 	);

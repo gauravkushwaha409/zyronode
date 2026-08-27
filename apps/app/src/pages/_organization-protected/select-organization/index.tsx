@@ -1,6 +1,6 @@
-import { useState } from "react";
 import { Button, DialogWrapper } from "@package/ui";
 import { useRouter } from "@tanstack/react-router";
+import { useState } from "react";
 import { useLogoutMutation } from "@/features/auth/hooks";
 import {
 	OrganizationList,
@@ -15,9 +15,9 @@ export function SelectOrganizationPage() {
 	const handleLogout = () => {
 		logoutMutation.mutate(undefined, {
 			onSuccess: () => {
-router.navigate({ to: "/auth/login" });
-		},
-	});
+				router.navigate({ to: "/auth/login" });
+			},
+		});
 	};
 
 	return (
@@ -56,9 +56,7 @@ router.navigate({ to: "/auth/login" });
 							<div className="w-full border-t border-border" />
 						</div>
 						<div className="relative flex justify-center text-xs uppercase tracking-widest">
-							<span className="bg-card px-3 text-muted-foreground/60">
-								or
-							</span>
+							<span className="bg-card px-3 text-muted-foreground/60">or</span>
 						</div>
 					</div>
 
@@ -87,7 +85,7 @@ router.navigate({ to: "/auth/login" });
 
 				<div className="mt-6 flex items-center justify-center gap-4">
 					<Button
-						variant="destructive"
+						variant="alert"
 						size="sm"
 						onClick={handleLogout}
 						disabled={logoutMutation.isPending}

@@ -1,11 +1,13 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router";
+import { LiveVisitorPage } from "@/pages/_organization-protected/$organization/visitor";
 
-export const Route = createFileRoute('/_organization-protected/$organization/visitor')(
-  {
-    component: RouteComponent,
-  },
-)
+export const Route = createFileRoute(
+	"/_organization-protected/$organization/visitor",
+)({
+	component: RouteComponent,
+});
 
 function RouteComponent() {
-  return <div>Hello "/_organization-protected/$organization/visitor"!</div>
+	const { organization } = Route.useParams();
+	return <LiveVisitorPage organizationId={organization} />;
 }

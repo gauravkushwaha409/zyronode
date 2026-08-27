@@ -1,7 +1,11 @@
 import { type AxiosRequestConfig, BaseAPIService } from "@package/api-client";
 import { CONFIG } from "@/config";
 import { apiClient } from "@/lib";
-import type { OrganizationList, OrganizationMutation } from "../types";
+import type {
+	OrganizationList,
+	OrganizationMembers,
+	OrganizationMutation,
+} from "../types";
 
 class OrganizationApiServices extends BaseAPIService {
 	async create(
@@ -19,6 +23,16 @@ class OrganizationApiServices extends BaseAPIService {
 			OrganizationList.OrganizationItem[],
 			OrganizationList.OrganizationListAxiosResponse
 		>(CONFIG.ENDPOINTS.ORGANIZATION.GET_MY, axiosConfiguration);
+	}
+
+	async getMembers(
+		organizationId: string,
+		axiosConfiguration?: AxiosRequestConfig,
+	) {
+		return super.get<
+			OrganizationMembers.OrganizationMemberItem[],
+			OrganizationMembers.OrganizationMembersAxiosResponse
+		>(CONFIG.ENDPOINTS.ORGANIZATION.MEMBERS(organizationId), axiosConfiguration);
 	}
 }
 

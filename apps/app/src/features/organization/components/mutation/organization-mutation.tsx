@@ -9,7 +9,9 @@ import { OrganizationForm } from "../form";
 
 export function OrganizationMutation({
 	onSuccess,
-}: { onSuccess?: () => void }) {
+}: {
+	onSuccess?: () => void;
+}) {
 	const logoutMutation = useLogoutMutation();
 	const organizationForm = useOrganizationForm();
 	const createOrganizationMutation = useCreateOrganizationMutation(onSuccess);
@@ -36,7 +38,7 @@ export function OrganizationMutation({
 			<Button
 				onClick={() => logoutMutation.mutate()}
 				type="button"
-				variant={"destructive"}
+				variant="alert"
 				className="mt-10 w-full"
 			>
 				Logout

@@ -7,7 +7,8 @@ export const Route = createFileRoute(
 	component: RouteComponent,
 	beforeLoad: ({ context }) => {
 		const auth = context.auth;
-		if (auth.isError || !auth.user?.data?.id) {
+		// auth.user is the axios response: .data (body) .data (envelope)
+		if (auth.isError || !auth.user?.data?.data?.id) {
 			throw redirect({ to: "/auth/login" });
 		}
 	},

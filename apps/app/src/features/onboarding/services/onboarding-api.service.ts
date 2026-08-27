@@ -25,8 +25,10 @@ class OnboardingApiService extends BaseAPIService {
 		data: OrganizationOnboardingMutation.OrganizationOnboardingMutationPayload,
 		axiosConfig?: AxiosRequestConfig,
 	) {
+		// first param is the payload INSIDE the envelope (matching
+		// userOnboarding above), not the envelope itself
 		return super.post<
-			OrganizationOnboardingMutation.OrganizationOnboardingData,
+			OrganizationOnboardingMutation.OrganizationOnboardingResponseData,
 			OrganizationOnboardingMutation.OrganizationOnboardingMutationAxiosResponse,
 			OrganizationOnboardingMutation.OrganizationOnboardingMutationPayload
 		>(CONFIG.ENDPOINTS.ORGANIZATION.CREATE, data, axiosConfig);

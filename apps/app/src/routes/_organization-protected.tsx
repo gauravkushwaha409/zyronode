@@ -30,8 +30,11 @@ export const Route = createFileRoute("/_organization-protected")({
 			throw redirect({ to: "/onboarding/organization" });
 		}
 
+		// auth.user is the axios response: .data (body) .data (envelope)
+		const currentUser = auth.user?.data?.data;
+
 		// If user has no org, redirect to select organization
-		if (!auth.isError && auth.user?.data?.id && !auth.user?.data?.lastOrgId) {
+		if (!auth.isError && currentUser?.id && !currentUser.lastOrgId) {
 			throw redirect({ to: "/select-organization" });
 		}
 	},

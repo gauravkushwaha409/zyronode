@@ -5,10 +5,8 @@ import { organizationApiService } from "../../services";
 import type { OrganizationList } from "../../types";
 
 export function useMyOrganizationsQuery() {
-	return useQuery<
-		OrganizationList.OrganizationListAxiosResponse,
-		APIError
-	>(CONFIG.QUERY_KEY.ORGANIZATION.MY, () =>
-		organizationApiService.getMyOrganizations(),
+	return useQuery<OrganizationList.OrganizationListAxiosResponse, APIError>(
+		CONFIG.QUERY_KEY.ORGANIZATION.MY,
+		() => organizationApiService.getMyOrganizations(),
 	);
 }

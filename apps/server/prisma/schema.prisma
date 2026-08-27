@@ -23,10 +23,13 @@ model User {
   referralSource String?
   isOnboarded    Boolean  @default(false)
 
-  // relation with organization 
+  // relation with organization
   organizations OrganizationMember[]
   lastOrgId     String?
   lastOrg       Organization?        @relation("UserLastOrg", fields: [lastOrgId], references: [id])
+
+  assignedVisitors Visitor[]     @relation("VisitorAssignedAgent")
+  visitorNotes     VisitorNote[] @relation("VisitorNoteAuthor")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -86,12 +89,88 @@ model Visitor {
 
   status VisitorStatus @default(NEW)
 
+  // identity — externalId is the stable id the widget assigns a browser
+  externalId   String?
+  visitCount   Int     @default(1)
+  isIdentified Boolean @default(false)
+
+  // presence. isOnline/activeDuration/currentPage are refreshed by the
+  // widget heartbeat; lastSeenAt is the durable fallback.
+  isOnline       Boolean   @default(false)
+  currentPage    String?
+  activeDuration Int       @default(0) // seconds in the current session
+  lastSeenAt     DateTime?
+
+  // device
+  device     String?
+  deviceType String?
+  browser    String?
+  os         String?
+
+  // geo (resolved from ipAddress)
+  country     String?
+  countryCode String?
+  city        String?
+  region      String?
+  regionName  String?
+  timezone    String?
+  latitude    Float?
+  longitude   Float?
+
+  assignedAgentId String?
+  assignedAgent   User?   @relation("VisitorAssignedAgent", fields: [assignedAgentId], references: [id], onDelete: SetNull)
+
+  notes         VisitorNote[]
+  pageVisits    VisitorPageVisit[]
+  conversations Conversation[]
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  @@unique([organizationId, externalId])
   @@index([organizationId])
   @@index([email])
+  @@index([organizationId, isOnline])
+  @@index([organizationId, lastSeenAt(sort: Desc)])
   @@map("visitors")
+}
+
+model VisitorNote {
+  id        String  @id @default(uuid())
+  visitorId String
+  visitor   Visitor @relation(fields: [visitorId], references: [id], onDelete: Cascade)
+
+  authorId String?
+  author   User?   @relation("VisitorNoteAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+
+  content String
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([visitorId])
+  @@index([visitorId, createdAt(sort: Desc)])
+  @@map("visitor_notes")
+}
+
+// One row per page view, so "top pages" and the visited-sites timeline
+// can be aggregated without stuffing history onto the visitor row.
+model VisitorPageVisit {
+  id        String  @id @default(uuid())
+  visitorId String
+  visitor   Visitor @relation(fields: [visitorId], references: [id], onDelete: Cascade)
+
+  url             String
+  pageTitle       String?
+  enteredAt       DateTime  @default(now()) @map("entered_at")
+  leftAt          DateTime? @map("left_at")
+  durationSeconds Int       @default(0)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([visitorId])
+  @@index([visitorId, enteredAt(sort: Desc)])
+  @@map("visitor_page_visits")
 }
 
 enum PlanType {
@@ -138,6 +217,11 @@ model Conversation {
   organizationId String
   organization   Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
+  // optional link to the tracked visitor; visitorName/Email stay as the
+  // denormalised fallback for conversations with no visitor row.
+  visitorId String?
+  visitor   Visitor? @relation(fields: [visitorId], references: [id], onDelete: SetNull)
+
   status         ConversationStatus @default(ACTIVE)
   channel        String             @default("web")
   visitorName    String?
@@ -156,6 +240,7 @@ model Conversation {
   @@index([organizationId])
   @@index([organizationId, status])
   @@index([organizationId, updatedAt(sort: Desc)])
+  @@index([visitorId])
   @@map("conversations")
 }
 

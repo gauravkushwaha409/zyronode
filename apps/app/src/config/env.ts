@@ -1,4 +1,4 @@
 export const ENV = {
-    SERVER_URL: import.meta.env.VITE_SERVER_URL,
-    APP_URL: import.meta.env.VITE_APP_URL
-}
+	SERVER_URL: import.meta.env.VITE_SERVER_URL,
+	APP_URL: import.meta.env.VITE_APP_URL,
+};
