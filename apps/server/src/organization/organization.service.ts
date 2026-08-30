@@ -3,9 +3,13 @@ import {
 	Injectable,
 	NotFoundException,
 } from "@nestjs/common";
+import type { Response } from "express";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateOrganizationDto } from "./dto/create-organization.dto";
 import { UpdateOrganizationDto } from "./dto/update-organization.dto";
+
+const CURRENT_ORG_COOKIE = "organization";
+const COOKIE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
 
 @Injectable()
 export class OrganizationService {
@@ -37,6 +41,51 @@ export class OrganizationService {
 			message: "Organization created successfully",
 			success: true,
 			statusCode: 201,
+			data: organization,
+		};
+	}
+
+	/**
+	 * Verifies the user is a member of the given organization and, if so,
+	 * switches the "current organization" by persisting it server-side in an
+	 * httpOnly cookie (and updating the user's lastOrgId marker).
+	 */
+	async switchOrganization(
+		userId: string,
+		organizationId: string,
+		response: Response,
+	) {
+		const membership = await this.prisma.organizationMember.findUnique({
+			where: { userId_organizationId: { userId, organizationId } },
+		});
+
+		if (!membership) {
+			throw new ForbiddenException({
+				message: "You are not a member of this organization",
+				error_code: "NOT_ORGANIZATION_MEMBER",
+			});
+		}
+
+		await this.prisma.user.update({
+			where: { id: userId },
+			data: { lastOrgId: organizationId },
+		});
+
+		response.cookie(CURRENT_ORG_COOKIE, organizationId, {
+			httpOnly: true,
+			secure: process.env.NODE_ENV === "production",
+			sameSite: "lax",
+			maxAge: COOKIE_MAX_AGE_MS,
+		});
+
+		const organization = await this.prisma.organization.findUnique({
+			where: { id: organizationId },
+		});
+
+		return {
+			message: "Organization switched successfully",
+			success: true,
+			statusCode: 200,
 			data: organization,
 		};
 	}
