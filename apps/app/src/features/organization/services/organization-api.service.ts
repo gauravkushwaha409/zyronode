@@ -5,6 +5,7 @@ import type {
 	OrganizationList,
 	OrganizationMembers,
 	OrganizationMutation,
+	SwitchOrganizationMutation,
 } from "../types";
 
 class OrganizationApiServices extends BaseAPIService {
@@ -16,6 +17,21 @@ class OrganizationApiServices extends BaseAPIService {
 			OrganizationMutation.OrganizationResponseData,
 			OrganizationMutation.OrganizationMutationAxiosResponse
 		>(CONFIG.ENDPOINTS.ORGANIZATION.CREATE, data, axiosConfiguration);
+	}
+
+	async switchOrganization(
+		organizationId: string,
+		axiosConfiguration?: AxiosRequestConfig,
+	) {
+		return super.post<
+			SwitchOrganizationMutation.SwitchOrganizationResponseData,
+			SwitchOrganizationMutation.SwitchOrganizationAxiosResponse,
+			{ organizationId: string }
+		>(
+			CONFIG.ENDPOINTS.ORGANIZATION.SWITCH,
+			{ organizationId },
+			axiosConfiguration,
+		);
 	}
 
 	async getMyOrganizations(axiosConfiguration?: AxiosRequestConfig) {

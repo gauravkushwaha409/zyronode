@@ -1,4 +1,3 @@
-import { useRouter } from "@tanstack/react-router";
 import { useMyOrganizationsQuery } from "../../hooks";
 import type { OrganizationList as OrgListTypes } from "../../types";
 
@@ -52,15 +51,15 @@ function OrganizationCard({
 	);
 }
 
-export function OrganizationList() {
-	const router = useRouter();
+export function OrganizationList({
+	onSwitchOrganization,
+}: {
+	onSwitchOrganization?: (organizationId: string) => void;
+}) {
 	const { data, isLoading, isError, error } = useMyOrganizationsQuery();
 
 	const handleSelect = (id: string) => {
-		router.navigate({
-			to: "/$organization/dashboard",
-			params: { organization: id },
-		});
+		onSwitchOrganization?.(id);
 	};
 
 	if (isLoading) {

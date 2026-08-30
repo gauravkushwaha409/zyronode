@@ -3,6 +3,7 @@ import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
+	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 	Icon,
 	Typography,
@@ -15,6 +16,8 @@ interface SidebarHeaderProps {
 	currentOrganization?: OrganizationList.OrganizationItem;
 	otherOrganizations: OrganizationList.OrganizationItem[];
 	onSwitchOrganization: (organizationId: string) => void;
+	isSwitchingOrganization?: boolean;
+	onCreateOrganization: () => void;
 	onPin: () => void;
 	onCollapse: () => void;
 }
@@ -42,20 +45,18 @@ export function SidebarHeader({
 	currentOrganization,
 	otherOrganizations,
 	onSwitchOrganization,
+	isSwitchingOrganization,
+	onCreateOrganization,
 	onPin,
 	onCollapse,
 }: SidebarHeaderProps) {
 	const orgName = currentOrganization?.name ?? "Chatboq";
-	const canSwitch = open && otherOrganizations.length > 0;
 
 	return (
 		<section className="px-3">
 			<section className="flex items-center gap-1">
 				<DropdownMenu>
-					<DropdownMenuTrigger
-						disabled={!canSwitch}
-						className="group flex min-w-0 flex-1 items-center gap-1 rounded-[6px] p-1 -m-1 disabled:cursor-default enabled:hover:bg-gray-fill-50"
-					>
+					<DropdownMenuTrigger className="group flex min-w-0 flex-1 items-center gap-1 rounded-[6px] p-1 -m-1 cursor-pointer enabled:hover:bg-gray-fill-50">
 						<OrgAvatar name={orgName} />
 						<div
 							className={cn(
@@ -69,28 +70,37 @@ export function SidebarHeader({
 							>
 								{orgName}
 							</Typography.T3>
-							{otherOrganizations.length > 0 && (
-								<Icon
-									name="arrow-down"
-									size={12}
-									className="shrink-0 text-gray-400 transition-transform group-data-[state=open]:rotate-180"
-								/>
-							)}
+							<Icon
+								name="arrow-down"
+								size={12}
+								className="shrink-0 text-gray-400 transition-transform group-data-[state=open]:rotate-180"
+							/>
 						</div>
 					</DropdownMenuTrigger>
-					{canSwitch && (
-						<DropdownMenuContent align="start" className="w-56">
-							{otherOrganizations.map((org) => (
-								<DropdownMenuItem
-									key={org.id}
-									onSelect={() => onSwitchOrganization(org.id)}
-								>
-									<OrgAvatar name={org.name} className="size-6 text-xs" />
-									<span className="truncate">{org.name}</span>
-								</DropdownMenuItem>
-							))}
-						</DropdownMenuContent>
-					)}
+					<DropdownMenuContent align="start" className="w-56">
+						{currentOrganization && (
+							<DropdownMenuItem disabled>
+								<OrgAvatar name={orgName} className="size-6 text-xs" />
+								<span className="truncate">{orgName}</span>
+								<Icon name="tick" size={14} className="ml-auto text-primary" />
+							</DropdownMenuItem>
+						)}
+						{otherOrganizations.map((org) => (
+							<DropdownMenuItem
+								key={org.id}
+								disabled={isSwitchingOrganization}
+								onSelect={() => onSwitchOrganization(org.id)}
+							>
+								<OrgAvatar name={org.name} className="size-6 text-xs" />
+								<span className="truncate">{org.name}</span>
+							</DropdownMenuItem>
+						))}
+						<DropdownMenuSeparator />
+						<DropdownMenuItem onSelect={onCreateOrganization}>
+							<Icon name="plus" size={14} className="text-gray-400" />
+							<span>Create new organization</span>
+						</DropdownMenuItem>
+					</DropdownMenuContent>
 				</DropdownMenu>
 
 				{open && (

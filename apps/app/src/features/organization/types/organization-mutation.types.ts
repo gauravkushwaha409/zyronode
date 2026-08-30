@@ -2,10 +2,7 @@ import type { ApiResponse, ServerResponse } from "@package/api-client";
 
 export interface CreateOrganizationPayload {
 	name: string;
-	email: string;
 	website?: string;
-	phone?: string;
-	industry?: string;
 }
 
 export interface OrganizationResponseData {

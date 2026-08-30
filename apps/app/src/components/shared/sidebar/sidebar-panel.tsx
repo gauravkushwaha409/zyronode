@@ -18,6 +18,8 @@ interface SidebarPanelProps {
 	currentOrganization?: OrganizationList.OrganizationItem;
 	otherOrganizations: OrganizationList.OrganizationItem[];
 	onSwitchOrganization: (organizationId: string) => void;
+	isSwitchingOrganization?: boolean;
+	onCreateOrganization: () => void;
 	onLogout: () => void;
 	isLoggingOut?: boolean;
 	onPin: () => void;
@@ -35,6 +37,8 @@ export function SidebarPanel({
 	currentOrganization,
 	otherOrganizations,
 	onSwitchOrganization,
+	isSwitchingOrganization,
+	onCreateOrganization,
 	onLogout,
 	isLoggingOut,
 	onPin,
@@ -55,6 +59,8 @@ export function SidebarPanel({
 				currentOrganization={currentOrganization}
 				otherOrganizations={otherOrganizations}
 				onSwitchOrganization={onSwitchOrganization}
+				isSwitchingOrganization={isSwitchingOrganization}
+				onCreateOrganization={onCreateOrganization}
 				onPin={onPin}
 				onCollapse={onCollapse}
 			/>

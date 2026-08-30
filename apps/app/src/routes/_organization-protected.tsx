@@ -1,5 +1,6 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { AuthGaurd } from "@/features/auth/gaurds";
+import { CreateOrganizationDialog } from "@/features/organization/components";
 
 export const Route = createFileRoute("/_organization-protected")({
 	component: RouteComponent,
@@ -43,6 +44,7 @@ export const Route = createFileRoute("/_organization-protected")({
 function RouteComponent() {
 	return (
 		<AuthGaurd>
+			<CreateOrganizationDialog />
 			<Outlet />
 		</AuthGaurd>
 	);

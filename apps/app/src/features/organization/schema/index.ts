@@ -1,1 +1,1 @@
-export * from "./create-organization.schema";
+export * from "./create-organization-dialog.schema";

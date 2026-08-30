@@ -1,7 +1,12 @@
+import { toast } from "@package/ui";
 import { useRouter, useRouterState } from "@tanstack/react-router";
 import { useState } from "react";
 import { useLogoutMutation, useMeQuery } from "@/features/auth/hooks";
-import { useMyOrganizationsQuery } from "@/features/organization/hooks";
+import {
+	useCreateOrganizationDialog,
+	useMyOrganizationsQuery,
+	useSwitchOrganizationMutation,
+} from "@/features/organization/hooks";
 import {
 	getSidebarData,
 	SIDEBAR_WIDTH,
@@ -17,6 +22,8 @@ export function Sidebar() {
 	const { data } = useMeQuery();
 	const { data: organizationsData } = useMyOrganizationsQuery();
 	const logoutMutation = useLogoutMutation();
+	const switchOrganizationMutation = useSwitchOrganizationMutation();
+	const { open: openCreateOrganizationDialog } = useCreateOrganizationDialog();
 
 	const open = !collapsed || hovered;
 	const isFloating = collapsed && hovered;
@@ -33,9 +40,18 @@ export function Sidebar() {
 	const otherOrganizations = organizations.filter((org) => org.id !== orgId);
 
 	const handleSwitchOrganization = (organizationId: string) => {
-		router.navigate({
-			to: "/$organization/dashboard",
-			params: { organization: organizationId },
+		switchOrganizationMutation.mutate(organizationId, {
+			onSuccess: () => {
+				router.navigate({
+					to: "/$organization/dashboard",
+					params: { organization: organizationId },
+				});
+			},
+			onError: (error) => {
+				toast.error(
+					error?.response?.data?.error ?? "Failed to switch organization",
+				);
+			},
 		});
 	};
 
@@ -71,6 +87,8 @@ export function Sidebar() {
 				currentOrganization={currentOrganization}
 				otherOrganizations={otherOrganizations}
 				onSwitchOrganization={handleSwitchOrganization}
+				isSwitchingOrganization={switchOrganizationMutation.isPending}
+				onCreateOrganization={() => openCreateOrganizationDialog()}
 				onLogout={handleLogout}
 				isLoggingOut={logoutMutation.isPending}
 				onPin={() => {

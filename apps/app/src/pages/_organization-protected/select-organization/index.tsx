@@ -1,16 +1,33 @@
-import { Button, DialogWrapper } from "@package/ui";
+import { Button, toast } from "@package/ui";
 import { useRouter } from "@tanstack/react-router";
-import { useState } from "react";
 import { useLogoutMutation } from "@/features/auth/hooks";
+import { OrganizationList } from "@/features/organization/components";
 import {
-	OrganizationList,
-	OrganizationMutation,
-} from "@/features/organization/components";
+	useCreateOrganizationDialog,
+	useSwitchOrganizationMutation,
+} from "@/features/organization/hooks";
 
 export function SelectOrganizationPage() {
 	const router = useRouter();
-	const [showCreate, setShowCreate] = useState(false);
 	const logoutMutation = useLogoutMutation();
+	const { open: openCreateOrganizationDialog } = useCreateOrganizationDialog();
+	const switchOrganization = useSwitchOrganizationMutation();
+
+	const handleSwitchOrganization = (organizationId: string) => {
+		switchOrganization.mutate(organizationId, {
+			onSuccess: () => {
+				router.navigate({
+					to: "/$organization/dashboard",
+					params: { organization: organizationId },
+				});
+			},
+			onError: (error) => {
+				toast.error(
+					error?.response?.data?.error ?? "Failed to switch organization",
+				);
+			},
+		});
+	};
 
 	const handleLogout = () => {
 		logoutMutation.mutate(undefined, {
@@ -49,7 +66,7 @@ export function SelectOrganizationPage() {
 				</div>
 
 				<div className="rounded-2xl bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl p-6 sm:p-8 border border-white/50 dark:border-zinc-800/50 shadow-xl shadow-black/5 dark:shadow-black/20">
-					<OrganizationList />
+					<OrganizationList onSwitchOrganization={handleSwitchOrganization} />
 
 					<div className="relative my-6">
 						<div className="absolute inset-0 flex items-center">
@@ -62,7 +79,7 @@ export function SelectOrganizationPage() {
 
 					<button
 						type="button"
-						onClick={() => setShowCreate(true)}
+						onClick={() => openCreateOrganizationDialog()}
 						className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border py-3 text-sm font-medium text-muted-foreground transition-all hover:border-primary/40 hover:text-primary hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-primary/20"
 					>
 						<svg
@@ -103,14 +120,6 @@ export function SelectOrganizationPage() {
 						Back to login
 					</button>
 				</div>
-
-				<DialogWrapper
-					title="Create Organization"
-					open={showCreate}
-					onOpenChange={setShowCreate}
-				>
-					<OrganizationMutation onSuccess={() => setShowCreate(false)} />
-				</DialogWrapper>
 			</div>
 		</div>
 	);
