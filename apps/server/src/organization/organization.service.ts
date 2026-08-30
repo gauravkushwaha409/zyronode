@@ -17,10 +17,16 @@ export class OrganizationService {
 
 	async create(createOrganizationDto: CreateOrganizationDto, userId: string) {
 		const organization = await this.prisma.$transaction(async (tx) => {
-			const { name } = createOrganizationDto;
-		const org = await tx.organization.create({
-			data: { name },
-		});
+			const { name, website, phone, industry, plan } = createOrganizationDto;
+			const org = await tx.organization.create({
+				data: {
+					name,
+					website,
+					phone,
+					industry,
+					...(plan && { plan }),
+				},
+			});
 
 			await tx.organizationMember.create({
 				data: {
