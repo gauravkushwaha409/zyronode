@@ -7,6 +7,11 @@ export class CreateConversationDto {
   @IsNotEmpty()
   organizationId!: string;
 
+  @ApiPropertyOptional({ description: 'Visitor ID to link this conversation to' })
+  @IsString()
+  @IsOptional()
+  visitorId?: string;
+
   @ApiPropertyOptional({ description: 'Source URL where the conversation started' })
   @IsString()
   @IsOptional()

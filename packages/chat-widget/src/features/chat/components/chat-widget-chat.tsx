@@ -21,9 +21,7 @@ export default function ChatWidgetChat() {
 	const { data: messagesData, isLoading } = useGetMessagesQuery(
 		conversationId ?? undefined,
 	);
-	const { mutate: sendMessage, isPending: isSending } = useSendMessageMutation(
-		conversationId ?? "",
-	);
+	const { mutate: sendMessage, isPending: isSending } = useSendMessageMutation();
 	const { mutate: createConversation } = useCreateConversationMutation();
 
 	const { startTyping, stopTyping, isAgentTyping } = useTypingIndicator({
@@ -47,12 +45,19 @@ export default function ChatWidgetChat() {
 
 		const messagePayload = { content: content.trim(), messageType: "TEXT" as const };
 
+		const sendTo = (targetConversationId: string) => {
+			sendMessage(
+				{ ...messagePayload, conversationId: targetConversationId },
+				{
+					onSuccess: () => setContent(""),
+					onError: (err: unknown) => console.error("Send failed:", err),
+				},
+			);
+		};
+
 		if (conversationId) {
 			stopTyping();
-			sendMessage(messagePayload, {
-				onSuccess: () => setContent(""),
-				onError: (err: unknown) => console.error("Send failed:", err),
-			});
+			sendTo(conversationId);
 			return;
 		}
 
@@ -68,10 +73,7 @@ export default function ChatWidgetChat() {
 					if (!newId) return;
 					setConversationId(newId);
 					stopTyping();
-					sendMessage(messagePayload, {
-						onSuccess: () => setContent(""),
-						onError: (err: unknown) => console.error("Send failed:", err),
-					});
+					sendTo(newId);
 				},
 				onError: (err: unknown) => {
 					console.error("[chat-widget] Conversation creation failed:", err);

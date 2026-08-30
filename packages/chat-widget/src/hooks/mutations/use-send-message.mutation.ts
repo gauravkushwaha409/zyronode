@@ -7,22 +7,24 @@ import type {
 } from "../../types";
 import { applyChatMessageEvent } from "../../utility";
 
-export function useSendMessageMutation(conversationId: string) {
+type SendMessageVariables = SendMessagePayload & { conversationId: string };
+
+export function useSendMessageMutation() {
 	const queryClient = useQueryClient();
 
 	return useMutation<
 		SendMessageAxiosResponse,
 		SendMessageError,
-		SendMessagePayload
+		SendMessageVariables
 	>(
-		(payload: SendMessagePayload) =>
+		({ conversationId, ...payload }) =>
 			getWidgetApi().sendVisitorMessage(conversationId, payload),
 		{
-			onSuccess: (response) => {
+			onSuccess: (response, variables) => {
 				const message = response.data?.data;
 				if (!message) return;
-				applyChatMessageEvent(queryClient, conversationId, {
-					conversation: { id: conversationId },
+				applyChatMessageEvent(queryClient, variables.conversationId, {
+					conversation: { id: variables.conversationId },
 					message,
 				});
 			},

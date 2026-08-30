@@ -16,6 +16,7 @@ export class ConversationService {
 			const conversation = await this.prisma.conversation.create({
 				data: {
 					organizationId: dto.organizationId,
+					visitorId: dto.visitorId,
 					sourceUrl: dto.sourceUrl,
 					visitorName: dto.visitorName,
 					visitorEmail: dto.visitorEmail,

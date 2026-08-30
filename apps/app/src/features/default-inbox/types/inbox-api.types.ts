@@ -81,6 +81,17 @@ export interface InboxSendAgentMessagePayload {
   replyToId?: string;
 }
 
+export interface CreateConversationPayload {
+  organizationId: string;
+  visitorId?: string;
+  sourceUrl?: string;
+  visitorName?: string | null;
+  visitorEmail?: string | null;
+  visitorPhone?: string | null;
+  channel?: string;
+  metadata?: Record<string, unknown>;
+}
+
 export interface InboxSendAgentMessageResponse {
   message: string;
   data: InboxMessage;

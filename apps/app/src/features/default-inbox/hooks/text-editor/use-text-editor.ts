@@ -20,7 +20,7 @@ export function useTextEditor({
   const editorRef = useRef<LexicalEditor | null>(null);
 
   const { mutate: sendMessage, isPending: isSendingMessage } =
-    useSendAgentMessageMutation(conversationUUID, organizationId);
+    useSendAgentMessageMutation(organizationId);
 
   const {
     message: replyMessage,
@@ -60,6 +60,7 @@ export function useTextEditor({
 
       sendMessage(
         {
+          conversationId: conversationUUID,
           content: htmlContent,
           messageType: isInternalNote ? 'INTERNAL_NOTE' : 'TEXT',
           ...(replyToId && { replyToId }),

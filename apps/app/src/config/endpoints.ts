@@ -20,6 +20,7 @@ export const ENDPOINTS = {
 	INBOX: {
 		CONVERSATIONS: "/inbox/conversations",
 		CONVERSATION: "/inbox/conversations",
+		CREATE_CONVERSATION: "/conversations",
 		SEND_MESSAGE: "/conversations",
 		MARK_READ: "/conversations",
 	},

@@ -41,7 +41,11 @@ export function WebSocketProvider({
   }, [client]);
 
   useEffect(() => {
-    client.connect(auth);
+    if (auth) {
+      client.connect(auth);
+    } else {
+      client.disconnect();
+    }
   }, [client, auth]);
 
   return (

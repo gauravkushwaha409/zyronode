@@ -1,9 +1,13 @@
 import { Button, cn, EmptyState, Icon, Typography } from "@package/ui";
 import { format } from "date-fns";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useSendAgentMessageMutation } from "@/features/default-inbox/hooks/mutations";
+import {
+	useCreateConversationMutation,
+	useSendAgentMessageMutation,
+} from "@/features/default-inbox/hooks/mutations";
 import { useInboxConversationDetailQuery } from "@/features/default-inbox/hooks/queries";
 import { useVisitorInfoQuery } from "../../hooks";
+import type { VisitorInfo } from "../../types";
 import { skeletonKeys, visitorDisplayName } from "../../utility";
 
 interface AgentChatProps {
@@ -23,7 +27,7 @@ export function AgentChat({ organizationId, visitorId }: AgentChatProps) {
 	const visitor = infoData?.data?.data;
 
 	// most recently updated conversation is the one an agent wants to reply in
-	const conversationId = useMemo(
+	const initialConversationId = useMemo(
 		() => visitor?.conversations?.[0]?.id ?? null,
 		[visitor],
 	);
@@ -43,36 +47,29 @@ export function AgentChat({ organizationId, visitorId }: AgentChatProps) {
 		return <div className="h-64 animate-pulse rounded-[10px] bg-gray-100" />;
 	}
 
-	if (!conversationId) {
-		return (
-			<EmptyState
-				size="sm"
-				icon="all-conversation"
-				title="No conversation yet"
-				description={
-					visitor
-						? `${visitorDisplayName(visitor)} has not started a chat.`
-						: undefined
-				}
-			/>
-		);
-	}
-
 	return (
 		<ConversationThread
-			conversationId={conversationId}
+			initialConversationId={initialConversationId}
 			organizationId={organizationId}
+			visitor={visitor}
 		/>
 	);
 }
 
 function ConversationThread({
-	conversationId,
+	initialConversationId,
 	organizationId,
+	visitor,
 }: {
-	conversationId: string;
+	initialConversationId: string | null;
 	organizationId: string;
+	visitor: VisitorInfo | undefined;
 }) {
+	// holds the active conversation; a visitor with no conversation yet gets
+	// one created on the first send.
+	const [conversationId, setConversationId] = useState<string | null>(
+		initialConversationId,
+	);
 	const [draft, setDraft] = useState("");
 	const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -80,10 +77,8 @@ function ConversationThread({
 		conversationId,
 		organizationId,
 	);
-	const sendMessage = useSendAgentMessageMutation(
-		conversationId,
-		organizationId,
-	);
+	const sendMessage = useSendAgentMessageMutation(organizationId);
+	const createConversation = useCreateConversationMutation(organizationId);
 
 	// the API returns newest-first; render oldest-first like a chat log
 	const messages = useMemo(() => {
@@ -99,11 +94,39 @@ function ConversationThread({
 		if (node) node.scrollTo({ top: node.scrollHeight });
 	}, [messages.length]);
 
-	const handleSend = () => {
+	const handleSend = async () => {
 		const content = draft.trim();
-		if (!content || sendMessage.isPending) return;
-		sendMessage.mutate({ content }, { onSuccess: () => setDraft("") });
+		if (!content) return;
+
+		let targetConversationId = conversationId;
+
+		// no conversation yet for this visitor - create one, then send the message
+		if (!targetConversationId) {
+			const created = await createConversation.mutateAsync({
+				organizationId,
+				visitorId: visitor?.id,
+				visitorName: visitor?.name ?? null,
+				visitorEmail: visitor?.email ?? null,
+				visitorPhone: visitor?.phone ?? null,
+				sourceUrl: visitor?.sourceUrl ?? undefined,
+				channel: "web",
+			});
+			const createdId = created.data?.data?.id;
+			if (!createdId) return;
+			targetConversationId = createdId;
+			setConversationId(createdId);
+		}
+
+		sendMessage.mutate(
+			{ conversationId: targetConversationId, content },
+			{ onSuccess: () => setDraft("") },
+		);
 	};
+
+	const canSend =
+		draft.trim().length > 0 &&
+		!sendMessage.isPending &&
+		!createConversation.isPending;
 
 	return (
 		<div className="flex h-[26rem] flex-col overflow-hidden rounded-[12px] border border-gray-border-200 bg-white-base">
@@ -123,7 +146,18 @@ function ConversationThread({
 				)}
 
 				{!isLoading && messages.length === 0 && (
-					<EmptyState size="sm" icon="all-conversation" title="No messages yet" />
+					<EmptyState
+						size="sm"
+						icon="all-conversation"
+						title={conversationId ? "No messages yet" : "Start the conversation"}
+						description={
+							conversationId
+								? undefined
+								: `Type a message to start a conversation with ${
+										visitor ? visitorDisplayName(visitor) : "this visitor"
+								  }.`
+						}
+					/>
 				)}
 
 				{!isLoading && messages.length > 0 && (
@@ -170,19 +204,21 @@ function ConversationThread({
 						// Enter sends, Shift+Enter makes a newline
 						if (event.key === "Enter" && !event.shiftKey) {
 							event.preventDefault();
-							handleSend();
+							void handleSend();
 						}
 					}}
 					rows={1}
-					placeholder="Write a reply…"
+					placeholder={
+						conversationId ? "Write a reply…" : "Start a conversation…"
+					}
 					className="max-h-28 min-h-9 flex-1 resize-none rounded-[6px] border border-gray-border-200 px-3 py-2 typo-t4 text-gray-950 outline-none placeholder:text-gray-500 focus:border-primary-500"
 				/>
 				<Button
 					size="icon-sm"
 					className="w-auto shrink-0"
-					disabled={!draft.trim()}
-					isPending={sendMessage.isPending}
-					onClick={handleSend}
+					disabled={!canSend}
+					isPending={sendMessage.isPending || createConversation.isPending}
+					onClick={() => void handleSend()}
 					aria-label="Send reply"
 				>
 					<Icon name="send" size={16} />

@@ -1,7 +1,8 @@
-import { type AxiosRequestConfig, BaseAPIService } from "@package/api-client";
+import { type AxiosRequestConfig, BaseAPIService, type ApiResponse } from "@package/api-client";
 import { CONFIG } from "@/config";
 import { apiClient } from "@/lib";
 import type {
+  CreateConversationPayload,
   InboxConversationsData,
   InboxConversationDetail,
   InboxSendAgentMessagePayload,
@@ -42,6 +43,21 @@ class InboxApiService extends BaseAPIService {
         params: { organizationId },
         ...axiosConfiguration,
       },
+    );
+  }
+
+  async createConversation(
+    payload: CreateConversationPayload,
+    axiosConfiguration?: AxiosRequestConfig,
+  ) {
+    return super.post<
+      { id: string },
+      ApiResponse<{ id: string }>,
+      CreateConversationPayload
+    >(
+      CONFIG.ENDPOINTS.INBOX.CREATE_CONVERSATION,
+      payload,
+      axiosConfiguration,
     );
   }
 
