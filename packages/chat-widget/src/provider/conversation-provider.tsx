@@ -2,19 +2,23 @@ import {
 	createContext,
 	type ReactNode,
 	useContext,
-	useEffect,
 	useState,
 } from "react";
 import { getConfig } from "../config";
-import { useCreateConversationMutation } from "../hooks";
 import { getConversationId, setConversationId } from "../lib/storage";
 
 interface ConversationContextValue {
 	conversationId: string | null;
+	organizationId: string;
+	page: string;
+	setConversationId: (id: string) => void;
 }
 
 const ConversationContext = createContext<ConversationContextValue>({
 	conversationId: null,
+	organizationId: "",
+	page: "",
+	setConversationId: () => {},
 });
 
 interface ConversationProviderProps {
@@ -24,8 +28,9 @@ interface ConversationProviderProps {
 }
 
 /**
- * Creates a visitor conversation on first mount (or restores the
- * existing one from localStorage) and exposes it via context.
+ * Restores an existing conversation from localStorage (if any) and
+ * exposes conversation state via context. Conversations are created
+ * lazily when the visitor sends their first message.
  */
 export function ConversationProvider({
 	children,
@@ -34,38 +39,26 @@ export function ConversationProvider({
 }: ConversationProviderProps) {
 	const config = getConfig();
 	const orgId = organizationId ?? config.organizationId;
+	const pageUrl = page ?? window.location.href;
 
 	const [conversationId, setConversationIdState] = useState<string | null>(
 		getConversationId,
 	);
 
-	const { mutate: createConversation } = useCreateConversationMutation();
-
-	useEffect(() => {
-		if (conversationId) return;
-		createConversation(
-			{
-				organizationId: orgId,
-				sourceUrl: page ?? window.location.href,
-				channel: "web",
-			},
-			{
-				onSuccess: (res: { data?: { data?: { id?: string } } }) => {
-					const id = res.data?.data?.id;
-					if (id) {
-						setConversationId(id);
-						setConversationIdState(id);
-					}
-				},
-				onError: (err: unknown) => {
-					console.error("[chat-widget] Conversation creation failed:", err);
-				},
-			},
-		);
-	}, [conversationId, orgId, page, createConversation]);
+	const handleSetConversationId = (id: string) => {
+		setConversationId(id);
+		setConversationIdState(id);
+	};
 
 	return (
-		<ConversationContext.Provider value={{ conversationId }}>
+		<ConversationContext.Provider
+			value={{
+				conversationId,
+				organizationId: orgId,
+				page: pageUrl,
+				setConversationId: handleSetConversationId,
+			}}
+		>
 			{children}
 		</ConversationContext.Provider>
 	);

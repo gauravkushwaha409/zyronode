@@ -1,15 +1,19 @@
 import { useQueryClient } from "@package/query";
 import { Button } from "@package/ui";
 import { useEffect, useRef, useState } from "react";
-import { useGetMessagesQuery, useSendMessageMutation } from "@/hooks";
+import {
+	useCreateConversationMutation,
+	useGetMessagesQuery,
+	useSendMessageMutation,
+} from "@/hooks";
 import { useOnMessageNew, useTypingIndicator } from "@/hooks/events";
 import { useConversation } from "@/provider";
-import { useChatWidgetStore } from "@/store";
 import type { ChatMessage } from "@/types";
 import { applyChatMessageEvent, type ChatMessageEvent } from "@/utility";
 
 export default function ChatWidgetChat() {
-	const { conversationId } = useConversation();
+	const { conversationId, organizationId, page, setConversationId } =
+		useConversation();
 	const [content, setContent] = useState("");
 	const scrollRef = useRef<HTMLDivElement>(null);
 	const queryClient = useQueryClient();
@@ -20,6 +24,7 @@ export default function ChatWidgetChat() {
 	const { mutate: sendMessage, isPending: isSending } = useSendMessageMutation(
 		conversationId ?? "",
 	);
+	const { mutate: createConversation } = useCreateConversationMutation();
 
 	const { startTyping, stopTyping, isAgentTyping } = useTypingIndicator({
 		conversationId,
@@ -38,13 +43,39 @@ export default function ChatWidgetChat() {
 	}, [messages]);
 
 	const handleSend = () => {
-		if (!content.trim() || !conversationId || isSending) return;
-		stopTyping();
-		sendMessage(
-			{ content: content.trim(), messageType: "TEXT" },
-			{
+		if (!content.trim() || isSending) return;
+
+		const messagePayload = { content: content.trim(), messageType: "TEXT" as const };
+
+		if (conversationId) {
+			stopTyping();
+			sendMessage(messagePayload, {
 				onSuccess: () => setContent(""),
 				onError: (err: unknown) => console.error("Send failed:", err),
+			});
+			return;
+		}
+
+		createConversation(
+			{
+				organizationId,
+				sourceUrl: page,
+				channel: "web",
+			},
+			{
+				onSuccess: (res: { data?: { data?: { id?: string } } }) => {
+					const newId = res.data?.data?.id;
+					if (!newId) return;
+					setConversationId(newId);
+					stopTyping();
+					sendMessage(messagePayload, {
+						onSuccess: () => setContent(""),
+						onError: (err: unknown) => console.error("Send failed:", err),
+					});
+				},
+				onError: (err: unknown) => {
+					console.error("[chat-widget] Conversation creation failed:", err);
+				},
 			},
 		);
 	};
@@ -72,7 +103,7 @@ export default function ChatWidgetChat() {
 									: "bg-gray-100 text-gray-900 rounded-bl-none"
 							}`}
 						>
-							<p dangerouslySetInnerHTML={{ __html: msg.content }} />
+							<div dangerouslySetInnerHTML={{ __html: msg.content }} />
 							<p className="text-[10px] opacity-70 mt-1">
 								{new Date(msg.createdAt).toLocaleTimeString([], {
 									hour: "2-digit",
