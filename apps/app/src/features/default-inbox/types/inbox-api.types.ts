@@ -15,16 +15,14 @@ export interface InboxConversationListItem {
   unreadCount: number;
 }
 
-export interface InboxConversationsPagination {
-  page: number;
-  limit: number;
-  total: number;
-  totalPages: number;
-}
+import type { CursorPaginationMeta } from "@/types/cursor-pagination.types";
+
+// Re-export for reuse — inbox now uses cursor pagination exclusively
+export type InboxConversationsPagination = CursorPaginationMeta;
 
 export interface InboxConversationsData {
   conversations: InboxConversationListItem[];
-  pagination: InboxConversationsPagination;
+  pagination: CursorPaginationMeta;
 }
 
 export interface InboxConversationsResponse {

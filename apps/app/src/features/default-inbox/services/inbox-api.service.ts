@@ -1,6 +1,7 @@
 import { type AxiosRequestConfig, BaseAPIService } from "@package/api-client";
 import { CONFIG } from "@/config";
 import { apiClient } from "@/lib";
+import type { CursorPaginationParams } from "@/types/cursor-pagination.types";
 import type {
   InboxConversationsData,
   InboxConversationDetail,
@@ -8,15 +9,15 @@ import type {
   InboxMessage,
 } from "../types/inbox-api.types";
 
+export type InboxConversationsFilters = {
+  status?: string;
+  search?: string;
+} & CursorPaginationParams;
+
 class InboxApiService extends BaseAPIService {
   async getConversations(
     organizationId: string,
-    filters?: {
-      status?: string;
-      search?: string;
-      page?: number;
-      limit?: number;
-    },
+    filters?: InboxConversationsFilters,
     axiosConfiguration?: AxiosRequestConfig,
   ) {
     return super.get<InboxConversationsData>(

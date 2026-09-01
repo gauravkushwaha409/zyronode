@@ -1,8 +1,7 @@
 import { cn } from '@package/ui';
 import type React from 'react';
-import { useRef } from 'react';
+import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
 import { useInboxConversationsQuery } from '../../hooks';
-import type { InboxConversationListItem } from '../../types/inbox-api.types';
 import { ConversationListItem } from './conversation-list-item';
 
 type ConversationListWrapperProps = Pick<React.ComponentProps<'div'>, 'className'>;
@@ -12,11 +11,29 @@ interface ConversationListComponentProps extends ConversationListWrapperProps {
 }
 
 export function ConversationListComponent({ className, organizationId }: ConversationListComponentProps) {
-  const sentinelRef = useRef<HTMLDivElement>(null);
+  const {
+    items: conversations,
+    isLoading,
+    error,
+    hasNextPage,
+    hasPreviousPage,
+    fetchNextPage,
+    fetchPreviousPage,
+    isFetchingNextPage,
+    isFetchingPreviousPage,
+  } = useInboxConversationsQuery(organizationId,{
+    limit: 3
+  });
 
-  const { data, isLoading, error } = useInboxConversationsQuery(organizationId);
-
-  const conversations: InboxConversationListItem[] = data?.data?.data?.conversations ?? [];
+  // Abstracted bidirectional infinite scroll — reusable for any cursor-paginated list
+  const { topSentinelRef, bottomSentinelRef } = useInfiniteScroll({
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+    hasPreviousPage,
+    isFetchingPreviousPage,
+    fetchPreviousPage,
+  });
 
   if (isLoading) {
     return (
@@ -44,10 +61,26 @@ export function ConversationListComponent({ className, organizationId }: Convers
 
   return (
     <div className={cn('px-3', className)}>
-      {conversations.map((conversation) => (
+      {/* Top sentinel for bidirectional (newer) — loads prev page when scrolled to top */}
+      <div ref={topSentinelRef} className="h-1" />
+      {isFetchingPreviousPage && (
+        <div className="flex justify-center py-2">
+          <div className="size-4 animate-spin rounded-full border-2 border-gray-300 border-t-primary-500" />
+        </div>
+      )}
+      {conversations.map((conversation: (typeof conversations)[number]) => (
         <ConversationListItem key={conversation.id} {...conversation} />
       ))}
-      <div ref={sentinelRef} className="h-1" />
+      {/* Bottom sentinel for older (next) */}
+      <div ref={bottomSentinelRef} className="h-1" />
+      {isFetchingNextPage && (
+        <div className="flex justify-center py-2">
+          <div className="size-4 animate-spin rounded-full border-2 border-gray-300 border-t-primary-500" />
+        </div>
+      )}
+      {!hasNextPage && conversations.length > 0 && (
+        <p className="py-2 text-center text-xs text-gray-400">No more conversations</p>
+      )}
     </div>
   );
 }
