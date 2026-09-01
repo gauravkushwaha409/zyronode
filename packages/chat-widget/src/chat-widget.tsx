@@ -25,7 +25,6 @@ export default function ChatWidget({
 		<WidgetQueryProvider>
 			<ConversationProvider organizationId={organizationId}>
 				{isWidgetOpen && (
-					// SSE/WS connect lazily - only while the widget is open
 					<WidgetSseProvider>
 						<WidgetWebSocketProvider>
 							<WidgetWindow onClose={() => setWidgetOpen(false)} />

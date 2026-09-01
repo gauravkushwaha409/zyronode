@@ -8,7 +8,11 @@ import type { ChatMessage } from "@/types";
 import { applyChatMessageEvent, type ChatMessageEvent } from "@/utility";
 
 export default function ChatWidgetChat() {
-	const { conversationId, ensureConversation, isCreating: isCreatingConversation } = useConversation();
+	const {
+		conversationId,
+		ensureConversation,
+		isCreating: isCreatingConversation,
+	} = useConversation();
 	const [content, setContent] = useState("");
 	const scrollRef = useRef<HTMLDivElement>(null);
 	const queryClient = useQueryClient();
@@ -31,20 +35,13 @@ export default function ChatWidgetChat() {
 	const messages = messagesData?.data?.data?.messages ?? [];
 	const reversed = [...messages].reverse();
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <ignore>
 	useEffect(() => {
 		scrollRef.current?.scrollTo(0, scrollRef.current.scrollHeight);
 	}, [messages]);
 
 	/**
-	 * handleSend — decides: create conversation vs send to existing.
-	 *
-	 * 1. Validate input (not empty, not already sending/creating)
-	 * 2. Check `conversationId` from localStorage (via useConversation state)
-	 *    - if exists (returning visitor): use it directly → no extra network call
-	 *    - if null (first message): await ensureConversation()
-	 *        → POST http://localhost:SERVER_PORT/api/v1/conversations (CHAT_WIDGET_API.CONVERSATIONS)
-	 *        → saves id to localStorage `chat-widget-conversation-id:${orgId}` and state
-	 * 3. POST message to `POST /conversations/:id/messages/visitor` via useSendMessageMutation
+	 * handleSend — send message, creating conversation if needed
 	 */
 	const handleSend = async () => {
 		if (!content.trim() || isSending || isCreatingConversation) return;
@@ -53,11 +50,8 @@ export default function ChatWidgetChat() {
 
 		// Step 2: decide — existing conversation or need to create
 		let activeId = conversationId;
-		const shouldCreateConversation = !activeId;
-		if (shouldCreateConversation) {
+		if (!activeId) {
 			try {
-				// ensureConversation checks localStorage again + dedupes concurrent calls
-				// creates conversation only if no id in storage
 				activeId = await ensureConversation();
 			} catch (err) {
 				console.error("[chat-widget] Failed to create conversation:", err);
@@ -72,7 +66,10 @@ export default function ChatWidgetChat() {
 		// Step 3: send message to existing (or newly created) conversation
 		stopTyping();
 		sendMessage(
-			{ conversationId: activeId, payload: { content: trimmed, messageType: "TEXT" } },
+			{
+				conversationId: activeId,
+				payload: { content: trimmed, messageType: "TEXT" },
+			},
 			{
 				onSuccess: () => setContent(""),
 				onError: (err: unknown) => console.error("Send failed:", err),
@@ -103,7 +100,8 @@ export default function ChatWidgetChat() {
 									: "bg-gray-100 text-gray-900 rounded-bl-none"
 							}`}
 						>
-							<p dangerouslySetInnerHTML={{ __html: msg.content }} />
+							{/** biome-ignore lint/security/noDangerouslySetInnerHtml: <ignore> */}
+							<div dangerouslySetInnerHTML={{ __html: msg.content }} />
 							<p className="text-[10px] opacity-70 mt-1">
 								{new Date(msg.createdAt).toLocaleTimeString([], {
 									hour: "2-digit",
@@ -143,7 +141,11 @@ export default function ChatWidgetChat() {
 					disabled={!content.trim() || isSending || isCreatingConversation}
 					className="w-full"
 				>
-					{isSending || isCreatingConversation ? (isCreatingConversation ? "Starting chat..." : "Sending...") : "Send"}
+					{isSending || isCreatingConversation
+						? isCreatingConversation
+							? "Starting chat..."
+							: "Sending..."
+						: "Send"}
 				</Button>
 			</div>
 		</div>

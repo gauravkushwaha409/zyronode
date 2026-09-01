@@ -66,6 +66,34 @@ export function ConversationProvider({
 		pendingRef.current = null;
 	}, [orgId]);
 
+	/**
+	 * Ensures a conversation exists by following these steps:
+	 *
+	 * 1. Check localStorage for an existing conversation ID
+	 *    - If found, update state and return it immediately (no network call)
+	 *    - This restores the user's existing conversation
+	 *
+	 * 2. Check if conversation ID is already in state
+	 *    - If present, return it immediately
+	 *    - This handles the case where a conversation was just created
+	 *
+	 * 3. Check if a conversation creation is already in progress
+	 *    - If a promise exists, return it (dedupes concurrent calls)
+	 *    - This prevents multiple simultaneous API requests
+	 *
+	 * 4. Create a new conversation if none exist
+	 *    - Validates that organizationId is provided
+	 *    - Makes a POST request to create a new conversation
+	 *    - Extracts the conversation ID from the response
+	 *    - Stores the ID in localStorage and state
+	 *    - Returns the new conversation ID
+	 *
+	 * Why this approach:
+	 * - Lazy creation: Only creates conversations when needed (on first message)
+	 * - Deduplication: Prevents multiple conversations from being created due to race conditions
+	 * - Persistence: Stores IDs locally so conversations survive page refreshes
+	 * - Efficiency: No unnecessary API calls or empty conversations
+	 */
 	const ensureConversation = useCallback(async (): Promise<string> => {
 		const stored = getConversationId(orgId);
 		if (stored) {
