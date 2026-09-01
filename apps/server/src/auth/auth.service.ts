@@ -294,7 +294,8 @@ export class AuthService {
 			RESET_TOKEN_TTL_SECONDS,
 		);
 
-		const resetUrl = `${process.env.VITE_APP_URL}/auth/set-password?token=${token}`;
+		const appUrl = (process.env.VITE_APP_URL ?? "").replace(/\$\{([^}]+)\}|\$([A-Z0-9_]+)/g, (_, b, c) => process.env[b ?? c] ?? "") || `http://localhost:${process.env.APP_PORT ?? "3000"}`;
+		const resetUrl = `${appUrl}/auth/set-password?token=${token}`;
 		const from = process.env.RESEND_FROM_EMAIL || "noreply@example.com";
 
 		const { data, error, headers } = await this.resend.emails.send({

@@ -23,9 +23,32 @@ interface VisitorPresencePayload {
  * being persisted. Anything that IS persisted (visitor row edits, notes,
  * assignment) goes out over SSE from VisitorService instead.
  */
+function getCorsOrigins(): string[] {
+	const appPort = process.env.APP_PORT ?? "3000";
+	const chatWidgetPort = process.env.CHAT_WIDGET_PORT ?? "4000";
+	const origins = new Set<string>([
+		`http://localhost:${appPort}`,
+		`http://localhost:${chatWidgetPort}`,
+		"http://localhost:4001",
+	]);
+	const viteAppUrl = process.env.VITE_APP_URL?.replace(/\$\{([^}]+)\}|\$([A-Z0-9_]+)/g, (_, b, c) => process.env[b ?? c] ?? "");
+	if (viteAppUrl) {
+		try {
+			origins.add(new URL(viteAppUrl).origin);
+		} catch {}
+	}
+	if (process.env.CORS_ORIGINS) {
+		for (const o of process.env.CORS_ORIGINS.split(",")) {
+			const t = o.trim();
+			if (t) origins.add(t);
+		}
+	}
+	return [...origins];
+}
+
 @WebSocketGateway({
 	cors: {
-		origin: ["http://localhost:3000", "http://localhost:4000"],
+		origin: getCorsOrigins(),
 		credentials: true,
 	},
 })

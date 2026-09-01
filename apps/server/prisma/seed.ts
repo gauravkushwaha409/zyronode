@@ -423,7 +423,7 @@ async function main() {
 	console.log(`  orgs:     ${organizations.map((o) => o.name).join(", ")}`);
 	console.log(`  visitors: ${visitorCount} on ${organizations[0].name}`);
 	console.log(
-		`  app:      http://localhost:3000/${organizations[0].id}/dashboard (after logging in)`,
+		`  app:      http://localhost:${process.env.APP_PORT ?? "3000"}/${organizations[0].id}/dashboard (after logging in)`,
 	);
 }
 
