@@ -8,11 +8,11 @@ import {
 	UseGuards,
 } from "@nestjs/common";
 import {
-	ApiTags,
-	ApiOperation,
-	ApiResponse,
 	ApiBearerAuth,
+	ApiOperation,
 	ApiParam,
+	ApiResponse,
+	ApiTags,
 } from "@nestjs/swagger";
 import { CurrentUser } from "../common/decorator/current-user.decorator";
 import { JwtAuthGuard } from "../common/gaurds/jwt-auth.guard";
@@ -27,8 +27,8 @@ export class InboxController {
 	constructor(private readonly inboxService: InboxService) {}
 
 	@Get("conversations")
-	@ApiOperation({ summary: 'List inbox conversations' })
-	@ApiResponse({ status: 200, description: 'Conversations returned' })
+	@ApiOperation({ summary: "List inbox conversations (cursor pagination, bidirectional)" })
+	@ApiResponse({ status: 200, description: "Conversations returned" })
 	getConversations(
 		@Query() query: ListInboxConversationsDto,
 		@CurrentUser("id") userId: string,
@@ -36,16 +36,17 @@ export class InboxController {
 		return this.inboxService.getConversations(query.organizationId, {
 			status: query.status,
 			search: query.search,
-			page: query.page,
 			limit: query.limit,
+			cursor: query.cursor,
+			direction: query.direction,
 		});
 	}
 
 	@Get("conversations/:id")
-	@ApiOperation({ summary: 'Get conversation details' })
-	@ApiParam({ name: 'id', description: 'Conversation ID' })
-	@ApiResponse({ status: 200, description: 'Conversation details returned' })
-	@ApiResponse({ status: 404, description: 'Conversation not found' })
+	@ApiOperation({ summary: "Get conversation details" })
+	@ApiParam({ name: "id", description: "Conversation ID" })
+	@ApiResponse({ status: 200, description: "Conversation details returned" })
+	@ApiResponse({ status: 404, description: "Conversation not found" })
 	getConversationDetails(
 		@Param("id") id: string,
 		@Query("organizationId") organizationId: string,
@@ -55,9 +56,9 @@ export class InboxController {
 	}
 
 	@Post("conversations/:id/close")
-	@ApiOperation({ summary: 'Close a conversation' })
-	@ApiParam({ name: 'id', description: 'Conversation ID' })
-	@ApiResponse({ status: 200, description: 'Conversation closed' })
+	@ApiOperation({ summary: "Close a conversation" })
+	@ApiParam({ name: "id", description: "Conversation ID" })
+	@ApiResponse({ status: 200, description: "Conversation closed" })
 	closeConversation(
 		@Param("id") id: string,
 		@Body("organizationId") organizationId: string,
@@ -67,9 +68,9 @@ export class InboxController {
 	}
 
 	@Post("conversations/:id/reopen")
-	@ApiOperation({ summary: 'Reopen a conversation' })
-	@ApiParam({ name: 'id', description: 'Conversation ID' })
-	@ApiResponse({ status: 200, description: 'Conversation reopened' })
+	@ApiOperation({ summary: "Reopen a conversation" })
+	@ApiParam({ name: "id", description: "Conversation ID" })
+	@ApiResponse({ status: 200, description: "Conversation reopened" })
 	reopenConversation(
 		@Param("id") id: string,
 		@Body("organizationId") organizationId: string,
