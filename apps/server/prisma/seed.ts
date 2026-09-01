@@ -47,7 +47,7 @@ const TEST_ORGANIZATIONS: Array<{
 const TEST_VISITORS = [
 	{
 		externalId: "vis_kathmandu_01",
-		name: "Raja Swarnakar",
+		name: "Gaurav",
 		email: "raja@example.com",
 		phone: "+977 9800000001",
 		ipAddress: "27.34.68.10",

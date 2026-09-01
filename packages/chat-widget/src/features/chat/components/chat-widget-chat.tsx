@@ -4,12 +4,11 @@ import { useEffect, useRef, useState } from "react";
 import { useGetMessagesQuery, useSendMessageMutation } from "@/hooks";
 import { useOnMessageNew, useTypingIndicator } from "@/hooks/events";
 import { useConversation } from "@/provider";
-import { useChatWidgetStore } from "@/store";
 import type { ChatMessage } from "@/types";
 import { applyChatMessageEvent, type ChatMessageEvent } from "@/utility";
 
 export default function ChatWidgetChat() {
-	const { conversationId } = useConversation();
+	const { conversationId, ensureConversation, isCreating: isCreatingConversation } = useConversation();
 	const [content, setContent] = useState("");
 	const scrollRef = useRef<HTMLDivElement>(null);
 	const queryClient = useQueryClient();
@@ -17,9 +16,8 @@ export default function ChatWidgetChat() {
 	const { data: messagesData, isLoading } = useGetMessagesQuery(
 		conversationId ?? undefined,
 	);
-	const { mutate: sendMessage, isPending: isSending } = useSendMessageMutation(
-		conversationId ?? "",
-	);
+	// dynamic mutation — conversationId passed per-call so it works right after lazy creation
+	const { mutate: sendMessage, isPending: isSending } = useSendMessageMutation();
 
 	const { startTyping, stopTyping, isAgentTyping } = useTypingIndicator({
 		conversationId,
@@ -37,11 +35,44 @@ export default function ChatWidgetChat() {
 		scrollRef.current?.scrollTo(0, scrollRef.current.scrollHeight);
 	}, [messages]);
 
-	const handleSend = () => {
-		if (!content.trim() || !conversationId || isSending) return;
+	/**
+	 * handleSend — decides: create conversation vs send to existing.
+	 *
+	 * 1. Validate input (not empty, not already sending/creating)
+	 * 2. Check `conversationId` from localStorage (via useConversation state)
+	 *    - if exists (returning visitor): use it directly → no extra network call
+	 *    - if null (first message): await ensureConversation()
+	 *        → POST http://localhost:SERVER_PORT/api/v1/conversations (CHAT_WIDGET_API.CONVERSATIONS)
+	 *        → saves id to localStorage `chat-widget-conversation-id:${orgId}` and state
+	 * 3. POST message to `POST /conversations/:id/messages/visitor` via useSendMessageMutation
+	 */
+	const handleSend = async () => {
+		if (!content.trim() || isSending || isCreatingConversation) return;
+
+		const trimmed = content.trim();
+
+		// Step 2: decide — existing conversation or need to create
+		let activeId = conversationId;
+		const shouldCreateConversation = !activeId;
+		if (shouldCreateConversation) {
+			try {
+				// ensureConversation checks localStorage again + dedupes concurrent calls
+				// creates conversation only if no id in storage
+				activeId = await ensureConversation();
+			} catch (err) {
+				console.error("[chat-widget] Failed to create conversation:", err);
+				return;
+			}
+		}
+		if (!activeId) {
+			console.error("[chat-widget] No conversationId after ensureConversation");
+			return;
+		}
+
+		// Step 3: send message to existing (or newly created) conversation
 		stopTyping();
 		sendMessage(
-			{ content: content.trim(), messageType: "TEXT" },
+			{ conversationId: activeId, payload: { content: trimmed, messageType: "TEXT" } },
 			{
 				onSuccess: () => setContent(""),
 				onError: (err: unknown) => console.error("Send failed:", err),
@@ -109,10 +140,10 @@ export default function ChatWidgetChat() {
 				<Button
 					type="button"
 					onClick={handleSend}
-					disabled={!content.trim() || isSending}
+					disabled={!content.trim() || isSending || isCreatingConversation}
 					className="w-full"
 				>
-					{isSending ? "Sending..." : "Send"}
+					{isSending || isCreatingConversation ? (isCreatingConversation ? "Starting chat..." : "Sending...") : "Send"}
 				</Button>
 			</div>
 		</div>
