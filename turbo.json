@@ -63,6 +63,11 @@
       "cache": false,
       "persistent": true,
       "interactive": true
+    },
+    "prisma:reset": {
+      "cache": false,
+      "interactive": true,
+      "env": ["DATABASE_URL"]
     }
   }
 }
