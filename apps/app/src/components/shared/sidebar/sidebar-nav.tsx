@@ -1,5 +1,6 @@
 import { cn } from "@package/ui";
 import { Fragment } from "react";
+import { useUnreadStatsQuery } from "@/features/default-inbox/hooks/queries";
 import type { SidebarItems } from "./sidebar.types";
 import { NavLink } from "./sidebar-nav-link";
 import { SidebarOtherInboxes } from "./sidebar-other-inboxes";
@@ -21,6 +22,19 @@ export function SidebarNav({
 	collapsed,
 	hovered,
 }: SidebarNavProps) {
+	const { data, isSuccess } = useUnreadStatsQuery();
+	const unreadCount = (data?.data as unknown as { conversations_with_unread?: number })?.conversations_with_unread ?? 0;
+
+	// Inject badge as ReactNode via data — NavLink stays generic (no path sniffing)
+	const displayData: SidebarItems = {
+		UPPER: sidebarData.UPPER.map((item) =>
+			item.label === "Inbox" && isSuccess && unreadCount
+				? { ...item, badge: unreadCount }
+				: item,
+		),
+		LOWER: sidebarData.LOWER,
+	};
+
 	return (
 		<section
 			className={cn(
@@ -29,27 +43,16 @@ export function SidebarNav({
 			)}
 		>
 			<section className="flex flex-col gap-1">
-				{sidebarData.UPPER.map((item) => (
+				{displayData.UPPER.map((item) => (
 					<Fragment key={item.label}>
-						<NavLink
-							item={item}
-							pathname={pathname}
-							open={open}
-							isFloating={isFloating}
-						/>
+						<NavLink item={item} pathname={pathname} open={open} isFloating={isFloating} />
 						{item.showOtherInboxesAfter && <SidebarOtherInboxes open={open} />}
 					</Fragment>
 				))}
 			</section>
 			<section className="flex flex-col gap-1">
-				{sidebarData.LOWER.map((item) => (
-					<NavLink
-						key={item.label}
-						item={item}
-						pathname={pathname}
-						open={open}
-						isFloating={isFloating}
-					/>
+				{displayData.LOWER.map((item) => (
+					<NavLink key={item.label} item={item} pathname={pathname} open={open} isFloating={isFloating} />
 				))}
 			</section>
 		</section>

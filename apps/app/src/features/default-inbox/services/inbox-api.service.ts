@@ -92,6 +92,13 @@ class InboxApiService extends BaseAPIService {
       axiosConfiguration,
     );
   }
+
+  async unreadStats(axiosConfiguration?: AxiosRequestConfig) {
+    return super.get<{ conversations_with_unread: number; total_unread: number }>(
+      CONFIG.ENDPOINTS.INBOX.UNREAD_STATS,
+      axiosConfiguration,
+    );
+  }
 }
 
 export const inboxApiService = new InboxApiService(apiClient);

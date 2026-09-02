@@ -22,6 +22,7 @@ export const ENDPOINTS = {
 		CONVERSATION: "/inbox/conversations",
 		SEND_MESSAGE: "/conversations",
 		MARK_READ: "/conversations",
+		UNREAD_STATS: "/inbox/conversations/unread-stats/analytics",
 	},
 	VISITOR: {
 		// every visitor route is tenant-scoped by path; the backend
