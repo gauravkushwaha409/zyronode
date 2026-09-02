@@ -26,9 +26,18 @@ import { Route as OrganizationProtectedSelectOrganizationRouteImport } from './r
 import { Route as OrganizationProtectedOrganizationRouteImport } from './routes/_organization-protected/$organization'
 import { Route as OrganizationProtectedOrganizationVisitorRouteImport } from './routes/_organization-protected/$organization/visitor'
 import { Route as OrganizationProtectedOrganizationTicketRouteImport } from './routes/_organization-protected/$organization/ticket'
+import { Route as OrganizationProtectedOrganizationSupportLibraryRouteImport } from './routes/_organization-protected/$organization/support-library'
 import { Route as OrganizationProtectedOrganizationSettingsRouteImport } from './routes/_organization-protected/$organization/settings'
+import { Route as OrganizationProtectedOrganizationPluginsRouteImport } from './routes/_organization-protected/$organization/plugins'
+import { Route as OrganizationProtectedOrganizationLiveVisitorRouteImport } from './routes/_organization-protected/$organization/live-visitor'
+import { Route as OrganizationProtectedOrganizationLeadRouteImport } from './routes/_organization-protected/$organization/lead'
+import { Route as OrganizationProtectedOrganizationKnowledgeHubRouteImport } from './routes/_organization-protected/$organization/knowledge-hub'
 import { Route as OrganizationProtectedOrganizationInboxRouteImport } from './routes/_organization-protected/$organization/inbox'
 import { Route as OrganizationProtectedOrganizationDashboardRouteImport } from './routes/_organization-protected/$organization/dashboard'
+import { Route as OrganizationProtectedOrganizationContactsRouteImport } from './routes/_organization-protected/$organization/contacts'
+import { Route as OrganizationProtectedOrganizationChatboqAiRouteImport } from './routes/_organization-protected/$organization/chatboq-ai'
+import { Route as OrganizationProtectedOrganizationCampaignsRouteImport } from './routes/_organization-protected/$organization/campaigns'
+import { Route as OrganizationProtectedOrganizationAnalyticsRouteImport } from './routes/_organization-protected/$organization/analytics'
 import { Route as OrganizationProtectedOrganizationSettingsTeamManagementRouteImport } from './routes/_organization-protected/$organization/settings/team-management'
 import { Route as OrganizationProtectedOrganizationSettingsQuickRepliesRouteImport } from './routes/_organization-protected/$organization/settings/quick-replies'
 import { Route as OrganizationProtectedOrganizationSettingsNotificationsSettingsRouteImport } from './routes/_organization-protected/$organization/settings/notifications-settings'
@@ -137,10 +146,40 @@ const OrganizationProtectedOrganizationTicketRoute =
     path: '/ticket',
     getParentRoute: () => OrganizationProtectedOrganizationRoute,
   } as any)
+const OrganizationProtectedOrganizationSupportLibraryRoute =
+  OrganizationProtectedOrganizationSupportLibraryRouteImport.update({
+    id: '/support-library',
+    path: '/support-library',
+    getParentRoute: () => OrganizationProtectedOrganizationRoute,
+  } as any)
 const OrganizationProtectedOrganizationSettingsRoute =
   OrganizationProtectedOrganizationSettingsRouteImport.update({
     id: '/settings',
     path: '/settings',
+    getParentRoute: () => OrganizationProtectedOrganizationRoute,
+  } as any)
+const OrganizationProtectedOrganizationPluginsRoute =
+  OrganizationProtectedOrganizationPluginsRouteImport.update({
+    id: '/plugins',
+    path: '/plugins',
+    getParentRoute: () => OrganizationProtectedOrganizationRoute,
+  } as any)
+const OrganizationProtectedOrganizationLiveVisitorRoute =
+  OrganizationProtectedOrganizationLiveVisitorRouteImport.update({
+    id: '/live-visitor',
+    path: '/live-visitor',
+    getParentRoute: () => OrganizationProtectedOrganizationRoute,
+  } as any)
+const OrganizationProtectedOrganizationLeadRoute =
+  OrganizationProtectedOrganizationLeadRouteImport.update({
+    id: '/lead',
+    path: '/lead',
+    getParentRoute: () => OrganizationProtectedOrganizationRoute,
+  } as any)
+const OrganizationProtectedOrganizationKnowledgeHubRoute =
+  OrganizationProtectedOrganizationKnowledgeHubRouteImport.update({
+    id: '/knowledge-hub',
+    path: '/knowledge-hub',
     getParentRoute: () => OrganizationProtectedOrganizationRoute,
   } as any)
 const OrganizationProtectedOrganizationInboxRoute =
@@ -153,6 +192,30 @@ const OrganizationProtectedOrganizationDashboardRoute =
   OrganizationProtectedOrganizationDashboardRouteImport.update({
     id: '/dashboard',
     path: '/dashboard',
+    getParentRoute: () => OrganizationProtectedOrganizationRoute,
+  } as any)
+const OrganizationProtectedOrganizationContactsRoute =
+  OrganizationProtectedOrganizationContactsRouteImport.update({
+    id: '/contacts',
+    path: '/contacts',
+    getParentRoute: () => OrganizationProtectedOrganizationRoute,
+  } as any)
+const OrganizationProtectedOrganizationChatboqAiRoute =
+  OrganizationProtectedOrganizationChatboqAiRouteImport.update({
+    id: '/chatboq-ai',
+    path: '/chatboq-ai',
+    getParentRoute: () => OrganizationProtectedOrganizationRoute,
+  } as any)
+const OrganizationProtectedOrganizationCampaignsRoute =
+  OrganizationProtectedOrganizationCampaignsRouteImport.update({
+    id: '/campaigns',
+    path: '/campaigns',
+    getParentRoute: () => OrganizationProtectedOrganizationRoute,
+  } as any)
+const OrganizationProtectedOrganizationAnalyticsRoute =
+  OrganizationProtectedOrganizationAnalyticsRouteImport.update({
+    id: '/analytics',
+    path: '/analytics',
     getParentRoute: () => OrganizationProtectedOrganizationRoute,
   } as any)
 const OrganizationProtectedOrganizationSettingsTeamManagementRoute =
@@ -321,9 +384,18 @@ export interface FileRoutesByFullPath {
   '/onboarding/success': typeof OnboardingSuccessRoute
   '/onboarding/user': typeof OnboardingUserRoute
   '/verify/email': typeof VerifyEmailRoute
+  '/$organization/analytics': typeof OrganizationProtectedOrganizationAnalyticsRoute
+  '/$organization/campaigns': typeof OrganizationProtectedOrganizationCampaignsRoute
+  '/$organization/chatboq-ai': typeof OrganizationProtectedOrganizationChatboqAiRoute
+  '/$organization/contacts': typeof OrganizationProtectedOrganizationContactsRoute
   '/$organization/dashboard': typeof OrganizationProtectedOrganizationDashboardRoute
   '/$organization/inbox': typeof OrganizationProtectedOrganizationInboxRoute
+  '/$organization/knowledge-hub': typeof OrganizationProtectedOrganizationKnowledgeHubRoute
+  '/$organization/lead': typeof OrganizationProtectedOrganizationLeadRoute
+  '/$organization/live-visitor': typeof OrganizationProtectedOrganizationLiveVisitorRoute
+  '/$organization/plugins': typeof OrganizationProtectedOrganizationPluginsRoute
   '/$organization/settings': typeof OrganizationProtectedOrganizationSettingsRouteWithChildren
+  '/$organization/support-library': typeof OrganizationProtectedOrganizationSupportLibraryRoute
   '/$organization/ticket': typeof OrganizationProtectedOrganizationTicketRoute
   '/$organization/visitor': typeof OrganizationProtectedOrganizationVisitorRoute
   '/$organization/settings/motivation-celebration': typeof OrganizationProtectedOrganizationSettingsMotivationCelebrationRouteWithChildren
@@ -361,9 +433,18 @@ export interface FileRoutesByTo {
   '/onboarding/success': typeof OnboardingSuccessRoute
   '/onboarding/user': typeof OnboardingUserRoute
   '/verify/email': typeof VerifyEmailRoute
+  '/$organization/analytics': typeof OrganizationProtectedOrganizationAnalyticsRoute
+  '/$organization/campaigns': typeof OrganizationProtectedOrganizationCampaignsRoute
+  '/$organization/chatboq-ai': typeof OrganizationProtectedOrganizationChatboqAiRoute
+  '/$organization/contacts': typeof OrganizationProtectedOrganizationContactsRoute
   '/$organization/dashboard': typeof OrganizationProtectedOrganizationDashboardRoute
   '/$organization/inbox': typeof OrganizationProtectedOrganizationInboxRoute
+  '/$organization/knowledge-hub': typeof OrganizationProtectedOrganizationKnowledgeHubRoute
+  '/$organization/lead': typeof OrganizationProtectedOrganizationLeadRoute
+  '/$organization/live-visitor': typeof OrganizationProtectedOrganizationLiveVisitorRoute
+  '/$organization/plugins': typeof OrganizationProtectedOrganizationPluginsRoute
   '/$organization/settings': typeof OrganizationProtectedOrganizationSettingsRouteWithChildren
+  '/$organization/support-library': typeof OrganizationProtectedOrganizationSupportLibraryRoute
   '/$organization/ticket': typeof OrganizationProtectedOrganizationTicketRoute
   '/$organization/visitor': typeof OrganizationProtectedOrganizationVisitorRoute
   '/$organization/settings/motivation-celebration': typeof OrganizationProtectedOrganizationSettingsMotivationCelebrationRouteWithChildren
@@ -403,9 +484,18 @@ export interface FileRoutesById {
   '/onboarding/success': typeof OnboardingSuccessRoute
   '/onboarding/user': typeof OnboardingUserRoute
   '/verify/email': typeof VerifyEmailRoute
+  '/_organization-protected/$organization/analytics': typeof OrganizationProtectedOrganizationAnalyticsRoute
+  '/_organization-protected/$organization/campaigns': typeof OrganizationProtectedOrganizationCampaignsRoute
+  '/_organization-protected/$organization/chatboq-ai': typeof OrganizationProtectedOrganizationChatboqAiRoute
+  '/_organization-protected/$organization/contacts': typeof OrganizationProtectedOrganizationContactsRoute
   '/_organization-protected/$organization/dashboard': typeof OrganizationProtectedOrganizationDashboardRoute
   '/_organization-protected/$organization/inbox': typeof OrganizationProtectedOrganizationInboxRoute
+  '/_organization-protected/$organization/knowledge-hub': typeof OrganizationProtectedOrganizationKnowledgeHubRoute
+  '/_organization-protected/$organization/lead': typeof OrganizationProtectedOrganizationLeadRoute
+  '/_organization-protected/$organization/live-visitor': typeof OrganizationProtectedOrganizationLiveVisitorRoute
+  '/_organization-protected/$organization/plugins': typeof OrganizationProtectedOrganizationPluginsRoute
   '/_organization-protected/$organization/settings': typeof OrganizationProtectedOrganizationSettingsRouteWithChildren
+  '/_organization-protected/$organization/support-library': typeof OrganizationProtectedOrganizationSupportLibraryRoute
   '/_organization-protected/$organization/ticket': typeof OrganizationProtectedOrganizationTicketRoute
   '/_organization-protected/$organization/visitor': typeof OrganizationProtectedOrganizationVisitorRoute
   '/_organization-protected/$organization/settings/motivation-celebration': typeof OrganizationProtectedOrganizationSettingsMotivationCelebrationRouteWithChildren
@@ -445,9 +535,18 @@ export interface FileRouteTypes {
     | '/onboarding/success'
     | '/onboarding/user'
     | '/verify/email'
+    | '/$organization/analytics'
+    | '/$organization/campaigns'
+    | '/$organization/chatboq-ai'
+    | '/$organization/contacts'
     | '/$organization/dashboard'
     | '/$organization/inbox'
+    | '/$organization/knowledge-hub'
+    | '/$organization/lead'
+    | '/$organization/live-visitor'
+    | '/$organization/plugins'
     | '/$organization/settings'
+    | '/$organization/support-library'
     | '/$organization/ticket'
     | '/$organization/visitor'
     | '/$organization/settings/motivation-celebration'
@@ -485,9 +584,18 @@ export interface FileRouteTypes {
     | '/onboarding/success'
     | '/onboarding/user'
     | '/verify/email'
+    | '/$organization/analytics'
+    | '/$organization/campaigns'
+    | '/$organization/chatboq-ai'
+    | '/$organization/contacts'
     | '/$organization/dashboard'
     | '/$organization/inbox'
+    | '/$organization/knowledge-hub'
+    | '/$organization/lead'
+    | '/$organization/live-visitor'
+    | '/$organization/plugins'
     | '/$organization/settings'
+    | '/$organization/support-library'
     | '/$organization/ticket'
     | '/$organization/visitor'
     | '/$organization/settings/motivation-celebration'
@@ -526,9 +634,18 @@ export interface FileRouteTypes {
     | '/onboarding/success'
     | '/onboarding/user'
     | '/verify/email'
+    | '/_organization-protected/$organization/analytics'
+    | '/_organization-protected/$organization/campaigns'
+    | '/_organization-protected/$organization/chatboq-ai'
+    | '/_organization-protected/$organization/contacts'
     | '/_organization-protected/$organization/dashboard'
     | '/_organization-protected/$organization/inbox'
+    | '/_organization-protected/$organization/knowledge-hub'
+    | '/_organization-protected/$organization/lead'
+    | '/_organization-protected/$organization/live-visitor'
+    | '/_organization-protected/$organization/plugins'
     | '/_organization-protected/$organization/settings'
+    | '/_organization-protected/$organization/support-library'
     | '/_organization-protected/$organization/ticket'
     | '/_organization-protected/$organization/visitor'
     | '/_organization-protected/$organization/settings/motivation-celebration'
@@ -681,11 +798,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrganizationProtectedOrganizationTicketRouteImport
       parentRoute: typeof OrganizationProtectedOrganizationRoute
     }
+    '/_organization-protected/$organization/support-library': {
+      id: '/_organization-protected/$organization/support-library'
+      path: '/support-library'
+      fullPath: '/$organization/support-library'
+      preLoaderRoute: typeof OrganizationProtectedOrganizationSupportLibraryRouteImport
+      parentRoute: typeof OrganizationProtectedOrganizationRoute
+    }
     '/_organization-protected/$organization/settings': {
       id: '/_organization-protected/$organization/settings'
       path: '/settings'
       fullPath: '/$organization/settings'
       preLoaderRoute: typeof OrganizationProtectedOrganizationSettingsRouteImport
+      parentRoute: typeof OrganizationProtectedOrganizationRoute
+    }
+    '/_organization-protected/$organization/plugins': {
+      id: '/_organization-protected/$organization/plugins'
+      path: '/plugins'
+      fullPath: '/$organization/plugins'
+      preLoaderRoute: typeof OrganizationProtectedOrganizationPluginsRouteImport
+      parentRoute: typeof OrganizationProtectedOrganizationRoute
+    }
+    '/_organization-protected/$organization/live-visitor': {
+      id: '/_organization-protected/$organization/live-visitor'
+      path: '/live-visitor'
+      fullPath: '/$organization/live-visitor'
+      preLoaderRoute: typeof OrganizationProtectedOrganizationLiveVisitorRouteImport
+      parentRoute: typeof OrganizationProtectedOrganizationRoute
+    }
+    '/_organization-protected/$organization/lead': {
+      id: '/_organization-protected/$organization/lead'
+      path: '/lead'
+      fullPath: '/$organization/lead'
+      preLoaderRoute: typeof OrganizationProtectedOrganizationLeadRouteImport
+      parentRoute: typeof OrganizationProtectedOrganizationRoute
+    }
+    '/_organization-protected/$organization/knowledge-hub': {
+      id: '/_organization-protected/$organization/knowledge-hub'
+      path: '/knowledge-hub'
+      fullPath: '/$organization/knowledge-hub'
+      preLoaderRoute: typeof OrganizationProtectedOrganizationKnowledgeHubRouteImport
       parentRoute: typeof OrganizationProtectedOrganizationRoute
     }
     '/_organization-protected/$organization/inbox': {
@@ -700,6 +852,34 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/$organization/dashboard'
       preLoaderRoute: typeof OrganizationProtectedOrganizationDashboardRouteImport
+      parentRoute: typeof OrganizationProtectedOrganizationRoute
+    }
+    '/_organization-protected/$organization/contacts': {
+      id: '/_organization-protected/$organization/contacts'
+      path: '/contacts'
+      fullPath: '/$organization/contacts'
+      preLoaderRoute: typeof OrganizationProtectedOrganizationContactsRouteImport
+      parentRoute: typeof OrganizationProtectedOrganizationRoute
+    }
+    '/_organization-protected/$organization/chatboq-ai': {
+      id: '/_organization-protected/$organization/chatboq-ai'
+      path: '/chatboq-ai'
+      fullPath: '/$organization/chatboq-ai'
+      preLoaderRoute: typeof OrganizationProtectedOrganizationChatboqAiRouteImport
+      parentRoute: typeof OrganizationProtectedOrganizationRoute
+    }
+    '/_organization-protected/$organization/campaigns': {
+      id: '/_organization-protected/$organization/campaigns'
+      path: '/campaigns'
+      fullPath: '/$organization/campaigns'
+      preLoaderRoute: typeof OrganizationProtectedOrganizationCampaignsRouteImport
+      parentRoute: typeof OrganizationProtectedOrganizationRoute
+    }
+    '/_organization-protected/$organization/analytics': {
+      id: '/_organization-protected/$organization/analytics'
+      path: '/analytics'
+      fullPath: '/$organization/analytics'
+      preLoaderRoute: typeof OrganizationProtectedOrganizationAnalyticsRouteImport
       parentRoute: typeof OrganizationProtectedOrganizationRoute
     }
     '/_organization-protected/$organization/settings/team-management': {
@@ -920,21 +1100,48 @@ const OrganizationProtectedOrganizationSettingsRouteWithChildren =
   )
 
 interface OrganizationProtectedOrganizationRouteChildren {
+  OrganizationProtectedOrganizationAnalyticsRoute: typeof OrganizationProtectedOrganizationAnalyticsRoute
+  OrganizationProtectedOrganizationCampaignsRoute: typeof OrganizationProtectedOrganizationCampaignsRoute
+  OrganizationProtectedOrganizationChatboqAiRoute: typeof OrganizationProtectedOrganizationChatboqAiRoute
+  OrganizationProtectedOrganizationContactsRoute: typeof OrganizationProtectedOrganizationContactsRoute
   OrganizationProtectedOrganizationDashboardRoute: typeof OrganizationProtectedOrganizationDashboardRoute
   OrganizationProtectedOrganizationInboxRoute: typeof OrganizationProtectedOrganizationInboxRoute
+  OrganizationProtectedOrganizationKnowledgeHubRoute: typeof OrganizationProtectedOrganizationKnowledgeHubRoute
+  OrganizationProtectedOrganizationLeadRoute: typeof OrganizationProtectedOrganizationLeadRoute
+  OrganizationProtectedOrganizationLiveVisitorRoute: typeof OrganizationProtectedOrganizationLiveVisitorRoute
+  OrganizationProtectedOrganizationPluginsRoute: typeof OrganizationProtectedOrganizationPluginsRoute
   OrganizationProtectedOrganizationSettingsRoute: typeof OrganizationProtectedOrganizationSettingsRouteWithChildren
+  OrganizationProtectedOrganizationSupportLibraryRoute: typeof OrganizationProtectedOrganizationSupportLibraryRoute
   OrganizationProtectedOrganizationTicketRoute: typeof OrganizationProtectedOrganizationTicketRoute
   OrganizationProtectedOrganizationVisitorRoute: typeof OrganizationProtectedOrganizationVisitorRoute
 }
 
 const OrganizationProtectedOrganizationRouteChildren: OrganizationProtectedOrganizationRouteChildren =
   {
+    OrganizationProtectedOrganizationAnalyticsRoute:
+      OrganizationProtectedOrganizationAnalyticsRoute,
+    OrganizationProtectedOrganizationCampaignsRoute:
+      OrganizationProtectedOrganizationCampaignsRoute,
+    OrganizationProtectedOrganizationChatboqAiRoute:
+      OrganizationProtectedOrganizationChatboqAiRoute,
+    OrganizationProtectedOrganizationContactsRoute:
+      OrganizationProtectedOrganizationContactsRoute,
     OrganizationProtectedOrganizationDashboardRoute:
       OrganizationProtectedOrganizationDashboardRoute,
     OrganizationProtectedOrganizationInboxRoute:
       OrganizationProtectedOrganizationInboxRoute,
+    OrganizationProtectedOrganizationKnowledgeHubRoute:
+      OrganizationProtectedOrganizationKnowledgeHubRoute,
+    OrganizationProtectedOrganizationLeadRoute:
+      OrganizationProtectedOrganizationLeadRoute,
+    OrganizationProtectedOrganizationLiveVisitorRoute:
+      OrganizationProtectedOrganizationLiveVisitorRoute,
+    OrganizationProtectedOrganizationPluginsRoute:
+      OrganizationProtectedOrganizationPluginsRoute,
     OrganizationProtectedOrganizationSettingsRoute:
       OrganizationProtectedOrganizationSettingsRouteWithChildren,
+    OrganizationProtectedOrganizationSupportLibraryRoute:
+      OrganizationProtectedOrganizationSupportLibraryRoute,
     OrganizationProtectedOrganizationTicketRoute:
       OrganizationProtectedOrganizationTicketRoute,
     OrganizationProtectedOrganizationVisitorRoute:
