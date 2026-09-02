@@ -31,8 +31,11 @@ import { Route as OrganizationProtectedOrganizationInboxRouteImport } from './ro
 import { Route as OrganizationProtectedOrganizationDashboardRouteImport } from './routes/_organization-protected/$organization/dashboard'
 import { Route as OrganizationProtectedOrganizationSettingsTeamManagementRouteImport } from './routes/_organization-protected/$organization/settings/team-management'
 import { Route as OrganizationProtectedOrganizationSettingsQuickRepliesRouteImport } from './routes/_organization-protected/$organization/settings/quick-replies'
+import { Route as OrganizationProtectedOrganizationSettingsNotificationsSettingsRouteImport } from './routes/_organization-protected/$organization/settings/notifications-settings'
 import { Route as OrganizationProtectedOrganizationSettingsMotivationCelebrationRouteImport } from './routes/_organization-protected/$organization/settings/motivation-celebration'
+import { Route as OrganizationProtectedOrganizationSettingsSoundSettingsIndexRouteImport } from './routes/_organization-protected/$organization/settings/sound-settings/index'
 import { Route as OrganizationProtectedOrganizationSettingsBillingSubscriptionIndexRouteImport } from './routes/_organization-protected/$organization/settings/billing-subscription/index'
+import { Route as OrganizationProtectedOrganizationSettingsSoundSettingsManageSoundsRouteImport } from './routes/_organization-protected/$organization/settings/sound-settings/manage-sounds'
 import { Route as OrganizationProtectedOrganizationSettingsOrganizationSettingsSetupAndIntegrationsRouteImport } from './routes/_organization-protected/$organization/settings/organization-settings/setup-and-integrations'
 import { Route as OrganizationProtectedOrganizationSettingsOrganizationSettingsOrganizationInformationRouteImport } from './routes/_organization-protected/$organization/settings/organization-settings/organization-information'
 import { Route as OrganizationProtectedOrganizationSettingsOrganizationSettingsOperatingHoursRouteImport } from './routes/_organization-protected/$organization/settings/organization-settings/operating-hours'
@@ -164,6 +167,14 @@ const OrganizationProtectedOrganizationSettingsQuickRepliesRoute =
     path: '/quick-replies',
     getParentRoute: () => OrganizationProtectedOrganizationSettingsRoute,
   } as any)
+const OrganizationProtectedOrganizationSettingsNotificationsSettingsRoute =
+  OrganizationProtectedOrganizationSettingsNotificationsSettingsRouteImport.update(
+    {
+      id: '/notifications-settings',
+      path: '/notifications-settings',
+      getParentRoute: () => OrganizationProtectedOrganizationSettingsRoute,
+    } as any,
+  )
 const OrganizationProtectedOrganizationSettingsMotivationCelebrationRoute =
   OrganizationProtectedOrganizationSettingsMotivationCelebrationRouteImport.update(
     {
@@ -172,11 +183,27 @@ const OrganizationProtectedOrganizationSettingsMotivationCelebrationRoute =
       getParentRoute: () => OrganizationProtectedOrganizationSettingsRoute,
     } as any,
   )
+const OrganizationProtectedOrganizationSettingsSoundSettingsIndexRoute =
+  OrganizationProtectedOrganizationSettingsSoundSettingsIndexRouteImport.update(
+    {
+      id: '/sound-settings/',
+      path: '/sound-settings/',
+      getParentRoute: () => OrganizationProtectedOrganizationSettingsRoute,
+    } as any,
+  )
 const OrganizationProtectedOrganizationSettingsBillingSubscriptionIndexRoute =
   OrganizationProtectedOrganizationSettingsBillingSubscriptionIndexRouteImport.update(
     {
       id: '/billing-subscription/',
       path: '/billing-subscription/',
+      getParentRoute: () => OrganizationProtectedOrganizationSettingsRoute,
+    } as any,
+  )
+const OrganizationProtectedOrganizationSettingsSoundSettingsManageSoundsRoute =
+  OrganizationProtectedOrganizationSettingsSoundSettingsManageSoundsRouteImport.update(
+    {
+      id: '/sound-settings/manage-sounds',
+      path: '/sound-settings/manage-sounds',
       getParentRoute: () => OrganizationProtectedOrganizationSettingsRoute,
     } as any,
   )
@@ -300,6 +327,7 @@ export interface FileRoutesByFullPath {
   '/$organization/ticket': typeof OrganizationProtectedOrganizationTicketRoute
   '/$organization/visitor': typeof OrganizationProtectedOrganizationVisitorRoute
   '/$organization/settings/motivation-celebration': typeof OrganizationProtectedOrganizationSettingsMotivationCelebrationRouteWithChildren
+  '/$organization/settings/notifications-settings': typeof OrganizationProtectedOrganizationSettingsNotificationsSettingsRoute
   '/$organization/settings/quick-replies': typeof OrganizationProtectedOrganizationSettingsQuickRepliesRoute
   '/$organization/settings/team-management': typeof OrganizationProtectedOrganizationSettingsTeamManagementRoute
   '/$organization/settings/account-settings/account-information': typeof OrganizationProtectedOrganizationSettingsAccountSettingsAccountInformationRoute
@@ -314,7 +342,9 @@ export interface FileRoutesByFullPath {
   '/$organization/settings/organization-settings/operating-hours': typeof OrganizationProtectedOrganizationSettingsOrganizationSettingsOperatingHoursRoute
   '/$organization/settings/organization-settings/organization-information': typeof OrganizationProtectedOrganizationSettingsOrganizationSettingsOrganizationInformationRoute
   '/$organization/settings/organization-settings/setup-and-integrations': typeof OrganizationProtectedOrganizationSettingsOrganizationSettingsSetupAndIntegrationsRoute
+  '/$organization/settings/sound-settings/manage-sounds': typeof OrganizationProtectedOrganizationSettingsSoundSettingsManageSoundsRoute
   '/$organization/settings/billing-subscription/': typeof OrganizationProtectedOrganizationSettingsBillingSubscriptionIndexRoute
+  '/$organization/settings/sound-settings/': typeof OrganizationProtectedOrganizationSettingsSoundSettingsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -337,6 +367,7 @@ export interface FileRoutesByTo {
   '/$organization/ticket': typeof OrganizationProtectedOrganizationTicketRoute
   '/$organization/visitor': typeof OrganizationProtectedOrganizationVisitorRoute
   '/$organization/settings/motivation-celebration': typeof OrganizationProtectedOrganizationSettingsMotivationCelebrationRouteWithChildren
+  '/$organization/settings/notifications-settings': typeof OrganizationProtectedOrganizationSettingsNotificationsSettingsRoute
   '/$organization/settings/quick-replies': typeof OrganizationProtectedOrganizationSettingsQuickRepliesRoute
   '/$organization/settings/team-management': typeof OrganizationProtectedOrganizationSettingsTeamManagementRoute
   '/$organization/settings/account-settings/account-information': typeof OrganizationProtectedOrganizationSettingsAccountSettingsAccountInformationRoute
@@ -351,7 +382,9 @@ export interface FileRoutesByTo {
   '/$organization/settings/organization-settings/operating-hours': typeof OrganizationProtectedOrganizationSettingsOrganizationSettingsOperatingHoursRoute
   '/$organization/settings/organization-settings/organization-information': typeof OrganizationProtectedOrganizationSettingsOrganizationSettingsOrganizationInformationRoute
   '/$organization/settings/organization-settings/setup-and-integrations': typeof OrganizationProtectedOrganizationSettingsOrganizationSettingsSetupAndIntegrationsRoute
+  '/$organization/settings/sound-settings/manage-sounds': typeof OrganizationProtectedOrganizationSettingsSoundSettingsManageSoundsRoute
   '/$organization/settings/billing-subscription': typeof OrganizationProtectedOrganizationSettingsBillingSubscriptionIndexRoute
+  '/$organization/settings/sound-settings': typeof OrganizationProtectedOrganizationSettingsSoundSettingsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -376,6 +409,7 @@ export interface FileRoutesById {
   '/_organization-protected/$organization/ticket': typeof OrganizationProtectedOrganizationTicketRoute
   '/_organization-protected/$organization/visitor': typeof OrganizationProtectedOrganizationVisitorRoute
   '/_organization-protected/$organization/settings/motivation-celebration': typeof OrganizationProtectedOrganizationSettingsMotivationCelebrationRouteWithChildren
+  '/_organization-protected/$organization/settings/notifications-settings': typeof OrganizationProtectedOrganizationSettingsNotificationsSettingsRoute
   '/_organization-protected/$organization/settings/quick-replies': typeof OrganizationProtectedOrganizationSettingsQuickRepliesRoute
   '/_organization-protected/$organization/settings/team-management': typeof OrganizationProtectedOrganizationSettingsTeamManagementRoute
   '/_organization-protected/$organization/settings/account-settings/account-information': typeof OrganizationProtectedOrganizationSettingsAccountSettingsAccountInformationRoute
@@ -390,7 +424,9 @@ export interface FileRoutesById {
   '/_organization-protected/$organization/settings/organization-settings/operating-hours': typeof OrganizationProtectedOrganizationSettingsOrganizationSettingsOperatingHoursRoute
   '/_organization-protected/$organization/settings/organization-settings/organization-information': typeof OrganizationProtectedOrganizationSettingsOrganizationSettingsOrganizationInformationRoute
   '/_organization-protected/$organization/settings/organization-settings/setup-and-integrations': typeof OrganizationProtectedOrganizationSettingsOrganizationSettingsSetupAndIntegrationsRoute
+  '/_organization-protected/$organization/settings/sound-settings/manage-sounds': typeof OrganizationProtectedOrganizationSettingsSoundSettingsManageSoundsRoute
   '/_organization-protected/$organization/settings/billing-subscription/': typeof OrganizationProtectedOrganizationSettingsBillingSubscriptionIndexRoute
+  '/_organization-protected/$organization/settings/sound-settings/': typeof OrganizationProtectedOrganizationSettingsSoundSettingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -415,6 +451,7 @@ export interface FileRouteTypes {
     | '/$organization/ticket'
     | '/$organization/visitor'
     | '/$organization/settings/motivation-celebration'
+    | '/$organization/settings/notifications-settings'
     | '/$organization/settings/quick-replies'
     | '/$organization/settings/team-management'
     | '/$organization/settings/account-settings/account-information'
@@ -429,7 +466,9 @@ export interface FileRouteTypes {
     | '/$organization/settings/organization-settings/operating-hours'
     | '/$organization/settings/organization-settings/organization-information'
     | '/$organization/settings/organization-settings/setup-and-integrations'
+    | '/$organization/settings/sound-settings/manage-sounds'
     | '/$organization/settings/billing-subscription/'
+    | '/$organization/settings/sound-settings/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -452,6 +491,7 @@ export interface FileRouteTypes {
     | '/$organization/ticket'
     | '/$organization/visitor'
     | '/$organization/settings/motivation-celebration'
+    | '/$organization/settings/notifications-settings'
     | '/$organization/settings/quick-replies'
     | '/$organization/settings/team-management'
     | '/$organization/settings/account-settings/account-information'
@@ -466,7 +506,9 @@ export interface FileRouteTypes {
     | '/$organization/settings/organization-settings/operating-hours'
     | '/$organization/settings/organization-settings/organization-information'
     | '/$organization/settings/organization-settings/setup-and-integrations'
+    | '/$organization/settings/sound-settings/manage-sounds'
     | '/$organization/settings/billing-subscription'
+    | '/$organization/settings/sound-settings'
   id:
     | '__root__'
     | '/'
@@ -490,6 +532,7 @@ export interface FileRouteTypes {
     | '/_organization-protected/$organization/ticket'
     | '/_organization-protected/$organization/visitor'
     | '/_organization-protected/$organization/settings/motivation-celebration'
+    | '/_organization-protected/$organization/settings/notifications-settings'
     | '/_organization-protected/$organization/settings/quick-replies'
     | '/_organization-protected/$organization/settings/team-management'
     | '/_organization-protected/$organization/settings/account-settings/account-information'
@@ -504,7 +547,9 @@ export interface FileRouteTypes {
     | '/_organization-protected/$organization/settings/organization-settings/operating-hours'
     | '/_organization-protected/$organization/settings/organization-settings/organization-information'
     | '/_organization-protected/$organization/settings/organization-settings/setup-and-integrations'
+    | '/_organization-protected/$organization/settings/sound-settings/manage-sounds'
     | '/_organization-protected/$organization/settings/billing-subscription/'
+    | '/_organization-protected/$organization/settings/sound-settings/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -671,6 +716,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrganizationProtectedOrganizationSettingsQuickRepliesRouteImport
       parentRoute: typeof OrganizationProtectedOrganizationSettingsRoute
     }
+    '/_organization-protected/$organization/settings/notifications-settings': {
+      id: '/_organization-protected/$organization/settings/notifications-settings'
+      path: '/notifications-settings'
+      fullPath: '/$organization/settings/notifications-settings'
+      preLoaderRoute: typeof OrganizationProtectedOrganizationSettingsNotificationsSettingsRouteImport
+      parentRoute: typeof OrganizationProtectedOrganizationSettingsRoute
+    }
     '/_organization-protected/$organization/settings/motivation-celebration': {
       id: '/_organization-protected/$organization/settings/motivation-celebration'
       path: '/motivation-celebration'
@@ -678,11 +730,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrganizationProtectedOrganizationSettingsMotivationCelebrationRouteImport
       parentRoute: typeof OrganizationProtectedOrganizationSettingsRoute
     }
+    '/_organization-protected/$organization/settings/sound-settings/': {
+      id: '/_organization-protected/$organization/settings/sound-settings/'
+      path: '/sound-settings'
+      fullPath: '/$organization/settings/sound-settings/'
+      preLoaderRoute: typeof OrganizationProtectedOrganizationSettingsSoundSettingsIndexRouteImport
+      parentRoute: typeof OrganizationProtectedOrganizationSettingsRoute
+    }
     '/_organization-protected/$organization/settings/billing-subscription/': {
       id: '/_organization-protected/$organization/settings/billing-subscription/'
       path: '/billing-subscription'
       fullPath: '/$organization/settings/billing-subscription/'
       preLoaderRoute: typeof OrganizationProtectedOrganizationSettingsBillingSubscriptionIndexRouteImport
+      parentRoute: typeof OrganizationProtectedOrganizationSettingsRoute
+    }
+    '/_organization-protected/$organization/settings/sound-settings/manage-sounds': {
+      id: '/_organization-protected/$organization/settings/sound-settings/manage-sounds'
+      path: '/sound-settings/manage-sounds'
+      fullPath: '/$organization/settings/sound-settings/manage-sounds'
+      preLoaderRoute: typeof OrganizationProtectedOrganizationSettingsSoundSettingsManageSoundsRouteImport
       parentRoute: typeof OrganizationProtectedOrganizationSettingsRoute
     }
     '/_organization-protected/$organization/settings/organization-settings/setup-and-integrations': {
@@ -792,6 +858,7 @@ const OrganizationProtectedOrganizationSettingsMotivationCelebrationRouteWithChi
 
 interface OrganizationProtectedOrganizationSettingsRouteChildren {
   OrganizationProtectedOrganizationSettingsMotivationCelebrationRoute: typeof OrganizationProtectedOrganizationSettingsMotivationCelebrationRouteWithChildren
+  OrganizationProtectedOrganizationSettingsNotificationsSettingsRoute: typeof OrganizationProtectedOrganizationSettingsNotificationsSettingsRoute
   OrganizationProtectedOrganizationSettingsQuickRepliesRoute: typeof OrganizationProtectedOrganizationSettingsQuickRepliesRoute
   OrganizationProtectedOrganizationSettingsTeamManagementRoute: typeof OrganizationProtectedOrganizationSettingsTeamManagementRoute
   OrganizationProtectedOrganizationSettingsAccountSettingsAccountInformationRoute: typeof OrganizationProtectedOrganizationSettingsAccountSettingsAccountInformationRoute
@@ -804,13 +871,17 @@ interface OrganizationProtectedOrganizationSettingsRouteChildren {
   OrganizationProtectedOrganizationSettingsOrganizationSettingsOperatingHoursRoute: typeof OrganizationProtectedOrganizationSettingsOrganizationSettingsOperatingHoursRoute
   OrganizationProtectedOrganizationSettingsOrganizationSettingsOrganizationInformationRoute: typeof OrganizationProtectedOrganizationSettingsOrganizationSettingsOrganizationInformationRoute
   OrganizationProtectedOrganizationSettingsOrganizationSettingsSetupAndIntegrationsRoute: typeof OrganizationProtectedOrganizationSettingsOrganizationSettingsSetupAndIntegrationsRoute
+  OrganizationProtectedOrganizationSettingsSoundSettingsManageSoundsRoute: typeof OrganizationProtectedOrganizationSettingsSoundSettingsManageSoundsRoute
   OrganizationProtectedOrganizationSettingsBillingSubscriptionIndexRoute: typeof OrganizationProtectedOrganizationSettingsBillingSubscriptionIndexRoute
+  OrganizationProtectedOrganizationSettingsSoundSettingsIndexRoute: typeof OrganizationProtectedOrganizationSettingsSoundSettingsIndexRoute
 }
 
 const OrganizationProtectedOrganizationSettingsRouteChildren: OrganizationProtectedOrganizationSettingsRouteChildren =
   {
     OrganizationProtectedOrganizationSettingsMotivationCelebrationRoute:
       OrganizationProtectedOrganizationSettingsMotivationCelebrationRouteWithChildren,
+    OrganizationProtectedOrganizationSettingsNotificationsSettingsRoute:
+      OrganizationProtectedOrganizationSettingsNotificationsSettingsRoute,
     OrganizationProtectedOrganizationSettingsQuickRepliesRoute:
       OrganizationProtectedOrganizationSettingsQuickRepliesRoute,
     OrganizationProtectedOrganizationSettingsTeamManagementRoute:
@@ -835,8 +906,12 @@ const OrganizationProtectedOrganizationSettingsRouteChildren: OrganizationProtec
       OrganizationProtectedOrganizationSettingsOrganizationSettingsOrganizationInformationRoute,
     OrganizationProtectedOrganizationSettingsOrganizationSettingsSetupAndIntegrationsRoute:
       OrganizationProtectedOrganizationSettingsOrganizationSettingsSetupAndIntegrationsRoute,
+    OrganizationProtectedOrganizationSettingsSoundSettingsManageSoundsRoute:
+      OrganizationProtectedOrganizationSettingsSoundSettingsManageSoundsRoute,
     OrganizationProtectedOrganizationSettingsBillingSubscriptionIndexRoute:
       OrganizationProtectedOrganizationSettingsBillingSubscriptionIndexRoute,
+    OrganizationProtectedOrganizationSettingsSoundSettingsIndexRoute:
+      OrganizationProtectedOrganizationSettingsSoundSettingsIndexRoute,
   }
 
 const OrganizationProtectedOrganizationSettingsRouteWithChildren =
