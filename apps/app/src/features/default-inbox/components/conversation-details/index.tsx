@@ -8,6 +8,7 @@ import { LeadType } from "./lead-type-accordion";
 import { Notes } from "./notes-accordion";
 import { VisitInformation } from "./visit-information-accordion";
 import { VisitedSites } from "./visited-sites-accordion";
+import { useConversationItem } from "../../hooks/custom";
 import { FormInput, FormWrapper } from "@package/form";
 import { useForm } from "@package/form";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, Icon } from "@package/ui";
@@ -24,6 +25,7 @@ const editSchema = z.object({
 type UserInfo = { name: string; email: string; phone: string; city: string; country: string; timezone: string };
 
 export function ConversationDetails() {
+	const { value: conversationUuid } = useConversationItem();
 	const [userInfo, setUserInfo] = useState<UserInfo>({
 		name: "John Doe",
 		email: "john@example.com",
@@ -51,14 +53,14 @@ export function ConversationDetails() {
 							content: <UserInfoContent info={userInfo} />,
 						},
 						{
-							title: <Typography.T5 weight="medium" className="text-gray-600">Lead Type</Typography.T5>,
+							title: <LeadType.Trigger />,
 							value: "lead-type",
-							content: <LeadType />,
+							content: <LeadType.Content conversationUuid={conversationUuid ?? ""} />,
 						},
 						{
-							title: <Typography.T5 weight="medium" className="text-gray-600">Add Tags</Typography.T5>,
+							title: <AddTags.Trigger />,
 							value: "add-tags",
-							content: <AddTags />,
+							content: <AddTags.Content conversationUuid={conversationUuid ?? ""} />,
 						},
 						{
 							title: <Typography.T5 weight="medium" className="text-gray-600">Company Details</Typography.T5>,
