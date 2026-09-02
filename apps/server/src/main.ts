@@ -3,7 +3,7 @@ import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import cookieParser from "cookie-parser";
-import { AppModule } from "./app.module";
+import { AppModule, ObserveInstrument } from "./app.module";
 import { HttpExceptionFilter } from "./common/filters/http-exception.filter";
 import { ResponseInterceptor } from "./common/interceptor/response.interceptor";
 
@@ -46,7 +46,9 @@ function getServerPort(): number {
 }
 
 async function bootstrap() {
-	const app = await NestFactory.create(AppModule);
+	const app = await NestFactory.create(AppModule, {
+    instrument: ObserveInstrument,
+  });
 
 	app.enableCors({
 		origin: getCorsOrigins(),
