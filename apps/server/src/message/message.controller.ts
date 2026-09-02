@@ -115,18 +115,18 @@ export class MessageController {
 	}
 
 	@Get()
-	@ApiOperation({ summary: 'List messages in a conversation' })
+	@ApiOperation({ summary: 'List messages in a conversation (cursor pagination)' })
 	@ApiParam({ name: 'conversationId', description: 'Conversation ID' })
 	@ApiResponse({ status: 200, description: 'Messages returned' })
 	findByConversation(
 		@Param("conversationId") conversationId: string,
 		@Query() query: ListMessagesDto,
 	) {
-		return this.messageService.findByConversation(
-			conversationId,
-			query.page ?? 1,
-			query.limit ?? 50,
-		);
+		return this.messageService.findByConversation(conversationId, {
+			limit: query.limit,
+			cursor: query.cursor,
+			direction: query.direction,
+		});
 	}
 
 	@Post("read")

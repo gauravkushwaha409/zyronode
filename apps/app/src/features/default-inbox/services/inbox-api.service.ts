@@ -99,6 +99,17 @@ class InboxApiService extends BaseAPIService {
       axiosConfiguration,
     );
   }
+
+  async getMessages(
+    conversationId: string,
+    filters?: CursorPaginationParams,
+    axiosConfiguration?: AxiosRequestConfig,
+  ) {
+    return super.get<{ messages: InboxMessage[]; pagination: import("@/types/cursor-pagination.types").CursorPaginationMeta }>(
+      CONFIG.ENDPOINTS.INBOX.MESSAGES(conversationId),
+      { params: { ...filters }, ...axiosConfiguration },
+    );
+  }
 }
 
 export const inboxApiService = new InboxApiService(apiClient);
