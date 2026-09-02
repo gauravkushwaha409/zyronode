@@ -30,6 +30,7 @@ export function TextEditor({
     handleSend,
     handleClose,
     isPending,
+    voice,
   } = useTextEditor({ conversationUUID, organizationId });
 
   return (
@@ -47,6 +48,17 @@ export function TextEditor({
             editorRef.current = editor;
           }}
           plugins={<EnterToSendPlugin onSubmit={handleSend} />}
+          VoiceMessageProps={{
+            isRecording: voice.isRecording,
+            isPaused: voice.isPaused,
+            elapsedSeconds: voice.elapsedSeconds,
+            amplitudeHistory: voice.amplitudeHistory,
+            filledBars: voice.filledBars,
+            onPause: voice.onPause,
+            onResume: voice.onResume,
+            onCancel: voice.onCancel,
+            onSend: voice.onSend,
+          }}
           rightToolbarProps={{
             replyMenuPopoverProps: {
               requestEmail: { onClick: () => {} },
@@ -61,6 +73,9 @@ export function TextEditor({
             sendButtonProps: {
               onClick: handleSend,
               disabled: isPending,
+            },
+            audioButtonProps: {
+              onClick: voice.onStart,
             },
           }}
           replyMessageProps={{
