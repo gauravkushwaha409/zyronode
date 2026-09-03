@@ -1,10 +1,12 @@
 import { Button, DropdownWrapper, useDropdownWrapper } from '@package/ui';
 import { useState } from 'react';
 
-export function ConversationHeaderAction({
+export function ConversationAction({
   triggerIconProps,
+  conversationId,
 }: {
-  triggerIconProps?: Pick<React.ComponentProps<typeof Button>, 'size' | 'className' | 'icon'>;
+  triggerIconProps?: Pick<React.ComponentProps<typeof Button>, 'size' | 'icon'>;
+  conversationId?: string;
 }) {
   const [isSnoozed] = useState(false);
   const [isBanned] = useState(false);
@@ -33,6 +35,9 @@ export function ConversationHeaderAction({
     ],
   });
 
+  // conversationId is available for wiring mutations without duplicating logic
+  void conversationId;
+
   return (
     <div className="relative">
       <DropdownWrapper
@@ -42,7 +47,6 @@ export function ConversationHeaderAction({
             icon={triggerIconProps?.icon || 'vertical-3-dot-menu'}
             variant="ghost"
             size={triggerIconProps?.size || 'icon-lg'}
-            className={triggerIconProps?.className}
             aria-expanded={isOpen}
           />
         )}
@@ -60,3 +64,6 @@ export function ConversationHeaderAction({
     </div>
   );
 }
+
+// Back-compat alias — will be removed after migration
+export const ConversationHeaderAction = ConversationAction;
