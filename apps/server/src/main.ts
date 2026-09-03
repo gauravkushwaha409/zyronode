@@ -20,7 +20,7 @@ function getCorsOrigins(): string[] {
 	const origins = new Set<string>([
 		`http://localhost:${appPort}`,
 		`http://localhost:${chatWidgetPort}`,
-		"http://localhost:4001", // legacy widget preview
+		"http://localhost:4100",
 	]);
 	if (viteAppUrl) {
 		try {
@@ -46,9 +46,14 @@ function getServerPort(): number {
 }
 
 async function bootstrap() {
+	const normalize = (v?: string) => v?.replace(/\$\$/g, "$");
+	const hasObserveCreds =
+		!!normalize(process.env.OBSERVE_APP_KEY) &&
+		!!normalize(process.env.OBSERVE_APP_SECRET) 
+		
 	const app = await NestFactory.create(AppModule, {
-    instrument: ObserveInstrument,
-  });
+		...(hasObserveCreds ? { instrument: ObserveInstrument } : {}),
+	});
 
 	app.enableCors({
 		origin: getCorsOrigins(),

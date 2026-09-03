@@ -17,6 +17,13 @@ import { VisitorModule } from "./visitor/visitor.module";
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
+// docker compose interpolates $VAR in env_file, so .env stores $$ to mean literal $. Normalize for both `pnpm dev` (dotenv) and docker.
+const normalizeObserveValue = (v?: string) => v?.replace(/\$\$/g, "$");
+const observeAppKey = normalizeObserveValue(process.env.OBSERVE_APP_KEY);
+const observeAppSecret = normalizeObserveValue(process.env.OBSERVE_APP_SECRET);
+
+const hasObserveCreds =
+	!!observeAppKey && !!observeAppSecret
 @Module({
 	imports: [
 		CommonModule,
@@ -31,11 +38,15 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
 		InboxModule,
 		SseModule,
 		VisitorModule,
-		ObserveModule.forRoot({
-			appKey: process.env.OBSERVE_APP_KEY ?? "default",
-			appSecret: process.env.OBSERVE_APP_SECRET ?? "default",
-			serviceId: "server",
-		}),
+		...(hasObserveCreds
+			? [
+					ObserveModule.forRoot({
+						appKey: observeAppKey as string,
+						appSecret: observeAppSecret as string,
+						serviceId: "zyro-chat-server",
+					}),
+				]
+			: []),
 	],
 	controllers: [AppController],
 	providers: [AppService],

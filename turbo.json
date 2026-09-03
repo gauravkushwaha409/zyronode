@@ -39,14 +39,15 @@
         "GOOGLE_CLIENT_SECRET",
         "GOOGLE_CALLBACK_URL",
         
-        // Resend email service env variables
         "RESEND_API_KEY",
         "RESEND_FROM_EMAIL",
 
 
-        // Redis env variable
         "REDIS_HOST",
-        "REDIS_PORT"
+        "REDIS_PORT",
+
+        "OBSERVE_APP_KEY" ,
+        "OBSERVE_APP_SECRET"
       ]
     },
     "prisma:migrate": {
