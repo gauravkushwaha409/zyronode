@@ -1,6 +1,8 @@
 import {
+	BadRequestException,
 	Body,
 	Controller,
+	Delete,
 	Get,
 	Param,
 	Post,
@@ -77,5 +79,21 @@ export class InboxController {
 		@CurrentUser("id") userId: string,
 	) {
 		return this.inboxService.reopenConversation(organizationId, id);
+	}
+
+	@Delete("conversations/:id")
+	@ApiOperation({ summary: "Soft delete a conversation (any org member)" })
+	@ApiParam({ name: "id", description: "Conversation ID" })
+	@ApiResponse({ status: 200, description: "Conversation deleted" })
+	@ApiResponse({ status: 404, description: "Conversation not found" })
+	softDeleteConversation(
+		@Param("id") id: string,
+		@Query("organizationId") organizationId: string,
+		@CurrentUser("id") userId: string,
+	) {
+		if (!organizationId) {
+			throw new BadRequestException("organizationId query param is required");
+		}
+		return this.inboxService.softDeleteConversation(organizationId, id, userId);
 	}
 }

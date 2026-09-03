@@ -36,8 +36,8 @@ export class MessageController {
 	private async getOrganizationId(
 		conversationId: string,
 	): Promise<string | null> {
-		const conversation = await this.prisma.conversation.findUnique({
-			where: { id: conversationId },
+		const conversation = await this.prisma.conversation.findFirst({
+			where: { id: conversationId, deletedAt: null },
 			select: { organizationId: true },
 		});
 		return conversation?.organizationId ?? null;

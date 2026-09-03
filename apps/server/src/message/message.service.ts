@@ -34,8 +34,8 @@ export class MessageService {
     senderType: "VISITOR" | "AGENT" | "SYSTEM",
     senderId?: string,
   ) {
-    const conversation = await this.prisma.conversation.findUnique({
-      where: { id: conversationId },
+    const conversation = await this.prisma.conversation.findFirst({
+      where: { id: conversationId, deletedAt: null },
     });
 
     if (!conversation) {
@@ -89,8 +89,8 @@ export class MessageService {
     conversationId: string,
     filters?: { limit?: number; cursor?: string; direction?: "next" | "prev" },
   ) {
-    const conversation = await this.prisma.conversation.findUnique({
-      where: { id: conversationId },
+    const conversation = await this.prisma.conversation.findFirst({
+      where: { id: conversationId, deletedAt: null },
     });
 
     if (!conversation) {

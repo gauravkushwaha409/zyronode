@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 
 function encodeCursor(conversation: { updatedAt: Date; id: string }): string {
@@ -36,7 +36,7 @@ export class InboxService {
     const direction = filters?.direction ?? "next";
     const cursor = filters?.cursor;
 
-    const baseWhere: Record<string, unknown> = { organizationId };
+    const baseWhere: Record<string, unknown> = { organizationId, deletedAt: null };
     if (filters?.status) baseWhere.status = filters.status;
     if (filters?.search) {
       baseWhere.OR = [
@@ -122,7 +122,7 @@ export class InboxService {
 
   async getConversationDetails(organizationId: string, conversationId: string) {
     const conversation = await this.prisma.conversation.findFirst({
-      where: { id: conversationId, organizationId },
+      where: { id: conversationId, organizationId, deletedAt: null },
       include: {
         messages: {
           orderBy: { createdAt: "asc" },
@@ -152,7 +152,7 @@ export class InboxService {
 
   async closeConversation(organizationId: string, conversationId: string) {
     const conversation = await this.prisma.conversation.findFirst({
-      where: { id: conversationId, organizationId },
+      where: { id: conversationId, organizationId, deletedAt: null },
     });
 
     if (!conversation) {
@@ -172,7 +172,7 @@ export class InboxService {
 
   async reopenConversation(organizationId: string, conversationId: string) {
     const conversation = await this.prisma.conversation.findFirst({
-      where: { id: conversationId, organizationId },
+      where: { id: conversationId, organizationId, deletedAt: null },
     });
 
     if (!conversation) {
@@ -187,6 +187,35 @@ export class InboxService {
     return {
       message: "Conversation reopened successfully",
       data: updated,
+    };
+  }
+
+  async softDeleteConversation(organizationId: string, conversationId: string, deletedById?: string) {
+    if (deletedById) {
+      const membership = await this.prisma.organizationMember.findUnique({
+        where: { userId_organizationId: { userId: deletedById, organizationId } },
+      });
+      if (!membership) {
+        throw new ForbiddenException("You are not a member of this organization");
+      }
+    }
+
+    const conversation = await this.prisma.conversation.findFirst({
+      where: { id: conversationId, organizationId, deletedAt: null },
+    });
+
+    if (!conversation) {
+      throw new NotFoundException("Conversation not found");
+    }
+
+    const deleted = await this.prisma.conversation.update({
+      where: { id: conversationId },
+      data: { deletedAt: new Date(), deletedById: deletedById ?? null },
+    });
+
+    return {
+      message: "Conversation deleted successfully",
+      data: deleted,
     };
   }
 }

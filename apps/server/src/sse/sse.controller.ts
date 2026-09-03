@@ -66,8 +66,8 @@ export class SseController {
 		@Param("conversationId") conversationId: string,
 		@Res() res: Response,
 	) {
-		const conversation = await this.prisma.conversation.findUnique({
-			where: { id: conversationId },
+		const conversation = await this.prisma.conversation.findFirst({
+			where: { id: conversationId, deletedAt: null },
 			select: { id: true },
 		});
 		if (!conversation) {
