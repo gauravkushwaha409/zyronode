@@ -1,5 +1,7 @@
 import { Button, DropdownWrapper, useDropdownWrapper } from "@package/ui";
+import { useParams } from "@tanstack/react-router";
 import { useState } from "react";
+import { useConversationDeleteStore } from "../../store/use-conversation-delete.store";
 
 export function ConversationAction({
 	triggerIconProps,
@@ -15,32 +17,47 @@ export function ConversationAction({
 	open?: boolean;
 	onOpenChange?: (open: boolean) => void;
 }) {
-	const [isSnoozed] = useState(false);
-	const [isBanned] = useState(false);
-	const [isSnoozeOpen, setIsSnoozeOpen] = useState(false);
+  const [isSnoozed] = useState(false);
+  const [isBanned] = useState(false);
+  const [isSnoozeOpen, setIsSnoozeOpen] = useState(false);
 
-	const internalDropdown = useDropdownWrapper({
-		items: [
-			{
-				label: isSnoozed ? "Unsnooze" : "Snooze",
-				value: "snooze",
-				leftIcon: { name: "time" },
-				onClick: () => setIsSnoozeOpen((v) => !v),
-			},
-			{
-				label: isBanned ? "Unban Visitor" : "Ban Visitor",
-				value: "ban-ip",
-				leftIcon: { name: "ban-visitor" },
-				onClick: () => {},
-			},
-			{
-				label: "Move to inbox",
-				value: "move-to-inbox",
-				leftIcon: { name: "inbox" },
-				onClick: () => {},
-			},
-		],
-	});
+  const params = useParams({ strict: false }) as { organization?: string };
+  const organizationId = params.organization ?? "";
+  const { setTarget } = useConversationDeleteStore();
+
+  const internalDropdown = useDropdownWrapper({
+    items: [
+      {
+        label: isSnoozed ? "Unsnooze" : "Snooze",
+        value: "snooze",
+        leftIcon: { name: "time" },
+        onClick: () => setIsSnoozeOpen((v) => !v),
+      },
+      {
+        label: isBanned ? "Unban Visitor" : "Ban Visitor",
+        value: "ban-ip",
+        leftIcon: { name: "ban-visitor" },
+        onClick: () => {},
+      },
+      {
+        label: "Move to inbox",
+        value: "move-to-inbox",
+        leftIcon: { name: "inbox" },
+        onClick: () => {},
+      },
+      {
+        label: "Delete",
+        value: "delete",
+        leftIcon: { name: "delete" },
+        variant: "danger",
+        onClick: (e: React.MouseEvent) => {
+          e.preventDefault();
+          if (!conversationId || !organizationId) return;
+          setTarget({ conversationId, organizationId });
+        },
+      },
+    ],
+  });
 
 	// Allow parent (e.g. list item whole-row hover) to control open state
 	const dropdown =
@@ -55,10 +72,10 @@ export function ConversationAction({
 	// conversationId is available for wiring mutations without duplicating logic
 	void conversationId;
 
-	return (
-		<div className="relative">
-			<DropdownWrapper
-				dropdown={dropdown}
+  return (
+    <div className="relative">
+      <DropdownWrapper
+        dropdown={dropdown}
 				TriggerButton={(props) => {
 					const { className, ...restProps } = props ?? {};
 					return (
@@ -71,7 +88,7 @@ export function ConversationAction({
 						/>
 					);
 				}}
-			/>
+      />
 			{isSnoozeOpen && (
 				<div className="absolute right-0 top-full z-50 mt-2 w-64 rounded-xl border bg-white p-4 shadow-lg">
 					<p className="typo-t3 font-medium">Snooze conversation</p>

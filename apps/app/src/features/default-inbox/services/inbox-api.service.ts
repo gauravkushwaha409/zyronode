@@ -93,6 +93,20 @@ class InboxApiService extends BaseAPIService {
     );
   }
 
+  async softDeleteConversation(
+    conversationId: string,
+    organizationId: string,
+    axiosConfiguration?: AxiosRequestConfig,
+  ) {
+    return super.delete<{ id: string }>(
+      `${CONFIG.ENDPOINTS.INBOX.CONVERSATION}/${conversationId}`,
+      {
+        params: { organizationId },
+        ...axiosConfiguration,
+      },
+    );
+  }
+
   async unreadStats(axiosConfiguration?: AxiosRequestConfig) {
     return super.get<{ conversations_with_unread: number; total_unread: number }>(
       CONFIG.ENDPOINTS.INBOX.UNREAD_STATS,

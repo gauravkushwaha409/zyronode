@@ -1,4 +1,5 @@
 import { Conversation, ConversationDetails, ConversationList, InboxLayout } from '@/features/default-inbox';
+import { DeleteConversationDialog } from '@/features/default-inbox/components/conversation/delete-conversation-dialog';
 import { InboxSocketProvider } from '@/features/default-inbox/providers';
 import { InboxSseProvider } from '@/features/sse';
 
@@ -15,6 +16,7 @@ export function DefaultInboxPage({ organizationId }: DefaultInboxPageProps) {
           <Conversation organizationId={organizationId} />
           <ConversationDetails />
         </InboxLayout>
+        <DeleteConversationDialog />
       </InboxSocketProvider>
     </InboxSseProvider>
   );
