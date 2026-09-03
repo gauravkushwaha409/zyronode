@@ -6,31 +6,6 @@ import { ConversationAction } from "../conversation/conversation-action";
 
 type ConversationListItemProps = InboxConversationListItem;
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Separated option menu component (same file) — reuses shared
-// apps/app/src/features/default-inbox/components/conversation/conversation-action.tsx
-// ─────────────────────────────────────────────────────────────────────────────
-type ConversationListItemOptionsProps = {
-	conversationId: string;
-};
-
-function ConversationListItemOptions({
-	conversationId,
-}: ConversationListItemOptionsProps) {
-	return (
-		<div
-			onClick={(e) => e.stopPropagation()}
-			onMouseDown={(e) => e.stopPropagation()}
-		>
-			<ConversationAction
-				conversationId={conversationId}
-				triggerIconProps={{
-					size: "icon-sm",
-				}}
-			/>
-		</div>
-	);
-}
 
 export function ConversationListItem(props: ConversationListItemProps) {
 	const { value: selectedId, onChange: selectConversation } =
@@ -50,6 +25,12 @@ export function ConversationListItem(props: ConversationListItemProps) {
 				"group w-full px-3 py-3.5 flex items-center gap-x-2.5 rounded-lg transition-colors cursor-pointer relative",
 				isSelected ? "bg-primary-50" : "hover:bg-gray-50",
 			)}
+			onMouseEnter={() => {
+				// hover listener on whole conversation item — drives group-hover swap via CSS
+			}}
+			onMouseLeave={() => {
+				// keep listener for whole-item hover
+			}}
 		>
 			<button
 				type="button"
@@ -92,7 +73,7 @@ export function ConversationListItem(props: ConversationListItemProps) {
 
 			{/* Right side: timestamp + dot share spot with 3-dot; hidden via opacity to avoid layout shift/flicker */}
 			<div className="shrink-0 flex items-center gap-x-2">
-				<Typography.T6 className="shrink-0 transition-opacity duration-150 group-hover:opacity-0 group-hover:pointer-events-none group-has-[button[aria-expanded=true]]:opacity-0 group-has-[button[aria-expanded=true]]:pointer-events-none">
+				<Typography.T6 className="shrink-0 transition-opacity duration-150 group-hover:opacity-0 group-hover:pointer-events-none">
 					{formatDistanceToNowStrict(new Date(props.lastMessageAt), {
 						addSuffix: false,
 					})
@@ -104,11 +85,11 @@ export function ConversationListItem(props: ConversationListItemProps) {
 						.replace(/ years?/, "y")}
 				</Typography.T6>
 				<div className="relative size-7 flex items-center justify-center shrink-0">
-					{/* Unread dot — same spot as 3-dot, swapped on hover/open */}
+					{/* Unread dot — same spot as 3-dot, swapped on hover */}
 					<div
 						className={cn(
 							"absolute inset-0 flex items-center justify-center transition-opacity duration-150",
-							"group-hover:opacity-0 group-hover:pointer-events-none group-has-[button[aria-expanded=true]]:opacity-0 group-has-[button[aria-expanded=true]]:pointer-events-none",
+							"group-hover:opacity-0 group-hover:pointer-events-none",
 						)}
 						aria-hidden
 					>
@@ -118,8 +99,13 @@ export function ConversationListItem(props: ConversationListItemProps) {
 							<span className="size-1.5" />
 						)}
 					</div>
-					<div className="absolute inset-0 flex items-center justify-center opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto has-[button[aria-expanded=true]]:opacity-100 has-[button[aria-expanded=true]]:pointer-events-auto transition-opacity duration-150">
-						<ConversationListItemOptions conversationId={props.id} />
+					<div className="absolute inset-0 flex items-center justify-center opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity duration-150">
+						<ConversationAction
+							conversationId={props.id}
+							triggerIconProps={{
+								size: "icon-sm",
+							}}
+						/>
 					</div>
 				</div>
 			</div>
