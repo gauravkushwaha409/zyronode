@@ -2,7 +2,10 @@
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
   "globalEnv": [
-    "DATABASE_URL"
+    "DATABASE_URL",
+    "SERVER_PORT",
+    "APP_PORT",
+    "CHAT_WIDGET_PORT"
   ],
   "tasks": {
     "build": {
@@ -19,9 +22,16 @@
       "env": [
         "JWT_SECRET",
         "NODE_ENV",
-        "PORT",
+        "SERVER_PORT",
+        "APP_PORT",
+        "CHAT_WIDGET_PORT",
+        "VITE_PORT",
+        "VITE_CHAT_WIDGET_PORT",
+        "CORS_ORIGINS",
         "DATABASE_URL",
         "VITE_SERVER_URL",
+        "VITE_CHAT_WIDGET_SERVER_URL",
+        "VITE_CHAT_WIDGET_WEBSOCKET_URL",
         "PROXY",
         "VITE_CLOUDFLARE_TURNSTILE_SITE_KEY",
         "VITE_APP_URL",
@@ -29,13 +39,15 @@
         "GOOGLE_CLIENT_SECRET",
         "GOOGLE_CALLBACK_URL",
         
-        // Resend email service env variables
         "RESEND_API_KEY",
         "RESEND_FROM_EMAIL",
 
 
-        // Redis env variable
-        "REDIS_HOST"
+        "REDIS_HOST",
+        "REDIS_PORT",
+
+        "OBSERVE_APP_KEY" ,
+        "OBSERVE_APP_SECRET"
       ]
     },
     "prisma:migrate": {
@@ -52,6 +64,11 @@
       "cache": false,
       "persistent": true,
       "interactive": true
+    },
+    "prisma:reset": {
+      "cache": false,
+      "interactive": true,
+      "env": ["DATABASE_URL"]
     }
   }
 }

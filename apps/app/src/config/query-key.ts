@@ -16,6 +16,9 @@ export const QUERY_KEY = {
 			conversationId: string | null,
 			organizationId: string,
 		) => ["inbox", "conversation", conversationId, organizationId] as const,
+		UNREAD_STATS: ["inbox", "unread-stats"] as const,
+		MESSAGES: (conversationId: string | null, limit?: number) =>
+			["inbox", "messages", conversationId, limit] as const,
 	},
 	VISITOR: {
 		/** Root key - invalidate this to refresh every visitor query at once. */

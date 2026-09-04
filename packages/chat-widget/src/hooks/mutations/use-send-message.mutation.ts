@@ -7,8 +7,23 @@ import type {
 } from "../../types";
 import { applyChatMessageEvent } from "../../utility";
 
-type SendMessageVariables = SendMessagePayload & { conversationId: string };
+type SendMessageVariables = {
+	conversationId: string;
+	payload: SendMessagePayload;
+};
 
+/**
+ * Visitor message mutation — ONLY sends messages.
+ * Conversation creation is handled separately by `ConversationProvider.ensureConversation()`.
+ *
+ * Usage (in ChatWidgetChat.handleSend):
+ *   let activeId = conversationId;
+ *   if (!activeId) activeId = await ensureConversation(); // creates POST /conversations if needed
+ *   sendMessage({ conversationId: activeId, payload })
+ *
+ * This enforces the lazy-conversation rule: POST /conversations never fires on widget open,
+ * only on first message when localStorage has no conversationId.
+ */
 export function useSendMessageMutation() {
 	const queryClient = useQueryClient();
 
@@ -17,7 +32,7 @@ export function useSendMessageMutation() {
 		SendMessageError,
 		SendMessageVariables
 	>(
-		({ conversationId, ...payload }) =>
+		({ conversationId, payload }) =>
 			getWidgetApi().sendVisitorMessage(conversationId, payload),
 		{
 			onSuccess: (response, variables) => {

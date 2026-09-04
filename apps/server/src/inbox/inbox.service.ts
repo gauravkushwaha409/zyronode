@@ -1,5 +1,22 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
+
+function encodeCursor(conversation: { updatedAt: Date; id: string }): string {
+  return Buffer.from(JSON.stringify({ updatedAt: conversation.updatedAt.toISOString(), id: conversation.id })).toString("base64url");
+}
+
+function decodeCursor(cursor: string): { updatedAt: Date; id: string } {
+  try {
+    const json = Buffer.from(cursor, "base64url").toString("utf-8");
+    const parsed = JSON.parse(json) as { updatedAt: string; id: string };
+    if (!parsed.updatedAt || !parsed.id) throw new Error("Invalid cursor payload");
+    const updatedAt = new Date(parsed.updatedAt);
+    if (Number.isNaN(updatedAt.getTime())) throw new Error("Invalid cursor date");
+    return { updatedAt, id: parsed.id };
+  } catch {
+    throw new BadRequestException("Invalid cursor");
+  }
+}
 
 @Injectable()
 export class InboxService {
@@ -10,56 +27,50 @@ export class InboxService {
     filters?: {
       status?: string;
       search?: string;
-      page?: number;
       limit?: number;
+      cursor?: string;
+      direction?: "next" | "prev";
     },
   ) {
-    const page = filters?.page ?? 1;
-    const limit = filters?.limit ?? 20;
-    const skip = (page - 1) * limit;
+    const limit = Math.min(Math.max(filters?.limit ?? 20, 1), 100);
+    const direction = filters?.direction ?? "next";
+    const cursor = filters?.cursor;
 
-    const where: Record<string, unknown> = { organizationId };
-
-    if (filters?.status) {
-      where.status = filters.status;
-    }
-
+    const baseWhere: Record<string, unknown> = { organizationId, deletedAt: null };
+    if (filters?.status) baseWhere.status = filters.status;
     if (filters?.search) {
-      where.OR = [
+      baseWhere.OR = [
         { visitorName: { contains: filters.search, mode: "insensitive" } },
         { visitorEmail: { contains: filters.search, mode: "insensitive" } },
       ];
     }
 
-    const [conversations, total] = await Promise.all([
-      this.prisma.conversation.findMany({
-        where,
-        orderBy: { updatedAt: "desc" },
-        skip,
-        take: limit,
-        include: {
-          messages: {
-            orderBy: { createdAt: "desc" },
-            take: 1,
-            select: {
-              id: true,
-              content: true,
-              senderType: true,
-              messageType: true,
-              createdAt: true,
-            },
-          },
-          _count: {
-            select: {
-              messages: {
-                where: { senderType: "VISITOR", status: { not: "READ" } },
-              },
-            },
-          },
+    let where: Record<string, unknown> = baseWhere;
+    if (cursor) {
+      const { updatedAt: cursorDate, id: cursorId } = decodeCursor(cursor);
+      const cursorWhere =
+        direction === "prev"
+          ? { OR: [{ updatedAt: { gt: cursorDate } }, { updatedAt: cursorDate, id: { gt: cursorId } }] }
+          : { OR: [{ updatedAt: { lt: cursorDate } }, { updatedAt: cursorDate, id: { lt: cursorId } }] };
+      where = { AND: [baseWhere, cursorWhere] };
+    }
+
+    const conversationsPlusOne = await this.prisma.conversation.findMany({
+      where: where as never,
+      orderBy: [{ updatedAt: "desc" }, { id: "desc" }],
+      take: limit + 1,
+      include: {
+        messages: {
+          orderBy: { createdAt: "desc" },
+          take: 1,
+          select: { id: true, content: true, senderType: true, messageType: true, createdAt: true },
         },
-      }),
-      this.prisma.conversation.count({ where }),
-    ]);
+        _count: { select: { messages: { where: { senderType: "VISITOR", status: { not: "READ" } } } } },
+      },
+    });
+
+    const hasExtra = conversationsPlusOne.length > limit;
+    const conversations = hasExtra ? conversationsPlusOne.slice(0, limit) : conversationsPlusOne;
 
     const data = conversations.map((conversation) => {
       const lastMessage = conversation.messages[0] ?? null;
@@ -72,12 +83,7 @@ export class InboxService {
         lastMessageAt: conversation.updatedAt,
         createdAt: conversation.createdAt,
         lastMessage: lastMessage
-          ? {
-              content: lastMessage.content,
-              senderType: lastMessage.senderType,
-              messageType: lastMessage.messageType,
-              createdAt: lastMessage.createdAt,
-            }
+          ? { content: lastMessage.content, senderType: lastMessage.senderType, messageType: lastMessage.messageType, createdAt: lastMessage.createdAt }
           : null,
         unreadCount: conversation._count.messages,
       };
@@ -88,10 +94,27 @@ export class InboxService {
       data: {
         conversations: data,
         pagination: {
-          page,
           limit,
-          total,
-          totalPages: Math.ceil(total / limit),
+          direction,
+          cursor: cursor ?? null,
+          nextCursor:
+            direction === "next"
+              ? hasExtra
+                ? encodeCursor(conversations[conversations.length - 1] as never)
+                : null
+              : conversations.length
+                ? encodeCursor(conversations[conversations.length - 1] as never)
+                : null,
+          prevCursor:
+              direction === "prev"
+                ? hasExtra
+                  ? encodeCursor(conversations[0] as never)
+                  : null
+                : cursor && conversations.length
+                  ? encodeCursor(conversations[0] as never)
+                  : null,
+          hasNext: direction === "next" ? hasExtra : conversations.length > 0,
+          hasPrev: direction === "prev" ? hasExtra : !!cursor,
         },
       },
     };
@@ -99,7 +122,7 @@ export class InboxService {
 
   async getConversationDetails(organizationId: string, conversationId: string) {
     const conversation = await this.prisma.conversation.findFirst({
-      where: { id: conversationId, organizationId },
+      where: { id: conversationId, organizationId, deletedAt: null },
       include: {
         messages: {
           orderBy: { createdAt: "asc" },
@@ -129,7 +152,7 @@ export class InboxService {
 
   async closeConversation(organizationId: string, conversationId: string) {
     const conversation = await this.prisma.conversation.findFirst({
-      where: { id: conversationId, organizationId },
+      where: { id: conversationId, organizationId, deletedAt: null },
     });
 
     if (!conversation) {
@@ -149,7 +172,7 @@ export class InboxService {
 
   async reopenConversation(organizationId: string, conversationId: string) {
     const conversation = await this.prisma.conversation.findFirst({
-      where: { id: conversationId, organizationId },
+      where: { id: conversationId, organizationId, deletedAt: null },
     });
 
     if (!conversation) {
@@ -164,6 +187,35 @@ export class InboxService {
     return {
       message: "Conversation reopened successfully",
       data: updated,
+    };
+  }
+
+  async softDeleteConversation(organizationId: string, conversationId: string, deletedById?: string) {
+    if (deletedById) {
+      const membership = await this.prisma.organizationMember.findUnique({
+        where: { userId_organizationId: { userId: deletedById, organizationId } },
+      });
+      if (!membership) {
+        throw new ForbiddenException("You are not a member of this organization");
+      }
+    }
+
+    const conversation = await this.prisma.conversation.findFirst({
+      where: { id: conversationId, organizationId, deletedAt: null },
+    });
+
+    if (!conversation) {
+      throw new NotFoundException("Conversation not found");
+    }
+
+    const deleted = await this.prisma.conversation.update({
+      where: { id: conversationId },
+      data: { deletedAt: new Date(), deletedById: deletedById ?? null },
+    });
+
+    return {
+      message: "Conversation deleted successfully",
+      data: deleted,
     };
   }
 }

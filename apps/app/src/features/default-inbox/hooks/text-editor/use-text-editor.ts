@@ -6,6 +6,7 @@ import {
   useMessageReplyStore,
 } from '../../store';
 import { useSendAgentMessageMutation } from '../mutations/use-send-agent-message.mutation';
+import { useVoiceRecorder } from '../use-voice-recorder';
 
 interface UseTextEditorOptions {
   conversationUUID: string;
@@ -18,6 +19,7 @@ export function useTextEditor({
 }: UseTextEditorOptions) {
   const [messageType, setMessageType] = useState<'reply' | 'notes'>('reply');
   const editorRef = useRef<LexicalEditor | null>(null);
+  const voice = useVoiceRecorder();
 
   const { mutate: sendMessage, isPending: isSendingMessage } =
     useSendAgentMessageMutation(organizationId);
@@ -92,6 +94,31 @@ export function useTextEditor({
     if (isReplyingToNote) cancelInternalNoteReply();
   }, [isReplyingToMessage, isReplyingToNote, cancelReply, cancelInternalNoteReply]);
 
+  const handleVoiceSend = useCallback(async () => {
+    if (!conversationUUID) return;
+    const result = await voice.stopAndGetBlob();
+    const blob = result?.blob ?? voice.audioBlob;
+    const url = result?.url ?? voice.audioUrl;
+    if (!blob) return;
+    const finalUrl = url ?? URL.createObjectURL(blob);
+    const isInternalNote = messageType === 'notes';
+    sendMessage(
+      {
+        content: `<audio controls src="${finalUrl}"></audio>`,
+        messageType: isInternalNote ? 'INTERNAL_NOTE' : 'TEXT',
+        ...(replyMessage?.uuid && { replyToId: replyMessage.uuid }),
+        ...(!replyMessage?.uuid && replyInternalNote?.uuid && { replyToId: replyInternalNote.uuid }),
+      },
+      {
+        onSuccess: () => {
+          voice.reset();
+          if (isReplyingToMessage) cancelReply();
+          if (isReplyingToNote) cancelInternalNoteReply();
+        },
+      },
+    );
+  }, [conversationUUID, voice, messageType, replyMessage, replyInternalNote, isReplyingToMessage, isReplyingToNote, sendMessage, cancelReply, cancelInternalNoteReply]);
+
   return {
     messageType,
     setMessageType,
@@ -106,5 +133,17 @@ export function useTextEditor({
     handleSend,
     handleClose,
     isPending: isSendingMessage,
+    voice: {
+      isRecording: voice.isRecording,
+      isPaused: voice.isPaused,
+      elapsedSeconds: voice.elapsedSeconds,
+      amplitudeHistory: voice.amplitudeHistory,
+      filledBars: voice.filledBars,
+      onPause: voice.pause,
+      onResume: voice.resume,
+      onCancel: voice.cancel,
+      onSend: handleVoiceSend,
+      onStart: voice.start,
+    },
   };
 }

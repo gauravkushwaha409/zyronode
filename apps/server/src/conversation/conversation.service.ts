@@ -49,9 +49,9 @@ export class ConversationService {
 		}
 	}
 
-	async findById(conversationId: string) {
-		const conversation = await this.prisma.conversation.findUnique({
-			where: { id: conversationId },
+  async findById(conversationId: string) {
+		const conversation = await this.prisma.conversation.findFirst({
+			where: { id: conversationId, deletedAt: null },
 			include: {
 				messages: {
 					orderBy: { createdAt: "desc" },
@@ -85,7 +85,7 @@ export class ConversationService {
 
 	async findByOrganizationId(organizationId: string) {
 		const conversations = await this.prisma.conversation.findMany({
-			where: { organizationId },
+			where: { organizationId, deletedAt: null },
 			orderBy: { updatedAt: "desc" },
 			include: {
 				messages: {
@@ -101,12 +101,12 @@ export class ConversationService {
 		};
 	}
 
-	async updateStatus(
+  async updateStatus(
 		conversationId: string,
 		status: "ACTIVE" | "IDLE" | "CLOSED" | "PENDING",
 	) {
-		const conversation = await this.prisma.conversation.findUnique({
-			where: { id: conversationId },
+		const conversation = await this.prisma.conversation.findFirst({
+			where: { id: conversationId, deletedAt: null },
 		});
 
 		if (!conversation) {

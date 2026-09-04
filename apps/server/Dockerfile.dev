@@ -11,4 +11,5 @@ RUN pnpm install
 
 COPY . .
 
+# Port is configurable via SERVER_PORT env (main.ts reads SERVER_PORT, docker-compose maps ${SERVER_PORT})
 EXPOSE 8000

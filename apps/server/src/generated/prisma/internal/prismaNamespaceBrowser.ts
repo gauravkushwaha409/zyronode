@@ -201,6 +201,8 @@ export const ConversationScalarFieldEnum = {
   userAgent: 'userAgent',
   sourceUrl: 'sourceUrl',
   metadata: 'metadata',
+  deletedAt: 'deletedAt',
+  deletedById: 'deletedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

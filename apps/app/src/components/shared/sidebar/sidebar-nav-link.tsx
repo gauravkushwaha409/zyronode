@@ -1,4 +1,4 @@
-import { Badge, cn, Icon, Typography } from "@package/ui";
+import { cn, Icon, Typography } from "@package/ui";
 import { Link } from "@tanstack/react-router";
 import { type SidebarItem } from "./sidebar.types";
 
@@ -54,12 +54,15 @@ export function NavLink({ item, pathname, open, isFloating }: NavLinkProps) {
 				>
 					{item.label}
 				</Typography.T3>
-				{!!item.badge && (
-					<Badge size="xs" radius="rounded" variant="secondary" className="shrink-0">
-						{item.badge}
-					</Badge>
+				{item.badge && open && (
+					<span className="h-5 border bg-white-base ml-auto rounded-[6px] px-1.5 flex items-center shadow-[0px_4px_12px_rgba(0,0,0,0.04)] border-gray-border-200 text-gray-500 justify-center backdrop-blur-xl">
+						<Typography.Cap weight="medium">{item.badge}</Typography.Cap>
+					</span>
 				)}
 			</span>
+			{item.badge && !open && (
+				<Icon name="dot" className="absolute text-warning-600 bottom-1 right-1" size={4} />
+			)}
 		</Link>
 	);
 }

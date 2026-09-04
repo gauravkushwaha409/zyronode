@@ -42,4 +42,5 @@ COPY packages/typescript-config/base.json \
      packages/typescript-config/react-library.json \
      ./packages/typescript-config/
 
+# Port is configurable via APP_PORT env (vite.config.ts reads APP_PORT, docker-compose maps ${APP_PORT})
 EXPOSE 3000

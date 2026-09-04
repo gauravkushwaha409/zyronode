@@ -9,19 +9,19 @@ datasource db {
 }
 
 model User {
-  id        String  @id @default(cuid())
-  email     String  @unique
-  password  String?
-  firstName String?
-  lastName  String?
-  profile   String?
-  googleId  String? @unique
-  authProvider String @default("email")
+  id              String  @id @default(uuid())
+  email           String  @unique
+  password        String?
+  firstName       String?
+  lastName        String?
+  profile         String?
+  googleId        String? @unique
+  authProvider    String  @default("email")
   isEmailVerified Boolean @default(false)
 
-  theme          String?  @default("light")
+  theme          String? @default("light")
   referralSource String?
-  isOnboarded    Boolean  @default(false)
+  isOnboarded    Boolean @default(false)
 
   // relation with organization
   organizations OrganizationMember[]
@@ -30,21 +30,22 @@ model User {
 
   assignedVisitors Visitor[]     @relation("VisitorAssignedAgent")
   visitorNotes     VisitorNote[] @relation("VisitorNoteAuthor")
+  deletedConversations Conversation[] @relation("ConversationDeletedBy")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 }
 
 model Organization {
-  id       String               @id @default(uuid())
-  name     String
-  website  String? // their public website
-  phone    String?
-  industry String?
-  plan     PlanType             @default(FREE)
-  isActive Boolean              @default(true)
-  visitors Visitor[]
-  members  OrganizationMember[]
+  id            String               @id @default(uuid())
+  name          String
+  website       String? // their public website
+  phone         String?
+  industry      String?
+  plan          PlanType             @default(FREE)
+  isActive      Boolean              @default(true)
+  visitors      Visitor[]
+  members       OrganizationMember[]
   conversations Conversation[]
 
   // back-relation for lastOrg
@@ -213,57 +214,62 @@ enum MessageDeliveryStatus {
 }
 
 model Conversation {
-  id             String             @id @default(cuid())
+  id             String       @id @default(uuid())
   organizationId String
-  organization   Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   // optional link to the tracked visitor; visitorName/Email stay as the
   // denormalised fallback for conversations with no visitor row.
   visitorId String?
   visitor   Visitor? @relation(fields: [visitorId], references: [id], onDelete: SetNull)
 
-  status         ConversationStatus @default(ACTIVE)
-  channel        String             @default("web")
-  visitorName    String?
-  visitorEmail   String?
-  visitorPhone   String?
-  ipAddress      String?
-  userAgent      String?
-  sourceUrl      String?
-  metadata       Json?
+  status       ConversationStatus @default(ACTIVE)
+  channel      String             @default("web")
+  visitorName  String?
+  visitorEmail String?
+  visitorPhone String?
+  ipAddress    String?
+  userAgent    String?
+  sourceUrl    String?
+  metadata     Json?
 
-  messages       Message[]
+  messages Message[]
 
-  createdAt      DateTime           @default(now()) @map("created_at")
-  updatedAt      DateTime           @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+  deletedById String?   @map("deleted_by")
+  deletedBy   User?     @relation("ConversationDeletedBy", fields: [deletedById], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@index([organizationId])
   @@index([organizationId, status])
   @@index([organizationId, updatedAt(sort: Desc)])
   @@index([visitorId])
+  @@index([deletedAt])
   @@map("conversations")
 }
 
 model Message {
-  id             String        @id @default(cuid())
+  id             String       @id @default(uuid())
   conversationId String
-  conversation   Conversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
-  senderType     MessageSenderType
-  senderId       String?
-  messageType    MessageType         @default(TEXT)
-  content        String
+  senderType  MessageSenderType
+  senderId    String?
+  messageType MessageType       @default(TEXT)
+  content     String
 
-  replyToId      String?
-  replyTo        Message?            @relation("MessageReplies", fields: [replyToId], references: [id])
-  replies        Message[]           @relation("MessageReplies")
+  replyToId String?
+  replyTo   Message?  @relation("MessageReplies", fields: [replyToId], references: [id])
+  replies   Message[] @relation("MessageReplies")
 
-  status         MessageDeliveryStatus @default(SENT)
-  isEdited       Boolean             @default(false)
-  editedAt       DateTime?
+  status   MessageDeliveryStatus @default(SENT)
+  isEdited Boolean               @default(false)
+  editedAt DateTime?
 
-  createdAt      DateTime      @default(now()) @map("created_at")
-  updatedAt      DateTime      @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@index([conversationId])
   @@index([conversationId, createdAt(sort: Desc)])

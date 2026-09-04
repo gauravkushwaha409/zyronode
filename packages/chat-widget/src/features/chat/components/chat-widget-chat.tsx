@@ -12,8 +12,11 @@ import type { ChatMessage } from "@/types";
 import { applyChatMessageEvent, type ChatMessageEvent } from "@/utility";
 
 export default function ChatWidgetChat() {
-	const { conversationId, organizationId, page, setConversationId } =
-		useConversation();
+	const {
+		conversationId,
+		ensureConversation,
+		isCreating: isCreatingConversation,
+	} = useConversation();
 	const [content, setContent] = useState("");
 	const scrollRef = useRef<HTMLDivElement>(null);
 	const queryClient = useQueryClient();
@@ -21,8 +24,8 @@ export default function ChatWidgetChat() {
 	const { data: messagesData, isLoading } = useGetMessagesQuery(
 		conversationId ?? undefined,
 	);
+	// dynamic mutation — conversationId passed per-call so it works right after lazy creation
 	const { mutate: sendMessage, isPending: isSending } = useSendMessageMutation();
-	const { mutate: createConversation } = useCreateConversationMutation();
 
 	const { startTyping, stopTyping, isAgentTyping } = useTypingIndicator({
 		conversationId,
@@ -36,48 +39,44 @@ export default function ChatWidgetChat() {
 	const messages = messagesData?.data?.data?.messages ?? [];
 	const reversed = [...messages].reverse();
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <ignore>
 	useEffect(() => {
 		scrollRef.current?.scrollTo(0, scrollRef.current.scrollHeight);
 	}, [messages]);
 
-	const handleSend = () => {
-		if (!content.trim() || isSending) return;
+	/**
+	 * handleSend — send message, creating conversation if needed
+	 */
+	const handleSend = async () => {
+		if (!content.trim() || isSending || isCreatingConversation) return;
 
-		const messagePayload = { content: content.trim(), messageType: "TEXT" as const };
+		const trimmed = content.trim();
 
-		const sendTo = (targetConversationId: string) => {
-			sendMessage(
-				{ ...messagePayload, conversationId: targetConversationId },
-				{
-					onSuccess: () => setContent(""),
-					onError: (err: unknown) => console.error("Send failed:", err),
-				},
-			);
-		};
-
-		if (conversationId) {
-			stopTyping();
-			sendTo(conversationId);
+		// Step 2: decide — existing conversation or need to create
+		let activeId = conversationId;
+		if (!activeId) {
+			try {
+				activeId = await ensureConversation();
+			} catch (err) {
+				console.error("[chat-widget] Failed to create conversation:", err);
+				return;
+			}
+		}
+		if (!activeId) {
+			console.error("[chat-widget] No conversationId after ensureConversation");
 			return;
 		}
 
-		createConversation(
+		// Step 3: send message to existing (or newly created) conversation
+		stopTyping();
+		sendMessage(
 			{
-				organizationId,
-				sourceUrl: page,
-				channel: "web",
+				conversationId: activeId,
+				payload: { content: trimmed, messageType: "TEXT" },
 			},
 			{
-				onSuccess: (res: { data?: { data?: { id?: string } } }) => {
-					const newId = res.data?.data?.id;
-					if (!newId) return;
-					setConversationId(newId);
-					stopTyping();
-					sendTo(newId);
-				},
-				onError: (err: unknown) => {
-					console.error("[chat-widget] Conversation creation failed:", err);
-				},
+				onSuccess: () => setContent(""),
+				onError: (err: unknown) => console.error("Send failed:", err),
 			},
 		);
 	};
@@ -105,6 +104,7 @@ export default function ChatWidgetChat() {
 									: "bg-gray-100 text-gray-900 rounded-bl-none"
 							}`}
 						>
+							{/** biome-ignore lint/security/noDangerouslySetInnerHtml: <ignore> */}
 							<div dangerouslySetInnerHTML={{ __html: msg.content }} />
 							<p className="text-[10px] opacity-70 mt-1">
 								{new Date(msg.createdAt).toLocaleTimeString([], {
@@ -142,10 +142,14 @@ export default function ChatWidgetChat() {
 				<Button
 					type="button"
 					onClick={handleSend}
-					disabled={!content.trim() || isSending}
+					disabled={!content.trim() || isSending || isCreatingConversation}
 					className="w-full"
 				>
-					{isSending ? "Sending..." : "Send"}
+					{isSending || isCreatingConversation
+						? isCreatingConversation
+							? "Starting chat..."
+							: "Sending..."
+						: "Send"}
 				</Button>
 			</div>
 		</div>

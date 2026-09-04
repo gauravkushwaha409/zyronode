@@ -25,7 +25,6 @@ export default function ChatWidget({
 		<WidgetQueryProvider>
 			<ConversationProvider organizationId={organizationId}>
 				{isWidgetOpen && (
-					// SSE/WS connect lazily - only while the widget is open
 					<WidgetSseProvider>
 						<WidgetWebSocketProvider>
 							<WidgetWindow onClose={() => setWidgetOpen(false)} />
@@ -39,8 +38,15 @@ export default function ChatWidget({
 }
 
 /**
+<<<<<<< HEAD
  * Rendered only while the widget is open. Shows the chat UI directly;
  * conversation is created lazily when the visitor sends their first message.
+=======
+ * Rendered only while the widget is open.
+ *
+ * Lazy conversation: no network call until visitor sends first message.
+ * ChatWidgetChat handles empty state + lazy creation via ConversationProvider.ensureConversation().
+>>>>>>> b3309b2f586ecd025a9b29663dc8e5eda853d432
  */
 function WidgetWindow({ onClose }: { onClose: () => void }) {
 	const { activeTab } = useChatWidgetStore();

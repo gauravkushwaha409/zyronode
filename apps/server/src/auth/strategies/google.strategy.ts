@@ -5,10 +5,14 @@ import { Strategy, type StrategyOptions, VerifyCallback } from "passport-google-
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, "google") {
 	constructor() {
+		const rawCallback = process.env.GOOGLE_CALLBACK_URL ?? "";
+		const callbackURL =
+			rawCallback.replace(/\$\{([^}]+)\}|\$([A-Z0-9_]+)/g, (_, b, c) => process.env[b ?? c] ?? "") ||
+			`http://localhost:${process.env.SERVER_PORT ?? "8000"}/auth/google/callback`;
 		super({
 			clientID: process.env.GOOGLE_CLIENT_ID,
 			clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-			callbackURL: process.env.GOOGLE_CALLBACK_URL,
+			callbackURL,
 			scope: ["email", "profile"],
 		} as StrategyOptions);
 	}

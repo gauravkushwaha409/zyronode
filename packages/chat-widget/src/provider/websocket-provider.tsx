@@ -1,7 +1,6 @@
 import { WebSocketProvider } from "@package/websocket";
 import type { ReactNode } from "react";
 import { getConfig } from "../config";
-import { useConversation } from "./conversation-provider";
 
 /**
  * Socket.io connection for the visitor, authenticated with the
@@ -10,7 +9,6 @@ import { useConversation } from "./conversation-provider";
  * conversation exists.
  */
 export function WidgetWebSocketProvider({ children }: { children: ReactNode }) {
-	const { conversationId } = useConversation();
 	const config = getConfig();
 
 	return (

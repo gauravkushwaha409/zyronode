@@ -1,6 +1,7 @@
 import type React from 'react';
-import { useRef } from 'react';
-import { useInboxConversationDetailQuery } from '../../hooks';
+import { useEffect, useRef } from 'react';
+import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
+import { useMessagesQuery } from '../../hooks';
 import type { InboxMessage } from '../../types/inbox-api.types';
 import {
   groupConsecutiveMessages,
@@ -16,12 +17,8 @@ interface ConversationBodyProps {
   organizationId: string;
 }
 
-export function ConversationBody({ conversationUUID, organizationId }: ConversationBodyProps) {
-  const textEditorContainerRef = useRef<HTMLDivElement>(null);
-
-  const { data, isLoading } = useInboxConversationDetailQuery(conversationUUID, organizationId);
-
-  const messages = (data?.data?.data?.messages ?? []).map((msg: InboxMessage) => ({
+function mapInboxMessage(msg: InboxMessage) {
+  return {
     uuid: msg.id,
     conversation_uuid: msg.conversationId,
     sender_type: msg.senderType.toLowerCase() as 'visitor' | 'agent' | 'system',
@@ -47,12 +44,53 @@ export function ConversationBody({ conversationUUID, organizationId }: Conversat
     edited_at: msg.editedAt,
     status: msg.status.toLowerCase() as 'sent' | 'delivered' | 'read',
     created_at: msg.createdAt,
-  }));
+  };
+}
 
+export function ConversationBody({ conversationUUID, organizationId }: ConversationBodyProps) {
+  const textEditorContainerRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  // detail query not needed for messages — messages are now cursor-paginated
+
+  const {
+    items: pagedMessages,
+    isLoading,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useMessagesQuery(conversationUUID, { limit: 20 });
+
+  // Infinite scroll — mirror ConversationList (conversation-list.component.tsx:29) which uses
+  // useInfiniteScroll({ hasNextPage, hasPreviousPage, ... }) with top=prev (newer) bottom=next (older).
+  // For chat, older messages are at the top, so map top sentinel to hasNextPage (older).
+  const { topSentinelRef } = useInfiniteScroll({
+    hasPreviousPage: hasNextPage,
+    isFetchingPreviousPage: isFetchingNextPage,
+    fetchPreviousPage: fetchNextPage,
+    hasNextPage: false,
+    isFetchingNextPage: false,
+    fetchNextPage: () => {},
+    root: null,
+    rootMargin: "200px",
+  });
+
+  // Sort asc for display (backend returns desc batches, flatten gives newest batch first)
+  const sortedPaged = [...pagedMessages].sort(
+    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+  );
+  const messages = sortedPaged.map(mapInboxMessage);
   const messageGroups = groupMessagesByDate(messages);
 
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const topSentinelRef = useRef<HTMLDivElement>(null);
+  // Auto-scroll to bottom on initial load / new messages
+  useEffect(() => {
+    if (scrollRef.current && messages.length) {
+      // only auto-scroll if near bottom (don't yank when reading history)
+      const el = scrollRef.current;
+      const isNearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 200;
+      if (isNearBottom) el.scrollTop = el.scrollHeight;
+    }
+  }, [messages.length]);
 
   return (
     <div className="relative flex-1 flex flex-col overflow-hidden px-4 pt-4">

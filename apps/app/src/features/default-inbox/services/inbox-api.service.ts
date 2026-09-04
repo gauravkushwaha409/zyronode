@@ -1,6 +1,7 @@
 import { type AxiosRequestConfig, BaseAPIService, type ApiResponse } from "@package/api-client";
 import { CONFIG } from "@/config";
 import { apiClient } from "@/lib";
+import type { CursorPaginationParams } from "@/types/cursor-pagination.types";
 import type {
   CreateConversationPayload,
   InboxConversationsData,
@@ -9,15 +10,15 @@ import type {
   InboxMessage,
 } from "../types/inbox-api.types";
 
+export type InboxConversationsFilters = {
+  status?: string;
+  search?: string;
+} & CursorPaginationParams;
+
 class InboxApiService extends BaseAPIService {
   async getConversations(
     organizationId: string,
-    filters?: {
-      status?: string;
-      search?: string;
-      page?: number;
-      limit?: number;
-    },
+    filters?: InboxConversationsFilters,
     axiosConfiguration?: AxiosRequestConfig,
   ) {
     return super.get<InboxConversationsData>(
@@ -105,6 +106,38 @@ class InboxApiService extends BaseAPIService {
       `${CONFIG.ENDPOINTS.INBOX.MARK_READ}/${conversationId}/messages/read`,
       undefined,
       axiosConfiguration,
+    );
+  }
+
+  async softDeleteConversation(
+    conversationId: string,
+    organizationId: string,
+    axiosConfiguration?: AxiosRequestConfig,
+  ) {
+    return super.delete<{ id: string }>(
+      `${CONFIG.ENDPOINTS.INBOX.CONVERSATION}/${conversationId}`,
+      {
+        params: { organizationId },
+        ...axiosConfiguration,
+      },
+    );
+  }
+
+  async unreadStats(axiosConfiguration?: AxiosRequestConfig) {
+    return super.get<{ conversations_with_unread: number; total_unread: number }>(
+      CONFIG.ENDPOINTS.INBOX.UNREAD_STATS,
+      axiosConfiguration,
+    );
+  }
+
+  async getMessages(
+    conversationId: string,
+    filters?: CursorPaginationParams,
+    axiosConfiguration?: AxiosRequestConfig,
+  ) {
+    return super.get<{ messages: InboxMessage[]; pagination: import("@/types/cursor-pagination.types").CursorPaginationMeta }>(
+      CONFIG.ENDPOINTS.INBOX.MESSAGES(conversationId),
+      { params: { ...filters }, ...axiosConfiguration },
     );
   }
 }

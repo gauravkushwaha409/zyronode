@@ -1,13 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { LiveVisitorPage } from "@/pages/_organization-protected/$organization/visitor";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
-export const Route = createFileRoute(
-	"/_organization-protected/$organization/visitor",
-)({
-	component: RouteComponent,
+export const Route = createFileRoute("/_organization-protected/$organization/visitor")({
+	beforeLoad: ({ params }) => {
+		throw redirect({
+			to: "/$organization/live-visitor",
+			params: { organization: params.organization },
+		});
+	},
 });
-
-function RouteComponent() {
-	const { organization } = Route.useParams();
-	return <LiveVisitorPage organizationId={organization} />;
-}

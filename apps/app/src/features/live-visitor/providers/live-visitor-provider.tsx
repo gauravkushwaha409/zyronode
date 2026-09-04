@@ -3,6 +3,7 @@ import { WebSocketProvider } from "@package/websocket";
 import type { ReactNode } from "react";
 import { CONFIG } from "@/config";
 import { buildSseUrl } from "@/config/sse";
+import { getSocketUrl } from "@/config/socket";
 import { useVisitorPresenceEvents, useVisitorSseEvents } from "../hooks";
 
 interface LiveVisitorProviderProps {
@@ -10,7 +11,7 @@ interface LiveVisitorProviderProps {
 	children: ReactNode;
 }
 
-const SOCKET_URL = typeof window !== "undefined" ? window.location.origin : "";
+
 
 /**
  * Wires both realtime transports for the live-visitor page:
@@ -33,7 +34,7 @@ export function LiveVisitorProvider({
 		>
 			<WebSocketProvider
 				options={{
-					url: SOCKET_URL,
+					url: getSocketUrl(),
 					transports: ["websocket"],
 					reconnection: true,
 					reconnectionAttempts: 10,

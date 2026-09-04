@@ -76,4 +76,18 @@ export const SETTINGS_SIDEBAR_DATA: InnerSidebarData[] = [
 		href: "/$organization/settings/billing-subscription",
 		icon: "send-transcript",
 	},
+	{
+		title: "Sound & Notifications",
+		icon: "reply-menu",
+		items: [
+			{
+				label: "Sound Setting",
+				href: "/$organization/settings/sound-settings",
+			},
+			{
+				label: "Notifications Setting",
+				href: "/$organization/settings/notifications-settings",
+			},
+		],
+	},
 ];

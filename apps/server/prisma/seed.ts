@@ -47,7 +47,7 @@ const TEST_ORGANIZATIONS: Array<{
 const TEST_VISITORS = [
 	{
 		externalId: "vis_kathmandu_01",
-		name: "Raja Swarnakar",
+		name: "Gaurav",
 		email: "raja@example.com",
 		phone: "+977 9800000001",
 		ipAddress: "27.34.68.10",
@@ -423,7 +423,7 @@ async function main() {
 	console.log(`  orgs:     ${organizations.map((o) => o.name).join(", ")}`);
 	console.log(`  visitors: ${visitorCount} on ${organizations[0].name}`);
 	console.log(
-		`  app:      http://localhost:3000/${organizations[0].id}/dashboard (after logging in)`,
+		`  app:      http://localhost:${process.env.APP_PORT ?? "3000"}/${organizations[0].id}/dashboard (after logging in)`,
 	);
 }
 

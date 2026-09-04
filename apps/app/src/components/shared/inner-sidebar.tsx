@@ -42,7 +42,7 @@ interface InnerSidebarProps {
 
 export function InnerSidebar({ pageHeader, data }: InnerSidebarProps) {
 	const pathname = useRouterState({ select: (s) => s.location.pathname });
-	const organizationId = pathname.split("/").filter(Boolean)[1] ?? "";
+	const organizationId = pathname.split("/").filter(Boolean)[0] ?? "";
 	const matchRoute = useMatchRoute();
 
 	const open = data.find((section) => {

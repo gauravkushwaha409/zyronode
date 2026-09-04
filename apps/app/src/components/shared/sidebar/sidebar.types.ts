@@ -5,7 +5,8 @@ export interface SidebarItem {
 	icon: IconName;
 	path: string;
 	matchPath?: string;
-	badge?: number;
+	/** Data-driven badge - rendered by NavLink (pill when open, dot when collapsed). No path sniffing. */
+	badge?: React.ReactNode;
 	/** Renders the "Other Inboxes" section header immediately after this item. */
 	showOtherInboxesAfter?: boolean;
 }

@@ -2,9 +2,8 @@ import { useQueryClient } from "@package/query";
 import { useChannel, useEvent, WebSocketProvider } from "@package/websocket";
 import { useCallback } from "react";
 import { CONFIG } from "@/config";
+import { getSocketUrl } from "@/config/socket";
 import { applyInboxMessageEvent, type InboxMessageEvent } from "../utility";
-
-const SOCKET_URL = window.location.origin;
 
 interface InboxSocketProviderProps {
 	organizationId: string;
@@ -52,7 +51,7 @@ export function InboxSocketProvider({
 	return (
 		<WebSocketProvider
 			options={{
-				url: SOCKET_URL,
+				url: getSocketUrl(),
 				transports: ["websocket"],
 				reconnection: true,
 				reconnectionAttempts: 10,

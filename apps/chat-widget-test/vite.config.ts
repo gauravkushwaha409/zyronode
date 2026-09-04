@@ -3,12 +3,24 @@ import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig, loadEnv } from "vite";
 
+function expandEnv(value: string | undefined, env: Record<string, string>): string | undefined {
+  if (!value) return value;
+  return value.replace(/\$\{([^}]+)\}|\$([A-Z0-9_]+)/g, (_, b, c) => env[b ?? c] ?? process.env[b ?? c] ?? "");
+}
+
 export default defineConfig(({ mode }) => {
   const rootDir = resolve(__dirname, "../../");
   const env = loadEnv(mode, rootDir, "VITE_");
+  const allEnv = loadEnv(mode, rootDir, "");
 
-  const serverUrl = env.VITE_CHAT_WIDGET_SERVER_URL || "http://localhost:8000";
-  const websocketUrl = env.VITE_CHAT_WIDGET_WEBSOCKET_URL || "http://localhost:8000";
+  const serverPort = allEnv.SERVER_PORT ?? process.env.SERVER_PORT ?? "8000";
+  const chatWidgetPortRaw = allEnv.CHAT_WIDGET_PORT ?? env.VITE_CHAT_WIDGET_PORT ?? process.env.CHAT_WIDGET_PORT ?? "4000";
+  const chatWidgetPort = Number.parseInt(expandEnv(chatWidgetPortRaw, allEnv) ?? "4000", 10) || 4000;
+
+  const rawServerUrl = env.VITE_CHAT_WIDGET_SERVER_URL;
+  const rawWebsocketUrl = env.VITE_CHAT_WIDGET_WEBSOCKET_URL;
+  const serverUrl = expandEnv(rawServerUrl, allEnv) || rawServerUrl || `http://localhost:${serverPort}`;
+  const websocketUrl = expandEnv(rawWebsocketUrl, allEnv) || rawWebsocketUrl || `http://localhost:${serverPort}`;
   const organizationId = env.VITE_ORGANIZATION_ID
 
   return {
@@ -17,7 +29,7 @@ export default defineConfig(({ mode }) => {
       tsconfigPaths: true,
     },
     server: {
-      port: 4000,
+      port: chatWidgetPort,
       host: true,
       proxy: {
         "/v1": {
@@ -42,7 +54,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     preview: {
-      port: 4000,
+      port: chatWidgetPort,
       host: true,
       proxy: {
         "/v1": {

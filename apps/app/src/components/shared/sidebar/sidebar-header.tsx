@@ -54,7 +54,7 @@ export function SidebarHeader({
 
 	return (
 		<section className="px-3">
-			<section className="flex items-center gap-1">
+			<section className="flex justify-between gap-1">
 				<DropdownMenu>
 					<DropdownMenuTrigger className="group flex min-w-0 flex-1 items-center gap-1 rounded-[6px] p-1 -m-1 cursor-pointer enabled:hover:bg-gray-fill-50">
 						<OrgAvatar name={orgName} />
@@ -103,16 +103,34 @@ export function SidebarHeader({
 					</DropdownMenuContent>
 				</DropdownMenu>
 
-				{open && (
-					<button
-						type="button"
-						className="flex size-6 shrink-0 items-center justify-center rounded-[6px] text-gray-400 hover:text-gray-600 cursor-pointer"
-						onClick={hovered ? onPin : onCollapse}
-						aria-label={hovered ? "Pin sidebar open" : "Collapse sidebar"}
-					>
-						<Icon name={hovered ? "sidebar-open" : "sidebar-close"} size={18} />
-					</button>
-				)}
+				<div className="flex items-center gap-1 ml-auto shrink-0">
+					{hovered && (
+						<button
+							className="h-5 w-5 text-gray-400 hover:text-gray-600 cursor-pointer"
+							type="button"
+							onClick={onPin}
+							aria-label="Pin sidebar open"
+						>
+							<Icon
+								name="pin"
+								size={20}
+								showTooltip
+								tooltipPlacement="right"
+								tooltipText="Click to Pin"
+							/>
+						</button>
+					)}
+					{!open ? null : !hovered ? (
+						<button
+							type="button"
+							className="h-5 w-5 text-gray-400 hover:text-gray-600 cursor-pointer"
+							onClick={onCollapse}
+							aria-label="Collapse sidebar"
+						>
+							<Icon name="sidebar-close" size={20} tooltipText="close sidebar" showTooltip tooltipPlacement="right" />
+						</button>
+					) : null}
+				</div>
 			</section>
 		</section>
 	);
