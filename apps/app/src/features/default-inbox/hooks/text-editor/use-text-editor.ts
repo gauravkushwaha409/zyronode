@@ -104,6 +104,7 @@ export function useTextEditor({
     const isInternalNote = messageType === 'notes';
     sendMessage(
       {
+        conversationId: conversationUUID,
         content: `<audio controls src="${finalUrl}"></audio>`,
         messageType: isInternalNote ? 'INTERNAL_NOTE' : 'TEXT',
         ...(replyMessage?.uuid && { replyToId: replyMessage.uuid }),

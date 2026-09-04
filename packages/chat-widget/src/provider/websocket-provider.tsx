@@ -21,7 +21,6 @@ export function WidgetWebSocketProvider({ children }: { children: ReactNode }) {
 				reconnectionDelay: 1000,
 				withCredentials: false,
 			}}
-			auth={conversationId ? { conversationId } : undefined}
 		>
 			{children}
 		</WebSocketProvider>
