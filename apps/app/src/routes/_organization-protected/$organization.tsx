@@ -2,6 +2,7 @@ import { Icon, Input } from '@package/ui';
 import { createFileRoute, Outlet } from '@tanstack/react-router';
 import { Sidebar } from '@/components';
 import { activeOrganizationGuard } from '@/features/auth/gaurds';
+import { AgentSocketProvider } from '@/features/realtime/websocket';
 
 export const Route = createFileRoute('/_organization-protected/$organization')({
   beforeLoad: ({ context, params }) => {
@@ -14,7 +15,9 @@ export const Route = createFileRoute('/_organization-protected/$organization')({
 });
 
 function RouteComponent() {
+  const { organization } = Route.useParams();
   return (
+    <AgentSocketProvider organizationId={organization}>
     <section className="flex h-screen overflow-hidden bg-gray-50">
       <Sidebar />
 
@@ -44,5 +47,6 @@ function RouteComponent() {
         </div>
       </section>
     </section>
+    </AgentSocketProvider>
   );
 }
