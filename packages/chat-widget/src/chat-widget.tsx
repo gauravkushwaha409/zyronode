@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { Activity, useCallback, useState } from "react";
 import { ChatWidgetChat, WidgetHeader, WidgetToggle } from "./features";
 import {
 	ConversationProvider,
 	WidgetQueryProvider,
+	WidgetSseListener,
 	WidgetSseProvider,
 	WidgetWebSocketProvider,
 } from "./provider";
@@ -17,36 +18,51 @@ interface ChatWidgetProps {
 export default function ChatWidget({
 	organizationId,
 	page,
+	// biome-ignore lint/correctness/noUnusedFunctionParameters: kept for backwards compat
 	referrer,
 }: ChatWidgetProps) {
 	const [isWidgetOpen, setWidgetOpen] = useState(false);
+	const unreadCount = useChatWidgetStore((s) => s.unreadCount);
+	const clearUnread = useChatWidgetStore((s) => s.clearUnread);
+
+	const handleToggle = useCallback(() => {
+		setWidgetOpen((prev) => {
+			const next = !prev;
+			if (next) clearUnread();
+			return next;
+		});
+	}, [clearUnread]);
+
+	const handleClose = useCallback(() => {
+		setWidgetOpen(false);
+	}, []);
 
 	return (
 		<WidgetQueryProvider>
-			<ConversationProvider organizationId={organizationId}>
-				{isWidgetOpen && (
+			<ConversationProvider organizationId={organizationId} page={page}>
+				<WidgetWebSocketProvider>
 					<WidgetSseProvider>
-						<WidgetWebSocketProvider>
-							<WidgetWindow onClose={() => setWidgetOpen(false)} />
-						</WidgetWebSocketProvider>
+						{/* Always-mounted SSE listener: connects as soon as conversationId exists,
+						    stays subscribed while widget is hidden via <Activity>. */}
+						<WidgetSseListener isWidgetOpen={isWidgetOpen} />
+
+						<Activity mode={isWidgetOpen ? "visible" : "hidden"}>
+							<WidgetWindow onClose={handleClose} />
+						</Activity>
+
+						<WidgetToggle onClick={handleToggle} unreadCount={unreadCount} />
 					</WidgetSseProvider>
-				)}
-				<WidgetToggle onClick={() => setWidgetOpen((prev) => !prev)} />
+				</WidgetWebSocketProvider>
 			</ConversationProvider>
 		</WidgetQueryProvider>
 	);
 }
 
 /**
-<<<<<<< HEAD
- * Rendered only while the widget is open. Shows the chat UI directly;
- * conversation is created lazily when the visitor sends their first message.
-=======
  * Rendered only while the widget is open.
  *
  * Lazy conversation: no network call until visitor sends first message.
  * ChatWidgetChat handles empty state + lazy creation via ConversationProvider.ensureConversation().
->>>>>>> b3309b2f586ecd025a9b29663dc8e5eda853d432
  */
 function WidgetWindow({ onClose }: { onClose: () => void }) {
 	const { activeTab } = useChatWidgetStore();
@@ -58,8 +74,7 @@ function WidgetWindow({ onClose }: { onClose: () => void }) {
 				<section className="flex-1 flex flex-col overflow-hidden">
 					{activeTab === "chat" && <ChatWidgetChat />}
 					<p className="py-3 text-gray-500 text-xs text-center">
-						Powered by{" "}
-						<span className="font-semibold text-blue-600">ChatApp</span>
+						Powered by <span className="font-semibold text-blue-600">ChatApp</span>
 					</p>
 				</section>
 			</section>

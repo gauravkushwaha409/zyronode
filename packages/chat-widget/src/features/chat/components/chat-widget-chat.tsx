@@ -1,15 +1,9 @@
-import { useQueryClient } from "@package/query";
 import { Button } from "@package/ui";
 import { useEffect, useRef, useState } from "react";
-import {
-	useCreateConversationMutation,
-	useGetMessagesQuery,
-	useSendMessageMutation,
-} from "@/hooks";
-import { useOnMessageNew, useTypingIndicator } from "@/hooks/events";
+import { useGetMessagesQuery, useSendMessageMutation } from "@/hooks";
+import { useTypingIndicator } from "@/hooks/events";
 import { useConversation } from "@/provider";
 import type { ChatMessage } from "@/types";
-import { applyChatMessageEvent, type ChatMessageEvent } from "@/utility";
 
 export default function ChatWidgetChat() {
 	const {
@@ -19,7 +13,6 @@ export default function ChatWidgetChat() {
 	} = useConversation();
 	const [content, setContent] = useState("");
 	const scrollRef = useRef<HTMLDivElement>(null);
-	const queryClient = useQueryClient();
 
 	const { data: messagesData, isLoading } = useGetMessagesQuery(
 		conversationId ?? undefined,
@@ -27,13 +20,9 @@ export default function ChatWidgetChat() {
 	// dynamic mutation — conversationId passed per-call so it works right after lazy creation
 	const { mutate: sendMessage, isPending: isSending } = useSendMessageMutation();
 
+	// WS is kept connected at ChatWidget level for typing only; messages are via SSE (WidgetSseListener)
 	const { startTyping, stopTyping, isAgentTyping } = useTypingIndicator({
 		conversationId,
-	});
-
-	useOnMessageNew<ChatMessageEvent>(conversationId ?? "", (data) => {
-		if (!conversationId) return;
-		applyChatMessageEvent(queryClient, conversationId, data);
 	});
 
 	const messages = messagesData?.data?.data?.messages ?? [];
