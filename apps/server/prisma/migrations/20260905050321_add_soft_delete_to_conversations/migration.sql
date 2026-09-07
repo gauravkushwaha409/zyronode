@@ -1,6 +1,6 @@
 -- AlterTable
-ALTER TABLE "conversations" ADD COLUMN "deleted_at" TIMESTAMP(3);
-ALTER TABLE "conversations" ADD COLUMN "deleted_by" TEXT;
+ALTER TABLE "conversations" ADD COLUMN     "deleted_at" TIMESTAMP(3),
+ADD COLUMN     "deleted_by" TEXT;
 
 -- CreateIndex
 CREATE INDEX "conversations_deleted_at_idx" ON "conversations"("deleted_at");
