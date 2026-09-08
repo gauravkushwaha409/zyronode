@@ -2,6 +2,7 @@ import { Activity, useCallback, useState } from "react";
 import { ChatWidgetChat, WidgetHeader, WidgetToggle } from "./features";
 import {
 	ConversationProvider,
+	VisitorSessionProvider,
 	WidgetQueryProvider,
 	WidgetSseListener,
 	WidgetSseProvider,
@@ -13,9 +14,7 @@ interface ChatWidgetProps {
 	organizationId?: string;
 }
 
-export default function ChatWidget({
-	organizationId,
-}: ChatWidgetProps) {
+export default function ChatWidget({ organizationId }: ChatWidgetProps) {
 	const [isWidgetOpen, setWidgetOpen] = useState(false);
 	const unreadCount = useChatWidgetStore((s) => s.unreadCount);
 	const clearUnread = useChatWidgetStore((s) => s.clearUnread);
@@ -33,23 +32,25 @@ export default function ChatWidget({
 	}, []);
 
 	return (
-		<WidgetQueryProvider>
-			<ConversationProvider organizationId={organizationId}>
-				<WidgetWebSocketProvider>
-					<WidgetSseProvider>
-						{/* Always-mounted SSE listener: connects as soon as conversationId exists,
+		<VisitorSessionProvider organizationId={organizationId}>
+			<WidgetQueryProvider>
+				<ConversationProvider organizationId={organizationId}>
+					<WidgetWebSocketProvider>
+						<WidgetSseProvider>
+							{/* Always-mounted SSE listener: connects as soon as conversationId exists,
 						    stays subscribed while widget is hidden via <Activity>. */}
-						<WidgetSseListener isWidgetOpen={isWidgetOpen} />
+							<WidgetSseListener isWidgetOpen={isWidgetOpen} />
 
-						<Activity mode={isWidgetOpen ? "visible" : "hidden"}>
-							<WidgetWindow onClose={handleClose} />
-						</Activity>
+							<Activity mode={isWidgetOpen ? "visible" : "hidden"}>
+								<WidgetWindow onClose={handleClose} />
+							</Activity>
 
-						<WidgetToggle onClick={handleToggle} unreadCount={unreadCount} />
-					</WidgetSseProvider>
-				</WidgetWebSocketProvider>
-			</ConversationProvider>
-		</WidgetQueryProvider>
+							<WidgetToggle onClick={handleToggle} unreadCount={unreadCount} />
+						</WidgetSseProvider>
+					</WidgetWebSocketProvider>
+				</ConversationProvider>
+			</WidgetQueryProvider>
+		</VisitorSessionProvider>
 	);
 }
 

@@ -1,23 +1,23 @@
-import type { APIError, ApiResponse } from "@package/api-client";
 
-export type { ConversationData } from "./conversation.types";
 export type {
-  CreateConversationPayload,
-  CreateConversationAxiosResponse,
-  CreateConversationError,
-} from "./conversation.types";
-export type {
-  ChatWidgetTab,
-  ChatWidgetTabConfig,
+	ChatWidgetTab,
+	ChatWidgetTabConfig,
 } from "./chat-widget-tabs.types";
 export type {
-  ChatMessage,
-  MessageSenderType,
-  MessageType,
-  SendMessagePayload,
-  MessagesData,
-  GetMessagesAxiosResponse,
-  GetMessagesError,
-  SendMessageAxiosResponse,
-  SendMessageError,
+	ConversationData,
+	CreateConversationAxiosResponse,
+	CreateConversationError,
+	CreateConversationPayload,
+} from "./conversation.types";
+export type {
+	ChatMessage,
+	GetMessagesAxiosResponse,
+	GetMessagesError,
+	MessageSenderType,
+	MessagesData,
+	MessageType,
+	SendMessageAxiosResponse,
+	SendMessageError,
+	SendMessagePayload,
 } from "./message.types";
+export type { VisitorSessionMutation } from "./visitor.types";

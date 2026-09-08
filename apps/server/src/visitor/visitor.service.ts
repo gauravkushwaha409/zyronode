@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import {
 	ForbiddenException,
 	Injectable,
@@ -7,6 +8,7 @@ import type { Prisma } from "../generated/prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { SseService } from "../sse/sse.service";
 import type { ListVisitorsDto } from "./dto/list-visitors.dto";
+import type { StartVisitorSessionDto } from "./dto/start-visitor-session.dto";
 import type { CreateVisitorNoteDto } from "./dto/update-visitor.dto";
 import type {
 	AssignVisitorAgentDto,
@@ -140,6 +142,84 @@ export class VisitorService {
 				visitor.lastSeenAt !== null &&
 				visitor.lastSeenAt >= cutoff,
 		};
+	}
+
+	/**
+	 * Starts (or resumes) a visitor session.
+	 *
+	 * The browser's identity lives in an httpOnly cookie. The cookie value is
+	 * stored as the visitor's externalId (unique per organization), so:
+	 * - cookie present + row exists  -> same visitor returns, visitCount bumps
+	 * - cookie present + row missing -> same token reused for a fresh row
+	 * - cookie removed (manual)      -> new token => a brand-new visitor row
+	 */
+	async startSession(
+		organizationId: string,
+		ipAddress: string | undefined,
+		existingSessionId: string | undefined,
+		dto: StartVisitorSessionDto,
+	) {
+		const organization = await this.prisma.organization.findUnique({
+			where: { id: organizationId },
+			select: { id: true },
+		});
+		if (!organization) {
+			throw new NotFoundException({
+				message: "Organization not found",
+				error_code: "ORGANIZATION_NOT_FOUND",
+			});
+		}
+
+		const sessionId = existingSessionId ?? randomUUID();
+
+		const existing = await this.prisma.visitor.findFirst({
+			where: { organizationId, externalId: sessionId },
+			select: VISITOR_LIST_SELECT,
+		});
+
+		if (existing) {
+			const visitor = await this.prisma.visitor.update({
+				where: { id: existing.id },
+				data: {
+					isOnline: true,
+					lastSeenAt: new Date(),
+					visitCount: { increment: 1 },
+					...(ipAddress ? { ipAddress } : {}),
+					...(dto.sourceUrl ? { sourceUrl: dto.sourceUrl } : {}),
+				},
+				select: VISITOR_LIST_SELECT,
+			});
+			return { visitor, sessionId };
+		}
+
+		// upsert (not create) so a concurrent request racing on the same token
+		// can never blow up the (organizationId, externalId) unique index.
+		const visitor = await this.prisma.visitor.upsert({
+			where: {
+				organizationId_externalId: { organizationId, externalId: sessionId },
+			},
+			create: {
+				organizationId,
+				externalId: sessionId,
+				sourceUrl: dto.sourceUrl ?? undefined,
+				ipAddress: ipAddress ?? undefined,
+				isOnline: true,
+				lastSeenAt: new Date(),
+			},
+			update: {
+				isOnline: true,
+				lastSeenAt: new Date(),
+				...(ipAddress ? { ipAddress } : {}),
+				...(dto.sourceUrl ? { sourceUrl: dto.sourceUrl } : {}),
+			},
+			select: VISITOR_LIST_SELECT,
+		});
+
+		void this.sse.publish([`org:${organizationId}`], "visitor.created", {
+			visitor,
+		});
+
+		return { visitor, sessionId };
 	}
 
 	async list(userId: string, organizationId: string, query: ListVisitorsDto) {

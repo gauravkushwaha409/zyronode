@@ -9,10 +9,18 @@ import type {
 	MessagesData,
 	SendMessageAxiosResponse,
 	SendMessagePayload,
+	VisitorSessionMutation,
 } from "../types";
 import { getApiClient } from "./api-client";
 
 export class WidgetApiService extends BaseAPIService {
+	async startSession(organizationId: string, payload: VisitorSessionMutation.StartSessionPayload) {
+		return super.post<VisitorSessionMutation.VisitorData, VisitorSessionMutation.StartSessionAxiosResponse>(
+			CHAT_WIDGET_API.VISITOR_SESSION_START(organizationId),
+			payload,
+		);
+	}
+
 	async createConversation(payload: CreateConversationPayload) {
 		return super.post<ConversationData, CreateConversationAxiosResponse>(
 			CHAT_WIDGET_API.CONVERSATIONS,
