@@ -1,7 +1,9 @@
 import { Activity, useCallback, useState } from "react";
 import { ChatWidgetChat, WidgetHeader, WidgetToggle } from "./features";
+import { useVisitorPresence } from "./hooks/events/ws";
 import {
 	ConversationProvider,
+	useVisitorSession,
 	VisitorSessionProvider,
 	WidgetQueryProvider,
 	WidgetSseListener,
@@ -40,6 +42,7 @@ export default function ChatWidget({ organizationId }: ChatWidgetProps) {
 							{/* Always-mounted SSE listener: connects as soon as conversationId exists,
 						    stays subscribed while widget is hidden via <Activity>. */}
 							<WidgetSseListener isWidgetOpen={isWidgetOpen} />
+							<WidgetPresenceEmitter />
 
 							<Activity mode={isWidgetOpen ? "visible" : "hidden"}>
 								<WidgetWindow onClose={handleClose} />
@@ -52,6 +55,13 @@ export default function ChatWidget({ organizationId }: ChatWidgetProps) {
 			</WidgetQueryProvider>
 		</VisitorSessionProvider>
 	);
+}
+
+/** Always-mounted: heartbeats visitor:presence over WS regardless of whether the widget is open. */
+function WidgetPresenceEmitter() {
+	const { organizationId, visitorId } = useVisitorSession();
+	useVisitorPresence(organizationId, visitorId);
+	return null;
 }
 
 /**

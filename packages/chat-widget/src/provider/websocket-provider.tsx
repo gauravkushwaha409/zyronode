@@ -21,6 +21,9 @@ export function WidgetWebSocketProvider({ children }: { children: ReactNode }) {
 				reconnectionDelay: 1000,
 				withCredentials: false,
 			}}
+			// no credentials needed - VisitorGateway verifies visitorId/organizationId
+			// against the DB itself, so any truthy auth just triggers connect()
+			auth={{}}
 		>
 			{children}
 		</WebSocketProvider>
