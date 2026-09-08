@@ -218,4 +218,9 @@ export class InboxService {
       data: deleted,
     };
   }
+
+  /** Dummy - sidebar unread badge has nothing real to query yet. */
+  async unreadStats() {
+    return { conversations_with_unread: 0, total_unread: 0 };
+  }
 }

@@ -44,6 +44,13 @@ export class InboxController {
 		});
 	}
 
+	@Get("conversations/unread-stats/analytics")
+	@ApiOperation({ summary: "Get unread conversation stats (dummy, not org-scoped yet)" })
+	@ApiResponse({ status: 200, description: "Unread stats returned" })
+	unreadStats() {
+		return this.inboxService.unreadStats();
+	}
+
 	@Get("conversations/:id")
 	@ApiOperation({ summary: "Get conversation details" })
 	@ApiParam({ name: "id", description: "Conversation ID" })

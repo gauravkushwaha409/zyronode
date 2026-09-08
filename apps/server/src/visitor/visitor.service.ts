@@ -6,6 +6,7 @@ import {
 } from "@nestjs/common";
 import type { Prisma } from "../generated/prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
+import { RedisService } from "../redis/redis.service";
 import { SseService } from "../sse/sse.service";
 import type { ListVisitorsDto } from "./dto/list-visitors.dto";
 import type { StartVisitorSessionDto } from "./dto/start-visitor-session.dto";
@@ -18,11 +19,17 @@ import type {
 const DEFAULT_LIMIT = 25;
 
 /**
- * A visitor counts as online only if the widget heartbeat is recent - the
- * isOnline column can go stale if a browser dies without sending a
- * disconnect, so reads always intersect it with lastSeenAt.
+ * A visitor counts as online only if a presence heartbeat landed inside this
+ * window. Authority for "online" is the Redis sorted set below, not the
+ * Visitor.isOnline/lastSeenAt columns - those are best-effort history only
+ * (analytics, "last seen" display), since nothing keeps them fresh once a
+ * browser dies without an explicit disconnect.
  */
 const ONLINE_WINDOW_MS = 60_000;
+
+/** ZSET per org: member = visitorId, score = last heartbeat epoch ms. */
+const onlinePresenceKey = (organizationId: string) =>
+	`visitor-presence:${organizationId}`;
 
 const VISITOR_LIST_SELECT = {
 	id: true,
@@ -60,6 +67,7 @@ export class VisitorService {
 	constructor(
 		private readonly prisma: PrismaService,
 		private readonly sse: SseService,
+		private readonly redis: RedisService,
 	) {}
 
 	/**
@@ -91,8 +99,18 @@ export class VisitorService {
 		}
 	}
 
-	private onlineCutoff() {
-		return new Date(Date.now() - ONLINE_WINDOW_MS);
+	private onlineCutoffMs() {
+		return Date.now() - ONLINE_WINDOW_MS;
+	}
+
+	/** Visitor ids with a live heartbeat, straight from Redis - the source of truth for "online". */
+	private async getOnlineVisitorIds(organizationId: string): Promise<Set<string>> {
+		const ids = await this.redis.zRangeByScore(
+			onlinePresenceKey(organizationId),
+			this.onlineCutoffMs(),
+		);
+		console.log("online visitor ids", ids);
+		return new Set(ids);
 	}
 
 	private buildWhere(
@@ -103,17 +121,6 @@ export class VisitorService {
 
 		if (query.country) where.country = query.country;
 		if (query.deviceType) where.deviceType = query.deviceType;
-
-		if (query.isOnline === true) {
-			where.isOnline = true;
-			where.lastSeenAt = { gte: this.onlineCutoff() };
-		} else if (query.isOnline === false) {
-			where.OR = [
-				{ isOnline: false },
-				{ lastSeenAt: null },
-				{ lastSeenAt: { lt: this.onlineCutoff() } },
-			];
-		}
 
 		if (query.search) {
 			where.AND = [
@@ -130,18 +137,83 @@ export class VisitorService {
 		return where;
 	}
 
-	/** Derived so a stale isOnline column never shows a dead browser as live. */
-	private withDerivedPresence<
-		T extends { isOnline: boolean; lastSeenAt: Date | null },
-	>(visitor: T) {
-		const cutoff = this.onlineCutoff();
-		return {
-			...visitor,
-			isOnline:
-				visitor.isOnline &&
-				visitor.lastSeenAt !== null &&
-				visitor.lastSeenAt >= cutoff,
-		};
+	/** Overrides the stale isOnline column with the Redis-derived truth. */
+	private withDerivedPresence<T extends { id: string; isOnline: boolean }>(
+		visitor: T,
+		onlineIds: Set<string>,
+	) {
+		return { ...visitor, isOnline: onlineIds.has(visitor.id) };
+	}
+
+	/**
+	 * Called by VisitorGateway on every presence heartbeat, after it has
+	 * verified visitorId belongs to organizationId. Redis holds the live
+	 * "online" truth (score = this heartbeat's epoch ms); the DB write is
+	 * throttled so a heartbeat every few seconds doesn't hit Postgres every
+	 * few seconds too - lastSeenAt/isOnline here are history, not authority.
+	 */
+	async recordPresenceHeartbeat(
+		organizationId: string,
+		visitorId: string,
+		fields: { currentPage?: string; activeDuration?: number },
+	): Promise<void> {
+		const key = onlinePresenceKey(organizationId);
+		const now = Date.now();
+		const previousScore = await this.redis.zScore(key, visitorId);
+		await this.redis.zAdd(key, now, visitorId);
+
+		const DB_WRITE_THROTTLE_MS = 30_000;
+		if (previousScore !== null && now - previousScore < DB_WRITE_THROTTLE_MS) {
+			return;
+		}
+
+		await this.prisma.visitor.update({
+			where: { id: visitorId },
+			data: {
+				isOnline: true,
+				lastSeenAt: new Date(now),
+				...(fields.currentPage !== undefined
+					? { currentPage: fields.currentPage }
+					: {}),
+				...(fields.activeDuration !== undefined
+					? { activeDuration: fields.activeDuration }
+					: {}),
+			},
+		});
+	}
+
+	/** Called by VisitorGateway on an explicit "visitor left" signal. */
+	async recordPresenceOffline(
+		organizationId: string,
+		visitorId: string,
+	): Promise<void> {
+		await this.redis.zRem(onlinePresenceKey(organizationId), visitorId);
+		const visitor = await this.prisma.visitor.update({
+			where: { id: visitorId },
+			data: { isOnline: false, lastSeenAt: new Date() },
+			select: { id: true, externalId: true },
+		});
+		void this.sse.publish([`org:${organizationId}`], "visitor.disconnected", {
+			visitorId: visitor.id,
+			externalId: visitor.externalId,
+			isOnline: false,
+		});
+	}
+
+	/**
+	 * Gateway trust boundary: a visitorId off the wire is never joined to a
+	 * room or written into an org's presence set until this confirms it
+	 * actually belongs to the claimed organizationId.
+	 */
+	async verifyVisitorMembership(
+		visitorId: string,
+		organizationId: string,
+	): Promise<boolean> {
+		const visitor = await this.prisma.visitor.findFirst({
+			where: { id: visitorId, organizationId },
+			select: { id: true },
+		});
+		return visitor !== null;
 	}
 
 	/**
@@ -189,6 +261,12 @@ export class VisitorService {
 				},
 				select: VISITOR_LIST_SELECT,
 			});
+			await this.redis.zAdd(onlinePresenceKey(organizationId), Date.now(), visitor.id);
+			void this.sse.publish([`org:${organizationId}`], "visitor.connected", {
+				visitorId: visitor.id,
+				externalId: visitor.externalId,
+				isOnline: true,
+			});
 			return { visitor, sessionId };
 		}
 
@@ -215,18 +293,39 @@ export class VisitorService {
 			select: VISITOR_LIST_SELECT,
 		});
 
+		await this.redis.zAdd(onlinePresenceKey(organizationId), Date.now(), visitor.id);
+
 		void this.sse.publish([`org:${organizationId}`], "visitor.created", {
 			visitor,
+		});
+		void this.sse.publish([`org:${organizationId}`], "visitor.connected", {
+			visitorId: visitor.id,
+			isOnline: true,
 		});
 
 		return { visitor, sessionId };
 	}
 
+	/**
+	 * 
+	 * Visitor List
+	 * @param userId 
+	 * @param organizationId 
+	 * @param query 
+	 * @returns 
+	 */
 	async list(userId: string, organizationId: string, query: ListVisitorsDto) {
 		await this.assertMembership(userId, organizationId);
 
 		const limit = query.limit ?? DEFAULT_LIMIT;
 		const where = this.buildWhere(organizationId, query);
+		const onlineIds = await this.getOnlineVisitorIds(organizationId);
+
+		if (query.isOnline === true) {
+			where.id = { in: [...onlineIds] };
+		} else if (query.isOnline === false) {
+			where.id = { notIn: [...onlineIds] };
+		}
 
 		const [rows, total] = await Promise.all([
 			this.prisma.visitor.findMany({
@@ -253,7 +352,7 @@ export class VisitorService {
 		return {
 			message: "Visitors fetched successfully",
 			data: {
-				data: page.map((row) => this.withDerivedPresence(row)),
+				data: page.map((row) => this.withDerivedPresence(row, onlineIds)),
 				total,
 				nextCursor: hasMore ? (page.at(-1)?.id ?? null) : null,
 				hasMore,
@@ -335,11 +434,17 @@ export class VisitorService {
 		}
 
 		const { conversations, ...rest } = visitor;
+		const score = await this.redis.zScore(
+			onlinePresenceKey(organizationId),
+			visitorId,
+		);
+		const isOnline = score !== null && score >= this.onlineCutoffMs();
 
 		return {
 			message: "Visitor fetched successfully",
 			data: {
-				...this.withDerivedPresence(rest),
+				...rest,
+				isOnline,
 				conversations: conversations.map(
 					({ _count, messages, ...conversation }) => ({
 						...conversation,
@@ -487,14 +592,14 @@ export class VisitorService {
 	async statCards(userId: string, organizationId: string) {
 		await this.assertMembership(userId, organizationId);
 
-		const cutoff = this.onlineCutoff();
 		const startOfToday = new Date();
 		startOfToday.setHours(0, 0, 0, 0);
 
 		const [online, today, identified, total, durationAgg] = await Promise.all([
-			this.prisma.visitor.count({
-				where: { organizationId, isOnline: true, lastSeenAt: { gte: cutoff } },
-			}),
+			this.redis.zCountByScore(
+				onlinePresenceKey(organizationId),
+				this.onlineCutoffMs(),
+			),
 			this.prisma.visitor.count({
 				where: { organizationId, createdAt: { gte: startOfToday } },
 			}),

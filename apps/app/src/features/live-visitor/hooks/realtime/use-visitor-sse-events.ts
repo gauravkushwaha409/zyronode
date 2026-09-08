@@ -13,6 +13,12 @@ interface VisitorNoteCreatedEvent {
 	note: VisitorNote;
 }
 
+interface VisitorPresenceSseEvent {
+	visitorId: string;
+	externalId: string | null;
+	isOnline: boolean;
+}
+
 /**
  * SSE carries the *persisted* visitor events (row edits, assignment, notes).
  * Ephemeral presence ticks arrive over WebSocket instead - see
@@ -32,4 +38,6 @@ export function useVisitorSseEvents(organizationId: string) {
 	useSseEvent<VisitorUpdatedEvent>("visitor.updated", invalidateAll);
 	useSseEvent<VisitorUpdatedEvent>("visitor.assigned", invalidateAll);
 	useSseEvent<VisitorNoteCreatedEvent>("visitor.note.created", invalidateAll);
+	useSseEvent<VisitorPresenceSseEvent>("visitor.connected", invalidateAll);
+	useSseEvent<VisitorPresenceSseEvent>("visitor.disconnected", invalidateAll);
 }

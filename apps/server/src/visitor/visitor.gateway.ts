@@ -1,27 +1,29 @@
+import { Logger } from "@nestjs/common";
 import {
 	ConnectedSocket,
 	MessageBody,
+	OnGatewayDisconnect,
 	SubscribeMessage,
 	WebSocketGateway,
 	WebSocketServer,
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
+import { VisitorService } from "./visitor.service";
 
 interface VisitorPresencePayload {
 	organizationId: string;
 	visitorId: string;
 	currentPage?: string;
 	activeDuration?: number;
-	isOnline?: boolean;
 }
 
 /**
- * Ephemeral visitor presence.
+ * Visitor presence, backed by Redis (see VisitorService.recordPresenceHeartbeat).
  *
- * These signals fire far too often to write to Postgres on every tick, so
- * they are taken from the client and rebroadcast to the org room without
- * being persisted. Anything that IS persisted (visitor row edits, notes,
- * assignment) goes out over SSE from VisitorService instead.
+ * organizationId/visitorId arrive on the client payload, so every handler
+ * verifies the pair against the DB before joining a room or touching Redis -
+ * otherwise a client could claim any org/visitor id and poison another
+ * tenant's presence set (see CLAUDE.md contract #2, multi-tenancy IDOR).
  */
 function getCorsOrigins(): string[] {
 	const appPort = process.env.APP_PORT ?? "3000";
@@ -52,12 +54,16 @@ function getCorsOrigins(): string[] {
 		credentials: true,
 	},
 })
-export class VisitorGateway {
+export class VisitorGateway implements OnGatewayDisconnect {
 	@WebSocketServer()
 	server!: Server;
 
+	private readonly logger = new Logger(VisitorGateway.name);
+
+	constructor(private readonly visitorService: VisitorService) {}
+
 	@SubscribeMessage("visitor:presence")
-	handlePresence(
+	async handlePresence(
 		@ConnectedSocket() client: Socket,
 		@MessageBody() data: VisitorPresencePayload,
 	) {
@@ -68,24 +74,43 @@ export class VisitorGateway {
 			};
 		}
 
-		// broadcast to everyone in the org room except the sender
+		const isMember = await this.visitorService.verifyVisitorMembership(
+			data.visitorId,
+			data.organizationId,
+		);
+		if (!isMember) {
+			this.logger.warn(
+				`Presence rejected: visitor ${data.visitorId} not in org ${data.organizationId}`,
+			);
+			return { event: "error", data: { message: "Unauthorized" } };
+		}
+
+		// cache the verified pair so handleDisconnect can clean up without
+		// trusting an unverified payload at disconnect time
+		client.data.visitorId = data.visitorId;
+		client.data.organizationId = data.organizationId;
+		client.join(`org:${data.organizationId}`);
+
+		await this.visitorService.recordPresenceHeartbeat(
+			data.organizationId,
+			data.visitorId,
+			{ currentPage: data.currentPage, activeDuration: data.activeDuration },
+		);
+
 		client.to(`org:${data.organizationId}`).emit("visitor:presence", {
 			visitorId: data.visitorId,
 			currentPage: data.currentPage,
 			activeDuration: data.activeDuration,
-			isOnline: data.isOnline ?? true,
+			isOnline: true,
 			at: new Date().toISOString(),
 		});
 
 		return { event: "visitor:presence:ack", data: { visitorId: data.visitorId } };
 	}
 
-	/**
-	 * Visitor closed the tab / went idle. Still ephemeral - the durable
-	 * lastSeenAt is written by the widget's periodic heartbeat, not here.
-	 */
+	/** Visitor closed the tab / navigated away deliberately. */
 	@SubscribeMessage("visitor:left")
-	handleLeft(
+	async handleLeft(
 		@ConnectedSocket() client: Socket,
 		@MessageBody() data: { organizationId: string; visitorId: string },
 	) {
@@ -96,6 +121,19 @@ export class VisitorGateway {
 			};
 		}
 
+		const isMember = await this.visitorService.verifyVisitorMembership(
+			data.visitorId,
+			data.organizationId,
+		);
+		if (!isMember) {
+			return { event: "error", data: { message: "Unauthorized" } };
+		}
+
+		await this.visitorService.recordPresenceOffline(
+			data.organizationId,
+			data.visitorId,
+		);
+
 		client.to(`org:${data.organizationId}`).emit("visitor:presence", {
 			visitorId: data.visitorId,
 			isOnline: false,
@@ -103,5 +141,16 @@ export class VisitorGateway {
 		});
 
 		return { event: "visitor:left:ack", data: { visitorId: data.visitorId } };
+	}
+
+	/**
+	 * Tab crash / network drop - no "visitor:left" ever arrives. Best-effort
+	 * cleanup of the Redis entry; even if this never fires, the read-path
+	 * cutoff (ONLINE_WINDOW_MS) still ages the stale entry out.
+	 */
+	async handleDisconnect(client: Socket) {
+		const { visitorId, organizationId } = client.data ?? {};
+		if (!visitorId || !organizationId) return;
+		await this.visitorService.recordPresenceOffline(organizationId, visitorId);
 	}
 }
