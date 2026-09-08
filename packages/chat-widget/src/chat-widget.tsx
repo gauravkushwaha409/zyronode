@@ -11,15 +11,10 @@ import { useChatWidgetStore } from "./store";
 
 interface ChatWidgetProps {
 	organizationId?: string;
-	page?: string;
-	referrer?: string;
 }
 
 export default function ChatWidget({
 	organizationId,
-	page,
-	// biome-ignore lint/correctness/noUnusedFunctionParameters: kept for backwards compat
-	referrer,
 }: ChatWidgetProps) {
 	const [isWidgetOpen, setWidgetOpen] = useState(false);
 	const unreadCount = useChatWidgetStore((s) => s.unreadCount);
@@ -39,7 +34,7 @@ export default function ChatWidget({
 
 	return (
 		<WidgetQueryProvider>
-			<ConversationProvider organizationId={organizationId} page={page}>
+			<ConversationProvider organizationId={organizationId}>
 				<WidgetWebSocketProvider>
 					<WidgetSseProvider>
 						{/* Always-mounted SSE listener: connects as soon as conversationId exists,

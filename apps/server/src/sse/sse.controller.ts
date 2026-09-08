@@ -9,12 +9,12 @@ import {
 	UseGuards,
 } from "@nestjs/common";
 import {
-	ApiTags,
-	ApiOperation,
-	ApiResponse,
 	ApiBearerAuth,
+	ApiOperation,
 	ApiParam,
 	ApiQuery,
+	ApiResponse,
+	ApiTags,
 } from "@nestjs/swagger";
 import type { Response } from "express";
 import { CurrentUser } from "../common/decorator/current-user.decorator";
@@ -33,10 +33,16 @@ export class SseController {
 	@Get("agent")
 	@UseGuards(JwtAuthGuard)
 	@ApiBearerAuth()
-	@ApiOperation({ summary: 'Agent SSE stream - receives events for one organization' })
-	@ApiQuery({ name: 'organizationId', description: 'Organization ID', required: true })
-	@ApiResponse({ status: 200, description: 'SSE stream opened' })
-	@ApiResponse({ status: 403, description: 'Not a member of this organization' })
+	@ApiOperation({
+		summary: "Agent SSE stream - receives events for one organization",
+	})
+	@ApiQuery({
+		name: "organizationId",
+		description: "Organization ID",
+		required: true,
+	})
+	@ApiResponse({ status: 200, description: "SSE stream opened" })
+	@ApiResponse({ status: 403, description: "Not a member of this organization" })
 	async agentStream(
 		@Query("organizationId") organizationId: string,
 		@CurrentUser("id") userId: string,
@@ -57,11 +63,13 @@ export class SseController {
 		this.openStream(res, [`org:${organizationId}`]);
 	}
 
-	@Get("conversation/:conversationId")
-	@ApiOperation({ summary: 'Visitor SSE stream - scoped to a single conversation' })
-	@ApiParam({ name: 'conversationId', description: 'Conversation ID' })
-	@ApiResponse({ status: 200, description: 'SSE stream opened' })
-	@ApiResponse({ status: 404, description: 'Conversation not found' })
+	@Get("visitor/:conversationId")
+	@ApiOperation({
+		summary: "Visitor SSE stream - scoped to a single conversation",
+	})
+	@ApiParam({ name: "conversationId", description: "Conversation ID" })
+	@ApiResponse({ status: 200, description: "SSE stream opened" })
+	@ApiResponse({ status: 404, description: "Conversation not found" })
 	async visitorStream(
 		@Param("conversationId") conversationId: string,
 		@Res() res: Response,

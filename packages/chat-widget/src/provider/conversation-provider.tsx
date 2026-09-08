@@ -50,11 +50,10 @@ interface ConversationProviderProps {
 export function ConversationProvider({
 	children,
 	organizationId,
-	page,
 }: ConversationProviderProps) {
 	const config = getConfig();
 	const orgId = organizationId ?? config.organizationId;
-	const pageUrl = page ?? window.location.href;
+	const pageUrl =  window.location.href;
 
 	const [conversationId, setConversationIdState] = useState<string | null>(
 		() => getConversationId(orgId),
@@ -111,7 +110,7 @@ export function ConversationProvider({
 		const promise = getWidgetApi()
 			.createConversation({
 				organizationId: orgId,
-				sourceUrl: page ?? (typeof window !== "undefined" ? window.location.href : undefined),
+				sourceUrl: pageUrl,
 				channel: "web",
 			})
 			.then((res) => {
@@ -132,7 +131,7 @@ export function ConversationProvider({
 
 		pendingRef.current = promise;
 		return promise;
-	}, [conversationId, orgId, page]);
+	}, [conversationId, orgId, pageUrl]);
 
 	return (
 		<ConversationContext.Provider value={{ conversationId, isCreating, ensureConversation }}>
