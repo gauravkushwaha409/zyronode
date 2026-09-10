@@ -1,10 +1,10 @@
 import { Module } from "@nestjs/common";
-import { SseModule } from "../sse/sse.module";
+import { WidgetEventsModule } from "../visitor/events/widget-events.module";
 import { MessageController } from "./message.controller";
 import { MessageService } from "./message.service";
 
 @Module({
-	imports: [SseModule],
+	imports: [WidgetEventsModule],
 	controllers: [MessageController],
 	providers: [MessageService],
 	exports: [MessageService],

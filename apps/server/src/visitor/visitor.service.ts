@@ -14,7 +14,7 @@ import type {
 	AssignVisitorAgentDto,
 	UpdateVisitorDetailsDto,
 } from "./dto/update-visitor-details.dto";
-import { VisitorEventsPublisher } from "./visitor-events.publisher";
+import { WidgetEventsPublisher } from "./events/widget-events.publisher";
 
 const DEFAULT_LIMIT = 25;
 
@@ -66,7 +66,7 @@ const VISITOR_LIST_SELECT = {
 export class VisitorService {
 	constructor(
 		private readonly prisma: PrismaService,
-		private readonly events: VisitorEventsPublisher,
+		private readonly widgetEvents: WidgetEventsPublisher,
 		private readonly redis: RedisService,
 	) {}
 
@@ -104,7 +104,9 @@ export class VisitorService {
 	}
 
 	/** Visitor ids with a live heartbeat, straight from Redis - the source of truth for "online". */
-	private async getOnlineVisitorIds(organizationId: string): Promise<Set<string>> {
+	private async getOnlineVisitorIds(
+		organizationId: string,
+	): Promise<Set<string>> {
 		const ids = await this.redis.zRangeByScore(
 			onlinePresenceKey(organizationId),
 			this.onlineCutoffMs(),
@@ -188,7 +190,7 @@ export class VisitorService {
 		});
 
 		if (becameOnline) {
-			this.events.connected(organizationId, {
+			this.widgetEvents.visitorConnected(organizationId, {
 				visitorId: visitor.id,
 				externalId: visitor.externalId,
 			});
@@ -206,7 +208,7 @@ export class VisitorService {
 			data: { isOnline: false, lastSeenAt: new Date() },
 			select: { id: true, externalId: true },
 		});
-		this.events.disconnected(organizationId, {
+		this.widgetEvents.visitorDisconnected(organizationId, {
 			visitorId: visitor.id,
 			externalId: visitor.externalId,
 		});
@@ -273,8 +275,12 @@ export class VisitorService {
 				},
 				select: VISITOR_LIST_SELECT,
 			});
-			await this.redis.zAdd(onlinePresenceKey(organizationId), Date.now(), visitor.id);
-			this.events.connected(organizationId, {
+			await this.redis.zAdd(
+				onlinePresenceKey(organizationId),
+				Date.now(),
+				visitor.id,
+			);
+			this.widgetEvents.visitorConnected(organizationId, {
 				visitorId: visitor.id,
 				externalId: visitor.externalId,
 			});
@@ -304,10 +310,14 @@ export class VisitorService {
 			select: VISITOR_LIST_SELECT,
 		});
 
-		await this.redis.zAdd(onlinePresenceKey(organizationId), Date.now(), visitor.id);
+		await this.redis.zAdd(
+			onlinePresenceKey(organizationId),
+			Date.now(),
+			visitor.id,
+		);
 
-		this.events.created(organizationId, visitor);
-		this.events.connected(organizationId, {
+		this.widgetEvents.visitorCreated(organizationId, visitor);
+		this.widgetEvents.visitorConnected(organizationId, {
 			visitorId: visitor.id,
 			externalId: visitor.externalId,
 		});
@@ -316,12 +326,12 @@ export class VisitorService {
 	}
 
 	/**
-	 * 
+	 *
 	 * Visitor List
-	 * @param userId 
-	 * @param organizationId 
-	 * @param query 
-	 * @returns 
+	 * @param userId
+	 * @param organizationId
+	 * @param query
+	 * @returns
 	 */
 	async list(userId: string, organizationId: string, query: ListVisitorsDto) {
 		await this.assertMembership(userId, organizationId);
@@ -488,7 +498,7 @@ export class VisitorService {
 		});
 
 		// persisted -> SSE
-		this.events.updated(organizationId, updated);
+		this.widgetEvents.visitorUpdated(organizationId, updated);
 
 		return {
 			message: "Visitor updated successfully",
@@ -527,7 +537,7 @@ export class VisitorService {
 			},
 		});
 
-		this.events.assigned(organizationId, updated);
+		this.widgetEvents.visitorAssigned(organizationId, updated);
 
 		return {
 			message: dto.agentId
@@ -583,7 +593,7 @@ export class VisitorService {
 			},
 		});
 
-		this.events.noteCreated(organizationId, { visitorId, note });
+		this.widgetEvents.visitorNoteCreated(organizationId, { visitorId, note });
 
 		return {
 			message: "Visitor note created successfully",

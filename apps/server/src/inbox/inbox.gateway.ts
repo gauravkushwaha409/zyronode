@@ -13,10 +13,10 @@ import {
 import { Server, Socket } from "socket.io";
 import { resolveSocketUser } from "../common/auth/socket-user";
 import { getCorsOrigins } from "../common/cors";
-import { EventBridge } from "../common/services/event-bridge.service";
 import { ConversationService } from "../conversation/conversation.service";
 import { MessageService } from "../message/message.service";
-import { SseService } from "../sse/sse.service";
+import { WidgetEventsPublisher } from "../visitor/events/widget-events.publisher";
+import { WebsocketService } from "../websocket/websocket.service";
 
 interface SendMessagePayload {
 	conversationId: string;
@@ -48,12 +48,12 @@ export class InboxGateway
 		private readonly jwtService: JwtService,
 		private readonly messageService: MessageService,
 		private readonly conversationService: ConversationService,
-		private readonly eventBridge: EventBridge,
-		private readonly sseService: SseService,
+		private readonly websocketService: WebsocketService,
+		private readonly widgetEvents: WidgetEventsPublisher,
 	) {}
 
 	afterInit() {
-		this.eventBridge.setServer(this.server);
+		this.websocketService.setServer(this.server);
 	}
 
 	async handleConnection(client: Socket) {
@@ -128,32 +128,10 @@ export class InboxGateway
 			senderId,
 		);
 
-		const room = `conversation:${data.conversationId}`;
-		this.server.to(room).emit("message:new", {
-			conversation: { id: data.conversationId },
+		await this.widgetEvents.messageCreated({
+			conversationId: data.conversationId,
 			message: result.data,
 		});
-
-		const conversation = await this.conversationService.findById(
-			data.conversationId,
-		);
-		if (conversation.data?.organizationId) {
-			this.server
-				.to(`org:${conversation.data.organizationId}`)
-				.emit("message:new", {
-					conversation: conversation.data,
-					message: result.data,
-				});
-
-			void this.sseService.publish(
-				[
-					`org:${conversation.data.organizationId}`,
-					`conversation:${data.conversationId}`,
-				],
-				"message.created",
-				{ conversation: { id: data.conversationId }, message: result.data },
-			);
-		}
 
 		return { event: "message:sent", data: result.data };
 	}
@@ -164,8 +142,14 @@ export class InboxGateway
 		@MessageBody() data: TypingPayload,
 	) {
 		const user = client.data.user;
-		const room = `conversation:${data.conversationId}`;
-		client.to(room).emit("typing:update", {
+		// Centralized typing — still direct to room for low latency, but via publisher
+		void this.widgetEvents.typingUpdate({
+			conversationId: data.conversationId,
+			senderType: user?.type ?? "VISITOR",
+			isTyping: true,
+		});
+		// Keep original room broadcast for immediate echo (publisher does same)
+		client.to(`conversation:${data.conversationId}`).emit("typing:update", {
 			conversationId: data.conversationId,
 			senderType: user?.type ?? "VISITOR",
 			isTyping: true,
@@ -178,8 +162,12 @@ export class InboxGateway
 		@MessageBody() data: TypingPayload,
 	) {
 		const user = client.data.user;
-		const room = `conversation:${data.conversationId}`;
-		client.to(room).emit("typing:update", {
+		void this.widgetEvents.typingUpdate({
+			conversationId: data.conversationId,
+			senderType: user?.type ?? "VISITOR",
+			isTyping: false,
+		});
+		client.to(`conversation:${data.conversationId}`).emit("typing:update", {
 			conversationId: data.conversationId,
 			senderType: user?.type ?? "VISITOR",
 			isTyping: false,
@@ -201,16 +189,13 @@ export class InboxGateway
 			data.status as "ACTIVE" | "IDLE" | "CLOSED" | "PENDING",
 		);
 
-		const room = `conversation:${data.conversationId}`;
-		this.server
-			.to(room)
-			.emit("conversation:updated", { conversation: result.data });
-
-		if (result.data?.organizationId) {
-			this.server
-				.to(`org:${result.data.organizationId}`)
-				.emit("conversation:updated", { conversation: result.data });
-		}
+		await this.widgetEvents.conversationUpdated({
+			conversationId: data.conversationId,
+			organizationId:
+				(result.data as unknown as { organizationId?: string })?.organizationId ??
+				null,
+			conversation: result.data,
+		});
 
 		return { event: "conversation:status:updated", data: result.data };
 	}
