@@ -14,7 +14,8 @@ import { resolveSocketUser } from "../common/auth/socket-user";
 import { getCorsOrigins } from "../common/cors";
 
 /**
- * Agent presence namespace (/agent-visitors).
+ * Agents operating on visitors (`/agent-visitors`): join, online/offline
+ * presence for the agent-on-visitor-page surface.
  *
  * Owns `org:<id>` rooms on its own server instance for agent online/offline
  * fanout. Inbox delivery rooms live on the /agent-inbox server instead, so
@@ -27,11 +28,13 @@ import { getCorsOrigins } from "../common/cors";
 		credentials: true,
 	},
 })
-export class AgentGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class AgentVisitorsGateway
+	implements OnGatewayConnection, OnGatewayDisconnect
+{
 	@WebSocketServer()
 	server!: Server;
 
-	private readonly logger = new Logger(AgentGateway.name);
+	private readonly logger = new Logger(AgentVisitorsGateway.name);
 
 	constructor(private readonly jwtService: JwtService) {}
 

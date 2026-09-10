@@ -3,7 +3,7 @@ import { JwtModule } from "@nestjs/jwt";
 import { ConversationModule } from "../conversation/conversation.module";
 import { MessageModule } from "../message/message.module";
 import { SseModule } from "../sse/sse.module";
-import { AgentGateway } from "./agent.gateway";
+import { AgentVisitorsGateway } from "./agent-visitors.gateway";
 import { InboxController } from "./inbox.controller";
 import { InboxGateway } from "./inbox.gateway";
 import { InboxService } from "./inbox.service";
@@ -18,6 +18,6 @@ import { InboxService } from "./inbox.service";
 		SseModule,
 	],
 	controllers: [InboxController],
-	providers: [InboxService, InboxGateway, AgentGateway],
+	providers: [InboxService, InboxGateway, AgentVisitorsGateway],
 })
 export class InboxModule {}

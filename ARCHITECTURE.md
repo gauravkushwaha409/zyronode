@@ -70,7 +70,7 @@ There are **two parallel transports**, both scoped by string keys:
 | Concern | File |
 |---|---|
 | WS inbox gateway (`/agent-inbox`: join/send/typing/status) | `apps/server/src/inbox/inbox.gateway.ts` |
-| WS agent presence gateway (`/agent-visitors`: join/online/offline) | `apps/server/src/inbox/agent.gateway.ts` |
+| WS agents-on-visitors gateway (`/agent-visitors`: join/online/offline) | `apps/server/src/inbox/agent-visitors.gateway.ts` |
 | HTTP→WS bridge for controllers | `apps/server/src/common/services/event-bridge.service.ts` |
 | SSE registry + Redis fanout | `apps/server/src/sse/sse.service.ts` |
 | SSE endpoints (agent w/ membership check, visitor) | `apps/server/src/sse/sse.controller.ts` |
