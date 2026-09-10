@@ -11,14 +11,12 @@ import {
 	WebSocketServer,
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
+import { resolveSocketUser } from "../common/auth/socket-user";
+import { getCorsOrigins } from "../common/cors";
 import { EventBridge } from "../common/services/event-bridge.service";
 import { ConversationService } from "../conversation/conversation.service";
 import { MessageService } from "../message/message.service";
 import { SseService } from "../sse/sse.service";
-
-interface AuthPayload {
-	id: string;
-}
 
 interface SendMessagePayload {
 	conversationId: string;
@@ -31,42 +29,20 @@ interface TypingPayload {
 	conversationId: string;
 }
 
-function getCorsOrigins(): string[] {
-	const appPort = process.env.APP_PORT ?? "3000";
-	const chatWidgetPort = process.env.CHAT_WIDGET_PORT ?? "4000";
-	const origins = new Set<string>([
-		`http://localhost:${appPort}`,
-		`http://localhost:${chatWidgetPort}`,
-		"http://localhost:4001",
-	]);
-	const viteAppUrl = process.env.VITE_APP_URL?.replace(/\$\{([^}]+)\}|\$([A-Z0-9_]+)/g, (_, b, c) => process.env[b ?? c] ?? "");
-	if (viteAppUrl) {
-		try {
-			origins.add(new URL(viteAppUrl).origin);
-		} catch {}
-	}
-	if (process.env.CORS_ORIGINS) {
-		for (const o of process.env.CORS_ORIGINS.split(",")) {
-			const t = o.trim();
-			if (t) origins.add(t);
-		}
-	}
-	return [...origins];
-}
-
 @WebSocketGateway({
+	namespace: "/agent-inbox",
 	cors: {
 		origin: getCorsOrigins(),
 		credentials: true,
 	},
 })
-export class ChatGateway
+export class InboxGateway
 	implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
 	@WebSocketServer()
 	server!: Server;
 
-	private readonly logger = new Logger(ChatGateway.name);
+	private readonly logger = new Logger(InboxGateway.name);
 
 	constructor(
 		private readonly jwtService: JwtService,
@@ -82,21 +58,11 @@ export class ChatGateway
 
 	async handleConnection(client: Socket) {
 		try {
-			const token =
-				client.handshake.auth?.token ??
-				client.handshake.headers?.authorization?.replace("Bearer ", "");
-
-			if (token) {
-				try {
-					const payload = await this.jwtService.verifyAsync<AuthPayload>(token);
-					client.data.user = { id: payload.id, type: "AGENT" as const };
-					this.logger.log(`Agent connected: ${payload.id} (${client.id})`);
-				} catch {
-					client.data.user = { type: "VISITOR" as const };
-					this.logger.log(`Visitor connected (no valid token): ${client.id}`);
-				}
+			client.data.user = await resolveSocketUser(this.jwtService, client);
+			const user = client.data.user;
+			if (user?.type === "AGENT") {
+				this.logger.log(`Agent connected: ${user.id} (${client.id})`);
 			} else {
-				client.data.user = { type: "VISITOR" as const };
 				this.logger.log(`Visitor connected: ${client.id}`);
 			}
 		} catch (err) {

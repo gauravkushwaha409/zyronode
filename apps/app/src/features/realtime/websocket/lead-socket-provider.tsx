@@ -1,7 +1,12 @@
 import { useQueryClient } from "@package/query";
-import { useChannel, useEvent, WebSocketProvider } from "@package/websocket";
+import {
+	SOCKET_NAMESPACES,
+	useChannel,
+	useEvent,
+	WebSocketProvider,
+} from "@package/websocket";
 import { useCallback } from "react";
-import { getSocketUrl } from "@/config/socket";
+import { getAgentSocketUrl } from "@/config/socket";
 
 interface LeadSocketProviderProps {
 	organizationId: string;
@@ -31,7 +36,7 @@ export function LeadSocketProvider({
 	return (
 		<WebSocketProvider
 			options={{
-				url: getSocketUrl(),
+				url: getAgentSocketUrl(SOCKET_NAMESPACES.AGENT_VISITORS),
 				transports: ["websocket"],
 				reconnection: true,
 				reconnectionAttempts: 10,

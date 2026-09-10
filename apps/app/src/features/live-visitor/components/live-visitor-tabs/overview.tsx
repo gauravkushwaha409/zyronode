@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useVisitorListQuery } from "../../hooks";
 import { useVisitorPanelsStore } from "../../store";
 import type { VisitorListItem, VisitorListParams } from "../../types";
-import { skeletonKeys, useVisitorsWithPresence } from "../../utility";
+import { skeletonKeys } from "../../utility";
 import { VISITOR_COLUMNS } from "../columns";
 import { VisitorTableFilter } from "../filter";
 
@@ -27,7 +27,7 @@ export function Overview({ organizationId }: OverviewProps) {
 	);
 
 	const page = data?.data?.data;
-	const visitors = useVisitorsWithPresence(page?.data);
+	const visitors = page?.data ?? [];
 	const openDrawer = useVisitorPanelsStore((s) => s.openDrawer);
 
 	const handleFilterChange = (next: VisitorListParams) => {

@@ -1,3 +1,4 @@
+import { SOCKET_NAMESPACES } from "@package/websocket";
 import { Activity, useCallback, useState } from "react";
 import { ChatWidgetChat, WidgetHeader, WidgetToggle } from "./features";
 import { useVisitorPresence } from "./hooks/events/ws";
@@ -37,18 +38,20 @@ export default function ChatWidget({ organizationId }: ChatWidgetProps) {
 		<VisitorSessionProvider organizationId={organizationId}>
 			<WidgetQueryProvider>
 				<ConversationProvider organizationId={organizationId}>
-					<WidgetWebSocketProvider>
+					<WidgetWebSocketProvider namespace={SOCKET_NAMESPACES.VISITOR}>
 						<WidgetSseProvider>
 							{/* Always-mounted SSE listener: connects as soon as conversationId exists,
 						    stays subscribed while widget is hidden via <Activity>. */}
 							<WidgetSseListener isWidgetOpen={isWidgetOpen} />
 							<WidgetPresenceEmitter />
 
-							<Activity mode={isWidgetOpen ? "visible" : "hidden"}>
-								<WidgetWindow onClose={handleClose} />
-							</Activity>
+							<WidgetWebSocketProvider namespace={SOCKET_NAMESPACES.AGENT_INBOX}>
+								<Activity mode={isWidgetOpen ? "visible" : "hidden"}>
+									<WidgetWindow onClose={handleClose} />
+								</Activity>
 
-							<WidgetToggle onClick={handleToggle} unreadCount={unreadCount} />
+								<WidgetToggle onClick={handleToggle} unreadCount={unreadCount} />
+							</WidgetWebSocketProvider>
 						</WidgetSseProvider>
 					</WidgetWebSocketProvider>
 				</ConversationProvider>

@@ -4,7 +4,7 @@ import {
 	useVisitorListQuery,
 	useVisitorTopPagesQuery,
 } from "../../hooks";
-import { skeletonKeys, useVisitorsWithPresence } from "../../utility";
+import { skeletonKeys } from "../../utility";
 import { type RankedBarDatum, RankedBarList } from "./ranked-bar-list";
 import { VisitorMap } from "./visitor-map";
 
@@ -23,7 +23,7 @@ export function GeoIp({ organizationId }: GeoIpProps) {
 	const { data: pagesData, isLoading: pagesLoading } =
 		useVisitorTopPagesQuery(organizationId);
 
-	const visitors = useVisitorsWithPresence(listData?.data?.data?.data);
+	const visitors = listData?.data?.data?.data ?? [];
 	const countries = countryData?.data?.data?.countries ?? [];
 	const pages = pagesData?.data?.data?.pages ?? [];
 

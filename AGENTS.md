@@ -69,7 +69,7 @@ pnpm resource                 # nest generate resource
 
 Dual transport, both scoped by `org:<id>` / `conversation:<id>`:
 
-- **WS (socket.io):** `apps/server/src/chat/chat.gateway.ts` — joins on `agent:join` / `conversation:join`, emits via `EventBridge` (`apps/server/src/common/services/event-bridge.service.ts`). No Redis adapter — WS is instance-local.
+- **WS (socket.io), one namespace per gateway:** `apps/server/src/inbox/inbox.gateway.ts` (`/agent-inbox`: messaging rooms) + `apps/server/src/inbox/agent.gateway.ts` (`/agent-visitors`: agent presence) + `apps/server/src/visitor/visitor.gateway.ts` (`/visitor`: heartbeats up only) — joins on `agent:join` / `conversation:join`, emits via `EventBridge` (`apps/server/src/common/services/event-bridge.service.ts`). No Redis adapter — WS is instance-local.
 - **SSE:** `apps/server/src/sse/sse.service.ts` + `sse.controller.ts` — Redis pub/sub fanout, key Set with intersection check. Agent SSE verifies `organizationMember`; WS does not (known gap).
 - Messages broadcast to **both** transports; clients patch react-query caches directly (`setQueryData`/`setQueriesData`) via `applyInboxMessageEvent` (`apps/app/src/features/default-inbox/utility/inbox-cache.util.ts`) and `applyChatMessageEvent` (`packages/chat-widget/src/utility/message-cache.util.ts`) — no invalidation. Deduped by FIFO Set of message ids. Events may arrive 3× (both WS rooms + SSE).
 - Cache is `AxiosResponse<ServerResponse<T>>` — patch at `previous.data.data.messages`, not `previous.data.messages`.

@@ -2,12 +2,13 @@ import { Logger } from "@nestjs/common";
 import {
 	ConnectedSocket,
 	MessageBody,
+	OnGatewayConnection,
 	OnGatewayDisconnect,
 	SubscribeMessage,
 	WebSocketGateway,
-	WebSocketServer,
 } from "@nestjs/websockets";
-import { Server, Socket } from "socket.io";
+import { Socket } from "socket.io";
+import { getCorsOrigins } from "../common/cors";
 import { VisitorService } from "./visitor.service";
 
 interface VisitorPresencePayload {
@@ -25,39 +26,22 @@ interface VisitorPresencePayload {
  * otherwise a client could claim any org/visitor id and poison another
  * tenant's presence set (see CLAUDE.md contract #2, multi-tenancy IDOR).
  */
-function getCorsOrigins(): string[] {
-	const appPort = process.env.APP_PORT ?? "3000";
-	const chatWidgetPort = process.env.CHAT_WIDGET_PORT ?? "4000";
-	const origins = new Set<string>([
-		`http://localhost:${appPort}`,
-		`http://localhost:${chatWidgetPort}`,
-		"http://localhost:4001",
-	]);
-	const viteAppUrl = process.env.VITE_APP_URL?.replace(/\$\{([^}]+)\}|\$([A-Z0-9_]+)/g, (_, b, c) => process.env[b ?? c] ?? "");
-	if (viteAppUrl) {
-		try {
-			origins.add(new URL(viteAppUrl).origin);
-		} catch {}
-	}
-	if (process.env.CORS_ORIGINS) {
-		for (const o of process.env.CORS_ORIGINS.split(",")) {
-			const t = o.trim();
-			if (t) origins.add(t);
-		}
-	}
-	return [...origins];
-}
+
+/**
+ * WebSocket gateway for handling visitor presence.
+ *
+ */
 
 @WebSocketGateway({
+	namespace: "/visitor",
 	cors: {
 		origin: getCorsOrigins(),
 		credentials: true,
 	},
 })
-export class VisitorGateway implements OnGatewayDisconnect {
-	@WebSocketServer()
-	server!: Server;
-
+export class VisitorGateway
+	implements OnGatewayDisconnect, OnGatewayConnection
+{
 	private readonly logger = new Logger(VisitorGateway.name);
 
 	constructor(private readonly visitorService: VisitorService) {}
@@ -89,21 +73,12 @@ export class VisitorGateway implements OnGatewayDisconnect {
 		// trusting an unverified payload at disconnect time
 		client.data.visitorId = data.visitorId;
 		client.data.organizationId = data.organizationId;
-		client.join(`org:${data.organizationId}`);
 
 		await this.visitorService.recordPresenceHeartbeat(
 			data.organizationId,
 			data.visitorId,
 			{ currentPage: data.currentPage, activeDuration: data.activeDuration },
 		);
-
-		client.to(`org:${data.organizationId}`).emit("visitor:presence", {
-			visitorId: data.visitorId,
-			currentPage: data.currentPage,
-			activeDuration: data.activeDuration,
-			isOnline: true,
-			at: new Date().toISOString(),
-		});
 
 		return { event: "visitor:presence:ack", data: { visitorId: data.visitorId } };
 	}
@@ -133,12 +108,8 @@ export class VisitorGateway implements OnGatewayDisconnect {
 			data.organizationId,
 			data.visitorId,
 		);
-
-		client.to(`org:${data.organizationId}`).emit("visitor:presence", {
-			visitorId: data.visitorId,
-			isOnline: false,
-			at: new Date().toISOString(),
-		});
+		// handleDisconnect fires next on socket close - it must not republish.
+		client.data.left = true;
 
 		return { event: "visitor:left:ack", data: { visitorId: data.visitorId } };
 	}
@@ -149,8 +120,21 @@ export class VisitorGateway implements OnGatewayDisconnect {
 	 * cutoff (ONLINE_WINDOW_MS) still ages the stale entry out.
 	 */
 	async handleDisconnect(client: Socket) {
-		const { visitorId, organizationId } = client.data ?? {};
+		const { visitorId, organizationId, left } = client.data ?? {};
 		if (!visitorId || !organizationId) return;
-		await this.visitorService.recordPresenceOffline(organizationId, visitorId);
+		// "visitor:left" already published the offline event - socket close
+		// must not repeat it.
+		if (left) return;
+		try {
+			await this.visitorService.recordPresenceOffline(organizationId, visitorId);
+		} catch (err) {
+			this.logger.warn(
+				`Presence cleanup failed for visitor ${visitorId}: ${(err as Error).message}`,
+			);
+		}
+	}
+
+	handleConnection(client: Socket) {
+		this.logger.log(`Visitor socket connected: ${client.id}`);
 	}
 }

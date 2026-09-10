@@ -3,7 +3,6 @@ import { createObserveModule } from "@nestjs/observe";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { AuthModule } from "./auth/auth.module";
-import { ChatModule } from "./chat/chat.module";
 import { CommonModule } from "./common/common.module";
 import { ConversationModule } from "./conversation/conversation.module";
 import { InboxModule } from "./inbox/inbox.module";
@@ -34,7 +33,6 @@ const hasObserveCreds =
 		OtpModule,
 		ConversationModule,
 		MessageModule,
-		ChatModule,
 		InboxModule,
 		SseModule,
 		VisitorModule,

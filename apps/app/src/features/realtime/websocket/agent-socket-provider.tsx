@@ -1,6 +1,11 @@
-import { useChannel, useEvent, WebSocketProvider } from "@package/websocket";
+import {
+	SOCKET_NAMESPACES,
+	useChannel,
+	useEvent,
+	WebSocketProvider,
+} from "@package/websocket";
 import { useCallback } from "react";
-import { getSocketUrl } from "@/config/socket";
+import { getAgentSocketUrl } from "@/config/socket";
 
 /**
  * Global agent socket – single connection for all authenticated
@@ -34,7 +39,7 @@ export function AgentSocketProvider({
 	return (
 		<WebSocketProvider
 			options={{
-				url: getSocketUrl(),
+				url: getAgentSocketUrl(SOCKET_NAMESPACES.AGENT_VISITORS),
 				transports: ["websocket"],
 				reconnection: true,
 				reconnectionAttempts: 10,

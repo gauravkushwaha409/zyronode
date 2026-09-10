@@ -160,12 +160,3 @@ export interface AssignVisitorAgentPayload {
 export interface CreateVisitorNotePayload {
 	content: string;
 }
-
-/** Ephemeral WS presence tick - not persisted, so never cached as truth. */
-export interface VisitorPresenceEvent {
-	visitorId: string;
-	currentPage?: string;
-	activeDuration?: number;
-	isOnline: boolean;
-	at: string;
-}

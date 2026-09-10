@@ -7,7 +7,6 @@ import {
 import type { Prisma } from "../generated/prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { RedisService } from "../redis/redis.service";
-import { SseService } from "../sse/sse.service";
 import type { ListVisitorsDto } from "./dto/list-visitors.dto";
 import type { StartVisitorSessionDto } from "./dto/start-visitor-session.dto";
 import type { CreateVisitorNoteDto } from "./dto/update-visitor.dto";
@@ -15,6 +14,7 @@ import type {
 	AssignVisitorAgentDto,
 	UpdateVisitorDetailsDto,
 } from "./dto/update-visitor-details.dto";
+import { VisitorEventsPublisher } from "./visitor-events.publisher";
 
 const DEFAULT_LIMIT = 25;
 
@@ -66,7 +66,7 @@ const VISITOR_LIST_SELECT = {
 export class VisitorService {
 	constructor(
 		private readonly prisma: PrismaService,
-		private readonly sse: SseService,
+		private readonly events: VisitorEventsPublisher,
 		private readonly redis: RedisService,
 	) {}
 
@@ -162,12 +162,17 @@ export class VisitorService {
 		const previousScore = await this.redis.zScore(key, visitorId);
 		await this.redis.zAdd(key, now, visitorId);
 
+		// Offline -> online transition only: heartbeats arrive on every tick,
+		// and session start already publishes "visitor.connected".
+		const becameOnline =
+			previousScore === null || now - previousScore >= ONLINE_WINDOW_MS;
+
 		const DB_WRITE_THROTTLE_MS = 30_000;
 		if (previousScore !== null && now - previousScore < DB_WRITE_THROTTLE_MS) {
 			return;
 		}
 
-		await this.prisma.visitor.update({
+		const visitor = await this.prisma.visitor.update({
 			where: { id: visitorId },
 			data: {
 				isOnline: true,
@@ -179,7 +184,15 @@ export class VisitorService {
 					? { activeDuration: fields.activeDuration }
 					: {}),
 			},
+			select: { id: true, externalId: true },
 		});
+
+		if (becameOnline) {
+			this.events.connected(organizationId, {
+				visitorId: visitor.id,
+				externalId: visitor.externalId,
+			});
+		}
 	}
 
 	/** Called by VisitorGateway on an explicit "visitor left" signal. */
@@ -193,10 +206,9 @@ export class VisitorService {
 			data: { isOnline: false, lastSeenAt: new Date() },
 			select: { id: true, externalId: true },
 		});
-		void this.sse.publish([`org:${organizationId}`], "visitor.disconnected", {
+		this.events.disconnected(organizationId, {
 			visitorId: visitor.id,
 			externalId: visitor.externalId,
-			isOnline: false,
 		});
 	}
 
@@ -262,10 +274,9 @@ export class VisitorService {
 				select: VISITOR_LIST_SELECT,
 			});
 			await this.redis.zAdd(onlinePresenceKey(organizationId), Date.now(), visitor.id);
-			void this.sse.publish([`org:${organizationId}`], "visitor.connected", {
+			this.events.connected(organizationId, {
 				visitorId: visitor.id,
 				externalId: visitor.externalId,
-				isOnline: true,
 			});
 			return { visitor, sessionId };
 		}
@@ -295,12 +306,10 @@ export class VisitorService {
 
 		await this.redis.zAdd(onlinePresenceKey(organizationId), Date.now(), visitor.id);
 
-		void this.sse.publish([`org:${organizationId}`], "visitor.created", {
-			visitor,
-		});
-		void this.sse.publish([`org:${organizationId}`], "visitor.connected", {
+		this.events.created(organizationId, visitor);
+		this.events.connected(organizationId, {
 			visitorId: visitor.id,
-			isOnline: true,
+			externalId: visitor.externalId,
 		});
 
 		return { visitor, sessionId };
@@ -479,9 +488,7 @@ export class VisitorService {
 		});
 
 		// persisted -> SSE
-		void this.sse.publish([`org:${organizationId}`], "visitor.updated", {
-			visitor: updated,
-		});
+		this.events.updated(organizationId, updated);
 
 		return {
 			message: "Visitor updated successfully",
@@ -520,9 +527,7 @@ export class VisitorService {
 			},
 		});
 
-		void this.sse.publish([`org:${organizationId}`], "visitor.assigned", {
-			visitor: updated,
-		});
+		this.events.assigned(organizationId, updated);
 
 		return {
 			message: dto.agentId
@@ -578,10 +583,7 @@ export class VisitorService {
 			},
 		});
 
-		void this.sse.publish([`org:${organizationId}`], "visitor.note.created", {
-			visitorId,
-			note,
-		});
+		this.events.noteCreated(organizationId, { visitorId, note });
 
 		return {
 			message: "Visitor note created successfully",

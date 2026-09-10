@@ -34,7 +34,7 @@ There are **two parallel transports**, both scoped by string keys:
 
 ### Lifecycle of an org-scoped event (e.g. new message)
 
-1. **Auth at WS handshake** — `apps/server/src/chat/chat.gateway.ts:60-83`
+1. **Auth at WS handshake** — `apps/server/src/inbox/inbox.gateway.ts` (via shared `common/auth/socket-user.ts`)
    Dashboard connects with `auth={{ token }}` (JWT from localStorage). Gateway verifies token → `client.data.user = { id, type: "AGENT" }`. Invalid/no token → VISITOR. **No org resolution here.**
 
 2. **Client subscribes to its org room** — `apps/app/src/features/default-inbox/providers/inbox-socket-provider.tsx:25`
@@ -43,7 +43,7 @@ There are **two parallel transports**, both scoped by string keys:
    ```
    `useChannel` (`packages/websocket/src/react/use-channel.ts`) just emits once connected. `organizationId` comes from the URL param `_organization-protected/$organization/inbox.tsx`.
 
-3. **Server joins the socket into the room** — `chat.gateway.ts:103-120`
+3. **Server joins the socket into the room** — `inbox.gateway.ts` (`agent:join` / `conversation:join`)
    ```ts
    @SubscribeMessage("agent:join")
    handleAgentJoin(client, data) { client.join(`org:${data.organizationId}`); }
@@ -69,7 +69,8 @@ There are **two parallel transports**, both scoped by string keys:
 
 | Concern | File |
 |---|---|
-| WS gateway (all handlers: join/send/typing/status) | `apps/server/src/chat/chat.gateway.ts` |
+| WS inbox gateway (`/agent-inbox`: join/send/typing/status) | `apps/server/src/inbox/inbox.gateway.ts` |
+| WS agent presence gateway (`/agent-visitors`: join/online/offline) | `apps/server/src/inbox/agent.gateway.ts` |
 | HTTP→WS bridge for controllers | `apps/server/src/common/services/event-bridge.service.ts` |
 | SSE registry + Redis fanout | `apps/server/src/sse/sse.service.ts` |
 | SSE endpoints (agent w/ membership check, visitor) | `apps/server/src/sse/sse.controller.ts` |

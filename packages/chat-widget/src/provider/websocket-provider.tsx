@@ -1,4 +1,4 @@
-import { WebSocketProvider } from "@package/websocket";
+import { SOCKET_NAMESPACES, WebSocketProvider } from "@package/websocket";
 import type { ReactNode } from "react";
 import { getConfig } from "../config";
 
@@ -8,21 +8,27 @@ import { getConfig } from "../config";
  * safely call `useWebSocket`, but the socket is only opened once a
  * conversation exists.
  */
-export function WidgetWebSocketProvider({ children }: { children: ReactNode }) {
+export function WidgetWebSocketProvider({
+	namespace,
+	children,
+}: {
+	namespace: (typeof SOCKET_NAMESPACES)[keyof typeof SOCKET_NAMESPACES];
+	children: ReactNode;
+}) {
 	const config = getConfig();
 
 	return (
 		<WebSocketProvider
 			options={{
-				url: config.websocketUrl,
+				url: `${config.websocketUrl}${namespace}`,
 				transports: ["websocket"],
 				reconnection: true,
 				reconnectionAttempts: 10,
 				reconnectionDelay: 1000,
 				withCredentials: false,
 			}}
-			// no credentials needed - VisitorGateway verifies visitorId/organizationId
-			// against the DB itself, so any truthy auth just triggers connect()
+			// Auth is optional: /agent classifies by token (agent vs visitor),
+			// /visitor verifies visitorId/organizationId against the DB per message.
 			auth={{}}
 		>
 			{children}
