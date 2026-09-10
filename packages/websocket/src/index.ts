@@ -21,3 +21,8 @@ export const SOCKET_NAMESPACES = {
 	AGENT_VISITORS: "/agent-visitors",
 	VISITOR: "/visitor",
 } as const;
+
+/** socket.io upgrades http(s) itself, but clients must pass ws(s)://. */
+export function toWebSocketUrl(url: string): string {
+	return url.replace(/^https:\/\//, "wss://").replace(/^http:\/\//, "ws://");
+}

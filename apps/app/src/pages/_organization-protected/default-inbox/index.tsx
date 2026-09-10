@@ -8,6 +8,7 @@ interface DefaultInboxPageProps {
 }
 
 export function DefaultInboxPage({ organizationId }: DefaultInboxPageProps) {
+  console.log("hello sir")
   return (
     <InboxSseProvider organizationId={organizationId}>
       <InboxSocketProvider organizationId={organizationId}>

@@ -52,7 +52,10 @@ export function InboxSocketProvider({
 }: InboxSocketProviderProps) {
 	const token =
 		typeof window !== "undefined" ? localStorage.getItem("token") : null;
-
+	console.log(
+		"inbox socket url:",
+		getAgentSocketUrl(SOCKET_NAMESPACES.AGENT_INBOX),
+	);
 	return (
 		<WebSocketProvider
 			options={{

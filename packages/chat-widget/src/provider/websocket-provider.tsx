@@ -1,4 +1,8 @@
-import { SOCKET_NAMESPACES, WebSocketProvider } from "@package/websocket";
+import {
+	SOCKET_NAMESPACES,
+	toWebSocketUrl,
+	WebSocketProvider,
+} from "@package/websocket";
 import type { ReactNode } from "react";
 import { getConfig } from "../config";
 
@@ -20,7 +24,7 @@ export function WidgetWebSocketProvider({
 	return (
 		<WebSocketProvider
 			options={{
-				url: `${config.websocketUrl}${namespace}`,
+				url: `${toWebSocketUrl(config.websocketUrl)}${namespace}`,
 				transports: ["websocket"],
 				reconnection: true,
 				reconnectionAttempts: 10,
