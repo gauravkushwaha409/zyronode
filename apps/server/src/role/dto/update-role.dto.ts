@@ -1,5 +1,12 @@
-import { IsArray, IsOptional, IsString, IsUUID, MaxLength } from "class-validator";
 import { ApiPropertyOptional } from "@nestjs/swagger";
+import {
+	IsArray,
+	IsNotEmpty,
+	IsOptional,
+	IsString,
+	IsUUID,
+	MaxLength,
+} from "class-validator";
 
 export class UpdateRoleDto {
 	@ApiPropertyOptional({ description: "Role name", example: "Support Lead" })
@@ -8,7 +15,10 @@ export class UpdateRoleDto {
 	@MaxLength(50)
 	name?: string;
 
-	@ApiPropertyOptional({ description: "Role description", example: "Leads the support team" })
+	@ApiPropertyOptional({
+		description: "Role description",
+		example: "Leads the support team",
+	})
 	@IsString()
 	@IsOptional()
 	@MaxLength(300)
@@ -20,6 +30,7 @@ export class UpdateRoleDto {
 	})
 	@IsArray()
 	@IsOptional()
+	@IsNotEmpty()
 	@IsUUID("4", { each: true })
 	permissionIds?: string[];
 }
