@@ -21,7 +21,7 @@ export function LiveVisitorProvider({
 	return (
 		<SseProvider
 			options={{
-				url: buildSseUrl(CONFIG.SSE.AGENT_STREAM, { organizationId }),
+				url: buildSseUrl(CONFIG.SSE.AGENT_VISITOR_STREAM, { organizationId }),
 			}}
 		>
 			<LiveVisitorRealtime organizationId={organizationId} />

@@ -1,8 +1,9 @@
 import { CONFIG } from ".";
 
 export const SSE_ENDPOINTS = {
-	AGENT_STREAM: "/sse-event/agent",
-	CONVERSATION_STREAM: "/sse-event/conversation",
+	AGENT_INBOX_STREAM: "/sse/agent/inbox",
+	AGENT_VISITOR_STREAM: "/sse/agent/visitor",
+	CONVERSATION_STREAM: "/sse/visitor/conversation",
 } as const;
 
 /**
@@ -13,7 +14,7 @@ export function buildSseUrl(
 	path: string,
 	params?: Record<string, string>,
 ): string {
-	const isProxy = (typeof __PROXY_ENABLED__ !== "undefined" && __PROXY_ENABLED__);
+	const isProxy = typeof __PROXY_ENABLED__ !== "undefined" && __PROXY_ENABLED__;
 	const origin = isProxy ? "" : CONFIG.ENV.SERVER_URL;
 
 	const url = new URL(`${origin || window.location.origin}/api/v1${path}`);

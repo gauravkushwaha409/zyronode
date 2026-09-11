@@ -11,7 +11,7 @@ import { SseService } from "../sse/sse.service";
  *
  * Single endpoint (canonical widget SSE):
  *   GET /api/v1/widget/sse/:conversationId -> text/event-stream
- * Legacy: GET /api/v1/sse-event/visitor/:conversationId (sse.controller.ts)
+ * Legacy: GET /api/v1/sse/visitor/conversation/:conversationId (sse.controller.ts)
  * remains for backward compat.
  */
 @ApiTags("Widget")

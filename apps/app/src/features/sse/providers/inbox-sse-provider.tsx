@@ -22,7 +22,7 @@ export function InboxSseProvider({
 	return (
 		<SseProvider
 			options={{
-				url: buildSseUrl(CONFIG.SSE.AGENT_STREAM, { organizationId }),
+				url: buildSseUrl(CONFIG.SSE.AGENT_INBOX_STREAM, { organizationId }),
 			}}
 		>
 			<InboxSseEvents organizationId={organizationId} />

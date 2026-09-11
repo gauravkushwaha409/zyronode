@@ -27,8 +27,9 @@ There are **two parallel transports**, both scoped by string keys:
 | | WebSocket (socket.io) | SSE |
 |---|---|---|
 | Key format | socket.io room `org:<id>` / `conversation:<id>` | key Set entries `org:<id>` / `conversation:<id>` |
-| Join point (agent) | `useChannel("agent:join", { organizationId })` | GET `/api/v1/sse-event/agent?organizationId=...` |
-| Join point (visitor) | `useChannel("conversation:join", { conversationId })` | GET `/api/v1/sse-event/visitor/:conversationId` |
+| Join point (agent, inbox) | `useChannel("agent:join", { organizationId })` | GET `/api/v1/sse/agent/inbox?organizationId=...` |
+| Join point (agent, visitors) | `useChannel("agent:join", { organizationId })` | GET `/api/v1/sse/agent/visitor?organizationId=...` |
+| Join point (visitor) | `useChannel("conversation:join", { conversationId })` | GET `/api/v1/sse/visitor/conversation/:conversationId` |
 | Membership verified? | ❌ trusts client-sent org id | ✅ checks `organizationMember` table |
 | Horizontal scaling | instance-local (no Redis adapter) | Redis pub/sub fanout |
 

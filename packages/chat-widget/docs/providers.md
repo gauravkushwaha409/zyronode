@@ -18,7 +18,7 @@ Single shared client for widget (not app's client). Must wrap `ConversationProvi
 - If `!conversationId` → renders children without SSE (no connection)
 - Else mounts `@package/sse` `SseProvider` with:
   ```
-  url: ${serverUrl}/api/v1/sse-event/visitor/${conversationId}
+  url: ${serverUrl}/api/v1/sse/visitor/conversation/${conversationId}
   withCredentials:false, retry 2000, max 10
   ```
 - Used for `message.created` and other SSE events.

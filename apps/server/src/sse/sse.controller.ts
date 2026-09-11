@@ -20,21 +20,41 @@ import type { Response } from "express";
 import { CurrentUser } from "../common/decorator/current-user.decorator";
 import { JwtAuthGuard } from "../common/gaurds/jwt-auth.guard";
 import { PrismaService } from "../prisma/prisma.service";
+import { WIDGET_SSE_EVENTS } from "../visitor/events/widget-event.types";
 import { SseService } from "./sse.service";
 
+// Role-first, module-second scoping: each route only delivers its module's events.
+const INBOX_EVENTS = new Set([
+	WIDGET_SSE_EVENTS.MESSAGE_CREATED,
+	WIDGET_SSE_EVENTS.CONVERSATION_UPDATED,
+]);
+const AGENT_VISITOR_EVENTS = new Set([
+	WIDGET_SSE_EVENTS.VISITOR_CREATED,
+	WIDGET_SSE_EVENTS.VISITOR_UPDATED,
+	WIDGET_SSE_EVENTS.VISITOR_ASSIGNED,
+	WIDGET_SSE_EVENTS.VISITOR_NOTE_CREATED,
+	WIDGET_SSE_EVENTS.VISITOR_CONNECTED,
+	WIDGET_SSE_EVENTS.VISITOR_DISCONNECTED,
+	WIDGET_SSE_EVENTS.CONVERSATION_UPDATED,
+]);
+const VISITOR_CONVERSATION_EVENTS = new Set([
+	WIDGET_SSE_EVENTS.MESSAGE_CREATED,
+	WIDGET_SSE_EVENTS.CONVERSATION_UPDATED,
+]);
+
 @ApiTags("SSE")
-@Controller("sse-event")
+@Controller("sse")
 export class SseController {
 	constructor(
 		private readonly sse: SseService,
 		private readonly prisma: PrismaService,
 	) {}
 
-	@Get("agent")
+	@Get("agent/inbox")
 	@UseGuards(JwtAuthGuard)
 	@ApiBearerAuth()
 	@ApiOperation({
-		summary: "Agent SSE stream - receives events for one organization",
+		summary: "Agent inbox SSE stream - messaging events for one organization",
 	})
 	@ApiQuery({
 		name: "organizationId",
@@ -43,7 +63,7 @@ export class SseController {
 	})
 	@ApiResponse({ status: 200, description: "SSE stream opened" })
 	@ApiResponse({ status: 403, description: "Not a member of this organization" })
-	async agentStream(
+	async agentInboxStream(
 		@Query("organizationId") organizationId: string,
 		@CurrentUser("id") userId: string,
 		@Res() res: Response,
@@ -60,10 +80,43 @@ export class SseController {
 		if (!membership) {
 			throw new ForbiddenException("You are not a member of this organization");
 		}
-		this.openStream(res, [`org:${organizationId}`]);
+		this.openStream(res, [`org:${organizationId}`], INBOX_EVENTS);
 	}
 
-	@Get("visitor/:conversationId")
+	@Get("agent/visitor")
+	@UseGuards(JwtAuthGuard)
+	@ApiBearerAuth()
+	@ApiOperation({
+		summary: "Agent visitor SSE stream - visitor events for one organization",
+	})
+	@ApiQuery({
+		name: "organizationId",
+		description: "Organization ID",
+		required: true,
+	})
+	@ApiResponse({ status: 200, description: "SSE stream opened" })
+	@ApiResponse({ status: 403, description: "Not a member of this organization" })
+	async agentVisitorStream(
+		@Query("organizationId") organizationId: string,
+		@CurrentUser("id") userId: string,
+		@Res() res: Response,
+	) {
+		if (!organizationId) {
+			throw new ForbiddenException("organizationId query param is required");
+		}
+
+		const membership = await this.prisma.organizationMember.findUnique({
+			where: {
+				userId_organizationId: { userId, organizationId },
+			},
+		});
+		if (!membership) {
+			throw new ForbiddenException("You are not a member of this organization");
+		}
+		this.openStream(res, [`org:${organizationId}`], AGENT_VISITOR_EVENTS);
+	}
+
+	@Get("visitor/conversation/:conversationId")
 	@ApiOperation({
 		summary: "Visitor SSE stream - scoped to a single conversation",
 	})
@@ -82,10 +135,14 @@ export class SseController {
 			throw new NotFoundException("Conversation not found");
 		}
 
-		this.openStream(res, [`conversation:${conversationId}`]);
+		this.openStream(
+			res,
+			[`conversation:${conversationId}`],
+			VISITOR_CONVERSATION_EVENTS,
+		);
 	}
 
-	private openStream(res: Response, keys: string[]): void {
+	private openStream(res: Response, keys: string[], events?: Set<string>): void {
 		res.setHeader("Content-Type", "text/event-stream");
 		res.setHeader("Cache-Control", "no-cache, no-transform");
 		res.setHeader("Connection", "keep-alive");
@@ -97,6 +154,7 @@ export class SseController {
 		void this.sse.register({
 			id: clientId,
 			keys: new Set(keys),
+			events,
 			write: (chunk) => res.write(chunk),
 		});
 
