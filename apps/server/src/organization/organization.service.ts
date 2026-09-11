@@ -171,6 +171,13 @@ export class OrganizationService {
 			orderBy: { joinedAt: "asc" },
 			select: {
 				joinedAt: true,
+				role: {
+					select: {
+						id: true,
+						name: true,
+						isSystem: true,
+					},
+				},
 				user: {
 					select: {
 						id: true,

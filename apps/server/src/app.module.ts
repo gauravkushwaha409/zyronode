@@ -10,6 +10,7 @@ import { OrganizationModule } from "./organization/organization.module";
 import { OtpModule } from "./otp/otp.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { RedisModule } from "./redis/redis.module";
+import { RoleModule } from "./role/role.module";
 import { SseModule } from "./sse/sse.module";
 import { VisitorModule } from "./visitor/visitor.module";
 import { WebsocketModule } from "./websocket/websocket.module";
@@ -34,6 +35,7 @@ const hasObserveCreds =
 		ConversationModule,
 		MessageModule,
 		InboxModule,
+		RoleModule,
 		SseModule,
 		VisitorModule,
 		...(hasObserveCreds
