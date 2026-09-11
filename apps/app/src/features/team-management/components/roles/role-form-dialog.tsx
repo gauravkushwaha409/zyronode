@@ -14,27 +14,9 @@ import {
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRoleForm } from "../../hooks/form-handler";
 import type { RoleFormSchema } from "../../schema";
-import type { PermissionItem, RoleItem } from "../../types";
+import type { PermissionItem, RoleForm } from "../../types";
 
-export type RoleFormMode = "create" | "edit" | "view";
-
-export interface RoleFormPayload {
-	name: string;
-	description?: string;
-	permissionIds: string[];
-}
-
-interface RoleFormDialogProps {
-	open: boolean;
-	mode: RoleFormMode;
-	role?: RoleItem;
-	permissions: PermissionItem[];
-	onOpenChange: (open: boolean) => void;
-	onSubmit: (payload: RoleFormPayload) => void;
-	isSubmitting?: boolean;
-}
-
-const MODE_TITLE: Record<RoleFormMode, string> = {
+const MODE_TITLE: Record<RoleForm.Mode, string> = {
 	create: "Create role",
 	edit: "Edit role",
 	view: "View role",
@@ -48,7 +30,7 @@ export function RoleFormDialog({
 	onOpenChange,
 	onSubmit,
 	isSubmitting = false,
-}: RoleFormDialogProps) {
+}: RoleForm.Props) {
 	const form = useRoleForm();
 	const isReadOnly = mode === "view";
 	const permissionError = form.formState.errors.permissionIds?.message as

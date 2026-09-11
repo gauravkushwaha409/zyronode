@@ -17,19 +17,15 @@ import {
 	useRolesQuery,
 	useUpdateRoleMutation,
 } from "../../hooks";
-import type { RoleItem } from "../../types";
-import {
-	RoleFormDialog,
-	type RoleFormMode,
-	type RoleFormPayload,
-} from "./role-form-dialog";
+import type { RoleForm, RoleItem } from "../../types";
+import { RoleFormDialog } from "./role-form-dialog";
 
 interface RolesTabProps {
 	organizationId: string;
 }
 
 interface DialogState {
-	mode: RoleFormMode;
+	mode: RoleForm.Mode;
 	role?: RoleItem;
 }
 
@@ -150,11 +146,7 @@ export function RolesTab({ organizationId }: RolesTabProps) {
 								>
 									Edit
 								</Button>
-								<Button
-									size="xs"
-									variant="alert"
-									onClick={() => setDeleteTarget(role)}
-								>
+								<Button size="xs" variant="alert" onClick={() => setDeleteTarget(role)}>
 									Delete
 								</Button>
 							</>
@@ -165,7 +157,7 @@ export function RolesTab({ organizationId }: RolesTabProps) {
 		},
 	];
 
-	const handleSubmit = (payload: RoleFormPayload) => {
+	const handleSubmit = (payload: RoleForm.Payload) => {
 		if (!dialog) return;
 
 		if (dialog.mode === "create") {
