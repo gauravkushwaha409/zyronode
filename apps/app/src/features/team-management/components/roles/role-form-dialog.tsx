@@ -4,9 +4,10 @@ import {
 	DialogWrapper,
 	Input,
 	Label,
+	PopoverWrapper,
 	Typography,
 } from "@package/ui";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { roleFormSchema } from "../../schema";
 import type { PermissionItem, RoleItem } from "../../types";
 
@@ -167,18 +168,12 @@ export function RoleFormDialog({
 									</legend>
 									<div className="flex flex-col gap-1.5">
 										{modulePermissions.map((permission) => (
-											<label
+											<PermissionCheckbox
 												key={permission.id}
-												htmlFor={`permission-${permission.id}`}
-												className="flex cursor-pointer items-center gap-2"
-											>
-												<Checkbox
-													id={`permission-${permission.id}`}
-													checked={permissionIds.includes(permission.id)}
-													onCheckedChange={() => togglePermission(permission.id)}
-												/>
-												<span className="typo-t3 text-gray-700">{permission.name}</span>
-											</label>
+												permission={permission}
+												checked={permissionIds.includes(permission.id)}
+												onToggle={() => togglePermission(permission.id)}
+											/>
 										))}
 									</div>
 								</fieldset>
@@ -211,5 +206,82 @@ function LabelField({
 			</Label>
 			{children}
 		</div>
+	);
+}
+
+function PermissionCheckbox({
+	permission,
+	checked,
+	onToggle,
+}: {
+	permission: PermissionItem;
+	checked: boolean;
+	onToggle: () => void;
+}) {
+	const [open, setOpen] = useState(false);
+	const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+	const handleEnter = () => {
+		if (closeTimer.current) clearTimeout(closeTimer.current);
+		setOpen(true);
+	};
+
+	const handleLeave = () => {
+		if (closeTimer.current) clearTimeout(closeTimer.current);
+		closeTimer.current = setTimeout(() => setOpen(false), 120);
+	};
+
+	const content = (
+		<>
+			<Checkbox
+				id={`permission-${permission.id}`}
+				checked={checked}
+				onCheckedChange={onToggle}
+			/>
+			<span className="typo-t3 text-gray-700">{permission.name}</span>
+		</>
+	);
+
+	if (!permission.description) {
+		return (
+			<label
+				htmlFor={`permission-${permission.id}`}
+				className="flex cursor-pointer items-center gap-2"
+			>
+				{content}
+			</label>
+		);
+	}
+
+	return (
+		<PopoverWrapper
+			open={open}
+			onOpenChange={(next) => {
+				if (!next) setOpen(false);
+			}}
+			title={permission.name}
+			description={permission.description}
+			align="start"
+			sideOffset={6}
+			Trigger={() => (
+				<label
+					htmlFor={`permission-${permission.id}`}
+					className="flex cursor-pointer items-center gap-2"
+				>
+					{content}
+				</label>
+			)}
+			popoverTriggerProps={{
+				onMouseEnter: handleEnter,
+				onMouseLeave: handleLeave,
+			}}
+			className="p-3"
+		>
+			<span onMouseEnter={handleEnter} onMouseLeave={handleLeave}>
+				<Typography.T6 className="text-gray-500">
+					{permission.description}
+				</Typography.T6>
+			</span>
+		</PopoverWrapper>
 	);
 }
