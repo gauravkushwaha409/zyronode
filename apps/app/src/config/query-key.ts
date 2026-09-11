@@ -9,6 +9,12 @@ export const QUERY_KEY = {
 		MEMBERS: (organizationId: string) =>
 			["organization", organizationId, "members"] as const,
 	},
+	ROLE: {
+		LIST: (organizationId: string) =>
+			["organization", organizationId, "roles"] as const,
+		PERMISSIONS: (organizationId: string) =>
+			["organization", organizationId, "permissions"] as const,
+	},
 	INBOX: {
 		CONVERSATIONS: (organizationId: string, filters?: Record<string, unknown>) =>
 			["inbox", "conversations", organizationId, filters] as const,
