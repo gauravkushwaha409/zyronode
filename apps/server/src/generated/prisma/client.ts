@@ -70,6 +70,11 @@ export type Role = Prisma.RoleModel
  */
 export type RolePermission = Prisma.RolePermissionModel
 /**
+ * Model Team
+ * 
+ */
+export type Team = Prisma.TeamModel
+/**
  * Model Visitor
  * 
  */

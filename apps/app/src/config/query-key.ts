@@ -15,6 +15,10 @@ export const QUERY_KEY = {
 		PERMISSIONS: (organizationId: string) =>
 			["organization", organizationId, "permissions"] as const,
 	},
+	TEAM: {
+		LIST: (organizationId: string) =>
+			["organization", organizationId, "teams"] as const,
+	},
 	INBOX: {
 		CONVERSATIONS: (organizationId: string, filters?: Record<string, unknown>) =>
 			["inbox", "conversations", organizationId, filters] as const,

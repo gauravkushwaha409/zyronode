@@ -29,6 +29,7 @@ export type OrganizationMemberMinAggregateOutputType = {
   userId: string | null
   organizationId: string | null
   roleId: string | null
+  teamId: string | null
   joinedAt: Date | null
 }
 
@@ -37,6 +38,7 @@ export type OrganizationMemberMaxAggregateOutputType = {
   userId: string | null
   organizationId: string | null
   roleId: string | null
+  teamId: string | null
   joinedAt: Date | null
 }
 
@@ -45,6 +47,7 @@ export type OrganizationMemberCountAggregateOutputType = {
   userId: number
   organizationId: number
   roleId: number
+  teamId: number
   joinedAt: number
   _all: number
 }
@@ -55,6 +58,7 @@ export type OrganizationMemberMinAggregateInputType = {
   userId?: true
   organizationId?: true
   roleId?: true
+  teamId?: true
   joinedAt?: true
 }
 
@@ -63,6 +67,7 @@ export type OrganizationMemberMaxAggregateInputType = {
   userId?: true
   organizationId?: true
   roleId?: true
+  teamId?: true
   joinedAt?: true
 }
 
@@ -71,6 +76,7 @@ export type OrganizationMemberCountAggregateInputType = {
   userId?: true
   organizationId?: true
   roleId?: true
+  teamId?: true
   joinedAt?: true
   _all?: true
 }
@@ -152,6 +158,7 @@ export type OrganizationMemberGroupByOutputType = {
   userId: string
   organizationId: string
   roleId: string | null
+  teamId: string | null
   joinedAt: Date
   _count: OrganizationMemberCountAggregateOutputType | null
   _min: OrganizationMemberMinAggregateOutputType | null
@@ -181,10 +188,12 @@ export type OrganizationMemberWhereInput = {
   userId?: Prisma.StringFilter<"OrganizationMember"> | string
   organizationId?: Prisma.StringFilter<"OrganizationMember"> | string
   roleId?: Prisma.StringNullableFilter<"OrganizationMember"> | string | null
+  teamId?: Prisma.StringNullableFilter<"OrganizationMember"> | string | null
   joinedAt?: Prisma.DateTimeFilter<"OrganizationMember"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
   role?: Prisma.XOR<Prisma.RoleNullableScalarRelationFilter, Prisma.RoleWhereInput> | null
+  team?: Prisma.XOR<Prisma.TeamNullableScalarRelationFilter, Prisma.TeamWhereInput> | null
 }
 
 export type OrganizationMemberOrderByWithRelationInput = {
@@ -192,10 +201,12 @@ export type OrganizationMemberOrderByWithRelationInput = {
   userId?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   roleId?: Prisma.SortOrderInput | Prisma.SortOrder
+  teamId?: Prisma.SortOrderInput | Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   organization?: Prisma.OrganizationOrderByWithRelationInput
   role?: Prisma.RoleOrderByWithRelationInput
+  team?: Prisma.TeamOrderByWithRelationInput
 }
 
 export type OrganizationMemberWhereUniqueInput = Prisma.AtLeast<{
@@ -207,10 +218,12 @@ export type OrganizationMemberWhereUniqueInput = Prisma.AtLeast<{
   userId?: Prisma.StringFilter<"OrganizationMember"> | string
   organizationId?: Prisma.StringFilter<"OrganizationMember"> | string
   roleId?: Prisma.StringNullableFilter<"OrganizationMember"> | string | null
+  teamId?: Prisma.StringNullableFilter<"OrganizationMember"> | string | null
   joinedAt?: Prisma.DateTimeFilter<"OrganizationMember"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
   role?: Prisma.XOR<Prisma.RoleNullableScalarRelationFilter, Prisma.RoleWhereInput> | null
+  team?: Prisma.XOR<Prisma.TeamNullableScalarRelationFilter, Prisma.TeamWhereInput> | null
 }, "id" | "userId_organizationId">
 
 export type OrganizationMemberOrderByWithAggregationInput = {
@@ -218,6 +231,7 @@ export type OrganizationMemberOrderByWithAggregationInput = {
   userId?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   roleId?: Prisma.SortOrderInput | Prisma.SortOrder
+  teamId?: Prisma.SortOrderInput | Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
   _count?: Prisma.OrganizationMemberCountOrderByAggregateInput
   _max?: Prisma.OrganizationMemberMaxOrderByAggregateInput
@@ -232,6 +246,7 @@ export type OrganizationMemberScalarWhereWithAggregatesInput = {
   userId?: Prisma.StringWithAggregatesFilter<"OrganizationMember"> | string
   organizationId?: Prisma.StringWithAggregatesFilter<"OrganizationMember"> | string
   roleId?: Prisma.StringNullableWithAggregatesFilter<"OrganizationMember"> | string | null
+  teamId?: Prisma.StringNullableWithAggregatesFilter<"OrganizationMember"> | string | null
   joinedAt?: Prisma.DateTimeWithAggregatesFilter<"OrganizationMember"> | Date | string
 }
 
@@ -241,6 +256,7 @@ export type OrganizationMemberCreateInput = {
   user: Prisma.UserCreateNestedOneWithoutOrganizationsInput
   organization: Prisma.OrganizationCreateNestedOneWithoutMembersInput
   role?: Prisma.RoleCreateNestedOneWithoutMembersInput
+  team?: Prisma.TeamCreateNestedOneWithoutMembersInput
 }
 
 export type OrganizationMemberUncheckedCreateInput = {
@@ -248,6 +264,7 @@ export type OrganizationMemberUncheckedCreateInput = {
   userId: string
   organizationId: string
   roleId?: string | null
+  teamId?: string | null
   joinedAt?: Date | string
 }
 
@@ -257,6 +274,7 @@ export type OrganizationMemberUpdateInput = {
   user?: Prisma.UserUpdateOneRequiredWithoutOrganizationsNestedInput
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutMembersNestedInput
   role?: Prisma.RoleUpdateOneWithoutMembersNestedInput
+  team?: Prisma.TeamUpdateOneWithoutMembersNestedInput
 }
 
 export type OrganizationMemberUncheckedUpdateInput = {
@@ -264,6 +282,7 @@ export type OrganizationMemberUncheckedUpdateInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   roleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  teamId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -272,6 +291,7 @@ export type OrganizationMemberCreateManyInput = {
   userId: string
   organizationId: string
   roleId?: string | null
+  teamId?: string | null
   joinedAt?: Date | string
 }
 
@@ -285,6 +305,7 @@ export type OrganizationMemberUncheckedUpdateManyInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   roleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  teamId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -308,6 +329,7 @@ export type OrganizationMemberCountOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   roleId?: Prisma.SortOrder
+  teamId?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
 }
 
@@ -316,6 +338,7 @@ export type OrganizationMemberMaxOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   roleId?: Prisma.SortOrder
+  teamId?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
 }
 
@@ -324,6 +347,7 @@ export type OrganizationMemberMinOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   organizationId?: Prisma.SortOrder
   roleId?: Prisma.SortOrder
+  teamId?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
 }
 
@@ -453,17 +477,61 @@ export type OrganizationMemberUncheckedUpdateManyWithoutRoleNestedInput = {
   deleteMany?: Prisma.OrganizationMemberScalarWhereInput | Prisma.OrganizationMemberScalarWhereInput[]
 }
 
+export type OrganizationMemberCreateNestedManyWithoutTeamInput = {
+  create?: Prisma.XOR<Prisma.OrganizationMemberCreateWithoutTeamInput, Prisma.OrganizationMemberUncheckedCreateWithoutTeamInput> | Prisma.OrganizationMemberCreateWithoutTeamInput[] | Prisma.OrganizationMemberUncheckedCreateWithoutTeamInput[]
+  connectOrCreate?: Prisma.OrganizationMemberCreateOrConnectWithoutTeamInput | Prisma.OrganizationMemberCreateOrConnectWithoutTeamInput[]
+  createMany?: Prisma.OrganizationMemberCreateManyTeamInputEnvelope
+  connect?: Prisma.OrganizationMemberWhereUniqueInput | Prisma.OrganizationMemberWhereUniqueInput[]
+}
+
+export type OrganizationMemberUncheckedCreateNestedManyWithoutTeamInput = {
+  create?: Prisma.XOR<Prisma.OrganizationMemberCreateWithoutTeamInput, Prisma.OrganizationMemberUncheckedCreateWithoutTeamInput> | Prisma.OrganizationMemberCreateWithoutTeamInput[] | Prisma.OrganizationMemberUncheckedCreateWithoutTeamInput[]
+  connectOrCreate?: Prisma.OrganizationMemberCreateOrConnectWithoutTeamInput | Prisma.OrganizationMemberCreateOrConnectWithoutTeamInput[]
+  createMany?: Prisma.OrganizationMemberCreateManyTeamInputEnvelope
+  connect?: Prisma.OrganizationMemberWhereUniqueInput | Prisma.OrganizationMemberWhereUniqueInput[]
+}
+
+export type OrganizationMemberUpdateManyWithoutTeamNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationMemberCreateWithoutTeamInput, Prisma.OrganizationMemberUncheckedCreateWithoutTeamInput> | Prisma.OrganizationMemberCreateWithoutTeamInput[] | Prisma.OrganizationMemberUncheckedCreateWithoutTeamInput[]
+  connectOrCreate?: Prisma.OrganizationMemberCreateOrConnectWithoutTeamInput | Prisma.OrganizationMemberCreateOrConnectWithoutTeamInput[]
+  upsert?: Prisma.OrganizationMemberUpsertWithWhereUniqueWithoutTeamInput | Prisma.OrganizationMemberUpsertWithWhereUniqueWithoutTeamInput[]
+  createMany?: Prisma.OrganizationMemberCreateManyTeamInputEnvelope
+  set?: Prisma.OrganizationMemberWhereUniqueInput | Prisma.OrganizationMemberWhereUniqueInput[]
+  disconnect?: Prisma.OrganizationMemberWhereUniqueInput | Prisma.OrganizationMemberWhereUniqueInput[]
+  delete?: Prisma.OrganizationMemberWhereUniqueInput | Prisma.OrganizationMemberWhereUniqueInput[]
+  connect?: Prisma.OrganizationMemberWhereUniqueInput | Prisma.OrganizationMemberWhereUniqueInput[]
+  update?: Prisma.OrganizationMemberUpdateWithWhereUniqueWithoutTeamInput | Prisma.OrganizationMemberUpdateWithWhereUniqueWithoutTeamInput[]
+  updateMany?: Prisma.OrganizationMemberUpdateManyWithWhereWithoutTeamInput | Prisma.OrganizationMemberUpdateManyWithWhereWithoutTeamInput[]
+  deleteMany?: Prisma.OrganizationMemberScalarWhereInput | Prisma.OrganizationMemberScalarWhereInput[]
+}
+
+export type OrganizationMemberUncheckedUpdateManyWithoutTeamNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationMemberCreateWithoutTeamInput, Prisma.OrganizationMemberUncheckedCreateWithoutTeamInput> | Prisma.OrganizationMemberCreateWithoutTeamInput[] | Prisma.OrganizationMemberUncheckedCreateWithoutTeamInput[]
+  connectOrCreate?: Prisma.OrganizationMemberCreateOrConnectWithoutTeamInput | Prisma.OrganizationMemberCreateOrConnectWithoutTeamInput[]
+  upsert?: Prisma.OrganizationMemberUpsertWithWhereUniqueWithoutTeamInput | Prisma.OrganizationMemberUpsertWithWhereUniqueWithoutTeamInput[]
+  createMany?: Prisma.OrganizationMemberCreateManyTeamInputEnvelope
+  set?: Prisma.OrganizationMemberWhereUniqueInput | Prisma.OrganizationMemberWhereUniqueInput[]
+  disconnect?: Prisma.OrganizationMemberWhereUniqueInput | Prisma.OrganizationMemberWhereUniqueInput[]
+  delete?: Prisma.OrganizationMemberWhereUniqueInput | Prisma.OrganizationMemberWhereUniqueInput[]
+  connect?: Prisma.OrganizationMemberWhereUniqueInput | Prisma.OrganizationMemberWhereUniqueInput[]
+  update?: Prisma.OrganizationMemberUpdateWithWhereUniqueWithoutTeamInput | Prisma.OrganizationMemberUpdateWithWhereUniqueWithoutTeamInput[]
+  updateMany?: Prisma.OrganizationMemberUpdateManyWithWhereWithoutTeamInput | Prisma.OrganizationMemberUpdateManyWithWhereWithoutTeamInput[]
+  deleteMany?: Prisma.OrganizationMemberScalarWhereInput | Prisma.OrganizationMemberScalarWhereInput[]
+}
+
 export type OrganizationMemberCreateWithoutUserInput = {
   id?: string
   joinedAt?: Date | string
   organization: Prisma.OrganizationCreateNestedOneWithoutMembersInput
   role?: Prisma.RoleCreateNestedOneWithoutMembersInput
+  team?: Prisma.TeamCreateNestedOneWithoutMembersInput
 }
 
 export type OrganizationMemberUncheckedCreateWithoutUserInput = {
   id?: string
   organizationId: string
   roleId?: string | null
+  teamId?: string | null
   joinedAt?: Date | string
 }
 
@@ -501,6 +569,7 @@ export type OrganizationMemberScalarWhereInput = {
   userId?: Prisma.StringFilter<"OrganizationMember"> | string
   organizationId?: Prisma.StringFilter<"OrganizationMember"> | string
   roleId?: Prisma.StringNullableFilter<"OrganizationMember"> | string | null
+  teamId?: Prisma.StringNullableFilter<"OrganizationMember"> | string | null
   joinedAt?: Prisma.DateTimeFilter<"OrganizationMember"> | Date | string
 }
 
@@ -509,12 +578,14 @@ export type OrganizationMemberCreateWithoutOrganizationInput = {
   joinedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutOrganizationsInput
   role?: Prisma.RoleCreateNestedOneWithoutMembersInput
+  team?: Prisma.TeamCreateNestedOneWithoutMembersInput
 }
 
 export type OrganizationMemberUncheckedCreateWithoutOrganizationInput = {
   id?: string
   userId: string
   roleId?: string | null
+  teamId?: string | null
   joinedAt?: Date | string
 }
 
@@ -549,12 +620,14 @@ export type OrganizationMemberCreateWithoutRoleInput = {
   joinedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutOrganizationsInput
   organization: Prisma.OrganizationCreateNestedOneWithoutMembersInput
+  team?: Prisma.TeamCreateNestedOneWithoutMembersInput
 }
 
 export type OrganizationMemberUncheckedCreateWithoutRoleInput = {
   id?: string
   userId: string
   organizationId: string
+  teamId?: string | null
   joinedAt?: Date | string
 }
 
@@ -584,10 +657,53 @@ export type OrganizationMemberUpdateManyWithWhereWithoutRoleInput = {
   data: Prisma.XOR<Prisma.OrganizationMemberUpdateManyMutationInput, Prisma.OrganizationMemberUncheckedUpdateManyWithoutRoleInput>
 }
 
+export type OrganizationMemberCreateWithoutTeamInput = {
+  id?: string
+  joinedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutOrganizationsInput
+  organization: Prisma.OrganizationCreateNestedOneWithoutMembersInput
+  role?: Prisma.RoleCreateNestedOneWithoutMembersInput
+}
+
+export type OrganizationMemberUncheckedCreateWithoutTeamInput = {
+  id?: string
+  userId: string
+  organizationId: string
+  roleId?: string | null
+  joinedAt?: Date | string
+}
+
+export type OrganizationMemberCreateOrConnectWithoutTeamInput = {
+  where: Prisma.OrganizationMemberWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationMemberCreateWithoutTeamInput, Prisma.OrganizationMemberUncheckedCreateWithoutTeamInput>
+}
+
+export type OrganizationMemberCreateManyTeamInputEnvelope = {
+  data: Prisma.OrganizationMemberCreateManyTeamInput | Prisma.OrganizationMemberCreateManyTeamInput[]
+  skipDuplicates?: boolean
+}
+
+export type OrganizationMemberUpsertWithWhereUniqueWithoutTeamInput = {
+  where: Prisma.OrganizationMemberWhereUniqueInput
+  update: Prisma.XOR<Prisma.OrganizationMemberUpdateWithoutTeamInput, Prisma.OrganizationMemberUncheckedUpdateWithoutTeamInput>
+  create: Prisma.XOR<Prisma.OrganizationMemberCreateWithoutTeamInput, Prisma.OrganizationMemberUncheckedCreateWithoutTeamInput>
+}
+
+export type OrganizationMemberUpdateWithWhereUniqueWithoutTeamInput = {
+  where: Prisma.OrganizationMemberWhereUniqueInput
+  data: Prisma.XOR<Prisma.OrganizationMemberUpdateWithoutTeamInput, Prisma.OrganizationMemberUncheckedUpdateWithoutTeamInput>
+}
+
+export type OrganizationMemberUpdateManyWithWhereWithoutTeamInput = {
+  where: Prisma.OrganizationMemberScalarWhereInput
+  data: Prisma.XOR<Prisma.OrganizationMemberUpdateManyMutationInput, Prisma.OrganizationMemberUncheckedUpdateManyWithoutTeamInput>
+}
+
 export type OrganizationMemberCreateManyUserInput = {
   id?: string
   organizationId: string
   roleId?: string | null
+  teamId?: string | null
   joinedAt?: Date | string
 }
 
@@ -596,12 +712,14 @@ export type OrganizationMemberUpdateWithoutUserInput = {
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutMembersNestedInput
   role?: Prisma.RoleUpdateOneWithoutMembersNestedInput
+  team?: Prisma.TeamUpdateOneWithoutMembersNestedInput
 }
 
 export type OrganizationMemberUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   roleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  teamId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -609,6 +727,7 @@ export type OrganizationMemberUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
   roleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  teamId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -616,6 +735,7 @@ export type OrganizationMemberCreateManyOrganizationInput = {
   id?: string
   userId: string
   roleId?: string | null
+  teamId?: string | null
   joinedAt?: Date | string
 }
 
@@ -624,12 +744,14 @@ export type OrganizationMemberUpdateWithoutOrganizationInput = {
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutOrganizationsNestedInput
   role?: Prisma.RoleUpdateOneWithoutMembersNestedInput
+  team?: Prisma.TeamUpdateOneWithoutMembersNestedInput
 }
 
 export type OrganizationMemberUncheckedUpdateWithoutOrganizationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   roleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  teamId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -637,6 +759,7 @@ export type OrganizationMemberUncheckedUpdateManyWithoutOrganizationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   roleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  teamId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -644,6 +767,7 @@ export type OrganizationMemberCreateManyRoleInput = {
   id?: string
   userId: string
   organizationId: string
+  teamId?: string | null
   joinedAt?: Date | string
 }
 
@@ -652,12 +776,14 @@ export type OrganizationMemberUpdateWithoutRoleInput = {
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutOrganizationsNestedInput
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutMembersNestedInput
+  team?: Prisma.TeamUpdateOneWithoutMembersNestedInput
 }
 
 export type OrganizationMemberUncheckedUpdateWithoutRoleInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  teamId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -665,6 +791,39 @@ export type OrganizationMemberUncheckedUpdateManyWithoutRoleInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  teamId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type OrganizationMemberCreateManyTeamInput = {
+  id?: string
+  userId: string
+  organizationId: string
+  roleId?: string | null
+  joinedAt?: Date | string
+}
+
+export type OrganizationMemberUpdateWithoutTeamInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutOrganizationsNestedInput
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutMembersNestedInput
+  role?: Prisma.RoleUpdateOneWithoutMembersNestedInput
+}
+
+export type OrganizationMemberUncheckedUpdateWithoutTeamInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  roleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type OrganizationMemberUncheckedUpdateManyWithoutTeamInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  roleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   joinedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -675,10 +834,12 @@ export type OrganizationMemberSelect<ExtArgs extends runtime.Types.Extensions.In
   userId?: boolean
   organizationId?: boolean
   roleId?: boolean
+  teamId?: boolean
   joinedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   role?: boolean | Prisma.OrganizationMember$roleArgs<ExtArgs>
+  team?: boolean | Prisma.OrganizationMember$teamArgs<ExtArgs>
 }, ExtArgs["result"]["organizationMember"]>
 
 export type OrganizationMemberSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -686,10 +847,12 @@ export type OrganizationMemberSelectCreateManyAndReturn<ExtArgs extends runtime.
   userId?: boolean
   organizationId?: boolean
   roleId?: boolean
+  teamId?: boolean
   joinedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   role?: boolean | Prisma.OrganizationMember$roleArgs<ExtArgs>
+  team?: boolean | Prisma.OrganizationMember$teamArgs<ExtArgs>
 }, ExtArgs["result"]["organizationMember"]>
 
 export type OrganizationMemberSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -697,10 +860,12 @@ export type OrganizationMemberSelectUpdateManyAndReturn<ExtArgs extends runtime.
   userId?: boolean
   organizationId?: boolean
   roleId?: boolean
+  teamId?: boolean
   joinedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   role?: boolean | Prisma.OrganizationMember$roleArgs<ExtArgs>
+  team?: boolean | Prisma.OrganizationMember$teamArgs<ExtArgs>
 }, ExtArgs["result"]["organizationMember"]>
 
 export type OrganizationMemberSelectScalar = {
@@ -708,24 +873,28 @@ export type OrganizationMemberSelectScalar = {
   userId?: boolean
   organizationId?: boolean
   roleId?: boolean
+  teamId?: boolean
   joinedAt?: boolean
 }
 
-export type OrganizationMemberOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "organizationId" | "roleId" | "joinedAt", ExtArgs["result"]["organizationMember"]>
+export type OrganizationMemberOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "organizationId" | "roleId" | "teamId" | "joinedAt", ExtArgs["result"]["organizationMember"]>
 export type OrganizationMemberInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   role?: boolean | Prisma.OrganizationMember$roleArgs<ExtArgs>
+  team?: boolean | Prisma.OrganizationMember$teamArgs<ExtArgs>
 }
 export type OrganizationMemberIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   role?: boolean | Prisma.OrganizationMember$roleArgs<ExtArgs>
+  team?: boolean | Prisma.OrganizationMember$teamArgs<ExtArgs>
 }
 export type OrganizationMemberIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   role?: boolean | Prisma.OrganizationMember$roleArgs<ExtArgs>
+  team?: boolean | Prisma.OrganizationMember$teamArgs<ExtArgs>
 }
 
 export type $OrganizationMemberPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -734,12 +903,14 @@ export type $OrganizationMemberPayload<ExtArgs extends runtime.Types.Extensions.
     user: Prisma.$UserPayload<ExtArgs>
     organization: Prisma.$OrganizationPayload<ExtArgs>
     role: Prisma.$RolePayload<ExtArgs> | null
+    team: Prisma.$TeamPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     userId: string
     organizationId: string
     roleId: string | null
+    teamId: string | null
     joinedAt: Date
   }, ExtArgs["result"]["organizationMember"]>
   composites: {}
@@ -1138,6 +1309,7 @@ export interface Prisma__OrganizationMemberClient<T, Null = never, ExtArgs exten
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   organization<T extends Prisma.OrganizationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OrganizationDefaultArgs<ExtArgs>>): Prisma.Prisma__OrganizationClient<runtime.Types.Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   role<T extends Prisma.OrganizationMember$roleArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OrganizationMember$roleArgs<ExtArgs>>): Prisma.Prisma__RoleClient<runtime.Types.Result.GetResult<Prisma.$RolePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  team<T extends Prisma.OrganizationMember$teamArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OrganizationMember$teamArgs<ExtArgs>>): Prisma.Prisma__TeamClient<runtime.Types.Result.GetResult<Prisma.$TeamPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1171,6 +1343,7 @@ export interface OrganizationMemberFieldRefs {
   readonly userId: Prisma.FieldRef<"OrganizationMember", 'String'>
   readonly organizationId: Prisma.FieldRef<"OrganizationMember", 'String'>
   readonly roleId: Prisma.FieldRef<"OrganizationMember", 'String'>
+  readonly teamId: Prisma.FieldRef<"OrganizationMember", 'String'>
   readonly joinedAt: Prisma.FieldRef<"OrganizationMember", 'DateTime'>
 }
     
@@ -1589,6 +1762,25 @@ export type OrganizationMember$roleArgs<ExtArgs extends runtime.Types.Extensions
    */
   include?: Prisma.RoleInclude<ExtArgs> | null
   where?: Prisma.RoleWhereInput
+}
+
+/**
+ * OrganizationMember.team
+ */
+export type OrganizationMember$teamArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Team
+   */
+  select?: Prisma.TeamSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Team
+   */
+  omit?: Prisma.TeamOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TeamInclude<ExtArgs> | null
+  where?: Prisma.TeamWhereInput
 }
 
 /**

@@ -2,8 +2,7 @@ import { SOCKET_NAMESPACES, toWebSocketUrl } from "@package/websocket";
 
 export function getSocketUrl(): string {
 	if (typeof window === "undefined") return "";
-	const isProxy =
-		typeof __PROXY_ENABLED__ !== "undefined" && __PROXY_ENABLED__;
+	const isProxy = typeof __PROXY_ENABLED__ !== "undefined" && __PROXY_ENABLED__;
 	if (isProxy) return toWebSocketUrl(window.location.origin);
 	return toWebSocketUrl(__SERVER_URL__);
 }

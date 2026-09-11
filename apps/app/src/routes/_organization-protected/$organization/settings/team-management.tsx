@@ -1,6 +1,5 @@
 import {
 	Avatar,
-	AvatarGroup,
 	Badge,
 	Button,
 	cn,
@@ -12,7 +11,10 @@ import {
 } from "@package/ui";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { RolesTab as TeamRolesTab } from "@/features/team-management";
+import {
+	RolesTab as TeamRolesTab,
+	TeamsTab as TeamTeamsTab,
+} from "@/features/team-management";
 
 export const Route = createFileRoute(
 	"/_organization-protected/$organization/settings/team-management",
@@ -126,7 +128,8 @@ function TeamManagementTabs({ organizationId }: { organizationId: string }) {
 			content: () => {
 				if (t.id === "team-invitation") return <TeamInvitationTab />;
 				if (t.id === "team-members") return <TeamMembersTab />;
-				if (t.id === "teams") return <TeamsTab />;
+				if (t.id === "teams")
+					return <TeamTeamsTab organizationId={organizationId} />;
 				return <RolesTab organizationId={organizationId} />;
 			},
 		})),
@@ -310,125 +313,6 @@ function TeamMembersTab() {
 										size="xs"
 										dot
 										className="capitalize"
-									>
-										{r.status}
-									</Badge>
-								</td>
-								<td className="px-4 py-3 text-right text-gray-400">⋯</td>
-							</tr>
-						))}
-					</tbody>
-				</table>
-			</div>
-		</section>
-	);
-}
-function TeamsTab() {
-	const rows = [
-		{
-			name: "Support",
-			color: "info",
-			leader: { name: "John Doe", online: true },
-			members: [
-				{ name: "John Doe" },
-				{ name: "Sarah Lee" },
-				{ name: "Alex Kim" },
-				{ name: "Jane" },
-			],
-			status: "active" as const,
-		},
-		{
-			name: "Sales",
-			color: "success",
-			leader: null,
-			members: [{ name: "Mike" }],
-			status: "active" as const,
-		},
-		{
-			name: "Engineering",
-			color: "warning",
-			leader: { name: "Sarah Lee", online: false },
-			members: [],
-			status: "active" as const,
-		},
-	];
-	return (
-		<section className="space-y-5 min-w-0">
-			<SectionHeader
-				heading="Team List"
-				description="Organize teams by function and responsibility."
-				actions={
-					<Button
-						size="sm"
-						rightIcon="department"
-						className="w-fit"
-						onClick={() => {}}
-					>
-						Add Teams
-					</Button>
-				}
-			/>
-			<div className="rounded-xl border border-gray-200 overflow-hidden bg-white">
-				<table className="w-full text-sm">
-					<thead className="bg-gray-50 text-gray-500">
-						<tr>
-							<th className="text-left font-medium px-4 py-2.5">Name</th>
-							<th className="text-left font-medium px-4 py-2.5">Team Leader</th>
-							<th className="text-left font-medium px-4 py-2.5">Members</th>
-							<th className="text-left font-medium px-4 py-2.5">Status</th>
-							<th className="w-12" />
-						</tr>
-					</thead>
-					<tbody className="divide-y divide-gray-100">
-						{rows.map((r) => (
-							<tr key={r.name} className="hover:bg-gray-50">
-								<td className="px-4 py-3">
-									<Badge
-										size="xs"
-										dot
-										dotVariant={r.color as never}
-										className="font-medium"
-									>
-										{r.name}
-									</Badge>
-								</td>
-								<td className="px-4 py-3">
-									{r.leader ? (
-										<div className="flex items-center gap-3">
-											<Avatar
-												size="sm"
-												fallbackText={r.leader.name}
-												showAvatarBadge
-												isActive={r.leader.online}
-												className="border"
-											/>
-											<Typography.T3 weight="medium" className="text-gray-950">
-												{r.leader.name}
-											</Typography.T3>
-										</div>
-									) : (
-										<Typography.T6 className="text-gray-500">
-											No leader assigned
-										</Typography.T6>
-									)}
-								</td>
-								<td className="px-4 py-3">
-									{r.members.length === 0 ? (
-										<Typography.T6 className="text-gray-500">No members</Typography.T6>
-									) : (
-										<AvatarGroup max={3}>
-											{r.members.map((m) => (
-												<Avatar key={m.name} fallbackText={m.name} className="border" />
-											))}
-										</AvatarGroup>
-									)}
-								</td>
-								<td className="px-4 py-3">
-									<Badge
-										radius="rounded"
-										size="sm"
-										dot
-										variant={r.status === "active" ? "success" : "alert"}
 									>
 										{r.status}
 									</Badge>

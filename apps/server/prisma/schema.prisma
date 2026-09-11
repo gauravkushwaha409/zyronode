@@ -31,6 +31,7 @@ model User {
   assignedVisitors Visitor[]     @relation("VisitorAssignedAgent")
   visitorNotes     VisitorNote[] @relation("VisitorNoteAuthor")
   deletedConversations Conversation[] @relation("ConversationDeletedBy")
+  leadingTeams     Team[]        @relation("TeamLeader")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -47,6 +48,7 @@ model Organization {
   visitors      Visitor[]
   members       OrganizationMember[]
   conversations Conversation[]
+  teams         Team[]
 
   // back-relation for lastOrg
   lastOrgUsers User[] @relation("UserLastOrg")
@@ -71,11 +73,15 @@ model OrganizationMember {
   roleId String?
   role   Role?  @relation(fields: [roleId], references: [id], onDelete: SetNull)
 
+  teamId String?
+  team   Team?  @relation(fields: [teamId], references: [id], onDelete: SetNull)
+
   joinedAt DateTime @default(now()) @map("joined_at")
 
   @@unique([userId, organizationId])
   @@index([userId])
   @@index([organizationId])
+  @@index([teamId])
   @@map("organization_members")
 }
 
@@ -124,6 +130,28 @@ model RolePermission {
 
   @@id([roleId, permissionId])
   @@map("role_permissions")
+}
+
+// Functional/department groups. Organization-scoped; members reference
+// OrganizationMember so a user belongs to a team within an org.
+model Team {
+  id             String @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name           String
+  description    String?
+
+  leaderId String?
+  leader   User?             @relation("TeamLeader", fields: [leaderId], references: [id], onDelete: SetNull)
+  members  OrganizationMember[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([organizationId, name])
+  @@index([organizationId])
+  @@index([leaderId])
+  @@map("teams")
 }
 
 model Visitor {

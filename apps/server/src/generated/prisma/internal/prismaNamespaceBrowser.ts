@@ -57,6 +57,7 @@ export const ModelName = {
   Permission: 'Permission',
   Role: 'Role',
   RolePermission: 'RolePermission',
+  Team: 'Team',
   Visitor: 'Visitor',
   VisitorNote: 'VisitorNote',
   VisitorPageVisit: 'VisitorPageVisit',
@@ -121,6 +122,7 @@ export const OrganizationMemberScalarFieldEnum = {
   userId: 'userId',
   organizationId: 'organizationId',
   roleId: 'roleId',
+  teamId: 'teamId',
   joinedAt: 'joinedAt'
 } as const
 
@@ -159,6 +161,19 @@ export const RolePermissionScalarFieldEnum = {
 } as const
 
 export type RolePermissionScalarFieldEnum = (typeof RolePermissionScalarFieldEnum)[keyof typeof RolePermissionScalarFieldEnum]
+
+
+export const TeamScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  name: 'name',
+  description: 'description',
+  leaderId: 'leaderId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TeamScalarFieldEnum = (typeof TeamScalarFieldEnum)[keyof typeof TeamScalarFieldEnum]
 
 
 export const VisitorScalarFieldEnum = {

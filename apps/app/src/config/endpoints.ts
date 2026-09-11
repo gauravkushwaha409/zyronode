@@ -19,12 +19,16 @@ export const ENDPOINTS = {
 			`/organization/${organizationId}/members`,
 	},
 	ROLE: {
-		LIST: (organizationId: string) =>
-			`/organizations/${organizationId}/roles`,
+		LIST: (organizationId: string) => `/organizations/${organizationId}/roles`,
 		DETAIL: (organizationId: string, roleId: string) =>
 			`/organizations/${organizationId}/roles/${roleId}`,
 		PERMISSIONS: (organizationId: string) =>
 			`/organizations/${organizationId}/permissions`,
+	},
+	TEAM: {
+		LIST: (organizationId: string) => `/organizations/${organizationId}/teams`,
+		DETAIL: (organizationId: string, teamId: string) =>
+			`/organizations/${organizationId}/teams/${teamId}`,
 	},
 	INBOX: {
 		CONVERSATIONS: "/inbox/conversations",
@@ -33,7 +37,8 @@ export const ENDPOINTS = {
 		SEND_MESSAGE: "/conversations",
 		MARK_READ: "/conversations",
 		UNREAD_STATS: "/inbox/conversations/unread-stats/analytics",
-		MESSAGES: (conversationId: string) => `/conversations/${conversationId}/messages`,
+		MESSAGES: (conversationId: string) =>
+			`/conversations/${conversationId}/messages`,
 	},
 	VISITOR: {
 		// every visitor route is tenant-scoped by path; the backend

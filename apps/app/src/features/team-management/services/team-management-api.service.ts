@@ -1,7 +1,7 @@
 import { type AxiosRequestConfig, BaseAPIService } from "@package/api-client";
 import { CONFIG } from "@/config";
 import { apiClient } from "@/lib";
-import type { Permission, Role } from "../types";
+import type { Permission, Role, Team } from "../types";
 
 class TeamManagementApiService extends BaseAPIService {
 	private static instance: TeamManagementApiService;
@@ -73,6 +73,54 @@ class TeamManagementApiService extends BaseAPIService {
 			axiosConfiguration,
 		);
 		return response as unknown as Role.DeleteResponse;
+	}
+
+	async listTeams(
+		organizationId: string,
+		axiosConfiguration?: AxiosRequestConfig,
+	) {
+		return super.get<Team.Item[], Team.ListAxiosResponse>(
+			CONFIG.ENDPOINTS.TEAM.LIST(organizationId),
+			axiosConfiguration,
+		);
+	}
+
+	async createTeam(
+		organizationId: string,
+		payload: Team.CreatePayload,
+		axiosConfiguration?: AxiosRequestConfig,
+	) {
+		return super.post<Team.Item, Team.ItemAxiosResponse, Team.CreatePayload>(
+			CONFIG.ENDPOINTS.TEAM.LIST(organizationId),
+			payload,
+			axiosConfiguration,
+		);
+	}
+
+	async updateTeam(
+		organizationId: string,
+		teamId: string,
+		payload: Team.UpdatePayload,
+		axiosConfiguration?: AxiosRequestConfig,
+	) {
+		const response = await super.patch<Team.UpdatePayload>(
+			CONFIG.ENDPOINTS.TEAM.DETAIL(organizationId, teamId),
+			payload,
+			axiosConfiguration,
+		);
+		return response as Team.ItemAxiosResponse;
+	}
+
+	async deleteTeam(
+		organizationId: string,
+		teamId: string,
+		axiosConfiguration?: AxiosRequestConfig,
+	) {
+		const response = await super.delete<{ id: string }>(
+			CONFIG.ENDPOINTS.TEAM.DETAIL(organizationId, teamId),
+			axiosConfiguration,
+		);
+		return response as unknown as Team.DeleteResponse;
 	}
 }
 

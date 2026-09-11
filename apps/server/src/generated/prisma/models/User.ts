@@ -267,6 +267,7 @@ export type UserWhereInput = {
   assignedVisitors?: Prisma.VisitorListRelationFilter
   visitorNotes?: Prisma.VisitorNoteListRelationFilter
   deletedConversations?: Prisma.ConversationListRelationFilter
+  leadingTeams?: Prisma.TeamListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -290,6 +291,7 @@ export type UserOrderByWithRelationInput = {
   assignedVisitors?: Prisma.VisitorOrderByRelationAggregateInput
   visitorNotes?: Prisma.VisitorNoteOrderByRelationAggregateInput
   deletedConversations?: Prisma.ConversationOrderByRelationAggregateInput
+  leadingTeams?: Prisma.TeamOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -316,6 +318,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   assignedVisitors?: Prisma.VisitorListRelationFilter
   visitorNotes?: Prisma.VisitorNoteListRelationFilter
   deletedConversations?: Prisma.ConversationListRelationFilter
+  leadingTeams?: Prisma.TeamListRelationFilter
 }, "id" | "email" | "googleId">
 
 export type UserOrderByWithAggregationInput = {
@@ -380,6 +383,7 @@ export type UserCreateInput = {
   assignedVisitors?: Prisma.VisitorCreateNestedManyWithoutAssignedAgentInput
   visitorNotes?: Prisma.VisitorNoteCreateNestedManyWithoutAuthorInput
   deletedConversations?: Prisma.ConversationCreateNestedManyWithoutDeletedByInput
+  leadingTeams?: Prisma.TeamCreateNestedManyWithoutLeaderInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -402,6 +406,7 @@ export type UserUncheckedCreateInput = {
   assignedVisitors?: Prisma.VisitorUncheckedCreateNestedManyWithoutAssignedAgentInput
   visitorNotes?: Prisma.VisitorNoteUncheckedCreateNestedManyWithoutAuthorInput
   deletedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutDeletedByInput
+  leadingTeams?: Prisma.TeamUncheckedCreateNestedManyWithoutLeaderInput
 }
 
 export type UserUpdateInput = {
@@ -424,6 +429,7 @@ export type UserUpdateInput = {
   assignedVisitors?: Prisma.VisitorUpdateManyWithoutAssignedAgentNestedInput
   visitorNotes?: Prisma.VisitorNoteUpdateManyWithoutAuthorNestedInput
   deletedConversations?: Prisma.ConversationUpdateManyWithoutDeletedByNestedInput
+  leadingTeams?: Prisma.TeamUpdateManyWithoutLeaderNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -446,6 +452,7 @@ export type UserUncheckedUpdateInput = {
   assignedVisitors?: Prisma.VisitorUncheckedUpdateManyWithoutAssignedAgentNestedInput
   visitorNotes?: Prisma.VisitorNoteUncheckedUpdateManyWithoutAuthorNestedInput
   deletedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutDeletedByNestedInput
+  leadingTeams?: Prisma.TeamUncheckedUpdateManyWithoutLeaderNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -647,6 +654,22 @@ export type UserUpdateOneRequiredWithoutOrganizationsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutOrganizationsInput, Prisma.UserUpdateWithoutOrganizationsInput>, Prisma.UserUncheckedUpdateWithoutOrganizationsInput>
 }
 
+export type UserCreateNestedOneWithoutLeadingTeamsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutLeadingTeamsInput, Prisma.UserUncheckedCreateWithoutLeadingTeamsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutLeadingTeamsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutLeadingTeamsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutLeadingTeamsInput, Prisma.UserUncheckedCreateWithoutLeadingTeamsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutLeadingTeamsInput
+  upsert?: Prisma.UserUpsertWithoutLeadingTeamsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutLeadingTeamsInput, Prisma.UserUpdateWithoutLeadingTeamsInput>, Prisma.UserUncheckedUpdateWithoutLeadingTeamsInput>
+}
+
 export type UserCreateNestedOneWithoutAssignedVisitorsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutAssignedVisitorsInput, Prisma.UserUncheckedCreateWithoutAssignedVisitorsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutAssignedVisitorsInput
@@ -714,6 +737,7 @@ export type UserCreateWithoutLastOrgInput = {
   assignedVisitors?: Prisma.VisitorCreateNestedManyWithoutAssignedAgentInput
   visitorNotes?: Prisma.VisitorNoteCreateNestedManyWithoutAuthorInput
   deletedConversations?: Prisma.ConversationCreateNestedManyWithoutDeletedByInput
+  leadingTeams?: Prisma.TeamCreateNestedManyWithoutLeaderInput
 }
 
 export type UserUncheckedCreateWithoutLastOrgInput = {
@@ -735,6 +759,7 @@ export type UserUncheckedCreateWithoutLastOrgInput = {
   assignedVisitors?: Prisma.VisitorUncheckedCreateNestedManyWithoutAssignedAgentInput
   visitorNotes?: Prisma.VisitorNoteUncheckedCreateNestedManyWithoutAuthorInput
   deletedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutDeletedByInput
+  leadingTeams?: Prisma.TeamUncheckedCreateNestedManyWithoutLeaderInput
 }
 
 export type UserCreateOrConnectWithoutLastOrgInput = {
@@ -803,6 +828,7 @@ export type UserCreateWithoutOrganizationsInput = {
   assignedVisitors?: Prisma.VisitorCreateNestedManyWithoutAssignedAgentInput
   visitorNotes?: Prisma.VisitorNoteCreateNestedManyWithoutAuthorInput
   deletedConversations?: Prisma.ConversationCreateNestedManyWithoutDeletedByInput
+  leadingTeams?: Prisma.TeamCreateNestedManyWithoutLeaderInput
 }
 
 export type UserUncheckedCreateWithoutOrganizationsInput = {
@@ -824,6 +850,7 @@ export type UserUncheckedCreateWithoutOrganizationsInput = {
   assignedVisitors?: Prisma.VisitorUncheckedCreateNestedManyWithoutAssignedAgentInput
   visitorNotes?: Prisma.VisitorNoteUncheckedCreateNestedManyWithoutAuthorInput
   deletedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutDeletedByInput
+  leadingTeams?: Prisma.TeamUncheckedCreateNestedManyWithoutLeaderInput
 }
 
 export type UserCreateOrConnectWithoutOrganizationsInput = {
@@ -861,6 +888,7 @@ export type UserUpdateWithoutOrganizationsInput = {
   assignedVisitors?: Prisma.VisitorUpdateManyWithoutAssignedAgentNestedInput
   visitorNotes?: Prisma.VisitorNoteUpdateManyWithoutAuthorNestedInput
   deletedConversations?: Prisma.ConversationUpdateManyWithoutDeletedByNestedInput
+  leadingTeams?: Prisma.TeamUpdateManyWithoutLeaderNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOrganizationsInput = {
@@ -879,6 +907,111 @@ export type UserUncheckedUpdateWithoutOrganizationsInput = {
   lastOrgId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  assignedVisitors?: Prisma.VisitorUncheckedUpdateManyWithoutAssignedAgentNestedInput
+  visitorNotes?: Prisma.VisitorNoteUncheckedUpdateManyWithoutAuthorNestedInput
+  deletedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutDeletedByNestedInput
+  leadingTeams?: Prisma.TeamUncheckedUpdateManyWithoutLeaderNestedInput
+}
+
+export type UserCreateWithoutLeadingTeamsInput = {
+  id?: string
+  email: string
+  password?: string | null
+  firstName?: string | null
+  lastName?: string | null
+  profile?: string | null
+  googleId?: string | null
+  authProvider?: string
+  isEmailVerified?: boolean
+  theme?: string | null
+  referralSource?: string | null
+  isOnboarded?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organizations?: Prisma.OrganizationMemberCreateNestedManyWithoutUserInput
+  lastOrg?: Prisma.OrganizationCreateNestedOneWithoutLastOrgUsersInput
+  assignedVisitors?: Prisma.VisitorCreateNestedManyWithoutAssignedAgentInput
+  visitorNotes?: Prisma.VisitorNoteCreateNestedManyWithoutAuthorInput
+  deletedConversations?: Prisma.ConversationCreateNestedManyWithoutDeletedByInput
+}
+
+export type UserUncheckedCreateWithoutLeadingTeamsInput = {
+  id?: string
+  email: string
+  password?: string | null
+  firstName?: string | null
+  lastName?: string | null
+  profile?: string | null
+  googleId?: string | null
+  authProvider?: string
+  isEmailVerified?: boolean
+  theme?: string | null
+  referralSource?: string | null
+  isOnboarded?: boolean
+  lastOrgId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organizations?: Prisma.OrganizationMemberUncheckedCreateNestedManyWithoutUserInput
+  assignedVisitors?: Prisma.VisitorUncheckedCreateNestedManyWithoutAssignedAgentInput
+  visitorNotes?: Prisma.VisitorNoteUncheckedCreateNestedManyWithoutAuthorInput
+  deletedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutDeletedByInput
+}
+
+export type UserCreateOrConnectWithoutLeadingTeamsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutLeadingTeamsInput, Prisma.UserUncheckedCreateWithoutLeadingTeamsInput>
+}
+
+export type UserUpsertWithoutLeadingTeamsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutLeadingTeamsInput, Prisma.UserUncheckedUpdateWithoutLeadingTeamsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutLeadingTeamsInput, Prisma.UserUncheckedCreateWithoutLeadingTeamsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutLeadingTeamsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutLeadingTeamsInput, Prisma.UserUncheckedUpdateWithoutLeadingTeamsInput>
+}
+
+export type UserUpdateWithoutLeadingTeamsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profile?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authProvider?: Prisma.StringFieldUpdateOperationsInput | string
+  isEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  theme?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organizations?: Prisma.OrganizationMemberUpdateManyWithoutUserNestedInput
+  lastOrg?: Prisma.OrganizationUpdateOneWithoutLastOrgUsersNestedInput
+  assignedVisitors?: Prisma.VisitorUpdateManyWithoutAssignedAgentNestedInput
+  visitorNotes?: Prisma.VisitorNoteUpdateManyWithoutAuthorNestedInput
+  deletedConversations?: Prisma.ConversationUpdateManyWithoutDeletedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutLeadingTeamsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profile?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authProvider?: Prisma.StringFieldUpdateOperationsInput | string
+  isEmailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  theme?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isOnboarded?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  lastOrgId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organizations?: Prisma.OrganizationMemberUncheckedUpdateManyWithoutUserNestedInput
   assignedVisitors?: Prisma.VisitorUncheckedUpdateManyWithoutAssignedAgentNestedInput
   visitorNotes?: Prisma.VisitorNoteUncheckedUpdateManyWithoutAuthorNestedInput
   deletedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutDeletedByNestedInput
@@ -903,6 +1036,7 @@ export type UserCreateWithoutAssignedVisitorsInput = {
   lastOrg?: Prisma.OrganizationCreateNestedOneWithoutLastOrgUsersInput
   visitorNotes?: Prisma.VisitorNoteCreateNestedManyWithoutAuthorInput
   deletedConversations?: Prisma.ConversationCreateNestedManyWithoutDeletedByInput
+  leadingTeams?: Prisma.TeamCreateNestedManyWithoutLeaderInput
 }
 
 export type UserUncheckedCreateWithoutAssignedVisitorsInput = {
@@ -924,6 +1058,7 @@ export type UserUncheckedCreateWithoutAssignedVisitorsInput = {
   organizations?: Prisma.OrganizationMemberUncheckedCreateNestedManyWithoutUserInput
   visitorNotes?: Prisma.VisitorNoteUncheckedCreateNestedManyWithoutAuthorInput
   deletedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutDeletedByInput
+  leadingTeams?: Prisma.TeamUncheckedCreateNestedManyWithoutLeaderInput
 }
 
 export type UserCreateOrConnectWithoutAssignedVisitorsInput = {
@@ -961,6 +1096,7 @@ export type UserUpdateWithoutAssignedVisitorsInput = {
   lastOrg?: Prisma.OrganizationUpdateOneWithoutLastOrgUsersNestedInput
   visitorNotes?: Prisma.VisitorNoteUpdateManyWithoutAuthorNestedInput
   deletedConversations?: Prisma.ConversationUpdateManyWithoutDeletedByNestedInput
+  leadingTeams?: Prisma.TeamUpdateManyWithoutLeaderNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAssignedVisitorsInput = {
@@ -982,6 +1118,7 @@ export type UserUncheckedUpdateWithoutAssignedVisitorsInput = {
   organizations?: Prisma.OrganizationMemberUncheckedUpdateManyWithoutUserNestedInput
   visitorNotes?: Prisma.VisitorNoteUncheckedUpdateManyWithoutAuthorNestedInput
   deletedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutDeletedByNestedInput
+  leadingTeams?: Prisma.TeamUncheckedUpdateManyWithoutLeaderNestedInput
 }
 
 export type UserCreateWithoutVisitorNotesInput = {
@@ -1003,6 +1140,7 @@ export type UserCreateWithoutVisitorNotesInput = {
   lastOrg?: Prisma.OrganizationCreateNestedOneWithoutLastOrgUsersInput
   assignedVisitors?: Prisma.VisitorCreateNestedManyWithoutAssignedAgentInput
   deletedConversations?: Prisma.ConversationCreateNestedManyWithoutDeletedByInput
+  leadingTeams?: Prisma.TeamCreateNestedManyWithoutLeaderInput
 }
 
 export type UserUncheckedCreateWithoutVisitorNotesInput = {
@@ -1024,6 +1162,7 @@ export type UserUncheckedCreateWithoutVisitorNotesInput = {
   organizations?: Prisma.OrganizationMemberUncheckedCreateNestedManyWithoutUserInput
   assignedVisitors?: Prisma.VisitorUncheckedCreateNestedManyWithoutAssignedAgentInput
   deletedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutDeletedByInput
+  leadingTeams?: Prisma.TeamUncheckedCreateNestedManyWithoutLeaderInput
 }
 
 export type UserCreateOrConnectWithoutVisitorNotesInput = {
@@ -1061,6 +1200,7 @@ export type UserUpdateWithoutVisitorNotesInput = {
   lastOrg?: Prisma.OrganizationUpdateOneWithoutLastOrgUsersNestedInput
   assignedVisitors?: Prisma.VisitorUpdateManyWithoutAssignedAgentNestedInput
   deletedConversations?: Prisma.ConversationUpdateManyWithoutDeletedByNestedInput
+  leadingTeams?: Prisma.TeamUpdateManyWithoutLeaderNestedInput
 }
 
 export type UserUncheckedUpdateWithoutVisitorNotesInput = {
@@ -1082,6 +1222,7 @@ export type UserUncheckedUpdateWithoutVisitorNotesInput = {
   organizations?: Prisma.OrganizationMemberUncheckedUpdateManyWithoutUserNestedInput
   assignedVisitors?: Prisma.VisitorUncheckedUpdateManyWithoutAssignedAgentNestedInput
   deletedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutDeletedByNestedInput
+  leadingTeams?: Prisma.TeamUncheckedUpdateManyWithoutLeaderNestedInput
 }
 
 export type UserCreateWithoutDeletedConversationsInput = {
@@ -1103,6 +1244,7 @@ export type UserCreateWithoutDeletedConversationsInput = {
   lastOrg?: Prisma.OrganizationCreateNestedOneWithoutLastOrgUsersInput
   assignedVisitors?: Prisma.VisitorCreateNestedManyWithoutAssignedAgentInput
   visitorNotes?: Prisma.VisitorNoteCreateNestedManyWithoutAuthorInput
+  leadingTeams?: Prisma.TeamCreateNestedManyWithoutLeaderInput
 }
 
 export type UserUncheckedCreateWithoutDeletedConversationsInput = {
@@ -1124,6 +1266,7 @@ export type UserUncheckedCreateWithoutDeletedConversationsInput = {
   organizations?: Prisma.OrganizationMemberUncheckedCreateNestedManyWithoutUserInput
   assignedVisitors?: Prisma.VisitorUncheckedCreateNestedManyWithoutAssignedAgentInput
   visitorNotes?: Prisma.VisitorNoteUncheckedCreateNestedManyWithoutAuthorInput
+  leadingTeams?: Prisma.TeamUncheckedCreateNestedManyWithoutLeaderInput
 }
 
 export type UserCreateOrConnectWithoutDeletedConversationsInput = {
@@ -1161,6 +1304,7 @@ export type UserUpdateWithoutDeletedConversationsInput = {
   lastOrg?: Prisma.OrganizationUpdateOneWithoutLastOrgUsersNestedInput
   assignedVisitors?: Prisma.VisitorUpdateManyWithoutAssignedAgentNestedInput
   visitorNotes?: Prisma.VisitorNoteUpdateManyWithoutAuthorNestedInput
+  leadingTeams?: Prisma.TeamUpdateManyWithoutLeaderNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDeletedConversationsInput = {
@@ -1182,6 +1326,7 @@ export type UserUncheckedUpdateWithoutDeletedConversationsInput = {
   organizations?: Prisma.OrganizationMemberUncheckedUpdateManyWithoutUserNestedInput
   assignedVisitors?: Prisma.VisitorUncheckedUpdateManyWithoutAssignedAgentNestedInput
   visitorNotes?: Prisma.VisitorNoteUncheckedUpdateManyWithoutAuthorNestedInput
+  leadingTeams?: Prisma.TeamUncheckedUpdateManyWithoutLeaderNestedInput
 }
 
 export type UserCreateManyLastOrgInput = {
@@ -1220,6 +1365,7 @@ export type UserUpdateWithoutLastOrgInput = {
   assignedVisitors?: Prisma.VisitorUpdateManyWithoutAssignedAgentNestedInput
   visitorNotes?: Prisma.VisitorNoteUpdateManyWithoutAuthorNestedInput
   deletedConversations?: Prisma.ConversationUpdateManyWithoutDeletedByNestedInput
+  leadingTeams?: Prisma.TeamUpdateManyWithoutLeaderNestedInput
 }
 
 export type UserUncheckedUpdateWithoutLastOrgInput = {
@@ -1241,6 +1387,7 @@ export type UserUncheckedUpdateWithoutLastOrgInput = {
   assignedVisitors?: Prisma.VisitorUncheckedUpdateManyWithoutAssignedAgentNestedInput
   visitorNotes?: Prisma.VisitorNoteUncheckedUpdateManyWithoutAuthorNestedInput
   deletedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutDeletedByNestedInput
+  leadingTeams?: Prisma.TeamUncheckedUpdateManyWithoutLeaderNestedInput
 }
 
 export type UserUncheckedUpdateManyWithoutLastOrgInput = {
@@ -1270,6 +1417,7 @@ export type UserCountOutputType = {
   assignedVisitors: number
   visitorNotes: number
   deletedConversations: number
+  leadingTeams: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1277,6 +1425,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   assignedVisitors?: boolean | UserCountOutputTypeCountAssignedVisitorsArgs
   visitorNotes?: boolean | UserCountOutputTypeCountVisitorNotesArgs
   deletedConversations?: boolean | UserCountOutputTypeCountDeletedConversationsArgs
+  leadingTeams?: boolean | UserCountOutputTypeCountLeadingTeamsArgs
 }
 
 /**
@@ -1317,6 +1466,13 @@ export type UserCountOutputTypeCountDeletedConversationsArgs<ExtArgs extends run
   where?: Prisma.ConversationWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountLeadingTeamsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TeamWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1339,6 +1495,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   assignedVisitors?: boolean | Prisma.User$assignedVisitorsArgs<ExtArgs>
   visitorNotes?: boolean | Prisma.User$visitorNotesArgs<ExtArgs>
   deletedConversations?: boolean | Prisma.User$deletedConversationsArgs<ExtArgs>
+  leadingTeams?: boolean | Prisma.User$leadingTeamsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1405,6 +1562,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   assignedVisitors?: boolean | Prisma.User$assignedVisitorsArgs<ExtArgs>
   visitorNotes?: boolean | Prisma.User$visitorNotesArgs<ExtArgs>
   deletedConversations?: boolean | Prisma.User$deletedConversationsArgs<ExtArgs>
+  leadingTeams?: boolean | Prisma.User$leadingTeamsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1422,6 +1580,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     assignedVisitors: Prisma.$VisitorPayload<ExtArgs>[]
     visitorNotes: Prisma.$VisitorNotePayload<ExtArgs>[]
     deletedConversations: Prisma.$ConversationPayload<ExtArgs>[]
+    leadingTeams: Prisma.$TeamPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1838,6 +1997,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   assignedVisitors<T extends Prisma.User$assignedVisitorsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$assignedVisitorsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VisitorPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   visitorNotes<T extends Prisma.User$visitorNotesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$visitorNotesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VisitorNotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   deletedConversations<T extends Prisma.User$deletedConversationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$deletedConversationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConversationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  leadingTeams<T extends Prisma.User$leadingTeamsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$leadingTeamsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TeamPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2395,6 +2555,30 @@ export type User$deletedConversationsArgs<ExtArgs extends runtime.Types.Extensio
   take?: number
   skip?: number
   distinct?: Prisma.ConversationScalarFieldEnum | Prisma.ConversationScalarFieldEnum[]
+}
+
+/**
+ * User.leadingTeams
+ */
+export type User$leadingTeamsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Team
+   */
+  select?: Prisma.TeamSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Team
+   */
+  omit?: Prisma.TeamOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TeamInclude<ExtArgs> | null
+  where?: Prisma.TeamWhereInput
+  orderBy?: Prisma.TeamOrderByWithRelationInput | Prisma.TeamOrderByWithRelationInput[]
+  cursor?: Prisma.TeamWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TeamScalarFieldEnum | Prisma.TeamScalarFieldEnum[]
 }
 
 /**
