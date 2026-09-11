@@ -18,6 +18,14 @@ export const ENDPOINTS = {
 		MEMBERS: (organizationId: string) =>
 			`/organization/${organizationId}/members`,
 	},
+	ROLE: {
+		LIST: (organizationId: string) =>
+			`/organizations/${organizationId}/roles`,
+		DETAIL: (organizationId: string, roleId: string) =>
+			`/organizations/${organizationId}/roles/${roleId}`,
+		PERMISSIONS: (organizationId: string) =>
+			`/organizations/${organizationId}/permissions`,
+	},
 	INBOX: {
 		CONVERSATIONS: "/inbox/conversations",
 		CONVERSATION: "/inbox/conversations",

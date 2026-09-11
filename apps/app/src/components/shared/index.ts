@@ -1,2 +1,3 @@
-export { Sidebar } from './sidebar';
-export type { SidebarItem, SidebarItems } from './sidebar/sidebar.types';
+export { Sidebar } from "./sidebar";
+export type { SidebarItem, SidebarItems } from "./sidebar/sidebar.types";
+export { Table } from "./table";

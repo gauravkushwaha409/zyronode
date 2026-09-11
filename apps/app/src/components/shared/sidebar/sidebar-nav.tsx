@@ -23,7 +23,9 @@ export function SidebarNav({
 	hovered,
 }: SidebarNavProps) {
 	const { data, isSuccess } = useUnreadStatsQuery();
-	const unreadCount = (data?.data as unknown as { conversations_with_unread?: number })?.conversations_with_unread ?? 0;
+	const unreadCount =
+		(data?.data as unknown as { conversations_with_unread?: number })
+			?.conversations_with_unread ?? 0;
 
 	// Inject badge as ReactNode via data — NavLink stays generic (no path sniffing)
 	const displayData: SidebarItems = {
@@ -45,14 +47,25 @@ export function SidebarNav({
 			<section className="flex flex-col gap-1">
 				{displayData.UPPER.map((item) => (
 					<Fragment key={item.label}>
-						<NavLink item={item} pathname={pathname} open={open} isFloating={isFloating} />
+						<NavLink
+							item={item}
+							pathname={pathname}
+							open={open}
+							isFloating={isFloating}
+						/>
 						{item.showOtherInboxesAfter && <SidebarOtherInboxes open={open} />}
 					</Fragment>
 				))}
 			</section>
 			<section className="flex flex-col gap-1">
 				{displayData.LOWER.map((item) => (
-					<NavLink key={item.label} item={item} pathname={pathname} open={open} isFloating={isFloating} />
+					<NavLink
+						key={item.label}
+						item={item}
+						pathname={pathname}
+						open={open}
+						isFloating={isFloating}
+					/>
 				))}
 			</section>
 		</section>

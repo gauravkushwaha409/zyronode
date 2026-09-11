@@ -51,6 +51,8 @@ model Organization {
   // back-relation for lastOrg
   lastOrgUsers User[] @relation("UserLastOrg")
 
+  roles Role[]
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -66,12 +68,62 @@ model OrganizationMember {
   user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
+  roleId String?
+  role   Role?  @relation(fields: [roleId], references: [id], onDelete: SetNull)
+
   joinedAt DateTime @default(now()) @map("joined_at")
 
   @@unique([userId, organizationId])
   @@index([userId])
   @@index([organizationId])
   @@map("organization_members")
+}
+
+// Global, platform-level permission registry. Seeded idempotently on server
+// boot; `key` (module.resource.verb) is the stable identity.
+model Permission {
+  id          String           @id @default(uuid())
+  key         String           @unique
+  name        String
+  description String?
+  module      String
+
+  roles RolePermission[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("permissions")
+}
+
+// Access roles. `organizationId = null` marks a system role (platform-wide,
+// seeded, immutable); custom roles are organization-scoped and editable.
+model Role {
+  id             String           @id @default(uuid())
+  organizationId String?
+  organization   Organization?    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name           String
+  description    String?
+  isSystem       Boolean          @default(false)
+
+  permissions RolePermission[]
+  members     OrganizationMember[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([organizationId])
+  @@map("roles")
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
 }
 
 model Visitor {
