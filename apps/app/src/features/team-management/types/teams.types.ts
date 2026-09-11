@@ -31,6 +31,10 @@ export namespace Team {
 		leaderId?: string | null;
 	}
 
+	export interface AddMembersPayload {
+		memberIds: string[];
+	}
+
 	export type ListResponse = ServerResponse<Item[]>;
 	export type ListAxiosResponse = ApiResponse<Item[]>;
 	export type ItemAxiosResponse = ApiResponse<Item>;

@@ -19,6 +19,7 @@ import {
 } from "../../hooks";
 import type { Team, TeamForm } from "../../types";
 import { TeamFormDialog } from "./team-form-dialog";
+import { TeamMembersDialog } from "./team-members-dialog";
 
 interface TeamsTabProps {
 	organizationId: string;
@@ -35,6 +36,7 @@ export function TeamsTab({ organizationId }: TeamsTabProps) {
 
 	const [dialog, setDialog] = useState<DialogState | null>(null);
 	const [deleteTarget, setDeleteTarget] = useState<Team.Item | null>(null);
+	const [membersTarget, setMembersTarget] = useState<Team.Item | null>(null);
 
 	const createMutation = useCreateTeamMutation(organizationId);
 	const updateTarget = dialog?.mode === "edit" ? dialog.team : undefined;
@@ -49,6 +51,9 @@ export function TeamsTab({ organizationId }: TeamsTabProps) {
 
 	const teams = teamsQuery.data?.data.data ?? [];
 	const members = membersQuery.data?.data.data ?? [];
+	const membersTeam = membersTarget
+		? (teams.find((t) => t.id === membersTarget.id) ?? membersTarget)
+		: null;
 
 	const columns: ColumnDef<Team.Item>[] = [
 		{
@@ -154,6 +159,13 @@ export function TeamsTab({ organizationId }: TeamsTabProps) {
 						<Button size="xs" variant="alert" onClick={() => setDeleteTarget(team)}>
 							Delete
 						</Button>
+						<Button
+							size="xs"
+							variant="outline"
+							onClick={() => setMembersTarget(team)}
+						>
+							Members
+						</Button>
 					</div>
 				);
 			},
@@ -238,6 +250,16 @@ export function TeamsTab({ organizationId }: TeamsTabProps) {
 					onSubmit={handleSubmit}
 				/>
 			)}
+
+			<TeamMembersDialog
+				open={Boolean(membersTarget)}
+				team={membersTeam}
+				members={members}
+				organizationId={organizationId}
+				onOpenChange={(open) => {
+					if (!open) setMembersTarget(null);
+				}}
+			/>
 
 			<ConfirmationDialog
 				open={Boolean(deleteTarget)}

@@ -53,6 +53,11 @@ export type RolePermission = Prisma.RolePermissionModel
  */
 export type Team = Prisma.TeamModel
 /**
+ * Model TeamInvitation
+ * 
+ */
+export type TeamInvitation = Prisma.TeamInvitationModel
+/**
  * Model Visitor
  * 
  */

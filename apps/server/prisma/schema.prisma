@@ -32,6 +32,7 @@ model User {
   visitorNotes     VisitorNote[] @relation("VisitorNoteAuthor")
   deletedConversations Conversation[] @relation("ConversationDeletedBy")
   leadingTeams     Team[]        @relation("TeamLeader")
+  teamInvitations  TeamInvitation[] @relation("TeamInvitationInvitedBy")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -49,6 +50,7 @@ model Organization {
   members       OrganizationMember[]
   conversations Conversation[]
   teams         Team[]
+  teamInvitations TeamInvitation[]
 
   // back-relation for lastOrg
   lastOrgUsers User[] @relation("UserLastOrg")
@@ -114,6 +116,7 @@ model Role {
 
   permissions RolePermission[]
   members     OrganizationMember[]
+  invitations TeamInvitation[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -144,6 +147,7 @@ model Team {
   leaderId String?
   leader   User?             @relation("TeamLeader", fields: [leaderId], references: [id], onDelete: SetNull)
   members  OrganizationMember[]
+  invitations TeamInvitation[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -152,6 +156,41 @@ model Team {
   @@index([organizationId])
   @@index([leaderId])
   @@map("teams")
+}
+
+// Pending invites to join an organization (optionally into a role/team).
+model TeamInvitation {
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  email          String
+
+  // Optional slot the invitee fills on acceptance
+  teamId String?
+  team   Team?  @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  roleId String?
+  role   Role?  @relation(fields: [roleId], references: [id], onDelete: SetNull)
+
+  invitedById String?
+  invitedBy   User?           @relation("TeamInvitationInvitedBy", fields: [invitedById], references: [id], onDelete: SetNull)
+
+  status    InvitationStatus @default(PENDING)
+  token     String           @unique @default(uuid())
+  expiresAt DateTime?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([organizationId])
+  @@index([organizationId, status])
+  @@map("team_invitations")
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  REVOKED
+  EXPIRED
 }
 
 model Visitor {

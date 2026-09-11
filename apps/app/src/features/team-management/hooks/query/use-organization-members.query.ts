@@ -7,6 +7,7 @@ import type { UserSummary } from "../../types";
 export interface OrganizationMemberItem {
 	joinedAt: string;
 	role: { id: string; name: string; isSystem: boolean } | null;
+	team: { id: string; name: string } | null;
 	user: UserSummary;
 }
 

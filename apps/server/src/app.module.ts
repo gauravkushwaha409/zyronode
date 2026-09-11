@@ -13,6 +13,7 @@ import { RedisModule } from "./redis/redis.module";
 import { RoleModule } from "./role/role.module";
 import { SseModule } from "./sse/sse.module";
 import { TeamModule } from "./team/team.module";
+import { TeamInvitationModule } from "./team-invitation/team-invitation.module";
 import { VisitorModule } from "./visitor/visitor.module";
 import { WebsocketModule } from "./websocket/websocket.module";
 
@@ -38,6 +39,7 @@ const hasObserveCreds = !!observeAppKey && !!observeAppSecret;
 		RoleModule,
 		SseModule,
 		TeamModule,
+		TeamInvitationModule,
 		VisitorModule,
 		...(hasObserveCreds
 			? [

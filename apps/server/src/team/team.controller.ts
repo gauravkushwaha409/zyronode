@@ -18,6 +18,7 @@ import {
 } from "@nestjs/swagger";
 import { CurrentUser } from "../common/decorator/current-user.decorator";
 import { JwtAuthGuard } from "../common/gaurds/jwt-auth.guard";
+import { AddTeamMembersDto } from "./dto/add-team-members.dto";
 import { CreateTeamDto } from "./dto/create-team.dto";
 import { UpdateTeamDto } from "./dto/update-team.dto";
 import { TeamEntity } from "./entities/team.entity";
@@ -79,5 +80,45 @@ export class TeamController {
 		@CurrentUser("id") userId: string,
 	) {
 		return this.teamService.deleteTeam(organizationId, userId, teamId);
+	}
+
+	@Post(":teamId/members")
+	@ApiOperation({ summary: "Add organization members to a team" })
+	@ApiParam({ name: "organizationId", description: "Organization ID" })
+	@ApiParam({ name: "teamId", description: "Team ID" })
+	@ApiResponse({ status: 200, type: TeamEntity })
+	addMembers(
+		@Param("organizationId") organizationId: string,
+		@Param("teamId") teamId: string,
+		@CurrentUser("id") userId: string,
+		@Body() dto: AddTeamMembersDto,
+	) {
+		return this.teamService.addMembers(
+			organizationId,
+			userId,
+			teamId,
+			dto.memberIds,
+		);
+	}
+
+	@Delete(":teamId/members/:memberId")
+	@HttpCode(200)
+	@ApiOperation({ summary: "Remove a member from a team" })
+	@ApiParam({ name: "organizationId", description: "Organization ID" })
+	@ApiParam({ name: "teamId", description: "Team ID" })
+	@ApiParam({ name: "memberId", description: "Member user ID" })
+	@ApiResponse({ status: 200, type: TeamEntity })
+	removeMember(
+		@Param("organizationId") organizationId: string,
+		@Param("teamId") teamId: string,
+		@Param("memberId") memberId: string,
+		@CurrentUser("id") userId: string,
+	) {
+		return this.teamService.removeMember(
+			organizationId,
+			userId,
+			teamId,
+			memberId,
+		);
 	}
 }

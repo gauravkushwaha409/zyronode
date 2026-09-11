@@ -1,7 +1,7 @@
 import { type AxiosRequestConfig, BaseAPIService } from "@package/api-client";
 import { CONFIG } from "@/config";
 import { apiClient } from "@/lib";
-import type { Permission, Role, Team } from "../types";
+import type { Permission, Role, Team, TeamInvitation } from "../types";
 
 class TeamManagementApiService extends BaseAPIService {
 	private static instance: TeamManagementApiService;
@@ -121,6 +121,71 @@ class TeamManagementApiService extends BaseAPIService {
 			axiosConfiguration,
 		);
 		return response as unknown as Team.DeleteResponse;
+	}
+
+	async addTeamMembers(
+		organizationId: string,
+		teamId: string,
+		payload: Team.AddMembersPayload,
+		axiosConfiguration?: AxiosRequestConfig,
+	) {
+		return super.post<Team.Item, Team.ItemAxiosResponse, Team.AddMembersPayload>(
+			CONFIG.ENDPOINTS.TEAM.MEMBERS(organizationId, teamId),
+			payload,
+			axiosConfiguration,
+		);
+	}
+
+	async removeTeamMember(
+		organizationId: string,
+		teamId: string,
+		memberId: string,
+		axiosConfiguration?: AxiosRequestConfig,
+	) {
+		const response = await super.delete<never>(
+			CONFIG.ENDPOINTS.TEAM.MEMBER(organizationId, teamId, memberId),
+			axiosConfiguration,
+		);
+		return response as unknown as Team.ItemAxiosResponse;
+	}
+
+	async listTeamInvitations(
+		organizationId: string,
+		axiosConfiguration?: AxiosRequestConfig,
+	) {
+		return super.get<TeamInvitation.Item[], TeamInvitation.ListAxiosResponse>(
+			CONFIG.ENDPOINTS.TEAM_INVITATION.LIST(organizationId),
+			axiosConfiguration,
+		);
+	}
+
+	async createTeamInvitation(
+		organizationId: string,
+		payload: TeamInvitation.CreatePayload,
+		axiosConfiguration?: AxiosRequestConfig,
+	) {
+		return super.post<
+			TeamInvitation.Item,
+			TeamInvitation.ItemAxiosResponse,
+			TeamInvitation.CreatePayload
+		>(
+			CONFIG.ENDPOINTS.TEAM_INVITATION.CREATE(organizationId),
+			payload,
+			axiosConfiguration,
+		);
+	}
+
+	async revokeTeamInvitation(
+		organizationId: string,
+		invitationId: string,
+		axiosConfiguration?: AxiosRequestConfig,
+	) {
+		const response = await super.patch(
+			CONFIG.ENDPOINTS.TEAM_INVITATION.REVOKE(organizationId, invitationId),
+			undefined,
+			axiosConfiguration,
+		);
+		return response as TeamInvitation.RevokeAxiosResponse;
 	}
 }
 

@@ -147,6 +147,53 @@ export class TeamService {
 		return { id: teamId };
 	}
 
+	async addMembers(
+		organizationId: string,
+		userId: string,
+		teamId: string,
+		memberIds: string[],
+	) {
+		await this.assertMembership(organizationId, userId);
+		await this.findTeam(teamId, organizationId);
+
+		for (const memberId of memberIds) {
+			await this.assertMemberIsInOrg(memberId, organizationId);
+		}
+
+		await this.prisma.organizationMember.updateMany({
+			where: { userId: { in: memberIds }, organizationId },
+			data: { teamId },
+		});
+
+		const team = await this.prisma.team.findUnique({
+			where: { id: teamId },
+			include: TEAM_INCLUDE,
+		});
+		return this.flatten(team!);
+	}
+
+	async removeMember(
+		organizationId: string,
+		userId: string,
+		teamId: string,
+		memberId: string,
+	) {
+		await this.assertMembership(organizationId, userId);
+		await this.findTeam(teamId, organizationId);
+		await this.assertMemberIsInOrg(memberId, organizationId);
+
+		await this.prisma.organizationMember.updateMany({
+			where: { userId: memberId, organizationId, teamId },
+			data: { teamId: null },
+		});
+
+		const team = await this.prisma.team.findUnique({
+			where: { id: teamId },
+			include: TEAM_INCLUDE,
+		});
+		return this.flatten(team!);
+	}
+
 	private async findTeam(teamId: string, organizationId: string) {
 		const team = await this.prisma.team.findUnique({
 			where: { id: teamId },
