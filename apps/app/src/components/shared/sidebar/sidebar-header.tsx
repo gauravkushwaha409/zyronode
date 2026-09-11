@@ -127,7 +127,13 @@ export function SidebarHeader({
 							onClick={onCollapse}
 							aria-label="Collapse sidebar"
 						>
-							<Icon name="sidebar-close" size={20} tooltipText="close sidebar" showTooltip tooltipPlacement="right" />
+							<Icon
+								name="sidebar-close"
+								size={20}
+								tooltipText="close sidebar"
+								showTooltip
+								tooltipPlacement="right"
+							/>
 						</button>
 					) : null}
 				</div>

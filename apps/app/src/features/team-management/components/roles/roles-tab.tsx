@@ -1,13 +1,15 @@
+import type { ColumnDef } from "@package/ui";
 import {
 	Badge,
 	Button,
 	ConfirmationDialog,
-	EmptyState,
+	cn,
 	SectionHeader,
 	Typography,
 	toast,
 } from "@package/ui";
 import { useState } from "react";
+import { Table } from "@/components";
 import {
 	useCreateRoleMutation,
 	useDeleteRoleMutation,
@@ -51,6 +53,117 @@ export function RolesTab({ organizationId }: RolesTabProps) {
 
 	const roles = rolesQuery.data?.data.data ?? [];
 	const permissions = permissionsQuery.data?.data.data ?? [];
+
+	const columns: ColumnDef<RoleItem>[] = [
+		{
+			id: "role",
+			header: "Role Name",
+			size: 260,
+			cell: ({ row }) => {
+				const role = row.original;
+				return (
+					<div className="flex min-w-0 items-center gap-3">
+						<span
+							className={cn(
+								"flex size-9 shrink-0 items-center justify-center rounded-lg text-sm font-semibold capitalize",
+								role.isSystem
+									? "bg-gray-100 text-gray-600"
+									: "bg-primary-50 text-primary-600",
+							)}
+						>
+							{role.name.charAt(0)}
+						</span>
+						<div className="flex min-w-0 flex-col">
+							<Typography.T3
+								weight="semibold"
+								className="truncate text-gray-950 capitalize"
+							>
+								{role.name}
+							</Typography.T3>
+							<Typography.T6 className="truncate text-gray-500">
+								{role.description ?? "No description"}
+							</Typography.T6>
+						</div>
+					</div>
+				);
+			},
+		},
+		{
+			id: "permissions",
+			header: "Permissions",
+			size: 130,
+			cell: ({ row }) => (
+				<Badge size="xs" variant="info">
+					{row.original.permissions.length} permissions
+				</Badge>
+			),
+		},
+		{
+			id: "members",
+			header: "Members",
+			size: 120,
+			cell: ({ row }) => (
+				<Typography.T4 className="text-gray-700">
+					{row.original.membersCount}
+				</Typography.T4>
+			),
+		},
+		{
+			id: "type",
+			header: "Type",
+			size: 120,
+			cell: ({ row }) => {
+				const role = row.original;
+				return (
+					<Badge
+						radius="rounded"
+						size="xs"
+						dot
+						variant={role.isSystem ? "secondary" : "success"}
+					>
+						{role.isSystem ? "System" : "Custom"}
+					</Badge>
+				);
+			},
+		},
+		{
+			id: "actions",
+			header: "",
+			size: 210,
+			cell: ({ row }) => {
+				const role = row.original;
+				return (
+					<div className="flex items-center justify-end gap-1.5">
+						<Button
+							size="xs"
+							variant="outline"
+							onClick={() => setDialog({ mode: "view", role })}
+						>
+							View
+						</Button>
+						{!role.isSystem && (
+							<>
+								<Button
+									size="xs"
+									variant="gray"
+									onClick={() => setDialog({ mode: "edit", role })}
+								>
+									Edit
+								</Button>
+								<Button
+									size="xs"
+									variant="alert"
+									onClick={() => setDeleteTarget(role)}
+								>
+									Delete
+								</Button>
+							</>
+						)}
+					</div>
+				);
+			},
+		},
+	];
 
 	const handleSubmit = (payload: RoleFormPayload) => {
 		if (!dialog) return;
@@ -104,106 +217,18 @@ export function RolesTab({ organizationId }: RolesTabProps) {
 				}
 			/>
 
-			{rolesQuery.isLoading ? (
-				<EmptyState title="Loading roles…" size="sm" />
-			) : rolesQuery.isError ? (
-				<EmptyState
-					title="Failed to load roles"
-					description="The server could not be reached. Try again."
-					action={
-						<Button variant="outline" size="xs" onClick={() => rolesQuery.refetch()}>
-							Retry
-						</Button>
-					}
-					size="sm"
-				/>
-			) : roles.length === 0 ? (
-				<EmptyState
-					title="No roles yet"
-					description="Create a custom role to grant your team specific access."
-					size="sm"
-				/>
-			) : (
-				<div className="rounded-xl border border-gray-200 overflow-hidden bg-white">
-					<table className="w-full text-sm">
-						<thead className="bg-gray-50 text-gray-500">
-							<tr>
-								<th className="text-left font-medium px-4 py-2.5">Role Name</th>
-								<th className="text-left font-medium px-4 py-2.5">Description</th>
-								<th className="text-left font-medium px-4 py-2.5">Permissions</th>
-								<th className="text-left font-medium px-4 py-2.5">Members</th>
-								<th className="text-left font-medium px-4 py-2.5">Type</th>
-								<th className="w-28" />
-							</tr>
-						</thead>
-						<tbody className="divide-y divide-gray-100">
-							{roles.map((role) => (
-								<tr key={role.id} className="hover:bg-gray-50">
-									<td className="px-4 py-3">
-										<Typography.T3 weight="semibold" className="text-gray-950 capitalize">
-											{role.name}
-										</Typography.T3>
-									</td>
-									<td className="px-4 py-3">
-										<Typography.T5 className="text-gray-600 line-clamp-1 max-w-64">
-											{role.description ?? "—"}
-										</Typography.T5>
-									</td>
-									<td className="px-4 py-3">
-										<Badge size="xs" variant="info">
-											{role.permissions.length} permissions
-										</Badge>
-									</td>
-									<td className="px-4 py-3">
-										<Typography.T5 className="text-gray-600">
-											{role.membersCount}
-										</Typography.T5>
-									</td>
-									<td className="px-4 py-3">
-										<Badge
-											radius="rounded"
-											size="xs"
-											dot
-											variant={role.isSystem ? "secondary" : "success"}
-										>
-											{role.isSystem ? "System" : "Custom"}
-										</Badge>
-									</td>
-									<td className="px-4 py-3">
-										<div className="flex items-center justify-end gap-2">
-											<Button
-												variant="outline"
-												size="xs"
-												onClick={() => setDialog({ mode: "view", role })}
-											>
-												View
-											</Button>
-											{!role.isSystem && (
-												<>
-													<Button
-														variant="outline"
-														size="xs"
-														onClick={() => setDialog({ mode: "edit", role })}
-													>
-														Edit
-													</Button>
-													<Button
-														variant="outline"
-														size="xs"
-														onClick={() => setDeleteTarget(role)}
-													>
-														Delete
-													</Button>
-												</>
-											)}
-										</div>
-									</td>
-								</tr>
-							))}
-						</tbody>
-					</table>
-				</div>
-			)}
+			<Table
+				data={roles}
+				columns={columns}
+				getRowId={(role) => role.id}
+				isPending={rolesQuery.isLoading}
+				isError={rolesQuery.isError}
+				emptyState={
+					<Typography.T4 className="text-gray-500">
+						No roles yet. Create a custom role to grant your team specific access.
+					</Typography.T4>
+				}
+			/>
 
 			{dialog && (
 				<RoleFormDialog

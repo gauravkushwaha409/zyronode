@@ -12,7 +12,7 @@ import {
 	Typography,
 } from "@package/ui";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useRoleForm } from "../../hooks";
+import { useRoleForm } from "../../hooks/form-handler";
 import type { RoleFormSchema } from "../../schema";
 import type { PermissionItem, RoleItem } from "../../types";
 
@@ -201,7 +201,7 @@ function PermissionCheckbox({ permission }: { permission: PermissionItem }) {
 		</label>
 	);
 
-	if (!permission.description) return checkbox;
+	if (!permission?.description) return checkbox;
 
 	return (
 		<PopoverWrapper

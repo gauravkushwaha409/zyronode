@@ -61,7 +61,11 @@ export function NavLink({ item, pathname, open, isFloating }: NavLinkProps) {
 				)}
 			</span>
 			{item.badge && !open && (
-				<Icon name="dot" className="absolute text-warning-600 bottom-1 right-1" size={4} />
+				<Icon
+					name="dot"
+					className="absolute text-warning-600 bottom-1 right-1"
+					size={4}
+				/>
 			)}
 		</Link>
 	);

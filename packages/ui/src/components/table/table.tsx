@@ -8,7 +8,7 @@ import {
 } from "@tanstack/react-table";
 import type React from "react";
 import { useCallback } from "react";
-import { cn } from "#lib/utils.js";
+import { cn } from "../../lib/utils";
 
 interface TableProps<T> {
 	data: T[];
@@ -28,6 +28,8 @@ interface TableProps<T> {
 	isPending?: boolean;
 	isError?: boolean;
 	isSuccess?: boolean;
+	/** Custom empty-state node rendered when the table has no rows. */
+	emptyState?: React.ReactNode;
 
 	// row selection
 	rowSelection?: RowSelectionState;
@@ -57,6 +59,7 @@ export function BaseTable<T>({
 	isPending,
 	isError,
 	isSuccess = true,
+	emptyState,
 }: TableProps<T>) {
 	const { className: tableWrapperClassName, ...restTableWrapperProps } =
 		tableWrapperProps ?? {};
@@ -229,23 +232,25 @@ export function BaseTable<T>({
 								colSpan={columns.length}
 								className="max-h-64 text-center align-middle"
 							>
-								<div className="flex flex-col items-center justify-center p-8 space-y-3 text-muted-foreground">
-									<svg
-										className="h-10 w-10 text-muted-foreground/50"
-										fill="none"
-										viewBox="0 0 24 24"
-										stroke="currentColor"
-									>
-										<title>No records found</title>
-										<path
-											strokeLinecap="round"
-											strokeLinejoin="round"
-											strokeWidth={1.5}
-											d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
-										/>
-									</svg>
-									<span className="text-sm font-medium">No records found</span>
-								</div>
+								{emptyState ?? (
+									<div className="flex flex-col items-center justify-center p-8 space-y-3 text-muted-foreground">
+										<svg
+											className="h-10 w-10 text-muted-foreground/50"
+											fill="none"
+											viewBox="0 0 24 24"
+											stroke="currentColor"
+										>
+											<title>No records found</title>
+											<path
+												strokeLinecap="round"
+												strokeLinejoin="round"
+												strokeWidth={1.5}
+												d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+											/>
+										</svg>
+										<span className="text-sm font-medium">No records found</span>
+									</div>
+								)}
 							</td>
 						</tr>
 					</tbody>
