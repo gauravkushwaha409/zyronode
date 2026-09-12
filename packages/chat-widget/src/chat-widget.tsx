@@ -9,6 +9,7 @@ import {
 	WidgetQueryProvider,
 	WidgetSseListener,
 	WidgetSseProvider,
+	WidgetVisitorSseProvider,
 	WidgetWebSocketProvider,
 } from "./provider";
 import { useChatWidgetStore } from "./store";
@@ -34,28 +35,31 @@ export default function ChatWidget({ organizationId }: ChatWidgetProps) {
 		setWidgetOpen(false);
 	}, []);
 
+	console.log("ChatWidget rendered with organizationId:", organizationId);
 	return (
 		<VisitorSessionProvider organizationId={organizationId}>
-			<WidgetQueryProvider>
-				<ConversationProvider organizationId={organizationId}>
-					<WidgetWebSocketProvider namespace={SOCKET_NAMESPACES.VISITOR}>
-						<WidgetSseProvider>
-							{/* Always-mounted SSE listener: connects as soon as conversationId exists,
+			<WidgetVisitorSseProvider>
+				<WidgetQueryProvider>
+					<ConversationProvider organizationId={organizationId}>
+						<WidgetWebSocketProvider namespace={SOCKET_NAMESPACES.VISITOR}>
+							<WidgetSseProvider>
+								{/* Always-mounted SSE listener: connects as soon as conversationId exists,
 						    stays subscribed while widget is hidden via <Activity>. */}
-							<WidgetSseListener isWidgetOpen={isWidgetOpen} />
-							<WidgetPresenceEmitter />
+								<WidgetSseListener isWidgetOpen={isWidgetOpen} />
+								<WidgetPresenceEmitter />
 
-							<WidgetWebSocketProvider namespace={SOCKET_NAMESPACES.AGENT_INBOX}>
-								<Activity mode={isWidgetOpen ? "visible" : "hidden"}>
-									<WidgetWindow onClose={handleClose} />
-								</Activity>
+								<WidgetWebSocketProvider namespace={SOCKET_NAMESPACES.AGENT_INBOX}>
+									<Activity mode={isWidgetOpen ? "visible" : "hidden"}>
+										<WidgetWindow onClose={handleClose} />
+									</Activity>
 
-								<WidgetToggle onClick={handleToggle} unreadCount={unreadCount} />
-							</WidgetWebSocketProvider>
-						</WidgetSseProvider>
-					</WidgetWebSocketProvider>
-				</ConversationProvider>
-			</WidgetQueryProvider>
+									<WidgetToggle onClick={handleToggle} unreadCount={unreadCount} />
+								</WidgetWebSocketProvider>
+							</WidgetSseProvider>
+						</WidgetWebSocketProvider>
+					</ConversationProvider>
+				</WidgetQueryProvider>
+			</WidgetVisitorSseProvider>
 		</VisitorSessionProvider>
 	);
 }

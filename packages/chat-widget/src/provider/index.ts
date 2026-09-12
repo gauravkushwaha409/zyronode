@@ -4,6 +4,7 @@ export {
 } from "./conversation-provider";
 export { WidgetQueryProvider } from "./query-provider";
 export { WidgetSseProvider } from "./sse-provider";
+export { WidgetVisitorSseProvider } from "./visitor-sse-provider";
 export {
 	useVisitorSession,
 	VisitorSessionProvider,

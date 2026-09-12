@@ -48,6 +48,10 @@ export class WidgetEventsPublisher {
 		return [`conversation:${conversationId}`];
 	}
 
+	private visitorKeys(visitorId: string): string[] {
+		return [`visitor:${visitorId}`];
+	}
+
 	private widgetKeys(
 		organizationId: string | null,
 		conversationId: string,
@@ -55,6 +59,10 @@ export class WidgetEventsPublisher {
 		return organizationId
 			? [`org:${organizationId}`, `conversation:${conversationId}`]
 			: [`conversation:${conversationId}`];
+	}
+
+	private visitorScopeKeys(organizationId: string, visitorId: string): string[] {
+		return [...this.orgKeys(organizationId), ...this.visitorKeys(visitorId)];
 	}
 
 	/* ──────────────────────── transport core ──────────────────────── */
@@ -172,7 +180,7 @@ export class WidgetEventsPublisher {
 		payload: { visitorId: string; externalId: string | null },
 	): Promise<void> {
 		const data = { ...payload, isOnline: true as const };
-		const keys = this.orgKeys(organizationId);
+		const keys = this.visitorScopeKeys(organizationId, payload.visitorId);
 		// visitor presence is SSE-only today (WS heartbeat is client->server), but also mirror to WS for symmetry
 		this.emitWs({
 			organizationId,
@@ -187,7 +195,7 @@ export class WidgetEventsPublisher {
 		payload: { visitorId: string; externalId: string | null },
 	): Promise<void> {
 		const data = { ...payload, isOnline: false as const };
-		const keys = this.orgKeys(organizationId);
+		const keys = this.visitorScopeKeys(organizationId, payload.visitorId);
 		this.emitWs({
 			organizationId,
 			wsEvent: SSE_TO_WS_EVENT_MAP[WIDGET_SSE_EVENTS.VISITOR_DISCONNECTED],
@@ -198,7 +206,10 @@ export class WidgetEventsPublisher {
 
 	async visitorCreated(organizationId: string, visitor: unknown): Promise<void> {
 		const data = { visitor };
-		const keys = this.orgKeys(organizationId);
+		const visitorId = (visitor as { id?: string })?.id;
+		const keys = visitorId
+			? this.visitorScopeKeys(organizationId, visitorId)
+			: this.orgKeys(organizationId);
 		this.emitWs({
 			organizationId,
 			wsEvent: SSE_TO_WS_EVENT_MAP[WIDGET_SSE_EVENTS.VISITOR_CREATED],
@@ -209,7 +220,10 @@ export class WidgetEventsPublisher {
 
 	async visitorUpdated(organizationId: string, visitor: unknown): Promise<void> {
 		const data = { visitor };
-		const keys = this.orgKeys(organizationId);
+		const visitorId = (visitor as { id?: string })?.id;
+		const keys = visitorId
+			? this.visitorScopeKeys(organizationId, visitorId)
+			: this.orgKeys(organizationId);
 		this.emitWs({
 			organizationId,
 			wsEvent: SSE_TO_WS_EVENT_MAP[WIDGET_SSE_EVENTS.VISITOR_UPDATED],
@@ -223,7 +237,10 @@ export class WidgetEventsPublisher {
 		visitor: unknown,
 	): Promise<void> {
 		const data = { visitor };
-		const keys = this.orgKeys(organizationId);
+		const visitorId = (visitor as { id?: string })?.id;
+		const keys = visitorId
+			? this.visitorScopeKeys(organizationId, visitorId)
+			: this.orgKeys(organizationId);
 		this.emitWs({
 			organizationId,
 			wsEvent: SSE_TO_WS_EVENT_MAP[WIDGET_SSE_EVENTS.VISITOR_ASSIGNED],
@@ -236,7 +253,7 @@ export class WidgetEventsPublisher {
 		organizationId: string,
 		data: { visitorId: string; note: unknown },
 	): Promise<void> {
-		const keys = this.orgKeys(organizationId);
+		const keys = this.visitorScopeKeys(organizationId, data.visitorId);
 		this.emitWs({
 			organizationId,
 			wsEvent: SSE_TO_WS_EVENT_MAP[WIDGET_SSE_EVENTS.VISITOR_NOTE_CREATED],
@@ -287,5 +304,33 @@ export class WidgetEventsPublisher {
 			data: data as Record<string, unknown>,
 		});
 		// no SSE — not needed
+	}
+
+	/**
+	 * Pre-conversation push to a specific visitor.
+	 * Widget opens `GET /widget/sse/visitor/:visitorId` immediately after session-start,
+	 * so this can deliver welcome prompts, assignment notices, or any info before
+	 * a conversation exists. Publishes to `visitor:${visitorId}` (and `org:${orgId}` if given)
+	 * so it works with both the new visitor SSE and the existing org SSE.
+	 */
+	async publishToVisitor(params: {
+		visitorId: string;
+		organizationId?: string | null;
+		event: WidgetSseEvent;
+		data: unknown;
+	}): Promise<void> {
+		const keys = params.organizationId
+			? this.visitorScopeKeys(params.organizationId, params.visitorId)
+			: this.visitorKeys(params.visitorId);
+		const wsEvent = SSE_TO_WS_EVENT_MAP[params.event] ?? params.event;
+		// Visitor pre-conversation is SSE-primary; mirror to WS for symmetry if org known
+		if (params.organizationId) {
+			this.emitWs({
+				organizationId: params.organizationId,
+				wsEvent,
+				data: params.data as Record<string, unknown>,
+			});
+		}
+		await this.emitSse(keys, params.event, params.data);
 	}
 }
