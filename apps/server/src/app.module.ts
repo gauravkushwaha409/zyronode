@@ -12,6 +12,8 @@ import { PrismaModule } from "./prisma/prisma.module";
 import { RedisModule } from "./redis/redis.module";
 import { RoleModule } from "./role/role.module";
 import { SseModule } from "./sse/sse.module";
+import { TeamModule } from "./team/team.module";
+import { TeamInvitationModule } from "./team-invitation/team-invitation.module";
 import { VisitorModule } from "./visitor/visitor.module";
 import { WebsocketModule } from "./websocket/websocket.module";
 
@@ -22,8 +24,7 @@ const normalizeObserveValue = (v?: string) => v?.replace(/\$\$/g, "$");
 const observeAppKey = normalizeObserveValue(process.env.OBSERVE_APP_KEY);
 const observeAppSecret = normalizeObserveValue(process.env.OBSERVE_APP_SECRET);
 
-const hasObserveCreds =
-	!!observeAppKey && !!observeAppSecret
+const hasObserveCreds = !!observeAppKey && !!observeAppSecret;
 @Module({
 	imports: [
 		WebsocketModule,
@@ -37,6 +38,8 @@ const hasObserveCreds =
 		InboxModule,
 		RoleModule,
 		SseModule,
+		TeamModule,
+		TeamInvitationModule,
 		VisitorModule,
 		...(hasObserveCreds
 			? [

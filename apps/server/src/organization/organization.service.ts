@@ -178,6 +178,12 @@ export class OrganizationService {
 						isSystem: true,
 					},
 				},
+				team: {
+					select: {
+						id: true,
+						name: true,
+					},
+				},
 				user: {
 					select: {
 						id: true,

@@ -1,4 +1,4 @@
-import type { PermissionItem, RoleItem } from "./roles.types";
+import type { Permission, Role } from "./roles.types";
 
 export namespace RoleForm {
 	export type Mode = "create" | "edit" | "view";
@@ -12,8 +12,8 @@ export namespace RoleForm {
 	export interface Props {
 		open: boolean;
 		mode: Mode;
-		role?: RoleItem;
-		permissions: PermissionItem[];
+		role?: Role.Item;
+		permissions: Permission.Item[];
 		onOpenChange: (open: boolean) => void;
 		onSubmit: (payload: Payload) => void;
 		isSubmitting?: boolean;

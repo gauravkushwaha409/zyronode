@@ -14,7 +14,7 @@ import {
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRoleForm } from "../../hooks/form-handler";
 import type { RoleFormSchema } from "../../schema";
-import type { PermissionItem, RoleForm } from "../../types";
+import type { Permission, RoleForm } from "../../types";
 
 const MODE_TITLE: Record<RoleForm.Mode, string> = {
 	create: "Create role",
@@ -47,7 +47,7 @@ export function RoleFormDialog({
 	}, [open, role, form]);
 
 	const groups = useMemo(() => {
-		const map = new Map<string, PermissionItem[]>();
+		const map = new Map<string, Permission.Item[]>();
 		for (const permission of permissions) {
 			const group = map.get(permission.module) ?? [];
 			group.push(permission);
@@ -152,7 +152,7 @@ export function RoleFormDialog({
 	);
 }
 
-function PermissionCheckbox({ permission }: { permission: PermissionItem }) {
+function PermissionCheckbox({ permission }: { permission: Permission.Item }) {
 	const { watch, setValue } = useFormContext<RoleFormSchema>();
 	const permissionIds = watch("permissionIds");
 	const checked = permissionIds.includes(permission.id);

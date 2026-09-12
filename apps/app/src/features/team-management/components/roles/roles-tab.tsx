@@ -17,7 +17,7 @@ import {
 	useRolesQuery,
 	useUpdateRoleMutation,
 } from "../../hooks";
-import type { RoleForm, RoleItem } from "../../types";
+import type { Role, RoleForm } from "../../types";
 import { RoleFormDialog } from "./role-form-dialog";
 
 interface RolesTabProps {
@@ -26,7 +26,7 @@ interface RolesTabProps {
 
 interface DialogState {
 	mode: RoleForm.Mode;
-	role?: RoleItem;
+	role?: Role.Item;
 }
 
 export function RolesTab({ organizationId }: RolesTabProps) {
@@ -34,7 +34,7 @@ export function RolesTab({ organizationId }: RolesTabProps) {
 	const permissionsQuery = usePermissionsQuery(organizationId);
 
 	const [dialog, setDialog] = useState<DialogState | null>(null);
-	const [deleteTarget, setDeleteTarget] = useState<RoleItem | null>(null);
+	const [deleteTarget, setDeleteTarget] = useState<Role.Item | null>(null);
 
 	const createMutation = useCreateRoleMutation(organizationId);
 	const updateTarget = dialog?.mode === "edit" ? dialog.role : undefined;
@@ -50,7 +50,7 @@ export function RolesTab({ organizationId }: RolesTabProps) {
 	const roles = rolesQuery.data?.data.data ?? [];
 	const permissions = permissionsQuery.data?.data.data ?? [];
 
-	const columns: ColumnDef<RoleItem>[] = [
+	const columns: ColumnDef<Role.Item>[] = [
 		{
 			id: "role",
 			header: "Role Name",

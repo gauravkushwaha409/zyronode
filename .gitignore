@@ -39,6 +39,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# Prisma generated client
+**/src/generated
+
 # Misc
 .DS_Store
 *.pem

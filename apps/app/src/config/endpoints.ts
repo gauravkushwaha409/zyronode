@@ -19,12 +19,28 @@ export const ENDPOINTS = {
 			`/organization/${organizationId}/members`,
 	},
 	ROLE: {
-		LIST: (organizationId: string) =>
-			`/organizations/${organizationId}/roles`,
+		LIST: (organizationId: string) => `/organizations/${organizationId}/roles`,
 		DETAIL: (organizationId: string, roleId: string) =>
 			`/organizations/${organizationId}/roles/${roleId}`,
 		PERMISSIONS: (organizationId: string) =>
 			`/organizations/${organizationId}/permissions`,
+	},
+	TEAM: {
+		LIST: (organizationId: string) => `/organizations/${organizationId}/teams`,
+		DETAIL: (organizationId: string, teamId: string) =>
+			`/organizations/${organizationId}/teams/${teamId}`,
+		MEMBERS: (organizationId: string, teamId: string) =>
+			`/organizations/${organizationId}/teams/${teamId}/members`,
+		MEMBER: (organizationId: string, teamId: string, memberId: string) =>
+			`/organizations/${organizationId}/teams/${teamId}/members/${memberId}`,
+	},
+	TEAM_INVITATION: {
+		LIST: (organizationId: string) =>
+			`/organizations/${organizationId}/team-invitations`,
+		CREATE: (organizationId: string) =>
+			`/organizations/${organizationId}/team-invitations`,
+		REVOKE: (organizationId: string, invitationId: string) =>
+			`/organizations/${organizationId}/team-invitations/${invitationId}/revoke`,
 	},
 	INBOX: {
 		CONVERSATIONS: "/inbox/conversations",
@@ -33,7 +49,8 @@ export const ENDPOINTS = {
 		SEND_MESSAGE: "/conversations",
 		MARK_READ: "/conversations",
 		UNREAD_STATS: "/inbox/conversations/unread-stats/analytics",
-		MESSAGES: (conversationId: string) => `/conversations/${conversationId}/messages`,
+		MESSAGES: (conversationId: string) =>
+			`/conversations/${conversationId}/messages`,
 	},
 	VISITOR: {
 		// every visitor route is tenant-scoped by path; the backend
