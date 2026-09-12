@@ -10,8 +10,8 @@ import {
 } from "@nestjs/common";
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 import type { Request, Response } from "express";
-import { ConversationService } from "../conversation/conversation.service";
-import { CreateConversationDto } from "../conversation/dto/create-conversation.dto";
+import { ConversationService } from "../inbox/conversation.service";
+import { CreateConversationDto } from "../inbox/dto/create-conversation.dto";
 import { ListMessagesDto } from "../message/dto/list-messages.dto";
 import { SendMessageDto } from "../message/dto/send-message.dto";
 import { MessageService } from "../message/message.service";

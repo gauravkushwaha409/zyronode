@@ -13,10 +13,10 @@ import {
 import { Server, Socket } from "socket.io";
 import { resolveSocketUser } from "../common/auth/socket-user";
 import { getCorsOrigins } from "../common/cors";
-import { ConversationService } from "../conversation/conversation.service";
 import { MessageService } from "../message/message.service";
 import { WidgetEventsPublisher } from "../visitor/events/widget-events.publisher";
 import { WebsocketService } from "../websocket/websocket.service";
+import { ConversationService } from "./conversation.service";
 
 interface SendMessagePayload {
 	conversationId: string;

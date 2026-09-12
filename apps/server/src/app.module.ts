@@ -3,7 +3,6 @@ import { createObserveModule } from "@nestjs/observe";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { AuthModule } from "./auth/auth.module";
-import { ConversationModule } from "./conversation/conversation.module";
 import { InboxModule } from "./inbox/inbox.module";
 import { MessageModule } from "./message/message.module";
 import { OrganizationModule } from "./organization/organization.module";
@@ -33,7 +32,6 @@ const hasObserveCreds = !!observeAppKey && !!observeAppSecret;
 		AuthModule,
 		OrganizationModule,
 		OtpModule,
-		ConversationModule,
 		MessageModule,
 		InboxModule,
 		RoleModule,

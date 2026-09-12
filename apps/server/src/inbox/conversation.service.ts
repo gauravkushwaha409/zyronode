@@ -13,6 +13,20 @@ export class ConversationService {
 
 	async create(dto: CreateConversationDto, ip?: string, userAgent?: string) {
 		try {
+			// Validate visitor belongs to organization when linking — prevents IDOR
+			// and ensures `conversation.visitor` (schema.prisma:342 `Visitor?`) is not null.
+			if (dto.visitorId) {
+				const visitor = await this.prisma.visitor.findFirst({
+					where: { id: dto.visitorId, organizationId: dto.organizationId },
+					select: { id: true },
+				});
+				if (!visitor) {
+					throw new BadRequestException(
+						"Invalid visitorId for organization",
+					);
+				}
+			}
+
 			const conversation = await this.prisma.conversation.create({
 				data: {
 					organizationId: dto.organizationId,
@@ -29,6 +43,9 @@ export class ConversationService {
 				include: {
 					organization: {
 						select: { id: true, name: true },
+					},
+					visitor: {
+						select: { id: true, name: true, email: true },
 					},
 				},
 			});

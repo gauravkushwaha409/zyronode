@@ -10,6 +10,7 @@ import {
 import { getConfig } from "../config";
 import { getConversationId, setConversationId } from "../lib/storage";
 import { getWidgetApi } from "../services/widget-api.service";
+import { useVisitorSession } from "./visitor-session-provider";
 
 interface ConversationContextValue {
 	conversationId: string | null;
@@ -53,7 +54,8 @@ export function ConversationProvider({
 }: ConversationProviderProps) {
 	const config = getConfig();
 	const orgId = organizationId ?? config.organizationId;
-	const pageUrl =  window.location.href;
+	const pageUrl = window.location.href;
+	const { visitorId } = useVisitorSession();
 
 	const [conversationId, setConversationIdState] = useState<string | null>(
 		() => getConversationId(orgId),
@@ -106,10 +108,27 @@ export function ConversationProvider({
 			throw new Error("[chat-widget] organizationId is required to create a conversation");
 		}
 
+		// Ensure visitor exists before linking — avoids race where first message
+		// is sent before VisitorSessionProvider's async startSession resolves.
+		let resolvedVisitorId = visitorId;
+		if (!resolvedVisitorId) {
+			try {
+				const sessionRes = await getWidgetApi().startSession(orgId, {
+					sourceUrl: pageUrl,
+				});
+				resolvedVisitorId = sessionRes?.data?.data?.id ?? null;
+			} catch {
+				// best-effort — conversation will be created without visitor link
+			}
+		}
+
 		setIsCreating(true);
 		const promise = getWidgetApi()
 			.createConversation({
 				organizationId: orgId,
+				// Link conversation → visitor so `conversation.visitor` is not null
+				// (schema.prisma:335 `Conversation.visitorId` → `Visitor`).
+				...(resolvedVisitorId ? { visitorId: resolvedVisitorId } : {}),
 				sourceUrl: pageUrl,
 				channel: "web",
 			})
@@ -131,7 +150,7 @@ export function ConversationProvider({
 
 		pendingRef.current = promise;
 		return promise;
-	}, [conversationId, orgId, pageUrl]);
+	}, [conversationId, orgId, pageUrl, visitorId]);
 
 	return (
 		<ConversationContext.Provider value={{ conversationId, isCreating, ensureConversation }}>
