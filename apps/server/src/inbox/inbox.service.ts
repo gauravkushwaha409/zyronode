@@ -1,5 +1,10 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
+import { RedisService } from "../redis/redis.service";
+
+const ONLINE_WINDOW_MS = 60_000;
+
+const onlinePresenceKey = (organizationId: string) => `visitor-presence:${organizationId}`;
 
 function encodeCursor(conversation: { updatedAt: Date; id: string }): string {
   return Buffer.from(JSON.stringify({ updatedAt: conversation.updatedAt.toISOString(), id: conversation.id })).toString("base64url");
@@ -20,7 +25,19 @@ function decodeCursor(cursor: string): { updatedAt: Date; id: string } {
 
 @Injectable()
 export class InboxService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly redis: RedisService,
+  ) {}
+
+  private onlineCutoffMs(): number {
+    return Date.now() - ONLINE_WINDOW_MS;
+  }
+
+  private async getOnlineVisitorIds(organizationId: string): Promise<Set<string>> {
+    const ids = await this.redis.zRangeByScore(onlinePresenceKey(organizationId), this.onlineCutoffMs());
+    return new Set(ids);
+  }
 
   async getConversations(
     organizationId: string,
@@ -55,31 +72,43 @@ export class InboxService {
       where = { AND: [baseWhere, cursorWhere] };
     }
 
-    const conversationsPlusOne = await this.prisma.conversation.findMany({
-      where: where as never,
-      orderBy: [{ updatedAt: "desc" }, { id: "desc" }],
-      take: limit + 1,
-      include: {
-        messages: {
-          orderBy: { createdAt: "desc" },
-          take: 1,
-          select: { id: true, content: true, senderType: true, messageType: true, createdAt: true },
+    const [conversationsPlusOne, onlineIds] = await Promise.all([
+      this.prisma.conversation.findMany({
+        where: where as never,
+        orderBy: [{ updatedAt: "desc" }, { id: "desc" }],
+        take: limit + 1,
+        include: {
+          messages: {
+            orderBy: { createdAt: "desc" },
+            take: 1,
+            select: { id: true, content: true, senderType: true, messageType: true, createdAt: true, replyTo: true, replyToId: true },
+          },
+          _count: { select: { messages: { where: { senderType: "VISITOR", status: { not: "READ" } } } } },
+          visitor: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
         },
-        _count: { select: { messages: { where: { senderType: "VISITOR", status: { not: "READ" } } } } },
-      },
-    });
+      }),
+      this.getOnlineVisitorIds(organizationId),
+    ]);
 
     const hasExtra = conversationsPlusOne.length > limit;
     const conversations = hasExtra ? conversationsPlusOne.slice(0, limit) : conversationsPlusOne;
 
     const data = conversations.map((conversation) => {
       const lastMessage = conversation.messages[0] ?? null;
+      const visitor = conversation.visitor
+        ? { ...conversation.visitor, isOnline: onlineIds.has(conversation.visitor.id) }
+        : null;
       return {
         id: conversation.id,
         status: conversation.status,
         channel: conversation.channel,
-        visitorName: conversation.visitorName,
-        visitorEmail: conversation.visitorEmail,
+        visitor,
         lastMessageAt: conversation.updatedAt,
         createdAt: conversation.createdAt,
         lastMessage: lastMessage
@@ -90,7 +119,7 @@ export class InboxService {
     });
 
     return {
-      message: "Inbox conversations fetched successfully",
+      message: "Inbox conversations fetched successfully...",
       data: {
         conversations: data,
         pagination: {
@@ -106,13 +135,13 @@ export class InboxService {
                 ? encodeCursor(conversations[conversations.length - 1] as never)
                 : null,
           prevCursor:
-              direction === "prev"
-                ? hasExtra
-                  ? encodeCursor(conversations[0] as never)
-                  : null
-                : cursor && conversations.length
-                  ? encodeCursor(conversations[0] as never)
-                  : null,
+            direction === "prev"
+              ? hasExtra
+                ? encodeCursor(conversations[0] as never)
+                : null
+              : cursor && conversations.length
+                ? encodeCursor(conversations[0] as never)
+                : null,
           hasNext: direction === "next" ? hasExtra : conversations.length > 0,
           hasPrev: direction === "prev" ? hasExtra : !!cursor,
         },

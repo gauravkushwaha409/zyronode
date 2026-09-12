@@ -2,8 +2,12 @@ export interface InboxConversationListItem {
   id: string;
   status: "ACTIVE" | "CLOSED" | "IDLE" | "PENDING";
   channel: string;
-  visitorName: string | null;
-  visitorEmail: string | null;
+  visitor: {
+    id: string,
+    name: string,
+    email: string,
+    isOnline: boolean
+  },
   lastMessageAt: string;
   createdAt: string;
   lastMessage: {

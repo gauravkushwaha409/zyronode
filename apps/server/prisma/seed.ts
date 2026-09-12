@@ -14,7 +14,7 @@ const prisma = new PrismaClient({
 });
 
 const TEST_USER = {
-	email: "test@chatboq.dev",
+	email: "test@gmail.com",
 	password: "Test@12345",
 	firstName: "Test",
 	lastName: "User",

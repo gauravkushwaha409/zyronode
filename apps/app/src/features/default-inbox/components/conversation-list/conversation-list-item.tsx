@@ -14,7 +14,7 @@ export function ConversationListItem(props: ConversationListItemProps) {
 
 	const senderLabel =
 		props.lastMessage?.senderType === "VISITOR"
-			? (props.visitorName ?? "Visitor")
+			? (props?.visitor?.name ?? "Visitor")
 			: props.lastMessage?.senderType === "AGENT"
 				? "Agent"
 				: "System";
@@ -42,11 +42,10 @@ export function ConversationListItem(props: ConversationListItemProps) {
 						className="shrink-0"
 						size="xl"
 						fallbackType="text"
-						fallbackText={props.visitorName?.charAt(0) ?? "U"}
+						fallbackText={props.visitor?.name?.charAt(0) ?? "U"}
+						isActive={props.visitor?.isOnline}
+						showAvatarBadge={props.visitor?.isOnline}
 					/>
-					{props.status === "ACTIVE" && (
-						<div className="absolute bottom-0 right-0 size-2.5 bg-green-500 border-2 border-white rounded-full" />
-					)}
 					<Icon
 						size={16}
 						name="messenger"
@@ -57,7 +56,7 @@ export function ConversationListItem(props: ConversationListItemProps) {
 				<div className="flex-1 flex flex-col min-w-0">
 					<div className="flex items-center gap-2.5">
 						<Typography.T3 weight="semibold" className="text-gray-950 truncate">
-							{props.visitorName ?? "Unknown Visitor"}
+							{props.visitor?.name ?? "Unknown Visitor"}
 						</Typography.T3>
 					</div>
 

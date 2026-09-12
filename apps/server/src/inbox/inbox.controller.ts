@@ -33,7 +33,6 @@ export class InboxController {
 	@ApiResponse({ status: 200, description: "Conversations returned" })
 	getConversations(
 		@Query() query: ListInboxConversationsDto,
-		@CurrentUser("id") userId: string,
 	) {
 		return this.inboxService.getConversations(query.organizationId, {
 			status: query.status,
