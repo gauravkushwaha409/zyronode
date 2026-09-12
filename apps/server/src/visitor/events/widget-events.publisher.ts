@@ -1,5 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service";
+import { SseKey } from "../../sse/keys";
 import { SseService } from "../../sse/sse.service";
 import { WebsocketService } from "../../websocket/websocket.service";
 import {
@@ -10,23 +11,6 @@ import {
 
 /**
  * Centralized, scalable publisher for every visitor/widget server → client event.
- *
- * Senior pattern: ONE place owns
- *   - event names (no string literals in controllers/gateways/services)
- *   - key convention (`org:${id}` / `conversation:${id}`)
- *   - dual transport (WS rooms + SSE Redis fanout)
- *   - orgId resolution for conversation-scoped events
- *
- * Usage:
- *   publisher.messageCreated({ conversationId, message, organizationId? })
- *   publisher.visitorConnected(organizationId, { visitorId, externalId })
- *   publisher.emit("visitor.updated", { visitor }, { organizationId })
- *
- * Adding a new event:
- *   1) Add name to WIDGET_SSE_EVENTS/WIDGET_WS_EVENTS + SSE_TO_WS_EVENT_MAP
- *   2) Add payload to WidgetEventPayloadMap
- *   3) Add typed method here (or use generic emit)
- * Call sites never touch WebsocketService/SseService directly.
  */
 @Injectable()
 export class WidgetEventsPublisher {
@@ -38,18 +22,18 @@ export class WidgetEventsPublisher {
 		private readonly prisma: PrismaService,
 	) {}
 
-	/* ───────────────────────── key helpers ───────────────────────── */
+	/* ───────────────────────── key helpers — centralized in sse/keys.ts ───────────────────────── */
 
 	private orgKeys(organizationId: string): string[] {
-		return [`org:${organizationId}`];
+		return [SseKey.org(organizationId)];
 	}
 
 	private conversationKeys(conversationId: string): string[] {
-		return [`conversation:${conversationId}`];
+		return [SseKey.conversation(conversationId)];
 	}
 
 	private visitorKeys(visitorId: string): string[] {
-		return [`visitor:${visitorId}`];
+		return [SseKey.visitor(visitorId)];
 	}
 
 	private widgetKeys(
@@ -57,12 +41,12 @@ export class WidgetEventsPublisher {
 		conversationId: string,
 	): string[] {
 		return organizationId
-			? [`org:${organizationId}`, `conversation:${conversationId}`]
-			: [`conversation:${conversationId}`];
+			? [SseKey.org(organizationId), SseKey.conversation(conversationId)]
+			: [SseKey.conversation(conversationId)];
 	}
 
 	private visitorScopeKeys(organizationId: string, visitorId: string): string[] {
-		return [...this.orgKeys(organizationId), ...this.visitorKeys(visitorId)];
+		return [SseKey.org(organizationId), SseKey.visitor(visitorId)];
 	}
 
 	/* ──────────────────────── transport core ──────────────────────── */
@@ -188,6 +172,13 @@ export class WidgetEventsPublisher {
 			data: data as unknown as Record<string, unknown>,
 		});
 		await this.emitSse(keys, WIDGET_SSE_EVENTS.VISITOR_CONNECTED, data);
+		// If visitor has conversation(s), notify inbox (agent/inbox SSE + WS org room)
+		// so conversation list can flip `visitor.isOnline` without refetch.
+		await this.emitConversationPresenceForVisitor(
+			organizationId,
+			payload.visitorId,
+			true,
+		);
 	}
 
 	async visitorDisconnected(
@@ -202,6 +193,46 @@ export class WidgetEventsPublisher {
 			data: data as unknown as Record<string, unknown>,
 		});
 		await this.emitSse(keys, WIDGET_SSE_EVENTS.VISITOR_DISCONNECTED, data);
+		await this.emitConversationPresenceForVisitor(
+			organizationId,
+			payload.visitorId,
+			false,
+		);
+	}
+
+	/**
+	 * Check if visitor has any active conversation and emit to agent/inbox
+	 * so conversation list can flip `visitor.isOnline` without refetch.
+	 */
+	private async emitConversationPresenceForVisitor(
+		organizationId: string,
+		visitorId: string,
+		isOnline: boolean,
+	): Promise<void> {
+		try {
+			const conversations = await this.prisma.conversation.findMany({
+				where: { organizationId, visitorId, deletedAt: null },
+				select: { id: true },
+			});
+			if (conversations.length === 0) return;
+
+			for (const conv of conversations) {
+				const data = {
+					conversationId: conv.id,
+					visitorId,
+					isOnline,
+				};
+				await this.emitSse(
+					[...this.orgKeys(organizationId), ...this.conversationKeys(conv.id)],
+					WIDGET_SSE_EVENTS.CONVERSATION_PRESENCE,
+					data,
+				);
+			}
+		} catch (err) {
+			this.logger.warn(
+				`Failed to emit conversation presence for visitor ${visitorId}: ${(err as Error).message}`,
+			);
+		}
 	}
 
 	async visitorCreated(organizationId: string, visitor: unknown): Promise<void> {

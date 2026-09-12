@@ -1,10 +1,11 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { RedisService } from "../redis/redis.service";
+import { RedisKey } from "../sse/keys";
 
 const ONLINE_WINDOW_MS = 60_000;
 
-const onlinePresenceKey = (organizationId: string) => `visitor-presence:${organizationId}`;
+const onlinePresenceKey = RedisKey.visitorPresence;
 
 function encodeCursor(conversation: { updatedAt: Date; id: string }): string {
   return Buffer.from(JSON.stringify({ updatedAt: conversation.updatedAt.toISOString(), id: conversation.id })).toString("base64url");

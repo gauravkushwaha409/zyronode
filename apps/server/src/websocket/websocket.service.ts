@@ -1,5 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { Server } from "socket.io";
+import { SseKey } from "../sse/keys";
 
 /**
  * Socket counterpart to SseService.
@@ -26,7 +27,7 @@ export class WebsocketService {
 			this.logger.warn("Server not set, cannot emit event");
 			return;
 		}
-		this.server.to(`conversation:${conversationId}`).emit(event, data);
+		this.server.to(SseKey.conversation(conversationId)).emit(event, data);
 	}
 
 	emitToOrg(
@@ -38,6 +39,6 @@ export class WebsocketService {
 			this.logger.warn("Server not set, cannot emit event");
 			return;
 		}
-		this.server.to(`org:${organizationId}`).emit(event, data);
+		this.server.to(SseKey.org(organizationId)).emit(event, data);
 	}
 }

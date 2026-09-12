@@ -18,6 +18,7 @@ export const WIDGET_SSE_EVENTS = {
 	VISITOR_ASSIGNED: "visitor.assigned",
 	VISITOR_NOTE_CREATED: "visitor.note.created",
 	CONVERSATION_UPDATED: "conversation.updated",
+	CONVERSATION_PRESENCE: "conversation.presence",
 	TYPING_UPDATE: "typing.update",
 } as const;
 
@@ -31,6 +32,7 @@ export const WIDGET_WS_EVENTS = {
 	VISITOR_ASSIGNED: "visitor.assigned",
 	VISITOR_NOTE_CREATED: "visitor.note.created",
 	CONVERSATION_UPDATED: "conversation:updated",
+	CONVERSATION_PRESENCE: "conversation:presence",
 	TYPING_UPDATE: "typing:update",
 } as const;
 
@@ -47,6 +49,8 @@ export const SSE_TO_WS_EVENT_MAP: Record<string, string> = {
 		WIDGET_WS_EVENTS.VISITOR_NOTE_CREATED,
 	[WIDGET_SSE_EVENTS.CONVERSATION_UPDATED]:
 		WIDGET_WS_EVENTS.CONVERSATION_UPDATED,
+	[WIDGET_SSE_EVENTS.CONVERSATION_PRESENCE]:
+		WIDGET_WS_EVENTS.CONVERSATION_PRESENCE,
 	[WIDGET_SSE_EVENTS.TYPING_UPDATE]: WIDGET_WS_EVENTS.TYPING_UPDATE,
 } as const;
 
@@ -77,6 +81,12 @@ export interface TypingUpdatePayload {
 	isTyping: boolean;
 }
 
+export interface ConversationPresencePayload {
+	conversationId: string;
+	visitorId: string;
+	isOnline: boolean;
+}
+
 /** For generic emit<T> typing. */
 export type WidgetEventPayloadMap = {
 	[WIDGET_SSE_EVENTS.MESSAGE_CREATED]: MessageCreatedPayload;
@@ -91,5 +101,6 @@ export type WidgetEventPayloadMap = {
 	[WIDGET_SSE_EVENTS.VISITOR_ASSIGNED]: { visitor: unknown };
 	[WIDGET_SSE_EVENTS.VISITOR_NOTE_CREATED]: { visitorId: string; note: unknown };
 	[WIDGET_SSE_EVENTS.CONVERSATION_UPDATED]: ConversationUpdatedPayload;
+	[WIDGET_SSE_EVENTS.CONVERSATION_PRESENCE]: ConversationPresencePayload;
 	[WIDGET_SSE_EVENTS.TYPING_UPDATE]: TypingUpdatePayload;
 };

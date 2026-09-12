@@ -7,6 +7,7 @@ import {
 import type { Prisma } from "../generated/prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { RedisService } from "../redis/redis.service";
+import { RedisKey } from "../sse/keys";
 import type { ListVisitorsDto } from "./dto/list-visitors.dto";
 import type { StartVisitorSessionDto } from "./dto/start-visitor-session.dto";
 import type { CreateVisitorNoteDto } from "./dto/update-visitor.dto";
@@ -28,8 +29,7 @@ const DEFAULT_LIMIT = 25;
 const ONLINE_WINDOW_MS = 60_000;
 
 /** ZSET per org: member = visitorId, score = last heartbeat epoch ms. */
-const onlinePresenceKey = (organizationId: string) =>
-	`visitor-presence:${organizationId}`;
+const onlinePresenceKey = RedisKey.visitorPresence;
 
 const VISITOR_LIST_SELECT = {
 	id: true,

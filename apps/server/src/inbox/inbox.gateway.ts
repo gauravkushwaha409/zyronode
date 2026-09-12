@@ -14,6 +14,7 @@ import { Server, Socket } from "socket.io";
 import { resolveSocketUser } from "../common/auth/socket-user";
 import { getCorsOrigins } from "../common/cors";
 import { MessageService } from "../message/message.service";
+import { SseKey } from "../sse/keys";
 import { WidgetEventsPublisher } from "../visitor/events/widget-events.publisher";
 import { WebsocketService } from "../websocket/websocket.service";
 import { ConversationService } from "./conversation.service";
@@ -80,7 +81,7 @@ export class InboxGateway
 		@ConnectedSocket() client: Socket,
 		@MessageBody() data: { conversationId: string },
 	) {
-		const room = `conversation:${data.conversationId}`;
+		const room = SseKey.conversation(data.conversationId);
 		client.join(room);
 		this.logger.log(`Client ${client.id} joined room ${room}`);
 		return {
@@ -99,7 +100,7 @@ export class InboxGateway
 			return { event: "error", data: { message: "Unauthorized" } };
 		}
 
-		const room = `org:${data.organizationId}`;
+		const room = SseKey.org(data.organizationId);
 		client.join(room);
 		this.logger.log(`Agent ${user.id} joined org room ${room}`);
 		return {
@@ -149,7 +150,7 @@ export class InboxGateway
 			isTyping: true,
 		});
 		// Keep original room broadcast for immediate echo (publisher does same)
-		client.to(`conversation:${data.conversationId}`).emit("typing:update", {
+		client.to(SseKey.conversation(data.conversationId)).emit("typing:update", {
 			conversationId: data.conversationId,
 			senderType: user?.type ?? "VISITOR",
 			isTyping: true,
@@ -167,7 +168,7 @@ export class InboxGateway
 			senderType: user?.type ?? "VISITOR",
 			isTyping: false,
 		});
-		client.to(`conversation:${data.conversationId}`).emit("typing:update", {
+		client.to(SseKey.conversation(data.conversationId)).emit("typing:update", {
 			conversationId: data.conversationId,
 			senderType: user?.type ?? "VISITOR",
 			isTyping: false,

@@ -2,6 +2,7 @@ import { Controller, Get, NotFoundException, Param, Res } from "@nestjs/common";
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 import type { Response } from "express";
 import { PrismaService } from "../prisma/prisma.service";
+import { SseKey } from "../sse/keys";
 import { SseService } from "../sse/sse.service";
 
 /**
@@ -63,7 +64,7 @@ export class WidgetSseController {
 		const clientId = this.sse.nextClientId();
 		void this.sse.register({
 			id: clientId,
-			keys: new Set([`visitor:${visitorId}`]),
+			keys: new Set([SseKey.visitor(visitorId)]),
 			write: (chunk) => res.write(chunk),
 		});
 
@@ -100,7 +101,7 @@ export class WidgetSseController {
 		const clientId = this.sse.nextClientId();
 		void this.sse.register({
 			id: clientId,
-			keys: new Set([`conversation:${conversationId}`]),
+			keys: new Set([SseKey.conversation(conversationId)]),
 			write: (chunk) => res.write(chunk),
 		});
 
@@ -137,7 +138,7 @@ export class WidgetSseController {
 		const clientId = this.sse.nextClientId();
 		void this.sse.register({
 			id: clientId,
-			keys: new Set([`conversation:${conversationId}`]),
+			keys: new Set([SseKey.conversation(conversationId)]),
 			write: (chunk) => res.write(chunk),
 		});
 

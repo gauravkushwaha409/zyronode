@@ -12,6 +12,7 @@ import {
 import { Server, Socket } from "socket.io";
 import { resolveSocketUser } from "../common/auth/socket-user";
 import { getCorsOrigins } from "../common/cors";
+import { SseKey } from "../sse/keys";
 
 /**
  * Agents operating on visitors (`/agent-visitors`): join, online/offline
@@ -63,7 +64,7 @@ export class AgentVisitorsGateway
 			return { event: "error", data: { message: "Unauthorized" } };
 		}
 
-		const room = `org:${data.organizationId}`;
+		const room = SseKey.org(data.organizationId);
 		client.join(room);
 		const orgIds: string[] = client.data.orgIds ?? [];
 		if (!orgIds.includes(data.organizationId)) {
@@ -87,7 +88,7 @@ export class AgentVisitorsGateway
 		if (user?.type !== "AGENT") return;
 		const orgIds: string[] = client.data.orgIds ?? [];
 		for (const organizationId of orgIds) {
-			this.server.to(`org:${organizationId}`).emit("agent:offline", {
+			this.server.to(SseKey.org(organizationId)).emit("agent:offline", {
 				agentId: user.id,
 				organizationId,
 				at: new Date().toISOString(),

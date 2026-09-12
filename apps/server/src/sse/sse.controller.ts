@@ -21,12 +21,15 @@ import { CurrentUser } from "../common/decorator/current-user.decorator";
 import { JwtAuthGuard } from "../common/gaurds/jwt-auth.guard";
 import { PrismaService } from "../prisma/prisma.service";
 import { WIDGET_SSE_EVENTS } from "../visitor/events/widget-event.types";
+import { SseKey } from "./keys";
 import { SseService } from "./sse.service";
 
 // Role-first, module-second scoping: each route only delivers its module's events.
+// Inbox needs conversation presence to show visitor online in conversation list.
 const INBOX_EVENTS = new Set([
 	WIDGET_SSE_EVENTS.MESSAGE_CREATED,
 	WIDGET_SSE_EVENTS.CONVERSATION_UPDATED,
+	WIDGET_SSE_EVENTS.CONVERSATION_PRESENCE,
 ]);
 const AGENT_VISITOR_EVENTS = new Set([
 	WIDGET_SSE_EVENTS.VISITOR_CREATED,
@@ -80,7 +83,7 @@ export class SseController {
 		if (!membership) {
 			throw new ForbiddenException("You are not a member of this organization");
 		}
-		this.openStream(res, [`org:${organizationId}`], INBOX_EVENTS);
+		this.openStream(res, [SseKey.org(organizationId)], INBOX_EVENTS);
 	}
 
 	@Get("agent/visitor")
@@ -113,7 +116,7 @@ export class SseController {
 		if (!membership) {
 			throw new ForbiddenException("You are not a member of this organization");
 		}
-		this.openStream(res, [`org:${organizationId}`], AGENT_VISITOR_EVENTS);
+		this.openStream(res, [SseKey.org(organizationId)], AGENT_VISITOR_EVENTS);
 	}
 
 	@Get("visitor/conversation/:conversationId")
@@ -137,7 +140,7 @@ export class SseController {
 
 		this.openStream(
 			res,
-			[`conversation:${conversationId}`],
+			[SseKey.conversation(conversationId)],
 			VISITOR_CONVERSATION_EVENTS,
 		);
 	}
