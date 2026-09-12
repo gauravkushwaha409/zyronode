@@ -13,4 +13,5 @@
 **/.cache
 **/.vite
 **/build
+**/src/generated
 .pnpm-store
