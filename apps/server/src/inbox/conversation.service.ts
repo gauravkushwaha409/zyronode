@@ -5,16 +5,18 @@ import {
 } from "@nestjs/common";
 import { Prisma } from "../generated/prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
+import { WidgetEventsPublisher } from "../visitor/events/widget-events.publisher";
 import { CreateConversationDto } from "./dto/create-conversation.dto";
 
 @Injectable()
 export class ConversationService {
-	constructor(private readonly prisma: PrismaService) {}
+	constructor(
+		private readonly prisma: PrismaService,
+		private readonly widgetEvents: WidgetEventsPublisher,
+	) {}
 
-	async create(dto: CreateConversationDto, ip?: string, userAgent?: string) {
+	async createConversation(dto: CreateConversationDto) {
 		try {
-			// Validate visitor belongs to organization when linking — prevents IDOR
-			// and ensures `conversation.visitor` (schema.prisma:342 `Visitor?`) is not null.
 			if (dto.visitorId) {
 				const visitor = await this.prisma.visitor.findFirst({
 					where: { id: dto.visitorId, organizationId: dto.organizationId },
@@ -31,14 +33,7 @@ export class ConversationService {
 				data: {
 					organizationId: dto.organizationId,
 					visitorId: dto.visitorId,
-					sourceUrl: dto.sourceUrl,
-					visitorName: dto.visitorName,
-					visitorEmail: dto.visitorEmail,
-					visitorPhone: dto.visitorPhone,
 					channel: dto.channel ?? "web",
-					metadata: dto.metadata as never,
-					ipAddress: ip,
-					userAgent,
 				},
 				include: {
 					organization: {
@@ -48,6 +43,12 @@ export class ConversationService {
 						select: { id: true, name: true, email: true },
 					},
 				},
+			});
+
+			await this.widgetEvents.conversationCreated({
+				conversationId: conversation.id,
+				organizationId: conversation.organizationId,
+				conversation,
 			});
 
 			return {

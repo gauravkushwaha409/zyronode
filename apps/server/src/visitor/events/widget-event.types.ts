@@ -17,6 +17,7 @@ export const WIDGET_SSE_EVENTS = {
 	VISITOR_UPDATED: "visitor.updated",
 	VISITOR_ASSIGNED: "visitor.assigned",
 	VISITOR_NOTE_CREATED: "visitor.note.created",
+	CONVERSATION_CREATED: "conversation.created",
 	CONVERSATION_UPDATED: "conversation.updated",
 	CONVERSATION_PRESENCE: "conversation.presence",
 	TYPING_UPDATE: "typing.update",
@@ -31,6 +32,7 @@ export const WIDGET_WS_EVENTS = {
 	VISITOR_UPDATED: "visitor.updated",
 	VISITOR_ASSIGNED: "visitor.assigned",
 	VISITOR_NOTE_CREATED: "visitor.note.created",
+	CONVERSATION_CREATED: "conversation:created",
 	CONVERSATION_UPDATED: "conversation:updated",
 	CONVERSATION_PRESENCE: "conversation:presence",
 	TYPING_UPDATE: "typing:update",
@@ -47,6 +49,8 @@ export const SSE_TO_WS_EVENT_MAP: Record<string, string> = {
 	[WIDGET_SSE_EVENTS.VISITOR_ASSIGNED]: WIDGET_WS_EVENTS.VISITOR_ASSIGNED,
 	[WIDGET_SSE_EVENTS.VISITOR_NOTE_CREATED]:
 		WIDGET_WS_EVENTS.VISITOR_NOTE_CREATED,
+	[WIDGET_SSE_EVENTS.CONVERSATION_CREATED]:
+		WIDGET_WS_EVENTS.CONVERSATION_CREATED,
 	[WIDGET_SSE_EVENTS.CONVERSATION_UPDATED]:
 		WIDGET_WS_EVENTS.CONVERSATION_UPDATED,
 	[WIDGET_SSE_EVENTS.CONVERSATION_PRESENCE]:
@@ -75,6 +79,10 @@ export interface ConversationUpdatedPayload {
 	conversation: unknown;
 }
 
+export interface ConversationCreatedPayload {
+	conversation: unknown;
+}
+
 export interface TypingUpdatePayload {
 	conversationId: string;
 	senderType: string;
@@ -100,6 +108,7 @@ export type WidgetEventPayloadMap = {
 	[WIDGET_SSE_EVENTS.VISITOR_UPDATED]: { visitor: unknown };
 	[WIDGET_SSE_EVENTS.VISITOR_ASSIGNED]: { visitor: unknown };
 	[WIDGET_SSE_EVENTS.VISITOR_NOTE_CREATED]: { visitorId: string; note: unknown };
+	[WIDGET_SSE_EVENTS.CONVERSATION_CREATED]: ConversationCreatedPayload;
 	[WIDGET_SSE_EVENTS.CONVERSATION_UPDATED]: ConversationUpdatedPayload;
 	[WIDGET_SSE_EVENTS.CONVERSATION_PRESENCE]: ConversationPresencePayload;
 	[WIDGET_SSE_EVENTS.TYPING_UPDATE]: TypingUpdatePayload;

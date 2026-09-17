@@ -293,6 +293,28 @@ export class WidgetEventsPublisher {
 		await this.emitSse(keys, WIDGET_SSE_EVENTS.VISITOR_NOTE_CREATED, data);
 	}
 
+	async conversationCreated(params: {
+		conversationId: string;
+		organizationId?: string | null;
+		conversation: unknown;
+	}): Promise<void> {
+		const orgId =
+			params.organizationId !== undefined
+				? params.organizationId
+				: await this.resolveOrgId(params.conversationId);
+		const data = { conversation: params.conversation };
+		const keys = orgId
+			? this.orgKeys(orgId)
+			: this.conversationKeys(params.conversationId);
+		this.emitWs({
+			conversationId: params.conversationId,
+			organizationId: orgId,
+			wsEvent: SSE_TO_WS_EVENT_MAP[WIDGET_SSE_EVENTS.CONVERSATION_CREATED],
+			data: data as Record<string, unknown>,
+		});
+		await this.emitSse(keys, WIDGET_SSE_EVENTS.CONVERSATION_CREATED, data);
+	}
+
 	async conversationUpdated(params: {
 		conversationId: string;
 		organizationId?: string | null;

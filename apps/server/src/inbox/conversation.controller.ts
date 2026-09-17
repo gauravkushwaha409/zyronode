@@ -29,11 +29,8 @@ export class ConversationController {
 	@Post()
 	@ApiOperation({ summary: "Create a new conversation" })
 	@ApiResponse({ status: 201, description: "Conversation created" })
-	create(@Body() dto: CreateConversationDto, @Req() req: Request) {
-		const ip =
-			(req.headers["x-forwarded-for"] as string) ?? req.socket.remoteAddress;
-		const userAgent = req.headers["user-agent"];
-		return this.conversationService.create(dto, ip, userAgent);
+	create(@Body() dto: CreateConversationDto,) {
+		return this.conversationService.createConversation(dto);
 	}
 
 	@Get(":id")
