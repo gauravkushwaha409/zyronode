@@ -4,7 +4,6 @@ import { MessageModule } from "../message/message.module";
 import { SseModule } from "../sse/sse.module";
 import { WidgetEventsModule } from "../visitor/events/widget-events.module";
 import { AgentVisitorsGateway } from "./agent-visitors.gateway";
-import { ConversationController } from "./conversation.controller";
 import { ConversationService } from "./conversation.service";
 import { InboxController } from "./inbox.controller";
 import { InboxGateway } from "./inbox.gateway";
@@ -20,7 +19,7 @@ import { InboxSsePublisher } from "./inbox-sse.publisher";
 		WidgetEventsModule,
 		SseModule,
 	],
-	controllers: [InboxController, ConversationController],
+	controllers: [InboxController],
 	providers: [
 		InboxService,
 		ConversationService,
