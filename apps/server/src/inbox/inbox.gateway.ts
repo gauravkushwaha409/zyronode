@@ -185,18 +185,11 @@ export class InboxGateway
 			return { event: "error", data: { message: "Unauthorized" } };
 		}
 
+		// SSE/WS fanout is now owned by ConversationService via InboxSsePublisher
 		const result = await this.conversationService.updateStatus(
 			data.conversationId,
 			data.status as "ACTIVE" | "IDLE" | "CLOSED" | "PENDING",
 		);
-
-		await this.widgetEvents.conversationUpdated({
-			conversationId: data.conversationId,
-			organizationId:
-				(result.data as unknown as { organizationId?: string })?.organizationId ??
-				null,
-			conversation: result.data,
-		});
 
 		return { event: "conversation:status:updated", data: result.data };
 	}

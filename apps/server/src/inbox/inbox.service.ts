@@ -2,6 +2,7 @@ import { BadRequestException, ForbiddenException, Injectable, NotFoundException 
 import { PrismaService } from "../prisma/prisma.service";
 import { RedisService } from "../redis/redis.service";
 import { RedisKey } from "../sse/keys";
+import { InboxSsePublisher } from "./inbox-sse.publisher";
 
 const ONLINE_WINDOW_MS = 60_000;
 
@@ -29,6 +30,7 @@ export class InboxService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly redis: RedisService,
+    private readonly inboxSse: InboxSsePublisher,
   ) {}
 
   private onlineCutoffMs(): number {
@@ -194,6 +196,12 @@ export class InboxService {
       data: { status: "CLOSED" },
     });
 
+    await this.inboxSse.conversationUpdated({
+      conversationId,
+      organizationId,
+      conversation: updated,
+    });
+
     return {
       message: "Conversation closed successfully",
       data: updated,
@@ -212,6 +220,12 @@ export class InboxService {
     const updated = await this.prisma.conversation.update({
       where: { id: conversationId },
       data: { status: "ACTIVE" },
+    });
+
+    await this.inboxSse.conversationUpdated({
+      conversationId,
+      organizationId,
+      conversation: updated,
     });
 
     return {
@@ -241,6 +255,11 @@ export class InboxService {
     const deleted = await this.prisma.conversation.update({
       where: { id: conversationId },
       data: { deletedAt: new Date(), deletedById: deletedById ?? null },
+    });
+
+    await this.inboxSse.conversationDeleted({
+      conversationId,
+      organizationId,
     });
 
     return {

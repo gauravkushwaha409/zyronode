@@ -5,7 +5,6 @@ import {
 	Param,
 	Patch,
 	Post,
-	Req,
 	UseGuards,
 } from "@nestjs/common";
 import {
@@ -15,13 +14,11 @@ import {
 	ApiResponse,
 	ApiTags,
 } from "@nestjs/swagger";
-import type { Request } from "express";
-import { CurrentUser } from "../common/decorator/current-user.decorator";
 import { JwtAuthGuard } from "../common/gaurds/jwt-auth.guard";
 import { ConversationService } from "./conversation.service";
 import { CreateConversationDto } from "./dto/create-conversation.dto";
 
-@ApiTags("Conversation")
+@ApiTags("Conversations")
 @Controller("conversations")
 export class ConversationController {
 	constructor(private readonly conversationService: ConversationService) {}
@@ -50,7 +47,6 @@ export class ConversationController {
 	@ApiResponse({ status: 200, description: "Conversations returned" })
 	findByOrganization(
 		@Param("organizationId") organizationId: string,
-		@CurrentUser("id") userId: string,
 	) {
 		return this.conversationService.findByOrganizationId(organizationId);
 	}
@@ -64,7 +60,6 @@ export class ConversationController {
 	updateStatus(
 		@Param("id") id: string,
 		@Body("status") status: "ACTIVE" | "IDLE" | "CLOSED" | "PENDING",
-		@CurrentUser("id") userId: string,
 	) {
 		return this.conversationService.updateStatus(id, status);
 	}

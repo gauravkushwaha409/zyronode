@@ -5,28 +5,34 @@ import {
 } from "@nestjs/common";
 import { Prisma } from "../generated/prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
-import { WidgetEventsPublisher } from "../visitor/events/widget-events.publisher";
 import { CreateConversationDto } from "./dto/create-conversation.dto";
+import { InboxSsePublisher } from "./inbox-sse.publisher";
 
 @Injectable()
 export class ConversationService {
 	constructor(
 		private readonly prisma: PrismaService,
-		private readonly widgetEvents: WidgetEventsPublisher,
+		private readonly inboxSse: InboxSsePublisher,
 	) {}
 
-	async createConversation(dto: CreateConversationDto) {
+	async create(dto: CreateConversationDto, ip?: string, userAgent?: string) {
+		return this.createConversation(dto, ip, userAgent);
+	}
+
+	async createConversation(
+		dto: CreateConversationDto,
+		ip?: string,
+		userAgent?: string,
+	) {
 		try {
-			if (dto.visitorId) {
-				const visitor = await this.prisma.visitor.findFirst({
-					where: { id: dto.visitorId, organizationId: dto.organizationId },
-					select: { id: true },
-				});
-				if (!visitor) {
-					throw new BadRequestException(
-						"Invalid visitorId for organization",
-					);
-				}
+			const visitor = await this.prisma.visitor.findFirst({
+				where: { id: dto.visitorId, organizationId: dto.organizationId },
+				select: { id: true },
+			});
+			if (!visitor) {
+				throw new BadRequestException(
+					"Invalid visitorId for organization",
+				);
 			}
 
 			const conversation = await this.prisma.conversation.create({
@@ -34,6 +40,8 @@ export class ConversationService {
 					organizationId: dto.organizationId,
 					visitorId: dto.visitorId,
 					channel: dto.channel ?? "web",
+					...(ip ? { ipAddress: ip } : {}),
+					...(userAgent ? { userAgent } : {}),
 				},
 				include: {
 					organization: {
@@ -45,7 +53,7 @@ export class ConversationService {
 				},
 			});
 
-			await this.widgetEvents.conversationCreated({
+			await this.inboxSse.conversationCreated({
 				conversationId: conversation.id,
 				organizationId: conversation.organizationId,
 				conversation,
@@ -134,6 +142,12 @@ export class ConversationService {
 		const updated = await this.prisma.conversation.update({
 			where: { id: conversationId },
 			data: { status },
+		});
+
+		await this.inboxSse.conversationUpdated({
+			conversationId,
+			organizationId: updated.organizationId,
+			conversation: updated,
 		});
 
 		return {
