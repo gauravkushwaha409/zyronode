@@ -99,6 +99,19 @@ export interface InboxSendAgentMessageResponse {
   data: InboxMessage;
 }
 
+export interface InboxUploadedFile {
+  url: string;
+  key: string;
+  filename: string;
+  mimeType: string;
+  size: number;
+}
+
+export interface InboxUploadFileResponse {
+  message: string;
+  data: InboxUploadedFile;
+}
+
 export interface InboxCloseConversationResponse {
   message: string;
   data: { id: string; status: string };

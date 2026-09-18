@@ -8,6 +8,7 @@ import type {
   InboxConversationDetail,
   InboxSendAgentMessagePayload,
   InboxMessage,
+  InboxUploadedFile,
 } from "../types/inbox-api.types";
 
 export type InboxConversationsFilters = {
@@ -71,6 +72,28 @@ class InboxApiService extends BaseAPIService {
       `${CONFIG.ENDPOINTS.INBOX.SEND_MESSAGE}/${conversationId}/messages`,
       payload,
       axiosConfiguration,
+    );
+  }
+
+  async uploadFile(
+    conversationId: string,
+    organizationId: string,
+    file: File,
+    axiosConfiguration?: AxiosRequestConfig,
+  ) {
+    const formData = new FormData();
+    formData.append("organizationId", organizationId);
+    formData.append("file", file);
+    return super.post<InboxUploadedFile>(
+      CONFIG.ENDPOINTS.INBOX.UPLOAD(conversationId),
+      formData,
+      {
+        ...axiosConfiguration,
+        // instance default is Content-Type: application/json — override to
+        // undefined so axios/the browser sets multipart/form-data with the
+        // correct boundary itself instead of sending FormData as JSON.
+        headers: { ...axiosConfiguration?.headers, "Content-Type": undefined },
+      },
     );
   }
 

@@ -35,12 +35,14 @@ export class S3Service implements OnModuleInit {
 		if (!process.env.S3_ENDPOINT) return; // real AWS: bucket is provisioned out-of-band
 		try {
 			await this.client.send(new HeadBucketCommand({ Bucket: this.bucket }));
-		} catch {
+			this.logger.log(`Bucket "${this.bucket}" already exists`);
+		} catch (headErr) {
+			this.logger.warn(`Bucket "${this.bucket}" not found (${(headErr as Error).name}), creating it`);
 			try {
 				await this.client.send(new CreateBucketCommand({ Bucket: this.bucket }));
 				this.logger.log(`Created LocalStack bucket "${this.bucket}"`);
-			} catch (err) {
-				this.logger.warn(`Could not create bucket "${this.bucket}": ${(err as Error).message}`);
+			} catch (createErr) {
+				this.logger.error(`Could not create bucket "${this.bucket}": ${(createErr as Error).message}`);
 			}
 		}
 	}
@@ -50,14 +52,26 @@ export class S3Service implements OnModuleInit {
 		body: Buffer;
 		contentType?: string;
 	}): Promise<{ key: string; url: string }> {
-		await this.client.send(
-			new PutObjectCommand({
-				Bucket: this.bucket,
-				Key: params.key,
-				Body: params.body,
-				ContentType: params.contentType,
-			}),
-		);
+		const command = new PutObjectCommand({
+			Bucket: this.bucket,
+			Key: params.key,
+			Body: params.body,
+			ContentType: params.contentType,
+		});
+		try {
+			await this.client.send(command);
+		} catch (err) {
+			// LocalStack's in-memory store can drop the bucket without the
+			// container restarting (dev-only quirk) — recreate once and retry
+			// rather than failing every upload until someone notices and
+			// bounces the stack.
+			if ((err as { name?: string }).name === "NoSuchBucket" && process.env.S3_ENDPOINT) {
+				await this.client.send(new CreateBucketCommand({ Bucket: this.bucket }));
+				await this.client.send(command);
+			} else {
+				throw err;
+			}
+		}
 		return { key: params.key, url: this.publicUrl(params.key) };
 	}
 
