@@ -11,6 +11,7 @@ import { PrismaModule } from "./prisma/prisma.module";
 import { RedisModule } from "./redis/redis.module";
 import { RoleModule } from "./role/role.module";
 import { SseModule } from "./sse/sse.module";
+import { StorageModule } from "./storage/storage.module";
 import { TeamModule } from "./team/team.module";
 import { TeamInvitationModule } from "./team-invitation/team-invitation.module";
 import { VisitorModule } from "./visitor/visitor.module";
@@ -36,6 +37,7 @@ const hasObserveCreds = !!observeAppKey && !!observeAppSecret;
 		InboxModule,
 		RoleModule,
 		SseModule,
+		StorageModule,
 		TeamModule,
 		TeamInvitationModule,
 		VisitorModule,

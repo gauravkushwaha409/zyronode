@@ -58,11 +58,14 @@ services:
     environment:
       - DATABASE_URL=postgresql://admin:admin@postgres:5432/mydb
       - REDIS_HOST=redis
+      - S3_ENDPOINT=http://localstack:4566
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
+      localstack:
+        condition: service_started
 
   app:
     build:
