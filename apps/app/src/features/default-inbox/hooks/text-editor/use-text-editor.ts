@@ -3,9 +3,11 @@ import { $generateHtmlFromNodes, $getRoot } from '@package/text-editor';
 import { useCallback, useRef, useState } from 'react';
 import {
   useInternalNoteReplyStore,
+  useMessageEditStore,
   useMessageReplyStore,
 } from '../../store';
 import { useInboxFileUpload } from '../custom';
+import { useEditMessageMutation } from '../mutations/use-edit-message.mutation';
 import { useSendAgentMessageMutation } from '../mutations/use-send-agent-message.mutation';
 import { useSendInternalNoteMutation } from '../mutations/use-send-internal-note.mutation';
 import { useVoiceRecorder } from '../use-voice-recorder';
@@ -31,6 +33,13 @@ export function useTextEditor({
     useSendAgentMessageMutation(organizationId);
   const { mutate: sendInternalNote, isPending: isSendingInternalNote } =
     useSendInternalNoteMutation(organizationId);
+  const { mutate: editMessage, isPending: isEditingMessage } =
+    useEditMessageMutation(organizationId);
+
+  const {
+    message: editingMessage,
+    clearMessage: clearEditingMessage,
+  } = useMessageEditStore();
 
   const {
     message: replyMessage,
@@ -65,6 +74,24 @@ export function useTextEditor({
       htmlContent = $generateHtmlFromNodes(editor);
       isEmpty = $getRoot().getTextContentSize() === 0;
     });
+
+    if (editingMessage) {
+      if (isEmpty) return;
+      editMessage(
+        {
+          conversationId: editingMessage.conversation_uuid,
+          messageId: editingMessage.uuid,
+          content: htmlContent,
+        },
+        {
+          onSuccess: () => {
+            clearEditingMessage();
+            resetEditor();
+          },
+        },
+      );
+      return;
+    }
 
     const attachmentsToSend = fileUpload.attachments;
     if (isEmpty && attachmentsToSend.length === 0) return;
@@ -129,12 +156,23 @@ export function useTextEditor({
     cancelInternalNoteReply,
     resetEditor,
     fileUpload,
+    editingMessage,
+    editMessage,
+    clearEditingMessage,
   ]);
 
   const handleClose = useCallback(() => {
     if (isReplyingToMessage) cancelReply();
     if (isReplyingToNote) cancelInternalNoteReply();
-  }, [isReplyingToMessage, isReplyingToNote, cancelReply, cancelInternalNoteReply]);
+    if (editingMessage) clearEditingMessage();
+  }, [
+    isReplyingToMessage,
+    isReplyingToNote,
+    cancelReply,
+    cancelInternalNoteReply,
+    editingMessage,
+    clearEditingMessage,
+  ]);
 
   const handleVoiceSend = useCallback(async () => {
     if (!conversationUUID) return;
@@ -172,10 +210,11 @@ export function useTextEditor({
     replyInternalNote: isReplyingToNote ? replyInternalNote : null,
     isReplyingToNote,
     cancelInternalNoteReply: handleClose,
+    editingMessage,
     editorRef,
     handleSend,
     handleClose,
-    isPending: isSendingMessage || isSendingInternalNote,
+    isPending: isSendingMessage || isSendingInternalNote || isEditingMessage,
     fileUpload,
     voice: {
       isRecording: voice.isRecording,

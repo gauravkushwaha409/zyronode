@@ -111,6 +111,19 @@ export namespace MessageTypes {
     message: string;
     data: InboxMessage;
   }
+
+  export interface InboxEditMessagePayload {
+    content: string;
+  }
+
+  export interface InboxEditMessageResponse {
+    message: string;
+    data: InboxMessage;
+  }
+
+  export interface InboxDeleteMessageResponse {
+    message: string;
+  }
 }
 
 export namespace UploadTypes {

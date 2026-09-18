@@ -1,8 +1,10 @@
 import {
 	Body,
 	Controller,
+	Delete,
 	Get,
 	Param,
+	Patch,
 	Post,
 	Query,
 	UseGuards,
@@ -17,6 +19,7 @@ import {
 import { CurrentUser } from "../common/decorator/current-user.decorator";
 import { JwtAuthGuard } from "../common/gaurds/jwt-auth.guard";
 import { WidgetEventsPublisher } from "../visitor/events/widget-events.publisher";
+import { EditMessageDto } from "./dto/edit-message.dto";
 import { ListMessagesDto } from "./dto/list-messages.dto";
 import { SendMessageDto } from "./dto/send-message.dto";
 import { MessageService } from "./message.service";
@@ -46,10 +49,17 @@ export class MessageController {
 			"AGENT",
 			userId,
 		);
-		await this.widgetEvents.messageCreated({
-			conversationId,
-			message: result.data,
-		});
+		// Internal notes go through InternalNotesController's org-only-scoped
+		// SSE emit — never the conversation-keyed broadcast here, which the
+		// visitor widget's stream also subscribes to. This generic endpoint
+		// still technically accepts messageType=INTERNAL_NOTE (kept for the
+		// existing MessageService contract), so guard it defensively too.
+		if (dto.messageType !== "INTERNAL_NOTE") {
+			await this.widgetEvents.messageCreated({
+				conversationId,
+				message: result.data,
+			});
+		}
 		return result;
 	}
 
@@ -74,8 +84,10 @@ export class MessageController {
 	}
 
 	@Get()
+	@UseGuards(JwtAuthGuard)
+	@ApiBearerAuth()
 	@ApiOperation({
-		summary: "List messages in a conversation (cursor pagination)",
+		summary: "List messages in a conversation (cursor pagination, agent-only — widget uses GET /widget/conversations/:id/messages)",
 	})
 	@ApiParam({ name: "conversationId", description: "Conversation ID" })
 	@ApiResponse({ status: 200, description: "Messages returned" })
@@ -88,6 +100,53 @@ export class MessageController {
 			cursor: query.cursor,
 			direction: query.direction,
 		});
+	}
+
+	@Patch(":messageId")
+	@UseGuards(JwtAuthGuard)
+	@ApiBearerAuth()
+	@ApiOperation({ summary: "Edit your own message" })
+	@ApiParam({ name: "conversationId", description: "Conversation ID" })
+	@ApiParam({ name: "messageId", description: "Message ID" })
+	@ApiResponse({ status: 200, description: "Message edited" })
+	async edit(
+		@Param("conversationId") conversationId: string,
+		@Param("messageId") messageId: string,
+		@Body() dto: EditMessageDto,
+		@CurrentUser("id") userId: string,
+	) {
+		const result = await this.messageService.edit(
+			conversationId,
+			messageId,
+			userId,
+			dto.content,
+		);
+		await this.widgetEvents.messageUpdated({
+			conversationId,
+			message: result.data,
+		});
+		return result;
+	}
+
+	@Delete(":messageId")
+	@UseGuards(JwtAuthGuard)
+	@ApiBearerAuth()
+	@ApiOperation({ summary: "Delete your own message (soft delete)" })
+	@ApiParam({ name: "conversationId", description: "Conversation ID" })
+	@ApiParam({ name: "messageId", description: "Message ID" })
+	@ApiResponse({ status: 200, description: "Message deleted" })
+	async remove(
+		@Param("conversationId") conversationId: string,
+		@Param("messageId") messageId: string,
+		@CurrentUser("id") userId: string,
+	) {
+		const result = await this.messageService.softDelete(
+			conversationId,
+			messageId,
+			userId,
+		);
+		await this.widgetEvents.messageDeleted({ conversationId, messageId });
+		return result;
 	}
 
 	@Post("read")

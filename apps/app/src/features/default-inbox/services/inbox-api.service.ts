@@ -95,6 +95,32 @@ class InboxApiService extends BaseAPIService {
 		);
 	}
 
+	async editMessage(
+		conversationId: string,
+		messageId: string,
+		payload: MessageTypes.InboxEditMessagePayload,
+		axiosConfiguration?: AxiosRequestConfig,
+	) {
+		// `patch`/`delete` on BaseAPIService aren't generically typed over the
+		// response (unlike `get`/`post`) — cast to the real envelope shape.
+		return super.patch<MessageTypes.InboxEditMessagePayload>(
+			CONFIG.ENDPOINTS.INBOX.MESSAGE(conversationId, messageId),
+			payload,
+			axiosConfiguration,
+		) as Promise<ApiResponse<MessageTypes.InboxMessage>>;
+	}
+
+	async deleteMessage(
+		conversationId: string,
+		messageId: string,
+		axiosConfiguration?: AxiosRequestConfig,
+	) {
+		return super.delete<{ message: string }>(
+			CONFIG.ENDPOINTS.INBOX.MESSAGE(conversationId, messageId),
+			axiosConfiguration,
+		) as Promise<ApiResponse<{ message: string }>>;
+	}
+
 	async createInternalNote(
 		conversationId: string,
 		organizationId: string,

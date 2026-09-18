@@ -1,4 +1,11 @@
-import { Editor } from '@package/text-editor';
+import {
+  $createParagraphNode,
+  $generateNodesFromDOM,
+  $getRoot,
+  $isDecoratorNode,
+  $isElementNode,
+  Editor,
+} from '@package/text-editor';
 import { InputFile, toast } from '@package/ui';
 import type React from 'react';
 import { useTextEditor } from '../../hooks/text-editor';
@@ -30,6 +37,7 @@ export function TextEditor({
     isReplyingToMessage,
     replyInternalNote,
     isReplyingToNote,
+    editingMessage,
     setMessageType,
     editorRef,
     handleSend,
@@ -90,6 +98,30 @@ export function TextEditor({
               {isNotesMode && <InternalNotesBanner />}
 
               <Editor
+                key={editingMessage?.uuid ?? 'new'}
+                initialConfig={
+                  editingMessage
+                    ? {
+                        editorState: (editor) => {
+                          editor.update(() => {
+                            const dom = new DOMParser().parseFromString(
+                              editingMessage.content,
+                              'text/html',
+                            );
+                            const nodes = $generateNodesFromDOM(editor, dom);
+                            const root = $getRoot();
+                            root.clear();
+                            const rootChildren = nodes.every(
+                              (node) => $isElementNode(node) || $isDecoratorNode(node),
+                            )
+                              ? nodes
+                              : [$createParagraphNode().append(...nodes)];
+                            root.append(...rootChildren);
+                          });
+                        },
+                      }
+                    : undefined
+                }
                 onChange={(_editorState, editor) => {
                   editorRef.current = editor;
                 }}
@@ -134,6 +166,9 @@ export function TextEditor({
                   audioButtonProps: {
                     onClick: voice.onStart,
                   },
+                  ...(editingMessage && {
+                    closeButtonProps: { onClick: handleClose },
+                  }),
                 }}
                 replyMessageProps={{
                   message:

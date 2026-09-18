@@ -1,8 +1,11 @@
 export { $generateHtmlFromNodes, $generateNodesFromDOM } from '@lexical/html';
 export type { LexicalEditor } from 'lexical';
 export {
+  $createParagraphNode,
   $getRoot,
   $getSelection,
+  $isDecoratorNode,
+  $isElementNode,
   COMMAND_PRIORITY_LOW,
   KEY_DOWN_COMMAND,
 } from 'lexical';

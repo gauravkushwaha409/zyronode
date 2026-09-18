@@ -51,6 +51,8 @@ export const ENDPOINTS = {
 		UNREAD_STATS: "/inbox/conversations/unread-stats/analytics",
 		MESSAGES: (conversationId: string) =>
 			`/conversations/${conversationId}/messages`,
+		MESSAGE: (conversationId: string, messageId: string) =>
+			`/conversations/${conversationId}/messages/${messageId}`,
 		UPLOAD: (conversationId: string) =>
 			`/conversations/${conversationId}/uploads`,
 		INTERNAL_NOTES: (conversationId: string) =>

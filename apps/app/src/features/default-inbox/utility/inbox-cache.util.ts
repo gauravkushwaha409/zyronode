@@ -14,6 +14,18 @@ export interface InboxMessageEvent {
 	message: MessageTypes.InboxMessage;
 }
 
+export interface InboxMessageDeletedEvent {
+	conversation: { id: string };
+	messageId: string;
+}
+
+function messagesQueryPredicate(conversationId: string) {
+	return (query: { queryKey: readonly unknown[] }) =>
+		query.queryKey[0] === "inbox" &&
+		query.queryKey[1] === "messages" &&
+		query.queryKey[2] === conversationId;
+}
+
 const RECENT_MESSAGE_LIMIT = 500;
 const recentMessageIds = new Set<string>();
 
@@ -41,12 +53,7 @@ export function applyInboxMessageEvent(
 	// until a refetch. Newest messages live in the first page (the initial,
 	// no-cursor fetch), so append there.
 	queryClient.setQueriesData<InfiniteData<ApiResponse<MessagesPageData>>>(
-		{
-			predicate: (query) =>
-				query.queryKey[0] === "inbox" &&
-				query.queryKey[1] === "messages" &&
-				query.queryKey[2] === conversation.id,
-		},
+		{ predicate: messagesQueryPredicate(conversation.id) },
 		(previous) => {
 			if (!previous?.pages.length) return previous;
 			const [firstPage, ...restPages] = previous.pages;
@@ -126,6 +133,74 @@ export function applyInboxMessageEvent(
 					...previous.data,
 					data: { ...list, conversations: [updated, ...conversations] },
 				},
+			};
+		},
+	);
+}
+
+/** Edit: replace the message wherever it lives across the paginated cache. */
+export function applyInboxMessageUpdatedEvent(
+	queryClient: QueryClient,
+	_organizationId: string,
+	event: InboxMessageEvent,
+): void {
+	const { conversation, message } = event;
+	if (!conversation?.id || !message?.id) return;
+
+	queryClient.setQueriesData<InfiniteData<ApiResponse<MessagesPageData>>>(
+		{ predicate: messagesQueryPredicate(conversation.id) },
+		(previous) => {
+			if (!previous?.pages.length) return previous;
+			return {
+				...previous,
+				pages: previous.pages.map((page) => {
+					const messages = page.data.data.messages;
+					if (!messages.some((m) => m.id === message.id)) return page;
+					return {
+						...page,
+						data: {
+							...page.data,
+							data: {
+								...page.data.data,
+								messages: messages.map((m) => (m.id === message.id ? message : m)),
+							},
+						},
+					};
+				}),
+			};
+		},
+	);
+}
+
+/** Delete: remove the message wherever it lives across the paginated cache. */
+export function applyInboxMessageDeletedEvent(
+	queryClient: QueryClient,
+	_organizationId: string,
+	event: InboxMessageDeletedEvent,
+): void {
+	const { conversation, messageId } = event;
+	if (!conversation?.id || !messageId) return;
+
+	queryClient.setQueriesData<InfiniteData<ApiResponse<MessagesPageData>>>(
+		{ predicate: messagesQueryPredicate(conversation.id) },
+		(previous) => {
+			if (!previous?.pages.length) return previous;
+			return {
+				...previous,
+				pages: previous.pages.map((page) => {
+					const messages = page.data.data.messages;
+					if (!messages.some((m) => m.id === messageId)) return page;
+					return {
+						...page,
+						data: {
+							...page.data,
+							data: {
+								...page.data.data,
+								messages: messages.filter((m) => m.id !== messageId),
+							},
+						},
+					};
+				}),
 			};
 		},
 	);

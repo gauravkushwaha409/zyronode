@@ -159,6 +159,54 @@ export class WidgetEventsPublisher {
 		await this.emitSse(keys, WIDGET_SSE_EVENTS.MESSAGE_CREATED, data);
 	}
 
+	/** Message edited (agent). Dual broadcast — mirrors messageCreated. */
+	async messageUpdated(params: {
+		conversationId: string;
+		message: unknown;
+		organizationId?: string | null;
+	}): Promise<void> {
+		const orgId =
+			params.organizationId !== undefined
+				? params.organizationId
+				: await this.resolveOrgId(params.conversationId);
+		const data = {
+			conversation: { id: params.conversationId },
+			message: params.message,
+		};
+		const keys = this.widgetKeys(orgId, params.conversationId);
+		this.emitWs({
+			conversationId: params.conversationId,
+			organizationId: orgId,
+			wsEvent: SSE_TO_WS_EVENT_MAP[WIDGET_SSE_EVENTS.MESSAGE_UPDATED],
+			data: data as Record<string, unknown>,
+		});
+		await this.emitSse(keys, WIDGET_SSE_EVENTS.MESSAGE_UPDATED, data);
+	}
+
+	/** Message soft-deleted (agent). Dual broadcast — mirrors messageCreated. */
+	async messageDeleted(params: {
+		conversationId: string;
+		messageId: string;
+		organizationId?: string | null;
+	}): Promise<void> {
+		const orgId =
+			params.organizationId !== undefined
+				? params.organizationId
+				: await this.resolveOrgId(params.conversationId);
+		const data = {
+			conversation: { id: params.conversationId },
+			messageId: params.messageId,
+		};
+		const keys = this.widgetKeys(orgId, params.conversationId);
+		this.emitWs({
+			conversationId: params.conversationId,
+			organizationId: orgId,
+			wsEvent: SSE_TO_WS_EVENT_MAP[WIDGET_SSE_EVENTS.MESSAGE_DELETED],
+			data: data as Record<string, unknown>,
+		});
+		await this.emitSse(keys, WIDGET_SSE_EVENTS.MESSAGE_DELETED, data);
+	}
+
 	async visitorConnected(
 		organizationId: string,
 		payload: { visitorId: string; externalId: string | null },

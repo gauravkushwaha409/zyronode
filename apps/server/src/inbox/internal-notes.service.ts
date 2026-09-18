@@ -69,10 +69,14 @@ export class InternalNotesService {
 			},
 		});
 
+		// Org key only — never the conversation key, which the visitor
+		// widget's SSE stream also subscribes to. Internal notes must never
+		// reach the visitor in realtime, even though the agent-side inbox
+		// (org-scoped stream) needs them.
 		await this.inboxSse.emit(
 			WIDGET_SSE_EVENTS.MESSAGE_CREATED,
 			{ conversation: { id: conversationId }, message: note },
-			{ organizationId, conversationId },
+			{ organizationId },
 		);
 
 		return {
