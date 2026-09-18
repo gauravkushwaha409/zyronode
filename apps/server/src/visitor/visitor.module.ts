@@ -7,11 +7,10 @@ import { VisitorController } from "./visitor.controller";
 import { VisitorGateway } from "./visitor.gateway";
 import { VisitorService } from "./visitor.service";
 import { WidgetController } from "./widget.controller";
-import { WidgetSseController } from "./widget.sse";
 
 @Module({
 	imports: [WidgetEventsModule, InboxModule, MessageModule],
-	controllers: [VisitorController, WidgetController, WidgetSseController],
+	controllers: [VisitorController, WidgetController],
 	providers: [VisitorService, VisitorGateway, SseService],
 	exports: [VisitorService],
 })

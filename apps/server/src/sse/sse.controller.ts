@@ -55,6 +55,13 @@ export class SseController {
 		private readonly prisma: PrismaService,
 	) {}
 
+	/**
+	 * Agent inbox SSE stream
+	 * Send inbox event to agent
+	 * @param organizationId
+	 * @param userId
+	 * @param res
+	 */
 	@Get("agent/inbox")
 	@UseGuards(JwtAuthGuard)
 	@ApiBearerAuth()
@@ -85,9 +92,20 @@ export class SseController {
 		if (!membership) {
 			throw new ForbiddenException("You are not a member of this organization");
 		}
-		this.openStream(res, [SseKey.org(organizationId)], INBOX_EVENTS);
+		this.openStream(
+			res,
+			[SseKey.org(organizationId), SseKey.agent(organizationId)],
+			INBOX_EVENTS,
+		);
 	}
 
+	/**
+	 * Agent visitor SSE stream - visitor events for one organization
+	 * Send visitor event to agent
+	 * @param organizationId
+	 * @param userId
+	 * @param res
+	 */
 	@Get("agent/visitor")
 	@UseGuards(JwtAuthGuard)
 	@ApiBearerAuth()
@@ -121,32 +139,84 @@ export class SseController {
 		this.openStream(res, [SseKey.org(organizationId)], AGENT_VISITOR_EVENTS);
 	}
 
+	/**
+	 * Visitor SSE stream - scoped to a single conversation
+	 * Send conversation event to visitor in particular conversation
+	 * @param conversationId
+	 * @param res
+	 */
 	@Get("visitor/conversation/:conversationId")
 	@ApiOperation({
 		summary: "Visitor SSE stream - scoped to a single conversation",
 	})
 	@ApiParam({ name: "conversationId", description: "Conversation ID" })
+	@ApiQuery({
+		name: "visitorId",
+		description: "Visitor ID owning the conversation (enables visitor-only key)",
+		required: false,
+	})
 	@ApiResponse({ status: 200, description: "SSE stream opened" })
 	@ApiResponse({ status: 404, description: "Conversation not found" })
 	async visitorStream(
 		@Param("conversationId") conversationId: string,
+		@Query("visitorId") visitorId: string | undefined,
 		@Res() res: Response,
 	) {
 		const conversation = await this.prisma.conversation.findFirst({
 			where: { id: conversationId, deletedAt: null },
-			select: { id: true },
+			select: { id: true, visitorId: true },
 		});
 		if (!conversation) {
 			throw new NotFoundException("Conversation not found");
 		}
+		if (visitorId && visitorId !== conversation.visitorId) {
+			throw new ForbiddenException("visitorId does not match conversation");
+		}
 
-		this.openStream(
-			res,
-			[SseKey.conversation(conversationId)],
-			VISITOR_CONVERSATION_EVENTS,
-		);
+		const keys: string[] = [SseKey.conversation(conversationId)];
+		if (visitorId) keys.push(SseKey.visitor(visitorId));
+
+		this.openStream(res, keys, VISITOR_CONVERSATION_EVENTS);
 	}
 
+	/**
+	 * Visitor SSE stream - scoped to a single visitor (public, pre-conversation)
+	 * Send visitor event to visitor before conversation is created
+	 * @param visitorId
+	 * @param res
+	 */
+	@Get("visitor/:visitorId")
+	@ApiOperation({
+		summary:
+			"Visitor SSE stream - scoped to a single visitor (public, pre-conversation)",
+	})
+	@ApiParam({
+		name: "visitorId",
+		description: "Visitor ID (from session start)",
+	})
+	@ApiResponse({ status: 200, description: "SSE stream opened" })
+	@ApiResponse({ status: 404, description: "Visitor not found" })
+	async visitorStreamByVisitor(
+		@Param("visitorId") visitorId: string,
+		@Res() res: Response,
+	) {
+		const visitor = await this.prisma.visitor.findFirst({
+			where: { id: visitorId },
+			select: { id: true },
+		});
+		if (!visitor) {
+			throw new NotFoundException("Visitor not found");
+		}
+
+		this.openStream(res, [SseKey.visitor(visitorId)]);
+	}
+
+	/**
+	 * Opens an SSE stream for the given response, keys, and optional events.
+	 * @param res
+	 * @param keys
+	 * @param events
+	 */
 	private openStream(res: Response, keys: string[], events?: Set<string>): void {
 		res.setHeader("Content-Type", "text/event-stream");
 		res.setHeader("Cache-Control", "no-cache, no-transform");

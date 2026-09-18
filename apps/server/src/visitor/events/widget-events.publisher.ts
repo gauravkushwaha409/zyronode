@@ -223,7 +223,7 @@ export class WidgetEventsPublisher {
 					isOnline,
 				};
 				await this.emitSse(
-					[...this.orgKeys(organizationId), ...this.conversationKeys(conv.id)],
+					[SseKey.agent(organizationId)],
 					WIDGET_SSE_EVENTS.CONVERSATION_PRESENCE,
 					data,
 				);
@@ -361,7 +361,7 @@ export class WidgetEventsPublisher {
 
 	/**
 	 * Pre-conversation push to a specific visitor.
-	 * Widget opens `GET /widget/sse/visitor/:visitorId` immediately after session-start,
+	 * Widget opens `GET /sse/visitor/:visitorId` immediately after session-start,
 	 * so this can deliver welcome prompts, assignment notices, or any info before
 	 * a conversation exists. Publishes to `visitor:${visitorId}` (and `org:${orgId}` if given)
 	 * so it works with both the new visitor SSE and the existing org SSE.

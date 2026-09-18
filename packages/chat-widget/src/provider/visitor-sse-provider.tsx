@@ -9,7 +9,7 @@ import { useVisitorSession } from "./visitor-session-provider";
  * Unlike `WidgetSseProvider` (conversation-scoped), this does **not**
  * require a conversationId, so it hits the server on widget load and
  * can deliver pre-conversation information (welcome, assignment, etc.)
- * via `GET /api/v1/widget/sse/visitor/:visitorId`.
+ * via `GET /api/v1/sse/visitor/:visitorId`.
  */
 export function WidgetVisitorSseProvider({
 	children,
@@ -31,7 +31,7 @@ export function WidgetVisitorSseProvider({
 				<SseProvider
 					key={visitorId}
 					options={{
-						url: `${config.serverUrl}/api/v1/widget/sse/visitor/${visitorId}`,
+						url: `${config.serverUrl}/api/v1/sse/visitor/${visitorId}`,
 						withCredentials: false,
 						retry: 2000,
 						maxRetries: 10,
