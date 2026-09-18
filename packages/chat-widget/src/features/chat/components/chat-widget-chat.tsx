@@ -26,7 +26,6 @@ export default function ChatWidgetChat() {
 	});
 
 	const messages = messagesData?.data?.data?.messages ?? [];
-	const reversed = [...messages].reverse();
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <ignore>
 	useEffect(() => {
@@ -81,7 +80,7 @@ export default function ChatWidgetChat() {
 						No messages yet. Start the conversation!
 					</p>
 				)}
-				{reversed.map((msg: ChatMessage) => (
+				{messages.map((msg: ChatMessage) => (
 					<div
 						key={msg.id}
 						className={`flex ${msg.senderType === "VISITOR" ? "justify-end" : "justify-start"}`}
