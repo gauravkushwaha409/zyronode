@@ -7,6 +7,7 @@ import {
 } from '../../store';
 import { useInboxFileUpload } from '../custom';
 import { useSendAgentMessageMutation } from '../mutations/use-send-agent-message.mutation';
+import { useSendInternalNoteMutation } from '../mutations/use-send-internal-note.mutation';
 import { useVoiceRecorder } from '../use-voice-recorder';
 
 interface UseTextEditorOptions {
@@ -28,6 +29,8 @@ export function useTextEditor({
 
   const { mutate: sendMessage, isPending: isSendingMessage } =
     useSendAgentMessageMutation(organizationId);
+  const { mutate: sendInternalNote, isPending: isSendingInternalNote } =
+    useSendInternalNoteMutation(organizationId);
 
   const {
     message: replyMessage,
@@ -92,11 +95,23 @@ export function useTextEditor({
       return;
     }
 
+    if (isInternalNote) {
+      sendInternalNote(
+        {
+          conversationId: conversationUUID,
+          content: htmlContent,
+          ...(replyToId && { replyToId }),
+        },
+        { onSuccess: finishSend },
+      );
+      return;
+    }
+
     sendMessage(
       {
         conversationId: conversationUUID,
         content: htmlContent,
-        messageType: isInternalNote ? 'INTERNAL_NOTE' : 'TEXT',
+        messageType: 'TEXT',
         ...(replyToId && { replyToId }),
       },
       { onSuccess: finishSend },
@@ -109,6 +124,7 @@ export function useTextEditor({
     isReplyingToMessage,
     isReplyingToNote,
     sendMessage,
+    sendInternalNote,
     cancelReply,
     cancelInternalNoteReply,
     resetEditor,
@@ -159,7 +175,7 @@ export function useTextEditor({
     editorRef,
     handleSend,
     handleClose,
-    isPending: isSendingMessage,
+    isPending: isSendingMessage || isSendingInternalNote,
     fileUpload,
     voice: {
       isRecording: voice.isRecording,

@@ -1,15 +1,17 @@
 import type { ApiResponse } from "@package/api-client";
 import type { QueryClient } from "@package/query";
+import type { InfiniteData } from "@tanstack/react-query";
 import { CONFIG } from "@/config";
-import type {
-	InboxConversationDetail,
-	InboxConversationsData,
-	InboxMessage,
-} from "../types/inbox-api.types";
+import type { ConversationTypes, MessageTypes } from "../types/inbox-api.types";
+
+interface MessagesPageData {
+	messages: MessageTypes.InboxMessage[];
+	pagination: unknown;
+}
 
 export interface InboxMessageEvent {
 	conversation: { id: string };
-	message: InboxMessage;
+	message: MessageTypes.InboxMessage;
 }
 
 const RECENT_MESSAGE_LIMIT = 500;
@@ -33,7 +35,44 @@ export function applyInboxMessageEvent(
 	const { conversation, message } = event;
 	if (!conversation?.id || !message?.id) return;
 
-	queryClient.setQueryData<ApiResponse<InboxConversationDetail>>(
+	// The conversation body renders `useMessagesQuery` (cursor-paginated
+	// ["inbox", "messages", conversationId, limit]), not CONVERSATION_DETAIL
+	// below — that cache also needs the new message or it never appears
+	// until a refetch. Newest messages live in the first page (the initial,
+	// no-cursor fetch), so append there.
+	queryClient.setQueriesData<InfiniteData<ApiResponse<MessagesPageData>>>(
+		{
+			predicate: (query) =>
+				query.queryKey[0] === "inbox" &&
+				query.queryKey[1] === "messages" &&
+				query.queryKey[2] === conversation.id,
+		},
+		(previous) => {
+			if (!previous?.pages.length) return previous;
+			const [firstPage, ...restPages] = previous.pages;
+			const firstPageMessages = firstPage.data.data.messages;
+			if (firstPageMessages.some((m) => m.id === message.id)) return previous;
+
+			return {
+				...previous,
+				pages: [
+					{
+						...firstPage,
+						data: {
+							...firstPage.data,
+							data: {
+								...firstPage.data.data,
+								messages: [...firstPageMessages, message],
+							},
+						},
+					},
+					...restPages,
+				],
+			};
+		},
+	);
+
+	queryClient.setQueryData<ApiResponse<ConversationTypes.InboxConversationDetail>>(
 		CONFIG.QUERY_KEY.INBOX.CONVERSATION_DETAIL(conversation.id, organizationId),
 		(previous) => {
 			const detail = previous?.data?.data;
@@ -54,7 +93,7 @@ export function applyInboxMessageEvent(
 		),
 	);
 
-	queryClient.setQueriesData<ApiResponse<InboxConversationsData>>(
+	queryClient.setQueriesData<ApiResponse<ConversationTypes.InboxConversationsData>>(
 		{ queryKey: CONFIG.QUERY_KEY.INBOX.CONVERSATIONS(organizationId) },
 		(previous) => {
 			const list = previous?.data?.data;

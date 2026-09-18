@@ -2,7 +2,7 @@ import type React from 'react';
 import { useEffect, useRef } from 'react';
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
 import { useMessagesQuery } from '../../hooks';
-import type { InboxMessage } from '../../types/inbox-api.types';
+import type { MessageTypes } from '../../types/inbox-api.types';
 import {
   groupConsecutiveMessages,
   groupMessagesByDate,
@@ -17,7 +17,7 @@ interface ConversationBodyProps {
   organizationId: string;
 }
 
-function mapInboxMessage(msg: InboxMessage) {
+function mapInboxMessage(msg: MessageTypes.InboxMessage) {
   return {
     uuid: msg.id,
     conversation_uuid: msg.conversationId,

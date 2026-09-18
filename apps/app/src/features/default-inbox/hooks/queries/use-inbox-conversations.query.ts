@@ -3,7 +3,7 @@ import { CONFIG } from "@/config";
 import { useCursorPagination } from "@/hooks/use-cursor-pagination";
 import type { CursorPaginationParams } from "@/types/cursor-pagination.types";
 import { inboxApiService } from "../../services/inbox-api.service";
-import type { InboxConversationListItem, InboxConversationsData } from "../../types/inbox-api.types";
+import type { ConversationTypes } from "../../types/inbox-api.types";
 
 /**
  * Cursor-paginated inbox conversations — uses reusable `useCursorPagination`.
@@ -29,7 +29,10 @@ export function useInboxConversationsQuery(
     limit,
   });
 
-  const result = useCursorPagination<InboxConversationsData, InboxConversationListItem>({
+  const result = useCursorPagination<
+    ConversationTypes.InboxConversationsData,
+    ConversationTypes.InboxConversationListItem
+  >({
     queryKey,
     fetchPage: ({ cursor, direction }) =>
       inboxApiService.getConversations(organizationId, {
@@ -38,7 +41,7 @@ export function useInboxConversationsQuery(
         limit,
         cursor: cursor ?? undefined,
         direction,
-      }) as Promise<ApiResponse<InboxConversationsData>>,
+      }) as Promise<ApiResponse<ConversationTypes.InboxConversationsData>>,
     getItems: (page) => page.conversations,
     enabled: !!organizationId,
   });
