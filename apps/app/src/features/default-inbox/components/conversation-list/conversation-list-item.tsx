@@ -1,10 +1,10 @@
 import { Avatar, cn, Icon, Typography } from "@package/ui";
 import { formatDistanceToNowStrict } from "date-fns";
 import { useConversationItem } from "../../hooks";
-import type { InboxConversationListItem } from "../../types/inbox-api.types";
+import type { ConversationTypes } from "../../types/inbox-api.types";
 import { ConversationAction } from "../conversation/conversation-action";
 
-type ConversationListItemProps = InboxConversationListItem;
+type ConversationListItemProps = ConversationTypes.InboxConversationListItem;
 
 
 export function ConversationListItem(props: ConversationListItemProps) {

@@ -1,19 +1,22 @@
 import type { APIError, ApiResponse } from "@package/api-client";
 import { useMutation, useQueryClient } from "@package/query";
 import { inboxApiService } from "../../services/inbox-api.service";
-import type { MessageTypes } from "../../types/inbox-api.types";
+import type {
+	InternalNoteTypes,
+	MessageTypes,
+} from "../../types/inbox-api.types";
 import { applyInboxMessageEvent } from "../../utility";
 
-export function useSendAgentMessageMutation(organizationId: string) {
+export function useSendInternalNoteMutation(organizationId: string) {
 	const queryClient = useQueryClient();
 
 	return useMutation<
 		ApiResponse<MessageTypes.InboxMessage>,
 		APIError,
-		MessageTypes.InboxSendAgentMessagePayload & { conversationId: string }
+		InternalNoteTypes.InboxCreateInternalNotePayload & { conversationId: string }
 	>(
 		({ conversationId, ...payload }) =>
-			inboxApiService.sendAgentMessage(conversationId, payload),
+			inboxApiService.createInternalNote(conversationId, organizationId, payload),
 		{
 			onSuccess: (response, variables) => {
 				const message = response.data?.data;

@@ -9,6 +9,8 @@ import { InboxController } from "./inbox.controller";
 import { InboxGateway } from "./inbox.gateway";
 import { InboxService } from "./inbox.service";
 import { InboxSsePublisher } from "./inbox-sse.publisher";
+import { InternalNotesController } from "./internal-notes.controller";
+import { InternalNotesService } from "./internal-notes.service";
 
 @Module({
 	imports: [
@@ -19,14 +21,15 @@ import { InboxSsePublisher } from "./inbox-sse.publisher";
 		WidgetEventsModule,
 		SseModule,
 	],
-	controllers: [InboxController],
+	controllers: [InboxController, InternalNotesController],
 	providers: [
 		InboxService,
 		ConversationService,
 		InboxGateway,
 		AgentVisitorsGateway,
 		InboxSsePublisher,
+		InternalNotesService,
 	],
-	exports: [ConversationService, InboxService, InboxSsePublisher],
+	exports: [ConversationService, InboxService, InboxSsePublisher, InternalNotesService],
 })
 export class InboxModule {}

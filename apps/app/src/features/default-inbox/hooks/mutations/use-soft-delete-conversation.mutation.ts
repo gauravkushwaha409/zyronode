@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from "@package/query";
 import type { InfiniteData } from "@tanstack/react-query";
 import { CONFIG } from "@/config";
 import { inboxApiService } from "../../services/inbox-api.service";
-import type { InboxConversationsData } from "../../types/inbox-api.types";
+import type { ConversationTypes } from "../../types/inbox-api.types";
 import { useConversationItem } from "../custom/use-conversation-item.custom";
 
 export function useSoftDeleteConversationMutation(organizationId: string) {
@@ -21,7 +21,7 @@ export function useSoftDeleteConversationMutation(organizationId: string) {
 			onSuccess: (_data, { conversationId }) => {
 				// Remove from infinite list cache (all pages + filter variants)
 				queryClient.setQueriesData<
-					InfiniteData<ApiResponse<InboxConversationsData>>
+					InfiniteData<ApiResponse<ConversationTypes.InboxConversationsData>>
 				>(
 					{ queryKey: CONFIG.QUERY_KEY.INBOX.CONVERSATIONS(organizationId) },
 					(old) => {
@@ -40,12 +40,12 @@ export function useSoftDeleteConversationMutation(organizationId: string) {
 									},
 								},
 							})),
-						} as InfiniteData<ApiResponse<InboxConversationsData>>;
+						} as InfiniteData<ApiResponse<ConversationTypes.InboxConversationsData>>;
 					},
 				);
 
 				// Also handle non-infinite cache shape (setQueriesData with same key)
-				queryClient.setQueriesData<ApiResponse<InboxConversationsData>>(
+				queryClient.setQueriesData<ApiResponse<ConversationTypes.InboxConversationsData>>(
 					{ queryKey: ["inbox", "conversations", organizationId] },
 					(old) => {
 						if (!old?.data?.data?.conversations) return old;
@@ -60,7 +60,7 @@ export function useSoftDeleteConversationMutation(organizationId: string) {
 									),
 								},
 							},
-						} as ApiResponse<InboxConversationsData>;
+						} as ApiResponse<ConversationTypes.InboxConversationsData>;
 					},
 				);
 

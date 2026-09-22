@@ -2,7 +2,7 @@ import type { InboxUnionTypes } from '.';
 import type { AttachmentMimeType, MessageSenderType, MessageType, SenderType } from './inbox.union.types';
 
 export interface MessageSender {
-  id: number;
+  id: string | null;
   type: SenderType;
   full_name: string | null;
   avatar: string | null;

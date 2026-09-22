@@ -2,7 +2,7 @@ import type React from 'react';
 import { useEffect, useRef } from 'react';
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
 import { useMessagesQuery } from '../../hooks';
-import type { InboxMessage } from '../../types/inbox-api.types';
+import type { MessageTypes } from '../../types/inbox-api.types';
 import {
   groupConsecutiveMessages,
   groupMessagesByDate,
@@ -17,7 +17,7 @@ interface ConversationBodyProps {
   organizationId: string;
 }
 
-function mapInboxMessage(msg: InboxMessage) {
+function mapInboxMessage(msg: MessageTypes.InboxMessage) {
   return {
     uuid: msg.id,
     conversation_uuid: msg.conversationId,
@@ -25,7 +25,7 @@ function mapInboxMessage(msg: InboxMessage) {
     content: msg.content,
     message_type: msg.messageType.toLowerCase().replace('INTERNAL_NOTE', 'internal_note') as 'text' | 'file' | 'internal_note',
     sender: {
-      id: 0,
+      id: msg.senderId,
       type: msg.senderType.toLowerCase() as 'visitor' | 'agent' | 'system',
       full_name: msg.senderType === 'VISITOR' ? 'Visitor' : msg.senderType === 'AGENT' ? 'Agent' : 'System',
       avatar: null,
@@ -36,7 +36,7 @@ function mapInboxMessage(msg: InboxMessage) {
       ? {
           uuid: msg.replyTo.id,
           content: msg.replyTo.content,
-          sender: { id: 0, type: msg.replyTo.senderType.toLowerCase() as 'visitor' | 'agent' | 'system', full_name: '', avatar: null, bg_color: null, email: null },
+          sender: { id: msg.replyTo.senderId, type: msg.replyTo.senderType.toLowerCase() as 'visitor' | 'agent' | 'system', full_name: '', avatar: null, bg_color: null, email: null },
         }
       : null,
     attachments: null,
@@ -117,7 +117,7 @@ export function ConversationBody({ conversationUUID, organizationId }: Conversat
         />
       )}
 
-      <MessageDeleteDialog conversationUUID={conversationUUID} />
+      <MessageDeleteDialog conversationUUID={conversationUUID} organizationId={organizationId} />
     </div>
   );
 }

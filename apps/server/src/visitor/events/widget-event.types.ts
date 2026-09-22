@@ -11,6 +11,8 @@
 /** SSE canonical names (what EventSource receives). */
 export const WIDGET_SSE_EVENTS = {
 	MESSAGE_CREATED: "message.created",
+	MESSAGE_UPDATED: "message.updated",
+	MESSAGE_DELETED: "message.deleted",
 	VISITOR_CONNECTED: "visitor.connected",
 	VISITOR_DISCONNECTED: "visitor.disconnected",
 	VISITOR_CREATED: "visitor.created",
@@ -26,6 +28,8 @@ export const WIDGET_SSE_EVENTS = {
 /** WebSocket names (socket.io). */
 export const WIDGET_WS_EVENTS = {
 	MESSAGE_NEW: "message:new",
+	MESSAGE_UPDATED: "message:updated",
+	MESSAGE_DELETED: "message:deleted",
 	VISITOR_CONNECTED: "visitor.connected",
 	VISITOR_DISCONNECTED: "visitor.disconnected",
 	VISITOR_CREATED: "visitor.created",
@@ -41,6 +45,8 @@ export const WIDGET_WS_EVENTS = {
 /** Mapping: SSE canonical -> WS name (used by publisher). */
 export const SSE_TO_WS_EVENT_MAP: Record<string, string> = {
 	[WIDGET_SSE_EVENTS.MESSAGE_CREATED]: WIDGET_WS_EVENTS.MESSAGE_NEW,
+	[WIDGET_SSE_EVENTS.MESSAGE_UPDATED]: WIDGET_WS_EVENTS.MESSAGE_UPDATED,
+	[WIDGET_SSE_EVENTS.MESSAGE_DELETED]: WIDGET_WS_EVENTS.MESSAGE_DELETED,
 	[WIDGET_SSE_EVENTS.VISITOR_CONNECTED]: WIDGET_WS_EVENTS.VISITOR_CONNECTED,
 	[WIDGET_SSE_EVENTS.VISITOR_DISCONNECTED]:
 		WIDGET_WS_EVENTS.VISITOR_DISCONNECTED,
@@ -75,6 +81,16 @@ export interface MessageCreatedPayload {
 	message: unknown;
 }
 
+export interface MessageUpdatedPayload {
+	conversation: { id: string };
+	message: unknown;
+}
+
+export interface MessageDeletedPayload {
+	conversation: { id: string };
+	messageId: string;
+}
+
 export interface ConversationUpdatedPayload {
 	conversation: unknown;
 }
@@ -98,6 +114,8 @@ export interface ConversationPresencePayload {
 /** For generic emit<T> typing. */
 export type WidgetEventPayloadMap = {
 	[WIDGET_SSE_EVENTS.MESSAGE_CREATED]: MessageCreatedPayload;
+	[WIDGET_SSE_EVENTS.MESSAGE_UPDATED]: MessageUpdatedPayload;
+	[WIDGET_SSE_EVENTS.MESSAGE_DELETED]: MessageDeletedPayload;
 	[WIDGET_SSE_EVENTS.VISITOR_CONNECTED]: VisitorPresencePayload & {
 		isOnline: true;
 	};

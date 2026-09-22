@@ -87,7 +87,12 @@ export class MessageService {
 
   async findByConversation(
     conversationId: string,
-    filters?: { limit?: number; cursor?: string; direction?: "next" | "prev" },
+    filters?: {
+      limit?: number;
+      cursor?: string;
+      direction?: "next" | "prev";
+      excludeInternalNotes?: boolean;
+    },
   ) {
     const conversation = await this.prisma.conversation.findFirst({
       where: { id: conversationId, deletedAt: null },
@@ -101,14 +106,19 @@ export class MessageService {
     const direction = filters?.direction ?? "next";
     const cursor = filters?.cursor;
 
-    let where: Record<string, unknown> = { conversationId };
+    const baseWhere: Record<string, unknown> = { conversationId, deletedAt: null };
+    if (filters?.excludeInternalNotes) {
+      baseWhere.messageType = { not: "INTERNAL_NOTE" };
+    }
+
+    let where: Record<string, unknown> = baseWhere;
     if (cursor) {
       const { createdAt: cursorDate, id: cursorId } = decodeMessageCursor(cursor);
       const cursorWhere =
         direction === "prev"
           ? { OR: [{ createdAt: { gt: cursorDate } }, { createdAt: cursorDate, id: { gt: cursorId } }] }
           : { OR: [{ createdAt: { lt: cursorDate } }, { createdAt: cursorDate, id: { lt: cursorId } }] };
-      where = { AND: [{ conversationId }, cursorWhere] };
+      where = { AND: [baseWhere, cursorWhere] };
     }
 
     const messagesPlusOne = await this.prisma.message.findMany({
@@ -156,6 +166,53 @@ export class MessageService {
         },
       },
     };
+  }
+
+  private async findOwnMessageOrThrow(
+    conversationId: string,
+    messageId: string,
+    userId: string,
+  ) {
+    const message = await this.prisma.message.findFirst({
+      where: { id: messageId, conversationId, deletedAt: null },
+    });
+    if (!message) {
+      throw new NotFoundException("Message not found");
+    }
+    if (message.senderType !== "AGENT" || message.senderId !== userId) {
+      throw new ForbiddenException("You can only edit or delete your own messages");
+    }
+    return message;
+  }
+
+  async edit(conversationId: string, messageId: string, userId: string, content: string) {
+    await this.findOwnMessageOrThrow(conversationId, messageId, userId);
+
+    const message = await this.prisma.message.update({
+      where: { id: messageId },
+      data: { content, isEdited: true, editedAt: new Date() },
+      include: {
+        replyTo: {
+          select: { id: true, content: true, senderType: true, senderId: true },
+        },
+      },
+    });
+
+    return {
+      message: "Message edited successfully",
+      data: message,
+    };
+  }
+
+  async softDelete(conversationId: string, messageId: string, userId: string) {
+    await this.findOwnMessageOrThrow(conversationId, messageId, userId);
+
+    await this.prisma.message.update({
+      where: { id: messageId },
+      data: { deletedAt: new Date() },
+    });
+
+    return { message: "Message deleted successfully" };
   }
 
   async markAsRead(conversationId: string, senderType: "VISITOR" | "AGENT") {

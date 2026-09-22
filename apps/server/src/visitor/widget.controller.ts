@@ -107,6 +107,7 @@ export class WidgetController {
 			limit: query.limit,
 			cursor: query.cursor,
 			direction: query.direction,
+			excludeInternalNotes: true,
 		});
 	}
 

@@ -3,9 +3,13 @@ import { $generateHtmlFromNodes, $getRoot } from '@package/text-editor';
 import { useCallback, useRef, useState } from 'react';
 import {
   useInternalNoteReplyStore,
+  useMessageEditStore,
   useMessageReplyStore,
 } from '../../store';
+import { useInboxFileUpload } from '../custom';
+import { useEditMessageMutation } from '../mutations/use-edit-message.mutation';
 import { useSendAgentMessageMutation } from '../mutations/use-send-agent-message.mutation';
+import { useSendInternalNoteMutation } from '../mutations/use-send-internal-note.mutation';
 import { useVoiceRecorder } from '../use-voice-recorder';
 
 interface UseTextEditorOptions {
@@ -20,9 +24,22 @@ export function useTextEditor({
   const [messageType, setMessageType] = useState<'reply' | 'notes'>('reply');
   const editorRef = useRef<LexicalEditor | null>(null);
   const voice = useVoiceRecorder();
+  const fileUpload = useInboxFileUpload({
+    conversationId: conversationUUID,
+    organizationId,
+  });
 
   const { mutate: sendMessage, isPending: isSendingMessage } =
     useSendAgentMessageMutation(organizationId);
+  const { mutate: sendInternalNote, isPending: isSendingInternalNote } =
+    useSendInternalNoteMutation(organizationId);
+  const { mutate: editMessage, isPending: isEditingMessage } =
+    useEditMessageMutation(organizationId);
+
+  const {
+    message: editingMessage,
+    clearMessage: clearEditingMessage,
+  } = useMessageEditStore();
 
   const {
     message: replyMessage,
@@ -51,31 +68,81 @@ export function useTextEditor({
     const editor = editorRef.current;
     if (!conversationUUID || !editor) return;
 
+    let htmlContent = '';
+    let isEmpty = true;
     editor.read(() => {
-      const htmlContent = $generateHtmlFromNodes(editor);
-      const isEmpty = $getRoot().getTextContentSize() === 0;
+      htmlContent = $generateHtmlFromNodes(editor);
+      isEmpty = $getRoot().getTextContentSize() === 0;
+    });
 
+    if (editingMessage) {
       if (isEmpty) return;
-
-      const isInternalNote = messageType === 'notes';
-      const replyToId = replyMessage?.uuid ?? replyInternalNote?.uuid ?? undefined;
-
-      sendMessage(
+      editMessage(
         {
-          conversationId: conversationUUID,
+          conversationId: editingMessage.conversation_uuid,
+          messageId: editingMessage.uuid,
           content: htmlContent,
-          messageType: isInternalNote ? 'INTERNAL_NOTE' : 'TEXT',
-          ...(replyToId && { replyToId }),
         },
         {
           onSuccess: () => {
-            if (isReplyingToMessage) cancelReply();
-            if (isReplyingToNote) cancelInternalNoteReply();
+            clearEditingMessage();
             resetEditor();
           },
         },
       );
+      return;
+    }
+
+    const attachmentsToSend = fileUpload.attachments;
+    if (isEmpty && attachmentsToSend.length === 0) return;
+
+    const isInternalNote = messageType === 'notes';
+    const replyToId = replyMessage?.uuid ?? replyInternalNote?.uuid ?? undefined;
+
+    const finishSend = () => {
+      if (isReplyingToMessage) cancelReply();
+      if (isReplyingToNote) cancelInternalNoteReply();
+      resetEditor();
+    };
+
+    // Each attachment is its own FILE message — the backend stores a
+    // message's content as a single string (the file URL), it doesn't
+    // support multiple files per message.
+    fileUpload.setAttachments([]);
+    attachmentsToSend.forEach((attachment) => {
+      sendMessage({
+        conversationId: conversationUUID,
+        content: attachment.url,
+        messageType: 'FILE',
+      });
     });
+
+    if (isEmpty) {
+      finishSend();
+      return;
+    }
+
+    if (isInternalNote) {
+      sendInternalNote(
+        {
+          conversationId: conversationUUID,
+          content: htmlContent,
+          ...(replyToId && { replyToId }),
+        },
+        { onSuccess: finishSend },
+      );
+      return;
+    }
+
+    sendMessage(
+      {
+        conversationId: conversationUUID,
+        content: htmlContent,
+        messageType: 'TEXT',
+        ...(replyToId && { replyToId }),
+      },
+      { onSuccess: finishSend },
+    );
   }, [
     conversationUUID,
     messageType,
@@ -84,15 +151,28 @@ export function useTextEditor({
     isReplyingToMessage,
     isReplyingToNote,
     sendMessage,
+    sendInternalNote,
     cancelReply,
     cancelInternalNoteReply,
     resetEditor,
+    fileUpload,
+    editingMessage,
+    editMessage,
+    clearEditingMessage,
   ]);
 
   const handleClose = useCallback(() => {
     if (isReplyingToMessage) cancelReply();
     if (isReplyingToNote) cancelInternalNoteReply();
-  }, [isReplyingToMessage, isReplyingToNote, cancelReply, cancelInternalNoteReply]);
+    if (editingMessage) clearEditingMessage();
+  }, [
+    isReplyingToMessage,
+    isReplyingToNote,
+    cancelReply,
+    cancelInternalNoteReply,
+    editingMessage,
+    clearEditingMessage,
+  ]);
 
   const handleVoiceSend = useCallback(async () => {
     if (!conversationUUID) return;
@@ -130,10 +210,12 @@ export function useTextEditor({
     replyInternalNote: isReplyingToNote ? replyInternalNote : null,
     isReplyingToNote,
     cancelInternalNoteReply: handleClose,
+    editingMessage,
     editorRef,
     handleSend,
     handleClose,
-    isPending: isSendingMessage,
+    isPending: isSendingMessage || isSendingInternalNote || isEditingMessage,
+    fileUpload,
     voice: {
       isRecording: voice.isRecording,
       isPaused: voice.isPaused,

@@ -47,7 +47,12 @@
         "REDIS_PORT",
 
         "OBSERVE_APP_KEY" ,
-        "OBSERVE_APP_SECRET"
+        "OBSERVE_APP_SECRET",
+
+        "S3_ENDPOINT",
+        "S3_BUCKET",
+        "S3_PUBLIC_URL",
+        "AWS_REGION"
       ]
     },
     "prisma:migrate": {

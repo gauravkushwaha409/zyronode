@@ -51,6 +51,12 @@ export const ENDPOINTS = {
 		UNREAD_STATS: "/inbox/conversations/unread-stats/analytics",
 		MESSAGES: (conversationId: string) =>
 			`/conversations/${conversationId}/messages`,
+		MESSAGE: (conversationId: string, messageId: string) =>
+			`/conversations/${conversationId}/messages/${messageId}`,
+		UPLOAD: (conversationId: string) =>
+			`/conversations/${conversationId}/uploads`,
+		INTERNAL_NOTES: (conversationId: string) =>
+			`/inbox/conversations/${conversationId}/internal-notes`,
 	},
 	VISITOR: {
 		// every visitor route is tenant-scoped by path; the backend
