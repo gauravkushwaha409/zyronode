@@ -11,6 +11,7 @@ import { RedisService } from "./redis.service";
 				console.log("[Redis] Initializing Redis client...", process.env.REDIS_HOST, process.env.REDIS_PORT);
 				const client = new Redis({
 					host: process.env.REDIS_HOST || "localhost",
+					port: Number(process.env.REDIS_PORT) || 6379,
 					maxRetriesPerRequest: 3,
 					retryStrategy(times) {
 						if (times > 10) return null;

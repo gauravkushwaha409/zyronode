@@ -1,0 +1,40 @@
+FROM node:22-alpine
+RUN corepack enable && corepack prepare pnpm@11 --activate
+
+WORKDIR /app
+
+# ── manifests only -> install layer stays cached until deps change ──
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY apps/chat-widget-test/package.json ./apps/chat-widget-test/
+COPY packages/chat-widget/package.json ./packages/chat-widget/
+COPY packages/api-client/package.json ./packages/api-client/
+COPY packages/icons/package.json ./packages/icons/
+COPY packages/query/package.json ./packages/query/
+COPY packages/sse/package.json ./packages/sse/
+COPY packages/ui/package.json ./packages/ui/
+COPY packages/websocket/package.json ./packages/websocket/
+COPY packages/typescript-config/package.json ./packages/typescript-config/
+
+RUN pnpm install --frozen-lockfile
+
+# ── tooling & configs (source itself comes from bind mounts) ──
+COPY turbo.json tsconfig.json ./
+
+COPY apps/chat-widget-test/index.html \
+     apps/chat-widget-test/vite.config.ts \
+     apps/chat-widget-test/tsconfig.json \
+     ./apps/chat-widget-test/
+
+COPY packages/chat-widget/tsconfig.json ./packages/chat-widget/tsconfig.json
+COPY packages/api-client/tsconfig.json ./packages/api-client/tsconfig.json
+COPY packages/icons/tsconfig.json ./packages/icons/tsconfig.json
+COPY packages/query/tsconfig.json ./packages/query/tsconfig.json
+COPY packages/sse/tsconfig.json ./packages/sse/tsconfig.json
+COPY packages/ui/tsconfig.json ./packages/ui/tsconfig.json
+COPY packages/websocket/tsconfig.json ./packages/websocket/tsconfig.json
+COPY packages/typescript-config/base.json \
+     packages/typescript-config/react-library.json \
+     ./packages/typescript-config/
+
+# Port is configurable via CHAT_WIDGET_PORT env (vite.config.ts reads CHAT_WIDGET_PORT, docker-compose maps ${CHAT_WIDGET_PORT})
+EXPOSE 4000
