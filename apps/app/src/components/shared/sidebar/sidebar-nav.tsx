@@ -1,9 +1,7 @@
 import { cn } from "@package/ui";
-import { Fragment } from "react";
 import { useUnreadStatsQuery } from "@/features/default-inbox/hooks/queries";
 import type { SidebarItems } from "./sidebar.types";
 import { NavLink } from "./sidebar-nav-link";
-import { SidebarOtherInboxes } from "./sidebar-other-inboxes";
 
 interface SidebarNavProps {
 	sidebarData: SidebarItems;
@@ -46,15 +44,13 @@ export function SidebarNav({
 		>
 			<section className="flex flex-col gap-1">
 				{displayData.UPPER.map((item) => (
-					<Fragment key={item.label}>
-						<NavLink
-							item={item}
-							pathname={pathname}
-							open={open}
-							isFloating={isFloating}
-						/>
-						{item.showOtherInboxesAfter && <SidebarOtherInboxes open={open} />}
-					</Fragment>
+					<NavLink
+						key={item.label}
+						item={item}
+						pathname={pathname}
+						open={open}
+						isFloating={isFloating}
+					/>
 				))}
 			</section>
 			<section className="flex flex-col gap-1">

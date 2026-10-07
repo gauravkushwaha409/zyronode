@@ -5,7 +5,6 @@ import type { SidebarItems } from "./sidebar.types";
 import { SidebarFooter } from "./sidebar-footer";
 import { SidebarHeader } from "./sidebar-header";
 import { SidebarNav } from "./sidebar-nav";
-import { SidebarPlanCard } from "./sidebar-plan-card";
 
 interface SidebarPanelProps {
 	open: boolean;
@@ -72,7 +71,6 @@ export function SidebarPanel({
 				collapsed={collapsed}
 				hovered={hovered}
 			/>
-			<SidebarPlanCard open={open} plan={currentOrganization?.plan} />
 			<SidebarFooter
 				open={open}
 				userData={userData}
