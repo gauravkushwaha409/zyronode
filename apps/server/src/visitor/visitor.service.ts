@@ -245,8 +245,8 @@ export class VisitorService {
 		existingSessionId: string | undefined,
 		dto: StartVisitorSessionDto,
 	) {
-		const organization = await this.prisma.organization.findUnique({
-			where: { id: organizationId },
+		const organization = await this.prisma.organization.findFirst({
+			where: { id: organizationId, isActive: true },
 			select: { id: true },
 		});
 		if (!organization) {

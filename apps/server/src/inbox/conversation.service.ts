@@ -15,6 +15,24 @@ export class ConversationService {
 		private readonly inboxSse: InboxSsePublisher,
 	) {}
 
+	/**
+	 * Widget-facing lookup: the conversation must exist and belong to an
+	 * active organization. Throws 404 otherwise.
+	 */
+	async assertWidgetConversation(conversationId: string): Promise<void> {
+		const conversation = await this.prisma.conversation.findFirst({
+			where: {
+				id: conversationId,
+				deletedAt: null,
+				organization: { isActive: true },
+			},
+			select: { id: true },
+		});
+		if (!conversation) {
+			throw new NotFoundException("Conversation not found");
+		}
+	}
+
 	async create(dto: CreateConversationDto, ip?: string, userAgent?: string) {
 		return this.createConversation(dto, ip, userAgent);
 	}
@@ -26,7 +44,11 @@ export class ConversationService {
 	) {
 		try {
 			const visitor = await this.prisma.visitor.findFirst({
-				where: { id: dto.visitorId, organizationId: dto.organizationId },
+				where: {
+					id: dto.visitorId,
+					organizationId: dto.organizationId,
+					organization: { isActive: true },
+				},
 				select: { id: true },
 			});
 			if (!visitor) {

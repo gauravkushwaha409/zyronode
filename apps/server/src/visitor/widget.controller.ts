@@ -99,10 +99,12 @@ export class WidgetController {
 	@ApiOperation({ summary: "List messages for widget conversation (public)" })
 	@ApiParam({ name: "conversationId", description: "Conversation ID" })
 	@ApiResponse({ status: 200, description: "Messages returned" })
-	findMessages(
+	@ApiResponse({ status: 404, description: "Conversation not found" })
+	async findMessages(
 		@Param("conversationId") conversationId: string,
 		@Query() query: ListMessagesDto,
 	) {
+		await this.conversationService.assertWidgetConversation(conversationId);
 		return this.messageService.findByConversation(conversationId, {
 			limit: query.limit,
 			cursor: query.cursor,
@@ -121,10 +123,12 @@ export class WidgetController {
 	@ApiOperation({ summary: "Send message as visitor via widget (public)" })
 	@ApiParam({ name: "conversationId", description: "Conversation ID" })
 	@ApiResponse({ status: 201, description: "Message sent" })
+	@ApiResponse({ status: 404, description: "Conversation not found" })
 	async sendVisitorMessage(
 		@Param("conversationId") conversationId: string,
 		@Body() dto: SendMessageDto,
 	) {
+		await this.conversationService.assertWidgetConversation(conversationId);
 		const result = await this.messageService.create(
 			conversationId,
 			dto,
