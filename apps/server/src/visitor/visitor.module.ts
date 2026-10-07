@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 import { InboxModule } from "../inbox/inbox.module";
 import { MessageModule } from "../message/message.module";
-import { SseService } from "../sse/sse.service";
+import { SseModule } from "../sse/sse.module";
 import { WidgetEventsModule } from "./events/widget-events.module";
 import { VisitorController } from "./visitor.controller";
 import { VisitorGateway } from "./visitor.gateway";
@@ -9,9 +9,9 @@ import { VisitorService } from "./visitor.service";
 import { WidgetController } from "./widget.controller";
 
 @Module({
-	imports: [WidgetEventsModule, InboxModule, MessageModule],
+	imports: [WidgetEventsModule, InboxModule, MessageModule, SseModule],
 	controllers: [VisitorController, WidgetController],
-	providers: [VisitorService, VisitorGateway, SseService],
+	providers: [VisitorService, VisitorGateway],
 	exports: [VisitorService],
 })
 export class VisitorModule {}

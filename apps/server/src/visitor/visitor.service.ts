@@ -7,7 +7,7 @@ import {
 import type { Prisma } from "../generated/prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { RedisService } from "../redis/redis.service";
-import { RedisKey } from "../sse/keys";
+import { RedisKey } from "../redis/redis.keys";
 import type { ListVisitorsDto } from "./dto/list-visitors.dto";
 import type { StartVisitorSessionDto } from "./dto/start-visitor-session.dto";
 import type { CreateVisitorNoteDto } from "./dto/update-visitor.dto";

@@ -4,6 +4,8 @@ import type Redis from "ioredis";
 @Injectable()
 export class RedisService implements OnModuleDestroy {
 	private readonly logger = new Logger(RedisService.name);
+	private subscriber: Redis | null = null;
+	private readonly handlers = new Map<string, (message: string) => void>();
 
 	constructor(private readonly client: Redis) {}
 
@@ -69,7 +71,37 @@ export class RedisService implements OnModuleDestroy {
 		await this.client.zremrangebyscore(key, "-inf", `(${min}`);
 	}
 
+	async publish(channel: string, message: string): Promise<void> {
+		await this.client.publish(channel, message);
+	}
+
+	/**
+	 * Subscribes on a dedicated connection (a subscribed client cannot run
+	 * other commands). It is a duplicate of the main client, so it shares
+	 * its connection options; ioredis resubscribes after reconnects.
+	 */
+	async subscribe(
+		channel: string,
+		onMessage: (message: string) => void,
+	): Promise<void> {
+		if (!this.subscriber) {
+			this.subscriber = this.client.duplicate();
+			this.subscriber.on("message", (ch, message) => {
+				this.handlers.get(ch)?.(message);
+			});
+			this.subscriber.on("error", (err) => {
+				this.logger.warn(`Redis subscriber error: ${err.message}`);
+			});
+		}
+		if (this.handlers.has(channel)) {
+			throw new Error(`Redis channel "${channel}" already has a subscriber`);
+		}
+		this.handlers.set(channel, onMessage);
+		await this.subscriber.subscribe(channel);
+	}
+
 	onModuleDestroy() {
+		this.subscriber?.disconnect();
 		this.client.disconnect();
 		this.logger.log("Redis connection closed");
 	}

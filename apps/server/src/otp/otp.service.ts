@@ -1,14 +1,10 @@
-import {
-	BadRequestException,
-	Injectable,
-	Logger,
-} from "@nestjs/common";
+import { BadRequestException, Injectable, Logger } from "@nestjs/common";
 import { Resend } from "resend";
 import { PrismaService } from "../prisma/prisma.service";
+import { RedisKey } from "../redis/redis.keys";
 import { RedisService } from "../redis/redis.service";
 import { OtpPurpose } from "./types/otp-purpose.type";
 
-const OTP_KEY_PREFIX = "otp:";
 const OTP_TTL_SECONDS = 5 * 60; // 5 minutes
 const OTP_LENGTH = 6;
 
@@ -31,13 +27,8 @@ export class OtpService {
 			.padStart(OTP_LENGTH, "0");
 	}
 
-	private redisKey(email: string, purpose: OtpPurpose): string {
-		return `${OTP_KEY_PREFIX}${purpose}:${email}`;
-	}
-
 	private async sendEmail(to: string, code: string): Promise<void> {
 		const from = process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev";
-
 
 		const { data, error } = await this.resend.emails.send({
 			from,
@@ -63,7 +54,6 @@ export class OtpService {
 		});
 		console.log(`OTP email sent to ${to}: ${code}`);
 		console.log(`Resend API response:`, { data, error });
-
 	}
 
 	async generateAndSendOtp(
@@ -72,7 +62,7 @@ export class OtpService {
 	): Promise<{ message: string }> {
 		const code = this.generateCode();
 
-		await this.redis.set(this.redisKey(email, purpose), code, OTP_TTL_SECONDS);
+		await this.redis.set(RedisKey.otp(purpose, email), code, OTP_TTL_SECONDS);
 		console.log(`Generated OTP [${purpose}] for ${email}: ${code}`);
 
 		await this.sendEmail(email, code);
@@ -86,7 +76,7 @@ export class OtpService {
 		code: string,
 		purpose: OtpPurpose = OtpPurpose.EMAIL_VERIFICATION,
 	): Promise<{ message: string }> {
-		const stored = await this.redis.get(this.redisKey(email, purpose));
+		const stored = await this.redis.get(RedisKey.otp(purpose, email));
 
 		if (!stored) {
 			throw new BadRequestException({
@@ -102,7 +92,7 @@ export class OtpService {
 			});
 		}
 
-		await this.redis.del(this.redisKey(email, purpose));
+		await this.redis.del(RedisKey.otp(purpose, email));
 
 		if (purpose === OtpPurpose.EMAIL_VERIFICATION) {
 			await this.prisma.user.update({

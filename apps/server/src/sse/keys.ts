@@ -1,10 +1,10 @@
 /**
- * Centralized channel / Redis key factory.
+ * Centralized SSE / WS room key factory.
  *
  * Single source of truth for all `org:${id}` / `conversation:${id}` /
- * `visitor:${id}` keys used by SSE (SseService), WebSocket (WebsocketService),
- * and presence (Redis ZSET). Import from here instead of inline template strings
- * to prevent drift between publisher, controller, and gateway.
+ * `visitor:${id}` keys used by SSE (SseService) and WebSocket (WebsocketService).
+ * Import from here instead of inline template strings to prevent drift between
+ * publisher, controller, and gateway. Redis keys live in `redis/redis.keys.ts`.
  */
 
 // ── SSE / WS room keys (pub/sub + socket.io rooms) ──
@@ -17,13 +17,6 @@ export const SseKey = {
 } as const;
 
 export type SseKeyType = ReturnType<(typeof SseKey)[keyof typeof SseKey]>;
-
-// ── Redis keys ──
-export const RedisKey = {
-	/** ZSET per org: member = visitorId, score = last heartbeat epoch ms. */
-	visitorPresence: (organizationId: string) =>
-		`visitor-presence:${organizationId}` as const,
-} as const;
 
 // ── Helpers for tests / debugging ──
 export function isOrgKey(key: string): boolean {

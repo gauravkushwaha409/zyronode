@@ -13,6 +13,7 @@ import { Resend } from "resend";
 import { OtpService } from "../otp/otp.service";
 import { OtpPurpose } from "../otp/types/otp-purpose.type";
 import { PrismaService } from "../prisma/prisma.service";
+import { RedisKey } from "../redis/redis.keys";
 import { RedisService } from "../redis/redis.service";
 import { ForgotPasswordDto } from "./dto/forgot-password.dto";
 import { GoogleProfileDto } from "./dto/google-login.dto";
@@ -23,7 +24,6 @@ import { UserOnboardingDto } from "./dto/user-onboarding.dto";
 import { VerifyEmailDto } from "./dto/verify-email.dto";
 import { AuthJwtService } from "./jwt.service";
 
-const RESET_TOKEN_PREFIX = "password-reset:";
 const RESET_TOKEN_TTL_SECONDS = 15 * 60; // 15 minutes
 
 @Injectable()
@@ -165,7 +165,6 @@ export class AuthService {
 				googleId: true,
 				authProvider: true,
 				isOnboarded: true,
-				
 			},
 		});
 
@@ -289,12 +288,16 @@ export class AuthService {
 
 		const token = randomBytes(32).toString("hex");
 		await this.redis.set(
-			`${RESET_TOKEN_PREFIX}${token}`,
+			RedisKey.passwordReset(token),
 			user.id,
 			RESET_TOKEN_TTL_SECONDS,
 		);
 
-		const appUrl = (process.env.VITE_APP_URL ?? "").replace(/\$\{([^}]+)\}|\$([A-Z0-9_]+)/g, (_, b, c) => process.env[b ?? c] ?? "") || `http://localhost:${process.env.APP_PORT ?? "3000"}`;
+		const appUrl =
+			(process.env.VITE_APP_URL ?? "").replace(
+				/\$\{([^}]+)\}|\$([A-Z0-9_]+)/g,
+				(_, b, c) => process.env[b ?? c] ?? "",
+			) || `http://localhost:${process.env.APP_PORT ?? "3000"}`;
 		const resetUrl = `${appUrl}/auth/set-password?token=${token}`;
 		const from = process.env.RESEND_FROM_EMAIL || "noreply@example.com";
 
@@ -329,7 +332,7 @@ export class AuthService {
 	}
 
 	async setPassword(dto: SetPasswordDto) {
-		const userId = await this.redis.get(`${RESET_TOKEN_PREFIX}${dto.token}`);
+		const userId = await this.redis.get(RedisKey.passwordReset(dto.token));
 
 		if (!userId) {
 			throw new NotFoundException({
@@ -338,7 +341,7 @@ export class AuthService {
 			});
 		}
 
-		await this.redis.del(`${RESET_TOKEN_PREFIX}${dto.token}`);
+		await this.redis.del(RedisKey.passwordReset(dto.token));
 
 		const hashedPassword = await bcryptjs.hash(dto.new_password, 10);
 

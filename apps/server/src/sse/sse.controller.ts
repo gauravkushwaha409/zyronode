@@ -226,7 +226,7 @@ export class SseController {
 
 		const clientId = this.sse.nextClientId();
 
-		void this.sse.register({
+		this.sse.register({
 			id: clientId,
 			keys: new Set(keys),
 			events,

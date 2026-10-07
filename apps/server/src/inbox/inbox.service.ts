@@ -1,7 +1,7 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { RedisService } from "../redis/redis.service";
-import { RedisKey } from "../sse/keys";
+import { RedisKey } from "../redis/redis.keys";
 import { InboxSsePublisher } from "./inbox-sse.publisher";
 
 const ONLINE_WINDOW_MS = 60_000;
