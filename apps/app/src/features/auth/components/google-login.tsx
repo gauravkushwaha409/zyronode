@@ -1,7 +1,7 @@
-import { CONFIG } from "@/config";
+import { API_BASE_URL } from "@/lib/api-client";
 
 export function GoogleLogin() {
-	const googleAuthUrl = `${CONFIG.ENV.SERVER_URL}/auth/google`;
+	const googleAuthUrl = `${API_BASE_URL}/auth/google`;
 
 	return (
 		<a

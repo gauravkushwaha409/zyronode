@@ -1,8 +1,10 @@
 import { createApiClient } from "@package/api-client";
 
-export const apiClient = createApiClient(
-	__PROXY_ENABLED__ ? "/api/v1" : `${__SERVER_URL__}/api/v1`,
-);
+export const API_BASE_URL = __PROXY_ENABLED__
+	? "/api/v1"
+	: `${__SERVER_URL__}/api/v1`;
+
+export const apiClient = createApiClient(API_BASE_URL);
 
 apiClient.interceptors.request.use((config) => {
 	const token = localStorage.getItem("token");

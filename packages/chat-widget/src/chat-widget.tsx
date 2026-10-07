@@ -87,7 +87,7 @@ function WidgetWindow({ onClose }: { onClose: () => void }) {
 				<section className="flex-1 flex flex-col overflow-hidden">
 					{activeTab === "chat" && <ChatWidgetChat />}
 					<p className="py-3 text-gray-500 text-xs text-center">
-						Powered by <span className="font-semibold text-blue-600">zyro-chat</span>
+						Powered by <span className="font-semibold text-blue-600">zyronode</span>
 					</p>
 				</section>
 			</section>

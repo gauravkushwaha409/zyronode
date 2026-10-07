@@ -177,11 +177,20 @@ export class AuthService {
 	}
 
 	async googleLogin(profile: GoogleProfileDto, response: Response) {
+		// Only trust the email when Google has verified it; otherwise anyone
+		// could claim an address and get linked to that account.
+		if (!profile.email || !profile.emailVerified) {
+			throw new UnauthorizedException({
+				message: "Your Google account email is not verified",
+				error: "GOOGLE_EMAIL_NOT_VERIFIED",
+			});
+		}
+
 		let user = await this.prisma.user.findUnique({
 			where: { googleId: profile.googleId },
 		});
 
-		if (!user && profile.email) {
+		if (!user) {
 			user = await this.prisma.user.findUnique({
 				where: { email: profile.email },
 			});
@@ -189,7 +198,11 @@ export class AuthService {
 			if (user) {
 				user = await this.prisma.user.update({
 					where: { id: user.id },
-					data: { googleId: profile.googleId, authProvider: "google" },
+					data: {
+						googleId: profile.googleId,
+						authProvider: "google",
+						isEmailVerified: true,
+					},
 				});
 			}
 		}
@@ -203,7 +216,14 @@ export class AuthService {
 					lastName: profile.lastName,
 					profile: profile.profile,
 					authProvider: "google",
+					isEmailVerified: true,
 				},
+			});
+		} else if (!user.isEmailVerified) {
+			// Google users created before verification was recorded
+			user = await this.prisma.user.update({
+				where: { id: user.id },
+				data: { isEmailVerified: true },
 			});
 		}
 

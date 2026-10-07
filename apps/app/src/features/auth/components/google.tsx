@@ -1,11 +1,11 @@
-import { CONFIG } from '@/config';
+import { API_BASE_URL } from '@/lib/api-client';
 
 interface GoogleProps {
   text?: string;
 }
 
 export function Google({ text = 'Login with Google' }: GoogleProps) {
-  const googleAuthUrl = `${CONFIG.ENV.SERVER_URL}/auth/google`;
+  const googleAuthUrl = `${API_BASE_URL}/auth/google`;
 
   return (
     <button
