@@ -13,7 +13,7 @@ import {
 } from "../shadcn";
 
 const buttonVariants = cva(
-	"group/button aria-invalid:border-destructive aria-invalid:ring-destructive/20 inline-flex cursor-pointer items-center justify-center rounded-md border border-transparent bg-clip-padding text-base font-medium whitespace-nowrap transition-all outline-none select-none active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none aria-invalid:ring-3 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 w-full",
+	"group/button aria-invalid:border-destructive aria-invalid:ring-destructive/20 inline-flex cursor-pointer items-center justify-center rounded-md border border-transparent bg-clip-padding text-base font-medium whitespace-nowrap transition-all outline-none select-none active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none aria-invalid:ring-3 [&_svg]:pointer-events-none  [&_svg:not([class*='size-'])]:size-4 w-full",
 	{
 		variants: {
 			variant: {

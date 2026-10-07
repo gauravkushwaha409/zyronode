@@ -37,7 +37,7 @@ function RouteComponent() {
 	};
 
 	return (
-		<section className="space-y-5 px-11 pt-6">
+		<section className="h-full space-y-5 px-11 pt-6">
 			<PageHeader
 				title="Team Management"
 				description="Manage workspace members, departments and access structure."
@@ -66,13 +66,13 @@ function RouteComponent() {
 }
 
 const GrowingTeams = () => (
-	<section className="px-6 relative overflow-hidden py-5 rounded-[12px] border border-primary-100 bg-primary-25">
+	<section className="px-6 relative overflow-hidden py-5 rounded-[12px] border border-primary-100 bg-primary-25 border border-red-500">
 		<div className="absolute right-0 top-0 z-0 pointer-events-none">
 			<img
 				src="/images/app/settings/team-management.svg"
 				alt="team-management"
 				className="object-contain translate-x-16 opacity-100 w-74 h-36.5"
-				onError={(e) => (e.currentTarget.style.display = "none")}
+				// onError={(e) => (e.currentTarget.style.display = "none")}
 			/>
 		</div>
 		<div className="relative z-10 w-125">
