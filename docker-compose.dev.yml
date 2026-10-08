@@ -59,7 +59,7 @@ services:
     env_file:
       - .env
     environment:
-      - DATABASE_URL=postgresql://admin:admin@postgres:${POSTGRES_PORT:?POSTGRES_PORT must be set in .env}/mydb
+      - DATABASE_URL=postgresql://${POSTGRES_USER:?POSTGRES_USER must be set in .env}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env}@postgres:${POSTGRES_PORT:?POSTGRES_PORT must be set in .env}/${POSTGRES_DB:?POSTGRES_DB must be set in .env}
       - REDIS_HOST=redis
       - REDIS_PORT=6380
       - S3_ENDPOINT=http://localstack:4566
