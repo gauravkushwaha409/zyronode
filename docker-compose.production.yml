@@ -1,0 +1,153 @@
+# docker-compose.production.yml
+#
+# Production stack: postgres + redis + server + app (+ widget harness).
+# No bind mounts, no LocalStack — everything is baked into the images built
+# from docker/Dockerfile.production (one target per service), and file
+# uploads go to real S3 (S3_ENDPOINT unset in env/.env.production).
+#
+# IMPORTANT: every service reads runtime env from env/.env.production via
+# `env_file`, but ${VAR} interpolation in THIS file needs the same file
+# passed explicitly — always use the pnpm wrappers:
+#
+#   pnpm docker:prod:build
+#   pnpm docker:prod:up
+#   pnpm docker:prod:logs
+#   pnpm docker:prod:down
+#
+# (they add `--env-file env/.env.production`).
+#
+# No port fallbacks anywhere: every port MUST be set in env/.env.production,
+# compose fails fast naming the missing variable otherwise.
+# Before first deploy: fill in env/.env.production (secrets, public URLs),
+# then REBUILD the app/chat-widget-test images — Vite bakes VITE_* public
+# URLs into the bundles at build time.
+services:
+  postgres:
+    image: postgres:17.4
+    container_name: zyro-chat-prod-postgres
+    restart: unless-stopped
+    env_file:
+      - env/.env.production
+    environment:
+      - PGPORT=${POSTGRES_PORT:?POSTGRES_PORT must be set in env/.env.production}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-admin} -d ${POSTGRES_DB:-mydb} -p ${POSTGRES_PORT:?POSTGRES_PORT must be set in env/.env.production}",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  redis:
+    image: redis:7-alpine
+    container_name: zyro-chat-prod-redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  server:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.production
+      target: server
+    container_name: zyro-chat-prod-server
+    restart: unless-stopped
+    ports:
+      - "${SERVER_PORT:?SERVER_PORT must be set in env/.env.production}:${SERVER_PORT:?SERVER_PORT must be set in env/.env.production}"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "node -e \"fetch('http://localhost:' + (process.env.SERVER_PORT || '8000') + '/api/v1').then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))\"",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    env_file:
+      - env/.env.production
+    environment:
+      # Single source of truth stays in env/.env.production (POSTGRES_*);
+      # compose interpolates them here to the in-network hostname.
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-admin}:${POSTGRES_PASSWORD:-admin}@postgres:${POSTGRES_PORT:?POSTGRES_PORT must be set in env/.env.production}/${POSTGRES_DB:-mydb}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.production
+      target: app
+    container_name: zyro-chat-prod-app
+    restart: unless-stopped
+    env_file:
+      - env/.env.production
+    environment:
+      # PROXY=false in prod: vite preview has no proxy, the browser calls
+      # the absolute VITE_SERVER_URL (baked at build time) directly.
+      - PROXY=false
+      - APP_PORT=${APP_PORT:?APP_PORT must be set in env/.env.production}
+      - SERVER_PORT=${SERVER_PORT:?SERVER_PORT must be set in env/.env.production}
+    ports:
+      - "${APP_PORT:?APP_PORT must be set in env/.env.production}:${APP_PORT:?APP_PORT must be set in env/.env.production}"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "node -e \"fetch('http://localhost:' + (process.env.APP_PORT || '3000') + '/').then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))\"",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    depends_on:
+      server:
+        condition: service_healthy
+
+  chat-widget-test:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.production
+      target: chat-widget-test
+    container_name: zyro-chat-prod-widget-test
+    restart: unless-stopped
+    env_file:
+      - env/.env.production
+    environment:
+      - CHAT_WIDGET_PORT=${CHAT_WIDGET_PORT:?CHAT_WIDGET_PORT must be set in env/.env.production}
+      - SERVER_PORT=${SERVER_PORT:?SERVER_PORT must be set in env/.env.production}
+    ports:
+      - "${CHAT_WIDGET_PORT:?CHAT_WIDGET_PORT must be set in env/.env.production}:${CHAT_WIDGET_PORT:?CHAT_WIDGET_PORT must be set in env/.env.production}"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "node -e \"fetch('http://localhost:' + (process.env.CHAT_WIDGET_PORT || '4000') + '/').then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))\"",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    depends_on:
+      server:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  redis_data:

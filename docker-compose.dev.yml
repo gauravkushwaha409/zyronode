@@ -7,13 +7,13 @@ services:
     env_file:
       - .env
     environment:
-      - PGPORT=5433
+      - PGPORT=${POSTGRES_PORT:?POSTGRES_PORT must be set in .env}
     ports:
-      - "5433:5433"
+      - "${POSTGRES_PORT:?POSTGRES_PORT must be set in .env}:${POSTGRES_PORT:?POSTGRES_PORT must be set in .env}"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin -d mydb -p 5433"]
+      test: ["CMD-SHELL", "pg_isready -U admin -d mydb -p ${POSTGRES_PORT:?POSTGRES_PORT must be set in .env}"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -42,7 +42,7 @@ services:
     command: sh -c "pnpm prisma:generate && pnpm prisma:deploy && pnpm dev:server"
     restart: unless-stopped
     ports:
-      - "${SERVER_PORT:-8000}:${SERVER_PORT:-8000}"
+      - "${SERVER_PORT:?SERVER_PORT must be set in .env}:${SERVER_PORT:?SERVER_PORT must be set in .env}"
     healthcheck:
       test:
         [
@@ -59,7 +59,7 @@ services:
     env_file:
       - .env
     environment:
-      - DATABASE_URL=postgresql://admin:admin@postgres:5433/mydb
+      - DATABASE_URL=postgresql://admin:admin@postgres:${POSTGRES_PORT:?POSTGRES_PORT must be set in .env}/mydb
       - REDIS_HOST=redis
       - REDIS_PORT=6380
       - S3_ENDPOINT=http://localstack:4566
@@ -83,10 +83,10 @@ services:
     environment:
       # Overrides .env for Docker networking; change PROXY in .env to toggle single source of truth.
       - PROXY=${PROXY:-true}
-      - APP_PORT=${APP_PORT:-3000}
-      - SERVER_PORT=${SERVER_PORT:-8000}
+      - APP_PORT=${APP_PORT:?APP_PORT must be set in .env}
+      - SERVER_PORT=${SERVER_PORT:?SERVER_PORT must be set in .env}
     ports:
-      - "${APP_PORT:-3000}:${APP_PORT:-3000}"
+      - "${APP_PORT:?APP_PORT must be set in .env}:${APP_PORT:?APP_PORT must be set in .env}"
     depends_on:
       server:
         condition: service_healthy
@@ -113,10 +113,10 @@ services:
     env_file:
       - .env
     environment:
-      - CHAT_WIDGET_PORT=${CHAT_WIDGET_PORT:-4000}
-      - SERVER_PORT=${SERVER_PORT:-8000}
+      - CHAT_WIDGET_PORT=${CHAT_WIDGET_PORT:?CHAT_WIDGET_PORT must be set in .env}
+      - SERVER_PORT=${SERVER_PORT:?SERVER_PORT must be set in .env}
     ports:
-      - "${CHAT_WIDGET_PORT:-4000}:${CHAT_WIDGET_PORT:-4000}"
+      - "${CHAT_WIDGET_PORT:?CHAT_WIDGET_PORT must be set in .env}:${CHAT_WIDGET_PORT:?CHAT_WIDGET_PORT must be set in .env}"
     depends_on:
       server:
         condition: service_healthy

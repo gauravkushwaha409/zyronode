@@ -12,7 +12,9 @@ volume/**
 .env.local
 .env.development.local
 .env.test.local
+.env.production
 .env.production.local
+env/.env.production
 
 # Testing
 coverage
