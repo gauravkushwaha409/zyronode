@@ -1,3 +1,8 @@
+# apps/server/docker/Dockerfile.development
+#
+# Development image for server. Build context is the repo root; source comes
+# from bind mounts in docker/docker-compose.development.yml.
+
 FROM node:22-alpine
 RUN npm install -g pnpm
 

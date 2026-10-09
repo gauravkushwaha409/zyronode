@@ -2,7 +2,14 @@ import * as path from "node:path";
 import * as dotenv from "dotenv";
 import { defineConfig } from "prisma/config";
 
-dotenv.config({ path: path.resolve(__dirname, "../../.env") });
+// env/.env.<APP_ENV> (default development); already-set vars (docker env_file) win.
+dotenv.config({
+	path: path.resolve(
+		__dirname,
+		`../../env/.env.${process.env.APP_ENV ?? "development"}`,
+	),
+	quiet: true,
+});
 
 export default defineConfig({
 	schema: "prisma/schema.prisma",
