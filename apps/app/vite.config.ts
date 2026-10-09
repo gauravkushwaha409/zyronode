@@ -11,8 +11,8 @@ function expandEnv(value: string | undefined, env: Record<string, string>): stri
 }
 
 export default defineConfig(({ mode }) => {
-	const viteEnv = loadEnv(mode, "../../", "VITE_");
-	const allEnv = loadEnv(mode, "../../", "");
+	const viteEnv = loadEnv(mode, "../../env", "VITE_");
+	const allEnv = loadEnv(mode, "../../env", "");
 	console.log("viteEnv", viteEnv);
 	console.log("allEnv", allEnv);
 
@@ -31,7 +31,7 @@ export default defineConfig(({ mode }) => {
 	console.log("appPort", appPort, "serverPort", serverPort);
 
 	return {
-		envDir: "../../",
+		envDir: "../../env",
 		server: {
 			port: appPort,
 			host: true,

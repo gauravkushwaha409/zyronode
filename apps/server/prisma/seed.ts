@@ -3,7 +3,13 @@ import * as dotenv from "dotenv";
 
 // Resolved from cwd (npm scripts run with cwd = apps/server), not __dirname,
 // since __dirname's depth shifts depending on how this file was compiled.
-dotenv.config({ path: path.resolve(process.cwd(), "../../.env") });
+dotenv.config({
+	path: path.resolve(
+		process.cwd(),
+		`../../env/.env.${process.env.APP_ENV ?? "development"}`,
+	),
+	quiet: true,
+});
 
 import { PrismaPg } from "@prisma/adapter-pg";
 import * as bcryptjs from "bcryptjs";

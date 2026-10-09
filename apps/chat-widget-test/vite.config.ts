@@ -9,9 +9,9 @@ function expandEnv(value: string | undefined, env: Record<string, string>): stri
 }
 
 export default defineConfig(({ mode }) => {
-  const rootDir = resolve(__dirname, "../../");
-  const env = loadEnv(mode, rootDir, "VITE_");
-  const allEnv = loadEnv(mode, rootDir, "");
+  const envDir = resolve(__dirname, "../../env");
+  const env = loadEnv(mode, envDir, "VITE_");
+  const allEnv = loadEnv(mode, envDir, "");
 
   const serverPort = allEnv.SERVER_PORT ?? process.env.SERVER_PORT ?? "8000";
   const chatWidgetPortRaw = allEnv.CHAT_WIDGET_PORT ?? env.VITE_CHAT_WIDGET_PORT ?? process.env.CHAT_WIDGET_PORT ?? "4000";
@@ -77,6 +77,6 @@ export default defineConfig(({ mode }) => {
         organization_id: organizationId,
       }),
     },
-    envDir: rootDir,
+    envDir,
   };
 });

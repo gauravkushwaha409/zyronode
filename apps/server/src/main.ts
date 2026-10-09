@@ -1,4 +1,13 @@
-import "dotenv/config";
+import * as path from "node:path";
+import * as dotenv from "dotenv";
+
+// cwd is apps/server under pnpm/turbo. Missing file (docker runtime) is a no-op;
+// vars already set via docker env_file are never overridden.
+dotenv.config({
+	path: path.resolve(process.cwd(), `../../env/.env.${process.env.APP_ENV ?? "development"}`),
+	quiet: true,
+});
+
 import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";

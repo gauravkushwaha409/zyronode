@@ -1,0 +1,137 @@
+# UAT stack (same release images as production). Run via `pnpm docker:uat:*` (passes --env-file env/.env.uat).
+# Paths are relative to this file (docker/).
+name: zyro-chat-uat
+
+services:
+  postgres:
+    image: postgres:17.4
+    container_name: zyro-chat-uat-postgres
+    restart: unless-stopped
+    env_file:
+      - ../env/.env.uat
+    environment:
+      - PGPORT=${POSTGRES_PORT:?POSTGRES_PORT must be set in env/.env.uat}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-admin} -d ${POSTGRES_DB:-mydb} -p ${POSTGRES_PORT:?POSTGRES_PORT must be set in env/.env.uat}",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  redis:
+    image: redis:7-alpine
+    container_name: zyro-chat-uat-redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  server:
+    build:
+      context: ..
+      dockerfile: apps/server/docker/Dockerfile.production
+      args:
+        APP_ENV: uat
+    container_name: zyro-chat-uat-server
+    restart: unless-stopped
+    ports:
+      - "${SERVER_PORT:?SERVER_PORT must be set in env/.env.uat}:${SERVER_PORT:?SERVER_PORT must be set in env/.env.uat}"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "node -e \"fetch('http://localhost:' + (process.env.SERVER_PORT || '8000') + '/api/v1').then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))\"",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    env_file:
+      - ../env/.env.uat
+    environment:
+      # Single source of truth stays in env/.env.uat (POSTGRES_*);
+      # compose interpolates them here to the in-network hostname.
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-admin}:${POSTGRES_PASSWORD:-admin}@postgres:${POSTGRES_PORT:?POSTGRES_PORT must be set in env/.env.uat}/${POSTGRES_DB:-mydb}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  app:
+    build:
+      context: ..
+      dockerfile: apps/app/docker/Dockerfile.production
+      args:
+        APP_ENV: uat
+    container_name: zyro-chat-uat-app
+    restart: unless-stopped
+    env_file:
+      - ../env/.env.uat
+    environment:
+      # PROXY=false in prod: vite preview has no proxy, the browser calls
+      # the absolute VITE_SERVER_URL (baked at build time) directly.
+      - PROXY=false
+      - APP_PORT=${APP_PORT:?APP_PORT must be set in env/.env.uat}
+      - SERVER_PORT=${SERVER_PORT:?SERVER_PORT must be set in env/.env.uat}
+    ports:
+      - "${APP_PORT:?APP_PORT must be set in env/.env.uat}:${APP_PORT:?APP_PORT must be set in env/.env.uat}"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "node -e \"fetch('http://localhost:' + (process.env.APP_PORT || '3000') + '/').then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))\"",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    depends_on:
+      server:
+        condition: service_healthy
+
+  chat-widget-test:
+    build:
+      context: ..
+      dockerfile: apps/chat-widget-test/docker/Dockerfile.production
+      args:
+        APP_ENV: uat
+    container_name: zyro-chat-uat-widget-test
+    restart: unless-stopped
+    env_file:
+      - ../env/.env.uat
+    environment:
+      - CHAT_WIDGET_PORT=${CHAT_WIDGET_PORT:?CHAT_WIDGET_PORT must be set in env/.env.uat}
+      - SERVER_PORT=${SERVER_PORT:?SERVER_PORT must be set in env/.env.uat}
+    ports:
+      - "${CHAT_WIDGET_PORT:?CHAT_WIDGET_PORT must be set in env/.env.uat}:${CHAT_WIDGET_PORT:?CHAT_WIDGET_PORT must be set in env/.env.uat}"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "node -e \"fetch('http://localhost:' + (process.env.CHAT_WIDGET_PORT || '4000') + '/').then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))\"",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    depends_on:
+      server:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  redis_data:
