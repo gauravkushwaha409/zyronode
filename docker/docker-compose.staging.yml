@@ -1,11 +1,11 @@
 # Staging stack (same release images as production). Run via `pnpm docker:staging:*` (passes --env-file env/.env.staging).
 # Paths are relative to this file (docker/).
-name: zyro-chat-staging
+name: zyronode-staging
 
 services:
   postgres:
     image: postgres:17.4
-    container_name: zyro-chat-staging-postgres
+    container_name: zyronode-staging-postgres
     restart: unless-stopped
     env_file:
       - ../env/.env.staging
@@ -26,7 +26,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: zyro-chat-staging-redis
+    container_name: zyronode-staging-redis
     restart: unless-stopped
     volumes:
       - redis_data:/data
@@ -43,7 +43,7 @@ services:
       dockerfile: apps/server/docker/Dockerfile.production
       args:
         APP_ENV: staging
-    container_name: zyro-chat-staging-server
+    container_name: zyronode-staging-server
     restart: unless-stopped
     ports:
       - "${SERVER_PORT:?SERVER_PORT must be set in env/.env.staging}:${SERVER_PORT:?SERVER_PORT must be set in env/.env.staging}"
@@ -77,7 +77,7 @@ services:
       dockerfile: apps/app/docker/Dockerfile.production
       args:
         APP_ENV: staging
-    container_name: zyro-chat-staging-app
+    container_name: zyronode-staging-app
     restart: unless-stopped
     env_file:
       - ../env/.env.staging
@@ -109,7 +109,7 @@ services:
       dockerfile: apps/chat-widget-test/docker/Dockerfile.production
       args:
         APP_ENV: staging
-    container_name: zyro-chat-staging-widget-test
+    container_name: zyronode-staging-widget-test
     restart: unless-stopped
     env_file:
       - ../env/.env.staging

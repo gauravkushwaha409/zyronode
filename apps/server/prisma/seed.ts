@@ -53,8 +53,8 @@ const TEST_ORGANIZATIONS: Array<{
 const TEST_VISITORS = [
 	{
 		externalId: "vis_kathmandu_01",
-		name: "zyro chat",
-		email: "zyrochat@email.com",
+		name: "zyronode",
+		email: "zyronode@email.com",
 		phone: "+977 9800000001",
 		ipAddress: "27.34.68.10",
 		isOnline: true,

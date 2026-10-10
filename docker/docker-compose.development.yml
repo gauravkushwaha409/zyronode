@@ -1,11 +1,11 @@
 # Development stack. Run via `pnpm docker:development:*` (passes --env-file env/.env.development).
 # Paths are relative to this file (docker/).
-name: zyro-chat
+name: zyronode
 
 services:
   postgres:
     image: postgres:17.4
-    container_name: zyro-chat-postgres
+    container_name: zyronode-postgres
     restart: unless-stopped
     env_file:
       - ../env/.env.development
@@ -24,7 +24,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: zyro-chat-redis
+    container_name: zyronode-redis
     restart: unless-stopped
     command: ["redis-server", "--port", "6380"]
     ports:
@@ -41,7 +41,7 @@ services:
     build:
       context: ..
       dockerfile: apps/server/docker/Dockerfile.development
-    container_name: zyro-chat-server
+    container_name: zyronode-server
     command: sh -c "pnpm prisma:generate && pnpm prisma:deploy && pnpm dev:server"
     restart: unless-stopped
     ports:
@@ -78,7 +78,7 @@ services:
     build:
       context: ..
       dockerfile: apps/app/docker/Dockerfile.development
-    container_name: zyro-chat-app
+    container_name: zyronode-app
     command: sh -c "pnpm dev:app"
     restart: unless-stopped
     env_file:
@@ -110,7 +110,7 @@ services:
     build:
       context: ..
       dockerfile: apps/chat-widget-test/docker/Dockerfile.development
-    container_name: zyro-chat-widget-test
+    container_name: zyronode-widget-test
     command: sh -c "pnpm dev:chat-widget"
     restart: unless-stopped
     env_file:
@@ -135,7 +135,7 @@ services:
       - ../packages/typescript-config:/app/packages/typescript-config
 
   localstack:
-    container_name: zyro-chat-localstack
+    container_name: zyronode-localstack
     image: localstack/localstack
     ports:
       - '127.0.0.1:4566:4566' # LocalStack Gateway

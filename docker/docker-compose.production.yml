@@ -1,11 +1,11 @@
 # Production stack. Run via `pnpm docker:production:*` (passes --env-file env/.env.production).
 # Paths are relative to this file (docker/).
-name: zyro-chat-production
+name: zyronode-production
 
 services:
   postgres:
     image: postgres:17.4
-    container_name: zyro-chat-production-postgres
+    container_name: zyronode-production-postgres
     restart: unless-stopped
     env_file:
       - ../env/.env.production
@@ -26,7 +26,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: zyro-chat-production-redis
+    container_name: zyronode-production-redis
     restart: unless-stopped
     volumes:
       - redis_data:/data
@@ -43,7 +43,7 @@ services:
       dockerfile: apps/server/docker/Dockerfile.production
       args:
         APP_ENV: production
-    container_name: zyro-chat-production-server
+    container_name: zyronode-production-server
     restart: unless-stopped
     ports:
       - "${SERVER_PORT:?SERVER_PORT must be set in env/.env.production}:${SERVER_PORT:?SERVER_PORT must be set in env/.env.production}"
@@ -77,7 +77,7 @@ services:
       dockerfile: apps/app/docker/Dockerfile.production
       args:
         APP_ENV: production
-    container_name: zyro-chat-production-app
+    container_name: zyronode-production-app
     restart: unless-stopped
     env_file:
       - ../env/.env.production
@@ -109,7 +109,7 @@ services:
       dockerfile: apps/chat-widget-test/docker/Dockerfile.production
       args:
         APP_ENV: production
-    container_name: zyro-chat-production-widget-test
+    container_name: zyronode-production-widget-test
     restart: unless-stopped
     env_file:
       - ../env/.env.production

@@ -46,7 +46,7 @@ const hasObserveCreds = !!observeAppKey && !!observeAppSecret;
 					ObserveModule.forRoot({
 						appKey: observeAppKey as string,
 						appSecret: observeAppSecret as string,
-						serviceId: "zyro-chat-server",
+						serviceId: "zyronode-server",
 					}),
 				]
 			: []),
