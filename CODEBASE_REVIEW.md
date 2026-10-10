@@ -1,4 +1,4 @@
-# Zyro-Chat Codebase Review
+# Zyronode Codebase Review
 
 ## Overview
 
@@ -9,7 +9,7 @@ A **multi-tenant, real-time customer-support chat platform** built as a **pnpm +
 ## Project Structure
 
 ```
-zyro-chat/
+zyronode/
 ├── apps/
 │   ├── app/                  # Agent dashboard (React 19 + Vite 8 + TanStack Router)
 │   ├── server/               # NestJS API backend

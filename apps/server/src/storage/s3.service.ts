@@ -18,7 +18,7 @@ export class S3Service implements OnModuleInit {
 	private readonly bucket: string;
 
 	constructor() {
-		this.bucket = process.env.S3_BUCKET || "zyro-chat-uploads";
+		this.bucket = process.env.S3_BUCKET || "zyronode-uploads";
 		const endpoint = process.env.S3_ENDPOINT;
 		this.client = new S3Client({
 			region: process.env.AWS_REGION || "us-east-1",
