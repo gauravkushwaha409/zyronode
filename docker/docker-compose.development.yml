@@ -26,13 +26,13 @@ services:
     image: redis:7-alpine
     container_name: zyronode-redis
     restart: unless-stopped
-    command: ["redis-server", "--port", "6380"]
+    command: ["redis-server", "--port", "${REDIS_PORT:?REDIS_PORT must be set in env/.env.development}"]
     ports:
-      - "6380:6380"
+      - "${REDIS_PORT:?REDIS_PORT must be set in env/.env.development}:${REDIS_PORT:?REDIS_PORT must be set in env/.env.development}"
     volumes:
       - redis_data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "-p", "6380", "ping"]
+      test: ["CMD", "redis-cli", "-p", "${REDIS_PORT:?REDIS_PORT must be set in env/.env.development}", "ping"]
       interval: 60s
       timeout: 60s
       retries: 10
@@ -64,7 +64,7 @@ services:
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER:?POSTGRES_USER must be set in env/.env.development}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in env/.env.development}@postgres:${POSTGRES_PORT:?POSTGRES_PORT must be set in env/.env.development}/${POSTGRES_DB:?POSTGRES_DB must be set in env/.env.development}
       - REDIS_HOST=redis
-      - REDIS_PORT=6380
+      - REDIS_PORT=${REDIS_PORT:?REDIS_PORT must be set in env/.env.development}
       - S3_ENDPOINT=http://localstack:4566
     depends_on:
       postgres:

@@ -143,32 +143,8 @@ function TextEditorFooter({
           Quick Response
         </button>
 
-        <button
-          type="button"
-          className={cn(
-            'typo-t5 font-medium',
-            ' text-gray-950 bg-linear-to-b bg-gray-50',
-            'flex items-center gap-x-1',
-            'px-2.5 py-1 rounded-[6px]',
-          )}
-        >
-          Set Reminder
-        </button>
-
         <AiToolsDropdown {...aiToolsDropdownProps} />
       </div>
-      <button
-        type="button"
-        className={cn(
-          'typo-t5 font-medium',
-          'bg-[linear-gradient(180deg,#7C3AED_0%,#472187_100%)] bg-clip-text text-transparent',
-          'flex items-center gap-x-1',
-          'px-2.5 py-1 rounded-full',
-          'border border-primary-100',
-        )}
-      >
-        AI Suggest
-      </button>
     </div>
   );
 }
