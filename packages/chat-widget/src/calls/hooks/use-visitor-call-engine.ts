@@ -69,6 +69,7 @@ export function useVisitorCallEngine(
 	}
 
 	const getStore = useVisitorCallStore.getState;
+	console.log("[call] visitor engine mounted");
 
 	const cleanupPeer = useCallback((peerId: string) => {
 		const entry = pcs.current.get(peerId);
@@ -192,6 +193,10 @@ export function useVisitorCallEngine(
 
 			pc.ontrack = (event) => {
 				const [stream] = event.streams;
+				console.log(`[call] ontrack from ${peerId}`, {
+					streams: event.streams.length,
+					tracks: stream?.getTracks().map((t) => `${t.kind}:${t.readyState}`),
+				});
 				if (!stream) return;
 				const store = getStore();
 				const existing = store.peers[peerId];
@@ -224,6 +229,9 @@ export function useVisitorCallEngine(
 			};
 
 			pc.onconnectionstatechange = () => {
+				console.log(
+					`[call] pc ${peerId}: connection=${pc.connectionState} ice=${pc.iceConnectionState} signaling=${pc.signalingState}`,
+				);
 				const store = getStore();
 				const existing = store.peers[peerId];
 				if (existing)

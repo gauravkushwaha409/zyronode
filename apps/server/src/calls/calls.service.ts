@@ -230,6 +230,47 @@ export class CallsService {
 		return this.redis.get(peerActiveCallKey(peerId));
 	}
 
+	/**
+	 * Busy check that ignores stale markers. A marker is stale when its call
+	 * is gone, terminal, or past its ring deadline (e.g. timer died with a
+	 * restart) - it is cleared on the spot and the peer counts as free.
+	 * Live RINGING/ACTIVE calls still mean busy.
+	 */
+	async isPeerActuallyBusy(peerId: string): Promise<boolean> {
+		const callId = await this.getActiveCallId(peerId);
+		if (!callId) return false;
+		const call = await this.prisma.call.findUnique({ where: { id: callId } });
+		if (!call || call.status === "ENDED") {
+			await this.redis.del(peerActiveCallKey(peerId));
+			return false;
+		}
+		if (call.status === "RINGING") {
+			const expired = await this.expireRingIfDue(call);
+			if (expired) return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Self-heal on (re)connect: timers live in memory, so a restart can
+	 * orphan presence markers (peer looks busy forever) or a RINGING call
+	 * whose timer died. If the referenced call is gone, terminal, or past
+	 * its ring deadline, finish the transition now. Live calls are untouched
+	 * so mid-call reconnects keep working.
+	 */
+	async reconcilePeer(peerId: string): Promise<void> {
+		const callId = await this.getActiveCallId(peerId);
+		if (!callId) return;
+		const call = await this.prisma.call.findUnique({ where: { id: callId } });
+		if (!call || call.status === "ENDED") {
+			await this.redis.del(peerActiveCallKey(peerId));
+			return;
+		}
+		if (call.status === "RINGING") {
+			await this.expireRingIfDue(call);
+		}
+	}
+
 	// ─── Invite / join / reject / leave ─────────────────────────
 
 	async startCall(
@@ -253,7 +294,13 @@ export class CallsService {
 		// ringing call answers it by inviting back. Deterministic rule -
 		// fold into the existing call when it covers every target instead
 		// of failing busy or forking a second call.
-		const existingActiveId = await this.getActiveCallId(starterPeerId);
+		const existingActiveRaw = await this.getActiveCallId(starterPeerId);
+		// Stale markers (call gone/terminal/ring-expired) are cleared by the
+		// check itself - only a live call blocks a new invite.
+		const existingActiveId =
+			existingActiveRaw && (await this.isPeerActuallyBusy(starterPeerId))
+				? existingActiveRaw
+				: null;
 		if (existingActiveId) {
 			const existing = await this.prisma.call.findUnique({
 				where: { id: existingActiveId },
@@ -355,7 +402,7 @@ export class CallsService {
 			} catch {
 				continue;
 			}
-			if (await this.getActiveCallId(targetPeerId)) continue;
+			if (await this.isPeerActuallyBusy(targetPeerId)) continue;
 			rungPeerIds.push(targetPeerId as PeerId);
 		}
 		if (rungPeerIds.length === 0) {
@@ -427,7 +474,7 @@ export class CallsService {
 		if (expired) return { call, becameActive: false, peers: [], expired };
 
 		const active = await this.getActiveCallId(peerId);
-		if (active && active !== callId) {
+		if (active && active !== callId && (await this.isPeerActuallyBusy(peerId))) {
 			throw new ConflictException("You are already in another call");
 		}
 

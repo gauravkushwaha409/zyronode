@@ -168,6 +168,9 @@ export function CallScreen() {
 	const timer = useCallTimer(startedAt, phase === "active");
 	const peerList = Object.values(peers);
 	const names = usePeerNames(peerList.map((p) => p.peerId));
+	const localTracks =
+		localStream?.getTracks().map((t) => `${t.kind}:${t.readyState}:${t.enabled ? "on" : "off"}`).join(", ") ??
+		"none";
 	const inCall = phase === "active" || phase === "outgoing";
 
 	if (!inCall && !error && !endedReason) return null;
@@ -233,6 +236,23 @@ export function CallScreen() {
 
 				<div className="flex flex-col items-center gap-2">
 					<DeviceSelectors />
+					<details className="w-full rounded-lg bg-gray-800 px-3 py-1.5">
+						<summary className="cursor-pointer text-[11px] text-gray-400">
+							Connection diagnostics
+						</summary>
+						<div className="py-1 font-mono text-[11px] text-gray-300 break-all">
+							<div>phase: {phase}</div>
+							<div>local tracks: {localTracks}</div>
+							{peerList.length === 0 && <div>peers: none yet (waiting for join)</div>}
+							{peerList.map((peer) => (
+								<div key={peer.peerId}>
+									{peer.peerId}: {peer.connection} · stream:
+									{peer.stream ? "yes" : "no"} · mic:{peer.audio ? "on" : "off"} ·
+									cam:{peer.video ? "on" : "off"}
+								</div>
+							))}
+						</div>
+					</details>
 					<div className="flex items-center gap-3">
 						<Button
 							size="icon"

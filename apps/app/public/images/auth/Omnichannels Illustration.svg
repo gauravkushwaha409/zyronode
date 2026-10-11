@@ -42,7 +42,7 @@
 <foreignObject x="0" y="-35" width="228" height="228"><div xmlns="http://www.w3.org/1999/xhtml" style="backdrop-filter:blur(40px);clip-path:url(#bgblur_7_3602_11492_clip_path);height:100%;width:100%"></div></foreignObject><g filter="url(#filter4_d_3602_11492)" data-figma-bg-blur-radius="80">
 <rect x="82" y="47" width="64" height="64" rx="32" fill="white"/>
 <rect x="81" y="46" width="66" height="66" rx="33" stroke="#F7F7F7" strokeWidth="2"/>
-<path d="M114.002 97.9999C124.484 97.9999 132.98 89.5031 132.98 79.022C132.98 68.5408 124.484 60.0441 114.002 60.0441C103.521 60.0441 95.0245 68.5408 95.0245 79.022C95.0245 81.8859 95.659 84.6017 96.7949 87.0366C97.004 87.4847 97.0689 87.9896 96.9521 88.4701L95.2919 95.3018C94.9326 96.7804 96.2511 98.1218 97.7356 97.788L104.857 96.187C105.317 96.0836 105.796 96.1454 106.226 96.3387C108.599 97.4061 111.232 97.9999 114.002 97.9999Z" stroke="#7C3AED" strokeWidth="5.11634" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M114.002 97.9999C124.484 97.9999 132.98 89.5031 132.98 79.022C132.98 68.5408 124.484 60.0441 114.002 60.0441C103.521 60.0441 95.0245 68.5408 95.0245 79.022C95.0245 81.8859 95.659 84.6017 96.7949 87.0366C97.004 87.4847 97.0689 87.9896 96.9521 88.4701L95.2919 95.3018C94.9326 96.7804 96.2511 98.1218 97.7356 97.788L104.857 96.187C105.317 96.0836 105.796 96.1454 106.226 96.3387C108.599 97.4061 111.232 97.9999 114.002 97.9999Z" stroke="#7C3AED" strokeWidth="5.11634" strokeLinecap="round" strokeLinejoin="round"/>
 </g>
 <defs>
 <filter id="filter0_d_3602_11492" x="106" y="86" width="228" height="228" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">

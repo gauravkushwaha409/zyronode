@@ -57,6 +57,7 @@ export function useCallEngine(): CallActions {
 	const queryClient = useQueryClient();
 	const clientRef = useRef(client);
 	clientRef.current = client;
+	console.log("[call] engine mounted, socket status:", status);
 
 	const pcs = useRef(new Map<string, PeerConnectionState>());
 	const iceServers = useRef<RTCIceServer[] | null>(null);
@@ -215,6 +216,10 @@ export function useCallEngine(): CallActions {
 
 			pc.ontrack = (event) => {
 				const [stream] = event.streams;
+				console.log(`[call] ontrack from ${peerId}`, {
+					streams: event.streams.length,
+					tracks: stream?.getTracks().map((t) => `${t.kind}:${t.readyState}`),
+				});
 				if (!stream) return;
 				const store = getStore();
 				const existing = store.peers[peerId];
@@ -247,6 +252,9 @@ export function useCallEngine(): CallActions {
 			};
 
 			pc.onconnectionstatechange = () => {
+				console.log(
+					`[call] pc ${peerId}: connection=${pc.connectionState} ice=${pc.iceConnectionState} signaling=${pc.signalingState}`,
+				);
 				const store = getStore();
 				const existing = store.peers[peerId];
 				if (existing)
@@ -365,18 +373,28 @@ export function useCallEngine(): CallActions {
 
 	const startCall = useCallback(
 		async (conversationId: string, type: CallType) => {
+			console.log("[call] startCall clicked", { conversationId, type });
 			const store = getStore();
-			if (store.phase !== "idle") return;
+			if (store.phase !== "idle") {
+				console.log("[call] startCall blocked, phase:", store.phase);
+				return;
+			}
 			let stream: MediaStream;
 			try {
 				stream = await acquireLocalMedia(type);
+				console.log(
+					"[call] local media acquired",
+					stream.getTracks().map((t) => `${t.kind}:${t.readyState}`),
+				);
 			} catch (err) {
+				console.log("[call] getUserMedia failed", err);
 				store.set({ error: toMediaErrorMessage(err) });
 				return;
 			}
 			try {
 				await ensureIceServers();
 			} catch {
+				console.log("[call] ice-servers fetch failed");
 				store.set({ error: "Could not reach the call server. Try again." });
 				stream.getTracks().forEach((t) => {
 					t.stop();
@@ -394,10 +412,12 @@ export function useCallEngine(): CallActions {
 			});
 			ringtone.current.start();
 			try {
+				console.log("[call] sending invite, socket connected:", clientRef.current.connected);
 				const ack = await clientRef.current.emitWithAck<{ callId: string }>(
 					ClientCallEvents.INVITE,
 					{ conversationId, type },
 				);
+				console.log("[call] invite ack", ack);
 				getStore().set({
 					callId: ack.callId,
 					phase: "active",
@@ -633,6 +653,7 @@ export function useCallEngine(): CallActions {
 
 	// ─── Socket event wiring ──────────────────────────────────────────
 	useEffect(() => {
+		console.log("[call] socket status:", status);
 		if (status !== "connected") return;
 		const offs: Array<() => void> = [];
 		const on = <T>(event: string, handler: (data: T) => void) => {
@@ -640,6 +661,7 @@ export function useCallEngine(): CallActions {
 		};
 
 		on<CallIncomingPayload>(ServerCallEvents.INCOMING, (data) => {
+			console.log("[call] incoming", data);
 			const store = getStore();
 			if (store.phase !== "idle") {
 				// Busy in another call - tell the caller immediately.

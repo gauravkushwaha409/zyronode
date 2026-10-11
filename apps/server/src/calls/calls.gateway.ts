@@ -96,6 +96,10 @@ export class CallsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		client.data.peerId = peerId;
 		await client.join(roomForPeer(peerId));
 		this.clearGoneTimer(peerId);
+		// Best effort: clear presence orphaned by a restart (stuck busy).
+		void this.callsService.reconcilePeer(peerId).catch((err) => {
+			this.logger.warn(`reconcilePeer ${peerId} failed: ${err}`);
+		});
 		this.logger.log(`Call socket connected: ${peerId} (${client.id})`);
 	}
 
