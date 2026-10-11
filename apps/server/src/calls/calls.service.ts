@@ -243,13 +243,47 @@ export class CallsService {
 			starter,
 			conversationId,
 		);
-		if (await this.getActiveCallId(starterPeerId)) {
-			throw new ConflictException("You are already in a call");
-		}
 
 		// Normalize invitees to peer ids (bare ids mean agents).
 		const explicit =
 			inviteeIds?.map((id) => (parsePeerId(id) ? id : peerIdForUser(id))) ?? [];
+		const wanted = explicit.filter((id) => id !== starterPeerId);
+
+		// Counter-invite glare: a peer who is being rung (INVITED) in a
+		// ringing call answers it by inviting back. Deterministic rule -
+		// fold into the existing call when it covers every target instead
+		// of failing busy or forking a second call.
+		const existingActiveId = await this.getActiveCallId(starterPeerId);
+		if (existingActiveId) {
+			const existing = await this.prisma.call.findUnique({
+				where: { id: existingActiveId },
+				include: {
+					participants: { select: { userId: true, visitorId: true, status: true } },
+				},
+			});
+			const starterRow = existing?.participants.find((p) =>
+				starter.kind === "user"
+					? p.userId === starter.id
+					: p.visitorId === starter.id,
+			);
+			const memberIds = (existing?.participants ?? []).map((p) =>
+				this.participantPeerId(p),
+			);
+			const covers =
+				!inviteeIds || wanted.every((t) => memberIds.includes(t as PeerId));
+			if (
+				existing?.status === "RINGING" &&
+				existing.conversationId === conversationId &&
+				starterRow?.status === "INVITED" &&
+				covers
+			) {
+				const join = await this.joinCall(starterPeerId, existing.id);
+				return { call: join.call, merged: true, rungPeerIds: [], join };
+			}
+			throw new ConflictException("You are already in a call");
+		}
+
+		// Default target: ring every other member of the conversation's org.
 		let targets = explicit.filter((id) => id !== starterPeerId);
 		if (targets.length === 0 && !inviteeIds) {
 			// Default: ring every other member of the conversation's org (agents).

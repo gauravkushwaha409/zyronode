@@ -17,6 +17,11 @@ export class ResponseInterceptor<T>
 		context: ExecutionContext,
 		next: CallHandler,
 	): Observable<ApiResponse<T>> {
+		// HTTP-only: Socket.IO acks follow the shared signaling contract
+		// verbatim (@package/call-signaling) and must not be wrapped.
+		if (context.getType() !== "http") {
+			return next.handle();
+		}
 		const ctx = context.switchToHttp();
 		const response = ctx.getResponse<Response>();
 		const request = ctx.getRequest<Request>();
