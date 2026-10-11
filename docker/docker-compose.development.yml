@@ -37,6 +37,25 @@ services:
       timeout: 60s
       retries: 10
 
+  # Local TURN server for call testing. Uses the REST credential scheme
+  # (static-auth-secret must match TURN_SECRET in env/.env.development).
+  # Config lives in ../infra/coturn/turnserver.conf.
+  coturn:
+    image: coturn/coturn:4.6
+    container_name: zyronode-coturn
+    restart: unless-stopped
+    command:
+      - -c
+      - /etc/coturn/turnserver.conf
+      - --static-auth-secret=${TURN_SECRET:?TURN_SECRET must be set in env/.env.development}
+    ports:
+      - "3478:3478"
+      - "3478:3478/udp"
+      - "5349:5349"
+      - "5349:5349/udp"
+    volumes:
+      - ../infra/coturn/turnserver.conf:/etc/coturn/turnserver.conf:ro
+
   server:
     build:
       context: ..

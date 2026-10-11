@@ -4,7 +4,10 @@ import * as dotenv from "dotenv";
 // cwd is apps/server under pnpm/turbo. Missing file (docker runtime) is a no-op;
 // vars already set via docker env_file are never overridden.
 dotenv.config({
-	path: path.resolve(process.cwd(), `../../env/.env.${process.env.APP_ENV ?? "development"}`),
+	path: path.resolve(
+		process.cwd(),
+		`../../env/.env.${process.env.APP_ENV ?? "development"}`,
+	),
 	quiet: true,
 });
 
@@ -13,13 +16,17 @@ import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import cookieParser from "cookie-parser";
 import { AppModule, ObserveInstrument } from "./app.module";
+import { RedisIoAdapter } from "./calls/redis-io.adapter";
 import { HttpExceptionFilter } from "./common/filters/http-exception.filter";
 import { ResponseInterceptor } from "./common/interceptor/response.interceptor";
 
 /** Expand ${VAR} / $VAR placeholders in env values (e.g. VITE_APP_URL=http://localhost:${APP_PORT}) */
 function expandEnv(value?: string): string | undefined {
 	if (!value) return value;
-	return value.replace(/\$\{([^}]+)\}|\$([A-Z0-9_]+)/g, (_, b, c) => process.env[b ?? c] ?? "");
+	return value.replace(
+		/\$\{([^}]+)\}|\$([A-Z0-9_]+)/g,
+		(_, b, c) => process.env[b ?? c] ?? "",
+	);
 }
 
 function getCorsOrigins(): string[] {
@@ -58,8 +65,8 @@ async function bootstrap() {
 	const normalize = (v?: string) => v?.replace(/\$\$/g, "$");
 	const hasObserveCreds =
 		!!normalize(process.env.OBSERVE_APP_KEY) &&
-		!!normalize(process.env.OBSERVE_APP_SECRET) 
-		
+		!!normalize(process.env.OBSERVE_APP_SECRET);
+
 	const app = await NestFactory.create(AppModule, {
 		...(hasObserveCreds ? { instrument: ObserveInstrument } : {}),
 	});
@@ -72,12 +79,15 @@ async function bootstrap() {
 
 	app.use(cookieParser());
 
+	// Redis adapter so Socket.IO rooms/emits work across server instances.
+	app.useWebSocketAdapter(new RedisIoAdapter(app));
+
 	app.useGlobalInterceptors(new ResponseInterceptor());
 	app.useGlobalFilters(new HttpExceptionFilter());
 	app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
 
-	app.setGlobalPrefix("/api/v1",{
-		exclude: []
+	app.setGlobalPrefix("/api/v1", {
+		exclude: [],
 	});
 
 	/**
@@ -95,6 +105,7 @@ async function bootstrap() {
 		.addTag("Visitor", "Visitor management endpoints")
 		.addTag("OTP", "OTP verification endpoints")
 		.addTag("SSE", "Server-Sent Events endpoints")
+		.addTag("Calls", "Audio/video call signaling and ICE servers")
 		.addBearerAuth()
 		.build();
 
@@ -104,6 +115,8 @@ async function bootstrap() {
 	const port = getServerPort();
 	await app.listen(port, "0.0.0.0");
 	// eslint-disable-next-line no-console
-	console.log(`Server listening on http://localhost:${port} (CORS: ${getCorsOrigins().join(", ")})`);
+	console.log(
+		`Server listening on http://localhost:${port} (CORS: ${getCorsOrigins().join(", ")})`,
+	);
 }
 bootstrap();
