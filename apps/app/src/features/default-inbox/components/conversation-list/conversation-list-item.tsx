@@ -6,7 +6,6 @@ import { ConversationAction } from "../conversation/conversation-action";
 
 type ConversationListItemProps = ConversationTypes.InboxConversationListItem;
 
-
 export function ConversationListItem(props: ConversationListItemProps) {
 	const { value: selectedId, onChange: selectConversation } =
 		useConversationItem();
@@ -62,9 +61,20 @@ export function ConversationListItem(props: ConversationListItemProps) {
 
 					<div className="flex items-center justify-between gap-x-2.5">
 						<Typography.T5 className="text-gray-500 line-clamp-1">
-							{props.lastMessage
-								? `${senderLabel}: ${props.lastMessage.content}`
-								: "No messages yet"}
+							{props.lastMessage ? (
+								<>
+									{`${senderLabel}: `}
+									<span
+										className="[&_p]:inline [&_ul]:inline [&_ol]:inline [&_li]:inline [&_img]:hidden [&_br]:hidden"
+										// biome-ignore lint/security/noDangerouslySetInnerHtml: message HTML comes from the same rich-text pipeline already rendered as HTML in text-message.tsx
+										dangerouslySetInnerHTML={{
+											__html: props.lastMessage.content,
+										}}
+									/>
+								</>
+							) : (
+								"No messages yet"
+							)}
 						</Typography.T5>
 					</div>
 				</div>
