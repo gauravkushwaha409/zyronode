@@ -25,6 +25,44 @@ export class RedisService implements OnModuleDestroy {
 		await this.client.del(key);
 	}
 
+	/** SET key value NX EX ttl - returns true when the key was acquired. */
+	async setNx(key: string, value: string, ttlSeconds: number): Promise<boolean> {
+		const result = await this.client.set(key, value, "EX", ttlSeconds, "NX");
+		return result === "OK";
+	}
+
+	async expire(key: string, ttlSeconds: number): Promise<void> {
+		await this.client.expire(key, ttlSeconds);
+	}
+
+	async hSet(key: string, field: string, value: string): Promise<void> {
+		await this.client.hset(key, field, value);
+	}
+
+	async hGetAll(key: string): Promise<Record<string, string>> {
+		return this.client.hgetall(key);
+	}
+
+	async hDel(key: string, field: string): Promise<void> {
+		await this.client.hdel(key, field);
+	}
+
+	async sAdd(key: string, member: string): Promise<void> {
+		await this.client.sadd(key, member);
+	}
+
+	async sRem(key: string, member: string): Promise<void> {
+		await this.client.srem(key, member);
+	}
+
+	async sMembers(key: string): Promise<string[]> {
+		return this.client.smembers(key);
+	}
+
+	async sCard(key: string): Promise<number> {
+		return this.client.scard(key);
+	}
+
 	async exists(key: string): Promise<boolean> {
 		const result = await this.client.exists(key);
 		return result === 1;

@@ -8,7 +8,11 @@ import { RedisService } from "./redis.service";
 		{
 			provide: RedisService,
 			useFactory: () => {
-				console.log("[Redis] Initializing Redis client...", process.env.REDIS_HOST, process.env.REDIS_PORT);
+				console.log(
+					"[Redis] Initializing Redis client...",
+					process.env.REDIS_HOST,
+					process.env.REDIS_PORT,
+				);
 				const client = new Redis({
 					host: process.env.REDIS_HOST || "localhost",
 					port: Number(process.env.REDIS_PORT) || 6379,
