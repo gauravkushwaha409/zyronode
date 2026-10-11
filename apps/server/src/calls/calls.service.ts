@@ -283,18 +283,26 @@ export class CallsService {
 			throw new ConflictException("You are already in a call");
 		}
 
-		// Default target: ring every other member of the conversation's org.
+		// Default target: the conversation's visitor (if any) plus every
+		// other member of the conversation's org (agents), capped.
 		let targets = explicit.filter((id) => id !== starterPeerId);
 		if (targets.length === 0 && !inviteeIds) {
-			// Default: ring every other member of the conversation's org (agents).
 			const members = await this.prisma.organizationMember.findMany({
 				where: { organizationId: conversation.organizationId },
 				select: { userId: true },
 			});
-			targets = members
+			const agentTargets = members
 				.map((m) => peerIdForUser(m.userId))
-				.filter((id) => id !== starterPeerId)
-				.slice(0, this.maxParticipants - 1);
+				.filter((id) => id !== starterPeerId);
+			const visitorTarget =
+				conversation.visitorId &&
+				peerIdForVisitor(conversation.visitorId) !== starterPeerId
+					? [peerIdForVisitor(conversation.visitorId)]
+					: [];
+			targets = [...visitorTarget, ...agentTargets].slice(
+				0,
+				this.maxParticipants - 1,
+			);
 		}
 		if (targets.length === 0) {
 			throw new BadRequestException("No one to call in this conversation");
