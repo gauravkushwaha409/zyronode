@@ -13,8 +13,10 @@ import {
 	DEFAULT_CALL_RING_TIMEOUT_SECONDS,
 } from "@package/call-signaling";
 import type { Call, Conversation } from "../generated/prisma/client";
+import { MessageService } from "../message/message.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { RedisService } from "../redis/redis.service";
+import { WidgetEventsPublisher } from "../visitor/events/widget-events.publisher";
 import {
 	CALL_PRESENCE_TTL_SECONDS,
 	callKey,
@@ -65,6 +67,8 @@ export class CallsService {
 	constructor(
 		private readonly prisma: PrismaService,
 		private readonly redis: RedisService,
+		private readonly messageService: MessageService,
+		private readonly widgetEvents: WidgetEventsPublisher,
 	) {}
 
 	get maxParticipants(): number {
@@ -531,20 +535,23 @@ export class CallsService {
 		callId: string,
 		reason: CallEndReason,
 	): Promise<EndCallResult> {
-		const existing = await this.prisma.call.findUnique({
+		const call = await this.prisma.call.findUnique({
 			where: { id: callId },
-			select: { status: true, endReason: true },
+			include: {
+				participants: { select: { id: true, userId: true, status: true } },
+			},
 		});
-		const participants = await this.prisma.callParticipant.findMany({
-			where: { callId },
-			select: { id: true, userId: true, status: true },
-		});
+		if (!call) {
+			await this.clearPresence(callId, []);
+			return { callId, reason, memberUserIds: [] };
+		}
+		const participants = call.participants;
 		const memberUserIds = participants.map((p) => p.userId);
-		if (existing?.status === "ENDED") {
+		if (call.status === "ENDED") {
 			// Already terminal (race between timer and lazy expiry) - still
 			// ensure presence is gone, then report the original outcome.
 			await this.clearPresence(callId, memberUserIds);
-			return { callId, reason: existing.endReason ?? reason, memberUserIds };
+			return { callId, reason: call.endReason ?? reason, memberUserIds };
 		}
 		for (const p of participants) {
 			if (p.status === "INVITED") {
@@ -559,13 +566,70 @@ export class CallsService {
 				});
 			}
 		}
+		const endedAt = new Date();
 		await this.prisma.call.update({
 			where: { id: callId },
-			data: { status: "ENDED", endedAt: new Date(), endReason: reason },
+			data: { status: "ENDED", endedAt, endReason: reason },
 		});
 		await this.clearPresence(callId, memberUserIds);
 		this.logger.log(`Call ${callId} ended (${reason})`);
+		// Best effort: a call summary in the thread must never fail the ending.
+		void this.postCallSystemMessage(call, reason, endedAt).catch((err) => {
+			this.logger.warn(`Call ${callId} system message failed: ${err}`);
+		});
 		return { callId, reason, memberUserIds };
+	}
+
+	/**
+	 * Posts a SYSTEM summary into the conversation thread (missed/ended call)
+	 * and broadcasts it over the existing message channels so thread views,
+	 * previews, and unread counts update like any other message.
+	 */
+	private async postCallSystemMessage(
+		call: {
+			conversationId: string;
+			type: "AUDIO" | "VIDEO";
+			answeredAt: Date | null;
+		},
+		reason: CallEndReason,
+		endedAt: Date,
+	): Promise<void> {
+		const kind = call.type === "VIDEO" ? "Video" : "Voice";
+		let content: string;
+		switch (reason) {
+			case "COMPLETED": {
+				const secs = call.answeredAt
+					? Math.max(
+							0,
+							Math.round((endedAt.getTime() - call.answeredAt.getTime()) / 1000),
+						)
+					: 0;
+				const mm = Math.floor(secs / 60);
+				const ss = String(secs % 60).padStart(2, "0");
+				content = `${kind} call ended · ${mm}:${ss}`;
+				break;
+			}
+			case "MISSED":
+				content = `Missed ${kind.toLowerCase()} call`;
+				break;
+			case "REJECTED":
+				content = `${kind} call declined`;
+				break;
+			case "CANCELLED":
+				content = `${kind} call cancelled`;
+				break;
+			default:
+				content = `${kind} call failed`;
+		}
+		const result = await this.messageService.create(
+			call.conversationId,
+			{ content },
+			"SYSTEM",
+		);
+		await this.widgetEvents.messageCreated({
+			conversationId: call.conversationId,
+			message: result.data,
+		});
 	}
 
 	private async clearPresence(callId: string, userIds: string[]): Promise<void> {

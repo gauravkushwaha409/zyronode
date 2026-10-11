@@ -13,6 +13,7 @@ import type {
 	WebrtcOfferRelayPayload,
 } from "@package/call-signaling";
 import { ClientCallEvents, ServerCallEvents } from "@package/call-signaling";
+import { useQueryClient } from "@package/query";
 import { useWebSocket } from "@package/websocket";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { callApiService } from "../services/call-api.service";
@@ -53,6 +54,7 @@ export interface CallActions {
  */
 export function useCallEngine(): CallActions {
 	const { client, status } = useWebSocket();
+	const queryClient = useQueryClient();
 	const clientRef = useRef(client);
 	clientRef.current = client;
 
@@ -680,7 +682,13 @@ export function useCallEngine(): CallActions {
 				getStore().incoming?.callId !== data.callId
 			)
 				return;
+			const conversationId = getStore().conversationId;
 			endCallUi(data.reason, true);
+			if (conversationId) {
+				void queryClient.invalidateQueries({
+					queryKey: ["calls", "history", conversationId],
+				});
+			}
 		});
 
 		on<{ callId: string }>(ServerCallEvents.BUSY, () => {
@@ -774,12 +782,53 @@ export function useCallEngine(): CallActions {
 		flushQueuedCandidates,
 		fullCleanup,
 		handleRemoteOffer,
+		queryClient,
 	]);
 
 	// Full cleanup on unmount.
 	useEffect(() => {
 		return () => fullCleanup();
 	}, [fullCleanup]);
+
+	const rejoinAfterReconnect = useCallback(async () => {
+		const store = getStore();
+		const callId = store.callId;
+		if (!callId || store.phase !== "active") return;
+		try {
+			const ack = await clientRef.current.emitWithAck<CallPeersPayload>(
+				ClientCallEvents.JOIN,
+				{ callId },
+			);
+			// Fresh mesh: drop possibly-dead connections, re-offer to everyone.
+			for (const id of [...pcs.current.keys()]) cleanupPeer(id);
+			for (const peer of ack.peers) {
+				createPeerConnection(peer.userId);
+				getStore().upsertPeer({
+					userId: peer.userId,
+					stream: null,
+					audio: peer.audio,
+					video: peer.video,
+					connection: "new",
+				});
+				await sendOffer(peer.userId);
+			}
+			sendMediaState(store.localAudio, store.localVideo);
+		} catch {
+			// The server ended the call meanwhile - its call:ended event lands next.
+		}
+	}, [cleanupPeer, createPeerConnection, sendMediaState, sendOffer]);
+
+	// Rejoin mid-call sessions when the socket reconnects (the server keeps
+	// the user joined through the ~20s grace period).
+	const prevStatus = useRef(status);
+	useEffect(() => {
+		const was = prevStatus.current;
+		prevStatus.current = status;
+		if (was !== "connected" && status === "connected") {
+			const store = getStore();
+			if (store.callId && store.phase === "active") void rejoinAfterReconnect();
+		}
+	}, [status, rejoinAfterReconnect]);
 
 	return useMemo(
 		() => ({

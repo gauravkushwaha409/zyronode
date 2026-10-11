@@ -37,6 +37,9 @@ import {
 const ICE_RATE_LIMIT = 100;
 const ICE_RATE_WINDOW_MS = 10_000;
 
+/** How long a user may have zero sockets before being dropped from a call. */
+const GONE_GRACE_MS = 20_000;
+
 /**
  * Signaling gateway for audio/video calls. Media never passes through here -
  * this namespace only authenticates sockets and relays WebRTC signaling
@@ -60,6 +63,8 @@ export class CallsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	/** callId -> ring-timeout timer (cleared when the call goes ACTIVE/ENDED). */
 	private readonly ringTimers = new Map<string, NodeJS.Timeout>();
+	/** userId -> grace timer for treating a fully-gone user as left. */
+	private readonly goneTimers = new Map<string, NodeJS.Timeout>();
 	/** socket.id -> recent webrtc:ice timestamps (rate limiting). */
 	private readonly iceHits = new Map<string, number[]>();
 
@@ -86,6 +91,7 @@ export class CallsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			if (!payload?.id) throw new Error("missing sub");
 			client.data.userId = payload.id;
 			await client.join(userRoom(payload.id));
+			this.clearGoneTimer(payload.id);
 			this.logger.log(`Call socket connected: ${payload.id} (${client.id})`);
 		} catch {
 			this.logger.warn(`Rejected ${client.id}: invalid token`);
@@ -95,8 +101,46 @@ export class CallsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	handleDisconnect(client: Socket) {
 		this.iceHits.delete(client.id);
-		// Phase 7: treat a user with no connected sockets for ~20s as left.
+		const userId = client.data.userId as string | undefined;
+		if (userId) this.scheduleGoneCheck(userId);
 		this.logger.log(`Call socket disconnected: ${client.id}`);
+	}
+
+	/**
+	 * Grace period: a user whose sockets are all gone for ~20s is treated as
+	 * left (their client normally re-joins on reconnect before this fires).
+	 * fetchSockets works across instances via the Redis adapter.
+	 */
+	private scheduleGoneCheck(userId: string): void {
+		this.clearGoneTimer(userId);
+		const timer = setTimeout(() => {
+			this.goneTimers.delete(userId);
+			void this.dropGoneUser(userId);
+		}, GONE_GRACE_MS);
+		timer.unref();
+		this.goneTimers.set(userId, timer);
+	}
+
+	private clearGoneTimer(userId: string): void {
+		const timer = this.goneTimers.get(userId);
+		if (timer) {
+			clearTimeout(timer);
+			this.goneTimers.delete(userId);
+		}
+	}
+
+	private async dropGoneUser(userId: string): Promise<void> {
+		try {
+			const sockets = await this.server.in(userRoom(userId)).fetchSockets();
+			if (sockets.length > 0) return;
+			const callId = await this.callsService.getActiveCallId(userId);
+			if (!callId) return;
+			const ended = await this.callsService.leaveCall(userId, callId);
+			this.applyLeaveResult(callId, userId, ended);
+			this.logger.log(`Dropped gone user ${userId} from call ${callId}`);
+		} catch (err) {
+			this.logger.warn(`dropGoneUser ${userId} failed: ${err}`);
+		}
 	}
 
 	private userIdOf(client: Socket): string {
@@ -261,15 +305,23 @@ export class CallsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			this.callsService.leaveCall(userId, dto.callId),
 		);
 		await client.leave(callRoom(dto.callId));
+		this.applyLeaveResult(dto.callId, userId, ended);
+		return { callId: dto.callId };
+	}
+
+	private applyLeaveResult(
+		callId: string,
+		userId: string,
+		ended: EndCallResult | null,
+	): void {
 		if (ended) {
 			this.emitEnded(ended);
 		} else {
-			this.server.to(callRoom(dto.callId)).emit(ServerCallEvents.PEER_LEFT, {
-				callId: dto.callId,
+			this.server.to(callRoom(callId)).emit(ServerCallEvents.PEER_LEFT, {
+				callId,
 				userId,
 			});
 		}
-		return { callId: dto.callId };
 	}
 
 	@SubscribeMessage("webrtc:offer")

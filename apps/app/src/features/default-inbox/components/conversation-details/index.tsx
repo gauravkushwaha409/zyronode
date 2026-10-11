@@ -11,6 +11,7 @@ import {
 } from "@package/ui";
 import { isValidElement, useState } from "react";
 import { z } from "zod";
+import { CallHistory } from "@/features/calls/components/call-history";
 import { useConversationItem } from "../../hooks/custom";
 import { AddTags } from "./add-tags-accordion";
 import { CompanyDetails } from "./company-details-accordion";
@@ -93,6 +94,15 @@ export function ConversationDetails() {
 							),
 							value: "notes",
 							content: <Notes />,
+						},
+						{
+							title: (
+								<Typography.T5 weight="medium" className="text-gray-600">
+									Calls
+								</Typography.T5>
+							),
+							value: "calls",
+							content: <CallHistory conversationId={conversationUuid ?? ""} />,
 						},
 					]}
 				/>

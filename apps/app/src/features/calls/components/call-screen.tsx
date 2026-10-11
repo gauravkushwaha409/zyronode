@@ -177,8 +177,8 @@ export function CallScreen() {
 			<div className="w-[min(720px,92vw)] max-h-[88vh] rounded-2xl bg-gray-950 p-4 flex flex-col gap-3">
 				<div className="flex items-center justify-between">
 					<Typography.T3 weight="semibold" className="text-white">
-						{phase === "outgoing"
-							? "Calling…"
+						{phase === "outgoing" || (phase === "active" && peerList.length === 0)
+							? "Ringing…"
 							: `${type === "VIDEO" ? "Video" : "Audio"} call · ${peerList.length + 1}`}
 					</Typography.T3>
 					<Typography.T5 className="text-gray-400 tabular-nums">

@@ -81,5 +81,6 @@ export const ENDPOINTS = {
 	},
 	CALLS: {
 		ICE_SERVERS: "/calls/ice-servers",
+		HISTORY: "/calls/history",
 	},
 };
