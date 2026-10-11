@@ -114,6 +114,7 @@ services:
         condition: service_healthy
     volumes:
       - ../apps/app/src:/app/apps/app/src
+      - ../env:/app/env:ro
       - ../packages/api-client/src:/app/packages/api-client/src
       - ../packages/call-signaling/src:/app/packages/call-signaling/src
       - ../packages/form/src:/app/packages/form/src
@@ -145,6 +146,7 @@ services:
         condition: service_healthy
     volumes:
       - ../apps/chat-widget-test/src:/app/apps/chat-widget-test/src
+      - ../env:/app/env:ro
       - ../packages/chat-widget/src:/app/packages/chat-widget/src
       - ../packages/api-client/src:/app/packages/api-client/src
       - ../packages/call-signaling/src:/app/packages/call-signaling/src
