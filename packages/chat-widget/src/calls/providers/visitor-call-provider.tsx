@@ -11,7 +11,7 @@ import { VisitorIncomingCallModal } from "../components/visitor-incoming-call-mo
 import { useVisitorCallEngine } from "../hooks/use-visitor-call-engine";
 import { getVisitorCallApi } from "../services/visitor-call-api.service";
 import { useVisitorCallStore } from "../store/use-visitor-call.store";
-import { VisitorCallActionsProvider } from "./visitor-call-actions-context";
+import { VisitorCallActionsProvider, disabledVisitorCallActions } from "./visitor-call-actions-context";
 
 function VisitorCallEngineHost({
 	organizationId,
@@ -69,7 +69,13 @@ export function VisitorCallProvider({
 		};
 	}, [organizationId, conversationId, setStore]);
 
-	if (!organizationId || !token) return <>{children}</>;
+	if (!organizationId || !token) {
+		return (
+			<VisitorCallActionsProvider actions={disabledVisitorCallActions}>
+				{children}
+			</VisitorCallActionsProvider>
+		);
+	}
 
 	return (
 		<WebSocketProvider

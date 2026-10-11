@@ -28,3 +28,18 @@ export function useVisitorCallActions(): VisitorCallActions {
 	}
 	return actions;
 }
+
+/**
+ * Stub used before a call token exists (no conversation yet). All actions
+ * are safe no-ops so headers can call the hook unconditionally; the call
+ * buttons stay disabled until a conversation (and token) exists.
+ */
+export const disabledVisitorCallActions: VisitorCallActions = {
+	startCall: () => Promise.resolve(),
+	acceptCall: () => Promise.resolve(),
+	declineCall: () => {},
+	hangUp: () => {},
+	toggleAudio: () => {},
+	toggleVideo: () => {},
+	dismissEnded: () => {},
+};
