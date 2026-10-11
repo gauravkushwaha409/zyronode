@@ -13,6 +13,7 @@ COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY apps/chat-widget-test/package.json ./apps/chat-widget-test/
 COPY packages/chat-widget/package.json ./packages/chat-widget/
 COPY packages/api-client/package.json ./packages/api-client/
+COPY packages/call-signaling/package.json ./packages/call-signaling/
 COPY packages/icons/package.json ./packages/icons/
 COPY packages/query/package.json ./packages/query/
 COPY packages/sse/package.json ./packages/sse/

@@ -42,6 +42,7 @@ COPY apps/app/package.json ./apps/app/
 COPY apps/server/package.json ./apps/server/
 COPY apps/chat-widget-test/package.json ./apps/chat-widget-test/
 COPY packages/api-client/package.json ./packages/api-client/
+COPY packages/call-signaling/package.json ./packages/call-signaling/
 COPY packages/chat-widget/package.json ./packages/chat-widget/
 COPY packages/form/package.json ./packages/form/
 COPY packages/hooks/package.json ./packages/hooks/
@@ -74,6 +75,7 @@ COPY apps/app/package.json ./apps/app/
 COPY apps/server/package.json ./apps/server/
 COPY apps/chat-widget-test/package.json ./apps/chat-widget-test/
 COPY packages/api-client/package.json ./packages/api-client/
+COPY packages/call-signaling/package.json ./packages/call-signaling/
 COPY packages/chat-widget/package.json ./packages/chat-widget/
 COPY packages/form/package.json ./packages/form/
 COPY packages/hooks/package.json ./packages/hooks/

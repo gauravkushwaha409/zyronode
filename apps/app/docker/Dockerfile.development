@@ -12,6 +12,7 @@ WORKDIR /app
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY apps/app/package.json ./apps/app/
 COPY packages/api-client/package.json ./packages/api-client/
+COPY packages/call-signaling/package.json ./packages/call-signaling/
 COPY packages/form/package.json ./packages/form/
 COPY packages/hooks/package.json ./packages/hooks/
 COPY packages/icons/package.json ./packages/icons/

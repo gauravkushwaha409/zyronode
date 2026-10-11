@@ -8,6 +8,7 @@
       "@package/api-client": ["../../packages/api-client/src/index.ts"],
       "@package/query": ["../../packages/query/src/index.ts"],
       "@package/websocket": ["../../packages/websocket/src/index.ts"],
+      "@package/call-signaling": ["../../packages/call-signaling/src/index.ts"],
       "@package/sse": ["../../packages/sse/src/index.ts"],
       "@package/ui": ["../../packages/ui/src/index.ts"],
       "@package/icons": ["../../packages/icons/src/index.ts"],
