@@ -69,6 +69,22 @@ export function useCallEngine(): CallActions {
 	if (selfPeerId.current === null && selfId.current) {
 		selfPeerId.current = `user:${selfId.current}`;
 	}
+	// The dashboard authenticates over cookies, so no token may sit in
+	// storage - resolve our peer id from /auth/me as a fallback (used only
+	// for deterministic offer/answer politeness, never for auth).
+	useEffect(() => {
+		if (selfPeerId.current) return;
+		let live = true;
+		void callApiService
+			.getSelfId()
+			.then((id) => {
+				if (live && id && !selfPeerId.current) selfPeerId.current = `user:${id}`;
+			})
+			.catch(() => {});
+		return () => {
+			live = false;
+		};
+	}, []);
 
 	const getStore = useCallStore.getState;
 

@@ -19,6 +19,16 @@ class CallApiService extends BaseAPIService {
 			params: { conversationId, cursor, limit },
 		});
 	}
+
+	/** Own user id for deterministic WebRTC politeness (identity only). */
+	async getSelfId(): Promise<string | null> {
+		try {
+			const res = await super.get<{ id: string }>(CONFIG.ENDPOINTS.AUTH.ME);
+			return res.data.data.id ?? null;
+		} catch {
+			return null;
+		}
+	}
 }
 
 export const callApiService = new CallApiService(apiClient);

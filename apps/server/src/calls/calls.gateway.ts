@@ -18,6 +18,7 @@ import {
 	ServerCallEvents,
 } from "@package/call-signaling";
 import { Server, Socket } from "socket.io";
+import { tokenFromHandshake } from "../common/auth/socket-token";
 import { getCorsOrigins } from "../common/cors";
 import {
 	CallsService,
@@ -78,10 +79,10 @@ export class CallsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	 * Either way identity is stamped from the verified token only.
 	 */
 	async handleConnection(client: Socket) {
-		const token =
-			client.handshake.auth?.token ??
-			client.handshake.headers?.authorization?.replace("Bearer ", "");
-		if (!token || typeof token !== "string") {
+		// Bearer/auth-token first, then the httpOnly `access` cookie - the
+		// dashboard authenticates sockets the same way as HTTP (see JwtStrategy).
+		const token = tokenFromHandshake(client);
+		if (!token) {
 			this.logger.warn(`Rejected ${client.id}: no token`);
 			client.disconnect();
 			return;
