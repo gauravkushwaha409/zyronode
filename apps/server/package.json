@@ -26,6 +26,7 @@
 		"@nestjs/config": "^12.0.0",
 		"@nestjs/core": "^12.0.0",
 		"@nestjs/jwt": "^11.0.2",
+		"@package/call-signaling": "workspace:*",
 		"@nestjs/mapped-types": "^2.1.1",
 		"@nestjs/observe": "^0.1.8",
 		"@nestjs/passport": "^11.0.5",

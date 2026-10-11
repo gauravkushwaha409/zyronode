@@ -12,6 +12,7 @@
   "dependencies": {
     "@marsidev/react-turnstile": "^1.5.2",
     "@package/api-client": "workspace:*",
+    "@package/call-signaling": "workspace:*",
     "@package/form": "workspace:*",
     "@package/icons": "workspace:*",
     "@package/query": "workspace:*",
