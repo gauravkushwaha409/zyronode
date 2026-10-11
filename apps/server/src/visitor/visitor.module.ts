@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import { CallsModule } from "../calls/calls.module";
 import { InboxModule } from "../inbox/inbox.module";
 import { MessageModule } from "../message/message.module";
 import { SseModule } from "../sse/sse.module";
@@ -9,7 +10,13 @@ import { VisitorService } from "./visitor.service";
 import { WidgetController } from "./widget.controller";
 
 @Module({
-	imports: [WidgetEventsModule, InboxModule, MessageModule, SseModule],
+	imports: [
+		WidgetEventsModule,
+		CallsModule,
+		InboxModule,
+		MessageModule,
+		SseModule,
+	],
 	controllers: [VisitorController, WidgetController],
 	providers: [VisitorService, VisitorGateway],
 	exports: [VisitorService],

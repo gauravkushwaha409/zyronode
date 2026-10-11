@@ -6,8 +6,8 @@ import {
 } from "@nestjs/common";
 import type { Prisma } from "../generated/prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
-import { RedisService } from "../redis/redis.service";
 import { RedisKey } from "../redis/redis.keys";
+import { RedisService } from "../redis/redis.service";
 import type { ListVisitorsDto } from "./dto/list-visitors.dto";
 import type { StartVisitorSessionDto } from "./dto/start-visitor-session.dto";
 import type { CreateVisitorNoteDto } from "./dto/update-visitor.dto";
@@ -228,6 +228,21 @@ export class VisitorService {
 			select: { id: true },
 		});
 		return visitor !== null;
+	}
+
+	/**
+	 * Resolves a browser to its visitor via the httpOnly session cookie
+	 * (the cookie value is stored as Visitor.externalId). Returns null for
+	 * unknown sessions - callers turn that into 401.
+	 */
+	async findBySession(
+		sessionId: string,
+		organizationId: string,
+	): Promise<{ id: string } | null> {
+		return this.prisma.visitor.findFirst({
+			where: { organizationId, externalId: sessionId },
+			select: { id: true },
+		});
 	}
 
 	/**

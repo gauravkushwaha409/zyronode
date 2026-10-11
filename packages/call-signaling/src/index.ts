@@ -18,9 +18,38 @@ export function userRoom(userId: string): string {
 	return `user:${userId}`;
 }
 
+/** Room holding every socket of one visitor (all tabs). */
+export function visitorRoom(visitorId: string): string {
+	return `visitor:${visitorId}`;
+}
+
 /** Room holding every socket currently in one call. */
 export function callRoom(callId: string): string {
 	return `call:${callId}`;
+}
+
+/**
+ * Unified participant identity on the wire. Agents are `user:<userId>`,
+ * visitors are `visitor:<visitorId>`. Rooms are exactly these strings.
+ */
+export type PeerId = `user:${string}` | `visitor:${string}`;
+
+export function peerIdForUser(userId: string): PeerId {
+	return `user:${userId}`;
+}
+
+export function peerIdForVisitor(visitorId: string): PeerId {
+	return `visitor:${visitorId}`;
+}
+
+export function roomForPeer(peerId: string): string {
+	return peerId;
+}
+
+export function parsePeerId(peerId: string): { kind: "user" | "visitor"; id: string } | null {
+	const match = /^(user|visitor):(.+)$/.exec(peerId);
+	if (!match) return null;
+	return { kind: match[1] as "user" | "visitor", id: match[2] as string };
 }
 
 export type CallType = "AUDIO" | "VIDEO";
@@ -56,7 +85,7 @@ export interface IceCandidatePayload {
 
 /** A peer already in the call, sent as the join reply. */
 export interface CallPeerInfo {
-	userId: string;
+	peerId: PeerId;
 	audio: boolean;
 	video: boolean;
 }
@@ -80,7 +109,10 @@ export type ClientCallEvent =
 export interface CallInvitePayload {
 	conversationId: string;
 	type: CallType;
-	/** Users to ring. Empty = ring every other member of the conversation. */
+	/**
+	 * Peer ids to ring. Empty = ring every other member of the conversation.
+	 * Agents pass user ids or full peer ids; each is normalized server-side.
+	 */
 	inviteeIds?: string[];
 }
 
@@ -99,19 +131,19 @@ export interface CallLeavePayload {
 export interface WebrtcOfferPayload {
 	callId: string;
 	/** Joined participant that should receive the offer. */
-	to: string;
+	to: PeerId;
 	sdp: SdpPayload;
 }
 
 export interface WebrtcAnswerPayload {
 	callId: string;
-	to: string;
+	to: PeerId;
 	sdp: SdpPayload;
 }
 
 export interface WebrtcIcePayload {
 	callId: string;
-	to: string;
+	to: PeerId;
 	candidate: IceCandidatePayload;
 }
 
@@ -143,7 +175,7 @@ export type ServerCallEvent =
 
 export interface CallIncomingPayload {
 	callId: string;
-	from: string;
+	from: PeerId;
 	type: CallType;
 	conversationId: string;
 }
@@ -155,17 +187,17 @@ export interface CallPeersPayload {
 
 export interface CallPeerJoinedPayload {
 	callId: string;
-	userId: string;
+	peerId: PeerId;
 }
 
 export interface CallPeerLeftPayload {
 	callId: string;
-	userId: string;
+	peerId: PeerId;
 }
 
 export interface CallBusyPayload {
 	callId: string;
-	userId: string;
+	peerId: PeerId;
 }
 
 export interface CallFullPayload {
@@ -201,7 +233,7 @@ export interface WebrtcIceRelayPayload {
 
 export interface CallMediaStateRelayPayload {
 	callId: string;
-	userId: string;
+	peerId: PeerId;
 	audio: boolean;
 	video: boolean;
 }
@@ -221,7 +253,8 @@ export interface IceServersResponse {
 }
 
 export interface CallHistoryParticipant {
-	userId: string;
+	userId: string | null;
+	visitorId: string | null;
 	status: CallParticipantStatus;
 	joinedAt: string | null;
 	leftAt: string | null;

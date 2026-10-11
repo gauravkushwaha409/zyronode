@@ -11,4 +11,7 @@ export const CHAT_WIDGET_API = {
 		`/widget/conversations/${conversationId}/messages`,
 	CONVERSATION_VISITOR_MESSAGES: (conversationId: string) =>
 		`/widget/conversations/${conversationId}/messages`,
+	CALL_TOKEN: "/widget/calls/token",
+	CALL_ICE_SERVERS: (organizationId: string) =>
+		`/widget/calls/ice-servers?organizationId=${organizationId}`,
 } as const;

@@ -14,8 +14,8 @@ import {
 	CALLS_NAMESPACE,
 	type CallPeerInfo,
 	callRoom,
+	roomForPeer,
 	ServerCallEvents,
-	userRoom,
 } from "@package/call-signaling";
 import { Server, Socket } from "socket.io";
 import { getCorsOrigins } from "../common/cors";
@@ -37,15 +37,15 @@ import {
 const ICE_RATE_LIMIT = 100;
 const ICE_RATE_WINDOW_MS = 10_000;
 
-/** How long a user may have zero sockets before being dropped from a call. */
+/** How long a peer may have zero sockets before being dropped from a call. */
 const GONE_GRACE_MS = 20_000;
 
 /**
  * Signaling gateway for audio/video calls. Media never passes through here -
  * this namespace only authenticates sockets and relays WebRTC signaling
- * between joined call participants. Identity always comes from
- * socket.data.userId (stamped at handshake); client `from` fields are
- * never trusted.
+ * between joined call participants. Identity always comes from the handshake
+ * (agent JWT or visitor call token) and is stored as a unified peer id
+ * (`user:<id>` / `visitor:<id>`); client `from` fields are never trusted.
  */
 @WebSocketGateway({
 	namespace: CALLS_NAMESPACE,
@@ -63,7 +63,7 @@ export class CallsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	/** callId -> ring-timeout timer (cleared when the call goes ACTIVE/ENDED). */
 	private readonly ringTimers = new Map<string, NodeJS.Timeout>();
-	/** userId -> grace timer for treating a fully-gone user as left. */
+	/** peerId -> grace timer for treating a fully-gone peer as left. */
 	private readonly goneTimers = new Map<string, NodeJS.Timeout>();
 	/** socket.id -> recent webrtc:ice timestamps (rate limiting). */
 	private readonly iceHits = new Map<string, number[]>();
@@ -74,79 +74,57 @@ export class CallsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	) {}
 
 	/**
-	 * Handshake auth: a valid JWT is required. Identity is stamped from the
-	 * verified token only.
+	 * Handshake auth: an agent JWT or a visitor call token is required.
+	 * Either way identity is stamped from the verified token only.
 	 */
 	async handleConnection(client: Socket) {
 		const token =
 			client.handshake.auth?.token ??
 			client.handshake.headers?.authorization?.replace("Bearer ", "");
-		if (!token) {
+		if (!token || typeof token !== "string") {
 			this.logger.warn(`Rejected ${client.id}: no token`);
 			client.disconnect();
 			return;
 		}
-		try {
-			const payload = await this.jwtService.verifyAsync<{ id: string }>(token);
-			if (!payload?.id) throw new Error("missing sub");
-			client.data.userId = payload.id;
-			await client.join(userRoom(payload.id));
-			this.clearGoneTimer(payload.id);
-			this.logger.log(`Call socket connected: ${payload.id} (${client.id})`);
-		} catch {
+		const peerId = await this.resolveHandshakePeer(token);
+		if (!peerId) {
 			this.logger.warn(`Rejected ${client.id}: invalid token`);
 			client.disconnect();
+			return;
+		}
+		client.data.peerId = peerId;
+		await client.join(roomForPeer(peerId));
+		this.clearGoneTimer(peerId);
+		this.logger.log(`Call socket connected: ${peerId} (${client.id})`);
+	}
+
+	private async resolveHandshakePeer(token: string): Promise<string | null> {
+		// Agents first (existing JWT behaviour, unchanged).
+		try {
+			const payload = await this.jwtService.verifyAsync<{ id: string }>(token);
+			if (payload?.id) return this.callsService.peerIdOfUser(payload.id);
+		} catch {
+			// Not an agent token - try a visitor call token.
+		}
+		try {
+			const visitor = await this.callsService.verifyVisitorCallToken(token);
+			return this.callsService.peerIdOfVisitor(visitor.visitorId);
+		} catch {
+			return null;
 		}
 	}
 
 	handleDisconnect(client: Socket) {
 		this.iceHits.delete(client.id);
-		const userId = client.data.userId as string | undefined;
-		if (userId) this.scheduleGoneCheck(userId);
+		const peerId = client.data.peerId as string | undefined;
+		if (peerId) this.scheduleGoneCheck(peerId);
 		this.logger.log(`Call socket disconnected: ${client.id}`);
 	}
 
-	/**
-	 * Grace period: a user whose sockets are all gone for ~20s is treated as
-	 * left (their client normally re-joins on reconnect before this fires).
-	 * fetchSockets works across instances via the Redis adapter.
-	 */
-	private scheduleGoneCheck(userId: string): void {
-		this.clearGoneTimer(userId);
-		const timer = setTimeout(() => {
-			this.goneTimers.delete(userId);
-			void this.dropGoneUser(userId);
-		}, GONE_GRACE_MS);
-		timer.unref();
-		this.goneTimers.set(userId, timer);
-	}
-
-	private clearGoneTimer(userId: string): void {
-		const timer = this.goneTimers.get(userId);
-		if (timer) {
-			clearTimeout(timer);
-			this.goneTimers.delete(userId);
-		}
-	}
-
-	private async dropGoneUser(userId: string): Promise<void> {
-		try {
-			const sockets = await this.server.in(userRoom(userId)).fetchSockets();
-			if (sockets.length > 0) return;
-			const callId = await this.callsService.getActiveCallId(userId);
-			if (!callId) return;
-			const ended = await this.callsService.leaveCall(userId, callId);
-			this.applyLeaveResult(callId, userId, ended);
-			this.logger.log(`Dropped gone user ${userId} from call ${callId}`);
-		} catch (err) {
-			this.logger.warn(`dropGoneUser ${userId} failed: ${err}`);
-		}
-	}
-
-	private userIdOf(client: Socket): string {
-		const userId = client.data.userId as string | undefined;
-		if (!userId) throw new WsException("Unauthenticated");
-		return userId;
+	private peerIdOf(client: Socket): string {
+		const peerId = client.data.peerId as string | undefined;
+		if (!peerId) throw new WsException("Unauthenticated");
+		return peerId;
 	}
 
 	/** Wraps service HTTP exceptions into WsException for socket callers. */
@@ -194,8 +172,45 @@ export class CallsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		const payload = { callId: ended.callId, reason: ended.reason };
 		this.server.to(callRoom(ended.callId)).emit(ServerCallEvents.ENDED, payload);
 		// Also reach rung devices that never joined the call room.
-		for (const userId of ended.memberUserIds) {
-			this.server.to(userRoom(userId)).emit(ServerCallEvents.ENDED, payload);
+		for (const peerId of ended.memberPeerIds) {
+			this.server.to(roomForPeer(peerId)).emit(ServerCallEvents.ENDED, payload);
+		}
+	}
+
+	/**
+	 * Grace period: a peer whose sockets are all gone for ~20s is treated as
+	 * left (their client normally re-joins on reconnect before this fires).
+	 * fetchSockets works across instances via the Redis adapter.
+	 */
+	private scheduleGoneCheck(peerId: string): void {
+		this.clearGoneTimer(peerId);
+		const timer = setTimeout(() => {
+			this.goneTimers.delete(peerId);
+			void this.dropGonePeer(peerId);
+		}, GONE_GRACE_MS);
+		timer.unref();
+		this.goneTimers.set(peerId, timer);
+	}
+
+	private clearGoneTimer(peerId: string): void {
+		const timer = this.goneTimers.get(peerId);
+		if (timer) {
+			clearTimeout(timer);
+			this.goneTimers.delete(peerId);
+		}
+	}
+
+	private async dropGonePeer(peerId: string): Promise<void> {
+		try {
+			const sockets = await this.server.in(roomForPeer(peerId)).fetchSockets();
+			if (sockets.length > 0) return;
+			const callId = await this.callsService.getActiveCallId(peerId);
+			if (!callId) return;
+			const ended = await this.callsService.leaveCall(peerId, callId);
+			this.applyLeaveResult(callId, peerId, ended);
+			this.logger.log(`Dropped gone peer ${peerId} from call ${callId}`);
+		} catch (err) {
+			this.logger.warn(`dropGonePeer ${peerId} failed: ${err}`);
 		}
 	}
 
@@ -205,7 +220,7 @@ export class CallsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	 */
 	private async syncJoin(
 		client: Socket,
-		userId: string,
+		peerId: string,
 		result: JoinCallResult,
 	): Promise<{ callId: string; peers: CallPeerInfo[] }> {
 		if (result.expired) {
@@ -216,10 +231,10 @@ export class CallsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		await client.join(callRoom(result.call.id));
 		client.to(callRoom(result.call.id)).emit(ServerCallEvents.PEER_JOINED, {
 			callId: result.call.id,
-			userId,
+			peerId,
 		});
 		// Dismiss ringing on the joiner's other devices.
-		this.server.to(userRoom(userId)).emit(ServerCallEvents.HANDLED, {
+		this.server.to(roomForPeer(peerId)).emit(ServerCallEvents.HANDLED, {
 			callId: result.call.id,
 		});
 		return { callId: result.call.id, peers: result.peers };
@@ -230,7 +245,7 @@ export class CallsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		@ConnectedSocket() client: Socket,
 		@MessageBody() dto: CallInviteDto,
 	) {
-		const from = this.userIdOf(client);
+		const from = this.peerIdOf(client);
 		let started: Awaited<ReturnType<CallsService["startCall"]>>;
 		try {
 			started = await this.callsService.startCall(
@@ -254,8 +269,8 @@ export class CallsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			becameActive: false,
 			peers: [],
 		});
-		for (const userId of started.rungUserIds) {
-			this.server.to(userRoom(userId)).emit(ServerCallEvents.INCOMING, {
+		for (const peerId of started.rungPeerIds) {
+			this.server.to(roomForPeer(peerId)).emit(ServerCallEvents.INCOMING, {
 				callId: started.call.id,
 				from,
 				type: started.call.type,
@@ -271,15 +286,15 @@ export class CallsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		@ConnectedSocket() client: Socket,
 		@MessageBody() dto: CallIdDto,
 	) {
-		const userId = this.userIdOf(client);
+		const peerId = this.peerIdOf(client);
 		let result: Awaited<ReturnType<CallsService["joinCall"]>>;
 		try {
-			result = await this.callsService.joinCall(userId, dto.callId);
+			result = await this.callsService.joinCall(peerId, dto.callId);
 		} catch (err) {
-			this.emitCapacityEvent(userId, dto.callId, err);
+			this.emitCapacityEvent(peerId, dto.callId, err);
 			throw new WsException(err instanceof Error ? err.message : "Join failed");
 		}
-		return this.syncJoin(client, userId, result);
+		return this.syncJoin(client, peerId, result);
 	}
 
 	@SubscribeMessage("call:reject")
@@ -287,9 +302,9 @@ export class CallsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		@ConnectedSocket() client: Socket,
 		@MessageBody() dto: CallIdDto,
 	) {
-		const userId = this.userIdOf(client);
+		const peerId = this.peerIdOf(client);
 		const ended = await this.guard(() =>
-			this.callsService.rejectCall(userId, dto.callId),
+			this.callsService.rejectCall(peerId, dto.callId),
 		);
 		if (ended) this.emitEnded(ended);
 		return { callId: dto.callId };
@@ -300,18 +315,18 @@ export class CallsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		@ConnectedSocket() client: Socket,
 		@MessageBody() dto: CallIdDto,
 	) {
-		const userId = this.userIdOf(client);
+		const peerId = this.peerIdOf(client);
 		const ended = await this.guard(() =>
-			this.callsService.leaveCall(userId, dto.callId),
+			this.callsService.leaveCall(peerId, dto.callId),
 		);
 		await client.leave(callRoom(dto.callId));
-		this.applyLeaveResult(dto.callId, userId, ended);
+		this.applyLeaveResult(dto.callId, peerId, ended);
 		return { callId: dto.callId };
 	}
 
 	private applyLeaveResult(
 		callId: string,
-		userId: string,
+		peerId: string,
 		ended: EndCallResult | null,
 	): void {
 		if (ended) {
@@ -319,7 +334,7 @@ export class CallsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		} else {
 			this.server.to(callRoom(callId)).emit(ServerCallEvents.PEER_LEFT, {
 				callId,
-				userId,
+				peerId,
 			});
 		}
 	}
@@ -329,12 +344,12 @@ export class CallsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		@ConnectedSocket() client: Socket,
 		@MessageBody() dto: WebrtcOfferDto,
 	) {
-		const from = this.userIdOf(client);
+		const from = this.peerIdOf(client);
 		await this.guard(() =>
 			this.callsService.assertCanRelay(from, dto.callId, dto.to),
 		);
 		this.server
-			.to(userRoom(dto.to))
+			.to(roomForPeer(dto.to))
 			.emit(ServerCallEvents.OFFER, { callId: dto.callId, from, sdp: dto.sdp });
 		return { ok: true };
 	}
@@ -344,12 +359,12 @@ export class CallsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		@ConnectedSocket() client: Socket,
 		@MessageBody() dto: WebrtcAnswerDto,
 	) {
-		const from = this.userIdOf(client);
+		const from = this.peerIdOf(client);
 		await this.guard(() =>
 			this.callsService.assertCanRelay(from, dto.callId, dto.to),
 		);
 		this.server
-			.to(userRoom(dto.to))
+			.to(roomForPeer(dto.to))
 			.emit(ServerCallEvents.ANSWER, { callId: dto.callId, from, sdp: dto.sdp });
 		return { ok: true };
 	}
@@ -359,12 +374,12 @@ export class CallsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		@ConnectedSocket() client: Socket,
 		@MessageBody() dto: WebrtcIceDto,
 	) {
-		const from = this.userIdOf(client);
+		const from = this.peerIdOf(client);
 		this.checkIceRateLimit(client.id);
 		await this.guard(() =>
 			this.callsService.assertCanRelay(from, dto.callId, dto.to),
 		);
-		this.server.to(userRoom(dto.to)).emit(ServerCallEvents.ICE, {
+		this.server.to(roomForPeer(dto.to)).emit(ServerCallEvents.ICE, {
 			callId: dto.callId,
 			from,
 			candidate: {
@@ -381,13 +396,13 @@ export class CallsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		@ConnectedSocket() client: Socket,
 		@MessageBody() dto: CallMediaStateDto,
 	) {
-		const userId = this.userIdOf(client);
+		const peerId = this.peerIdOf(client);
 		await this.guard(() =>
-			this.callsService.setMediaState(userId, dto.callId, dto.audio, dto.video),
+			this.callsService.setMediaState(peerId, dto.callId, dto.audio, dto.video),
 		);
 		this.server.to(callRoom(dto.callId)).emit(ServerCallEvents.MEDIA_STATE, {
 			callId: dto.callId,
-			userId,
+			peerId,
 			audio: dto.audio,
 			video: dto.video,
 		});
@@ -400,18 +415,18 @@ export class CallsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	 * No event is sent when there is no call to reference.
 	 */
 	private emitCapacityEvent(
-		userId: string,
+		peerId: string,
 		callId: string | null,
 		err: unknown,
 	): void {
 		if (!callId) return;
 		const message = err instanceof Error ? err.message : "";
 		if (message.toLowerCase().includes("full")) {
-			this.server.to(userRoom(userId)).emit(ServerCallEvents.FULL, { callId });
+			this.server.to(roomForPeer(peerId)).emit(ServerCallEvents.FULL, { callId });
 		} else if (message.toLowerCase().includes("busy")) {
 			this.server
-				.to(userRoom(userId))
-				.emit(ServerCallEvents.BUSY, { callId, userId });
+				.to(roomForPeer(peerId))
+				.emit(ServerCallEvents.BUSY, { callId, peerId });
 		}
 	}
 

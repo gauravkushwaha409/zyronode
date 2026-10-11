@@ -4,7 +4,7 @@ import { create } from "zustand";
 export type CallPhase = "idle" | "outgoing" | "incoming" | "active";
 
 export interface RemotePeerState {
-	userId: string;
+	peerId: string;
 	stream: MediaStream | null;
 	audio: boolean;
 	video: boolean;
@@ -44,7 +44,7 @@ interface CallStore {
 
 	set: (partial: Partial<CallStore>) => void;
 	upsertPeer: (peer: RemotePeerState) => void;
-	removePeer: (userId: string) => void;
+	removePeer: (peerId: string) => void;
 	reset: () => void;
 }
 
@@ -89,7 +89,7 @@ export const useCallStore = create<CallStore>()((set) => ({
 
 	set: (partial) => set(partial),
 	upsertPeer: (peer) =>
-		set((state) => ({ peers: { ...state.peers, [peer.userId]: peer } })),
+		set((state) => ({ peers: { ...state.peers, [peer.peerId]: peer } })),
 	removePeer: (userId) =>
 		set((state) => {
 			const peers = { ...state.peers };

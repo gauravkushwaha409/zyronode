@@ -1,5 +1,6 @@
 import { SOCKET_NAMESPACES } from "@package/websocket";
 import { Activity, useCallback, useState } from "react";
+import { VisitorCallProvider } from "./calls";
 import { ChatWidgetChat, WidgetHeader, WidgetToggle } from "./features";
 import { useVisitorPresence } from "./hooks/events/ws";
 import {
@@ -41,22 +42,24 @@ export default function ChatWidget({ organizationId }: ChatWidgetProps) {
 			<WidgetVisitorSseProvider>
 				<WidgetQueryProvider>
 					<ConversationProvider organizationId={organizationId}>
-						<WidgetWebSocketProvider namespace={SOCKET_NAMESPACES.VISITOR}>
-							<WidgetSseProvider>
-								{/* Always-mounted SSE listener: connects as soon as conversationId exists,
+						<VisitorCallProvider organizationId={organizationId ?? null}>
+							<WidgetWebSocketProvider namespace={SOCKET_NAMESPACES.VISITOR}>
+								<WidgetSseProvider>
+									{/* Always-mounted SSE listener: connects as soon as conversationId exists,
 						    stays subscribed while widget is hidden via <Activity>. */}
-								<WidgetSseListener isWidgetOpen={isWidgetOpen} />
-								<WidgetPresenceEmitter />
+									<WidgetSseListener isWidgetOpen={isWidgetOpen} />
+									<WidgetPresenceEmitter />
 
-								<WidgetWebSocketProvider namespace={SOCKET_NAMESPACES.AGENT_INBOX}>
-									<Activity mode={isWidgetOpen ? "visible" : "hidden"}>
-										<WidgetWindow onClose={handleClose} />
-									</Activity>
+									<WidgetWebSocketProvider namespace={SOCKET_NAMESPACES.AGENT_INBOX}>
+										<Activity mode={isWidgetOpen ? "visible" : "hidden"}>
+											<WidgetWindow onClose={handleClose} />
+										</Activity>
 
-									<WidgetToggle onClick={handleToggle} unreadCount={unreadCount} />
-								</WidgetWebSocketProvider>
-							</WidgetSseProvider>
-						</WidgetWebSocketProvider>
+										<WidgetToggle onClick={handleToggle} unreadCount={unreadCount} />
+									</WidgetWebSocketProvider>
+								</WidgetSseProvider>
+							</WidgetWebSocketProvider>
+						</VisitorCallProvider>
 					</ConversationProvider>
 				</WidgetQueryProvider>
 			</WidgetVisitorSseProvider>

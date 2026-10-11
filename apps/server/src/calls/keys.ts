@@ -25,11 +25,12 @@ export function callRingKey(callId: string): string {
 }
 
 /**
- * user:{id}:activeCall string -> callId. Acquired with SET NX so a user can
- * be in only one call at a time (busy detection).
+ * peer:{peerId}:activeCall string -> callId, where peerId is `user:<id>` or
+ * `visitor:<id>`. Acquired with SET NX so a peer can be in only one call at
+ * a time (busy detection).
  */
-export function userActiveCallKey(userId: string): string {
-	return `user:${userId}:activeCall`;
+export function peerActiveCallKey(peerId: string): string {
+	return `peer:${peerId}:activeCall`;
 }
 
 /** Backstop TTL for presence keys (explicitly cleared on end regardless). */

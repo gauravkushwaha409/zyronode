@@ -245,6 +245,8 @@ model Visitor {
   notes         VisitorNote[]
   pageVisits    VisitorPageVisit[]
   conversations Conversation[]
+  startedCalls  Call[]            @relation("CallStartedByVisitor")
+  callParticipations CallParticipant[] @relation("CallParticipationsVisitor")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -366,8 +368,13 @@ model Call {
   conversationId String
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
-  startedById String
-  startedBy   User   @relation("CallStartedBy", fields: [startedById], references: [id], onDelete: Cascade)
+  startedById String?
+  startedBy   User?  @relation("CallStartedBy", fields: [startedById], references: [id], onDelete: Cascade)
+
+  // Visitor starter (when the call was started from the chat widget).
+  // Exactly one of startedBy / startedByVisitor is set.
+  startedByVisitorId String?
+  startedByVisitor   Visitor? @relation("CallStartedByVisitor", fields: [startedByVisitorId], references: [id], onDelete: Cascade)
 
   type   CallType
   status CallStatus @default(RINGING)
@@ -393,8 +400,13 @@ model CallParticipant {
   callId String
   call   Call   @relation(fields: [callId], references: [id], onDelete: Cascade)
 
-  userId String
-  user   User   @relation("CallParticipations", fields: [userId], references: [id], onDelete: Cascade)
+  userId String?
+  user   User?  @relation("CallParticipations", fields: [userId], references: [id], onDelete: Cascade)
+
+  // Visitor participant (chat widget side). Exactly one of user / visitor
+  // is set per row; enforced in CallsService (not a DB check constraint).
+  visitorId String?
+  visitor   Visitor? @relation("CallParticipationsVisitor", fields: [visitorId], references: [id], onDelete: Cascade)
 
   status CallParticipantStatus @default(INVITED)
 
@@ -405,8 +417,10 @@ model CallParticipant {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@unique([callId, userId])
+  @@unique([callId, visitorId])
   @@index([callId])
   @@index([userId])
+  @@index([visitorId])
   @@map("call_participants")
 }
 

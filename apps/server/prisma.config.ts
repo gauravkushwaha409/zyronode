@@ -19,5 +19,8 @@ export default defineConfig({
 	},
 	datasource: {
 		url: process.env.DATABASE_URL,
+		// Local-only: used by `prisma migrate diff` for offline SQL rendering.
+		// Never needed at runtime; leave unset in every deployed environment.
+		shadowDatabaseUrl: process.env.SHADOW_DATABASE_URL,
 	},
 });

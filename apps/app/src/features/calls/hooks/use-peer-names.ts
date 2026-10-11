@@ -1,3 +1,4 @@
+import { parsePeerId } from "@package/call-signaling";
 import { useMemo } from "react";
 import { useOrganizationMembersQuery } from "@/features/organization/hooks/query/use-organization-members.query";
 import { useCallStore } from "../store/use-call.store";
@@ -13,7 +14,7 @@ function displayName(
 	return full || user.email || fallback;
 }
 
-/** Maps call peer userIds to org member display names (falls back to Peer N). */
+/** Maps call peer ids to display names (agents via members, else fallback). */
 export function usePeerNames(peerIds: string[]): Record<string, string> {
 	const organizationId = useCallStore((s) => s.organizationId);
 	const { data } = useOrganizationMembersQuery(organizationId ?? "");
@@ -21,9 +22,14 @@ export function usePeerNames(peerIds: string[]): Record<string, string> {
 
 	return useMemo(() => {
 		const names: Record<string, string> = {};
-		peerIds.forEach((id, i) => {
-			const member = members.find((m) => m.user.id === id);
-			names[id] = displayName(member?.user, `Peer ${i + 1}`);
+		peerIds.forEach((peerId, i) => {
+			const parsed = parsePeerId(peerId);
+			if (parsed?.kind === "user") {
+				const member = members.find((m) => m.user.id === parsed.id);
+				names[peerId] = displayName(member?.user, `Peer ${i + 1}`);
+			} else {
+				names[peerId] = "Visitor";
+			}
 		});
 		return names;
 	}, [members, peerIds]);

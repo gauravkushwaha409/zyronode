@@ -65,22 +65,26 @@ export function useCallEngine(): CallActions {
 	const joiningRef = useRef(false);
 	const selfId = useRef<string | null>(null);
 	if (selfId.current === null) selfId.current = getSelfUserId();
+	const selfPeerId = useRef<string | null>(null);
+	if (selfPeerId.current === null && selfId.current) {
+		selfPeerId.current = `user:${selfId.current}`;
+	}
 
 	const getStore = useCallStore.getState;
 
-	const cleanupPeer = useCallback((userId: string) => {
-		const entry = pcs.current.get(userId);
+	const cleanupPeer = useCallback((peerId: string) => {
+		const entry = pcs.current.get(peerId);
 		if (entry) {
 			if (entry.disconnectTimer !== null)
 				window.clearTimeout(entry.disconnectTimer);
 			entry.pc.close();
-			pcs.current.delete(userId);
+			pcs.current.delete(peerId);
 		}
-		getStore().removePeer(userId);
+		getStore().removePeer(peerId);
 	}, []);
 
 	const fullCleanup = useCallback(() => {
-		for (const userId of [...pcs.current.keys()]) cleanupPeer(userId);
+		for (const peerId of [...pcs.current.keys()]) cleanupPeer(peerId);
 		const { localStream, screenStream } = getStore();
 		localStream?.getTracks().forEach((t) => {
 			t.stop();
@@ -199,7 +203,7 @@ export function useCallEngine(): CallActions {
 				const store = getStore();
 				const existing = store.peers[peerId];
 				store.upsertPeer({
-					userId: peerId,
+					peerId,
 					stream,
 					audio: existing?.audio ?? true,
 					video: existing?.video ?? true,
@@ -278,8 +282,8 @@ export function useCallEngine(): CallActions {
 				if (!entry) return;
 			}
 			const { pc } = entry;
-			// Deterministic politeness from user ids (decoded locally, not auth).
-			const polite = (selfId.current ?? "") < peerId;
+			// Deterministic politeness from peer ids (identity only, not auth).
+			const polite = (selfPeerId.current ?? "") < peerId;
 			const collision = entry.makingOffer || pc.signalingState !== "stable";
 			entry.ignoreOffer = !polite && collision;
 			if (entry.ignoreOffer) return;
@@ -437,15 +441,15 @@ export function useCallEngine(): CallActions {
 			});
 			// Offer direction: the newly joined peer offers to each existing peer.
 			for (const peer of ack.peers) {
-				createPeerConnection(peer.userId);
+				createPeerConnection(peer.peerId);
 				getStore().upsertPeer({
-					userId: peer.userId,
+					peerId: peer.peerId,
 					stream: null,
 					audio: peer.audio,
 					video: peer.video,
 					connection: "new",
 				});
-				await sendOffer(peer.userId);
+				await sendOffer(peer.peerId);
 			}
 			sendMediaState(true, incoming.type === "VIDEO");
 		} catch (err) {
@@ -654,12 +658,12 @@ export function useCallEngine(): CallActions {
 		on<CallPeerJoinedPayload>(ServerCallEvents.PEER_JOINED, (data) => {
 			const store = getStore();
 			if (store.callId !== data.callId || store.phase !== "active") return;
-			if (data.userId === selfId.current) return;
+			if (data.peerId === selfPeerId.current) return;
 			// Existing peers only answer - the newcomer offers (see acceptCall).
-			createPeerConnection(data.userId);
-			if (!store.peers[data.userId]) {
+			createPeerConnection(data.peerId);
+			if (!store.peers[data.peerId]) {
 				store.upsertPeer({
-					userId: data.userId,
+					peerId: data.peerId,
 					stream: null,
 					audio: true,
 					video: true,
@@ -670,7 +674,7 @@ export function useCallEngine(): CallActions {
 
 		on<CallPeerLeftPayload>(ServerCallEvents.PEER_LEFT, (data) => {
 			if (getStore().callId !== data.callId) return;
-			cleanupPeer(data.userId);
+			cleanupPeer(data.peerId);
 		});
 
 		on<{
@@ -746,7 +750,7 @@ export function useCallEngine(): CallActions {
 		on<CallMediaStateRelayPayload>(ServerCallEvents.MEDIA_STATE, (data) => {
 			const store = getStore();
 			if (store.callId !== data.callId) return;
-			const existing = store.peers[data.userId];
+			const existing = store.peers[data.peerId];
 			if (existing) {
 				store.upsertPeer({ ...existing, audio: data.audio, video: data.video });
 			}
@@ -802,15 +806,15 @@ export function useCallEngine(): CallActions {
 			// Fresh mesh: drop possibly-dead connections, re-offer to everyone.
 			for (const id of [...pcs.current.keys()]) cleanupPeer(id);
 			for (const peer of ack.peers) {
-				createPeerConnection(peer.userId);
+				createPeerConnection(peer.peerId);
 				getStore().upsertPeer({
-					userId: peer.userId,
+					peerId: peer.peerId,
 					stream: null,
 					audio: peer.audio,
 					video: peer.video,
 					connection: "new",
 				});
-				await sendOffer(peer.userId);
+				await sendOffer(peer.peerId);
 			}
 			sendMediaState(store.localAudio, store.localVideo);
 		} catch {

@@ -43,7 +43,7 @@ export class CallsController {
 		@Query() query: CallHistoryQueryDto,
 	) {
 		return this.callsService.getCallHistory(
-			userId,
+			this.callsService.peerIdOfUser(userId),
 			query.conversationId,
 			query.cursor,
 			query.limit ?? 20,

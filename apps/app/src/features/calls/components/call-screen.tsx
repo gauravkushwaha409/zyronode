@@ -167,7 +167,7 @@ export function CallScreen() {
 
 	const timer = useCallTimer(startedAt, phase === "active");
 	const peerList = Object.values(peers);
-	const names = usePeerNames(peerList.map((p) => p.userId));
+	const names = usePeerNames(peerList.map((p) => p.peerId));
 	const inCall = phase === "active" || phase === "outgoing";
 
 	if (!inCall && !error && !endedReason) return null;
@@ -225,8 +225,8 @@ export function CallScreen() {
 						</div>
 					</div>
 					{peerList.map((peer) => (
-						<div key={peer.userId} className="min-h-0 aspect-video">
-							<PeerTile peer={peer} label={names[peer.userId] ?? peer.userId} />
+						<div key={peer.peerId} className="min-h-0 aspect-video">
+							<PeerTile peer={peer} label={names[peer.peerId] ?? peer.peerId} />
 						</div>
 					))}
 				</div>

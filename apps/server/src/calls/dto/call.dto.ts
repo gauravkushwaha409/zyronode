@@ -28,7 +28,7 @@ export class CallInviteDto {
 	@IsOptional()
 	@IsArray()
 	@ArrayMaxSize(10)
-	@IsUUID("4", { each: true })
+	@IsString({ each: true })
 	inviteeIds?: string[];
 }
 
@@ -63,7 +63,8 @@ export class IceCandidateDto {
 }
 
 export class WebrtcOfferDto extends CallIdDto {
-	@IsUUID()
+	@IsString()
+	@IsNotEmpty()
 	to!: string;
 
 	@IsObject()
@@ -73,7 +74,8 @@ export class WebrtcOfferDto extends CallIdDto {
 }
 
 export class WebrtcAnswerDto extends CallIdDto {
-	@IsUUID()
+	@IsString()
+	@IsNotEmpty()
 	to!: string;
 
 	@IsObject()
@@ -83,7 +85,8 @@ export class WebrtcAnswerDto extends CallIdDto {
 }
 
 export class WebrtcIceDto extends CallIdDto {
-	@IsUUID()
+	@IsString()
+	@IsNotEmpty()
 	to!: string;
 
 	@IsObject()
@@ -114,4 +117,12 @@ export class CallHistoryQueryDto {
 	@Min(1)
 	@Max(50)
 	limit?: number;
+}
+
+export class VisitorCallTokenDto {
+	@IsUUID()
+	organizationId!: string;
+
+	@IsUUID()
+	conversationId!: string;
 }

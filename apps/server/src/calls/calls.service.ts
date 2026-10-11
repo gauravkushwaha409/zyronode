@@ -5,12 +5,18 @@ import {
 	Injectable,
 	Logger,
 	NotFoundException,
+	UnauthorizedException,
 } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
 import {
 	type CallEndReason,
 	type CallPeerInfo,
 	DEFAULT_CALL_MAX_PARTICIPANTS,
 	DEFAULT_CALL_RING_TIMEOUT_SECONDS,
+	type PeerId,
+	parsePeerId,
+	peerIdForUser,
+	peerIdForVisitor,
 } from "@package/call-signaling";
 import type { Call, Conversation } from "../generated/prisma/client";
 import { MessageService } from "../message/message.service";
@@ -23,15 +29,27 @@ import {
 	callMediaKey,
 	callParticipantsKey,
 	callRingKey,
-	userActiveCallKey,
+	peerActiveCallKey,
 } from "./keys";
+
+/** Scope marker inside visitor call tokens (short-lived, conversation-bound). */
+const VISITOR_CALL_SCOPE = "visitor-call";
+/** Visitor call tokens live just long enough to connect (re-issued per call). */
+const VISITOR_TOKEN_TTL_SECONDS = 600;
+
+export interface VisitorCallTokenPayload {
+	visitorId: string;
+	conversationId: string;
+	organizationId: string;
+	scope: string;
+}
 
 export interface StartCallResult {
 	call: Call;
 	/** True when the invite merged into the other side's ringing call (glare). */
 	merged: boolean;
-	/** Invitees that were actually rung (busy/non-member users excluded). */
-	rungUserIds: string[];
+	/** Peers that were actually rung (busy/non-member peers excluded). */
+	rungPeerIds: PeerId[];
 	/** Join outcome when merged (glare path joins immediately). */
 	join?: JoinCallResult;
 }
@@ -48,14 +66,18 @@ export interface JoinCallResult {
 export interface EndCallResult {
 	callId: string;
 	reason: CallEndReason;
-	/** Every userId that was part of the call (for room cleanup/notifies). */
-	memberUserIds: string[];
+	/** Every peerId that was part of the call (for room cleanup/notifies). */
+	memberPeerIds: string[];
 }
 
+export type PeerRef = { kind: "user" | "visitor"; id: string };
+
 /**
- * Owns call state. Postgres is the durable record; Redis holds ephemeral
- * presence (joined set, media flags, per-user active-call markers) with
- * TTLs as a backstop - all cleared explicitly on terminal transitions.
+ * Owns call state for agents (`user:<id>`) and visitors (`visitor:<id>`)
+ * under one unified peer identity. Postgres is the durable record; Redis
+ * holds ephemeral presence (joined set, media flags, per-peer active-call
+ * markers) with TTLs as a backstop - all cleared explicitly on terminal
+ * transitions.
  *
  * Throws standard HTTP exceptions; the gateway translates them to
  * WsException for socket callers.
@@ -67,6 +89,7 @@ export class CallsService {
 	constructor(
 		private readonly prisma: PrismaService,
 		private readonly redis: RedisService,
+		private readonly jwtService: JwtService,
 		private readonly messageService: MessageService,
 		private readonly widgetEvents: WidgetEventsPublisher,
 	) {}
@@ -85,58 +108,158 @@ export class CallsService {
 			: DEFAULT_CALL_RING_TIMEOUT_SECONDS;
 	}
 
-	/** A user may start or join a call only as a member of the conversation. */
-	async requireConversationMember(
-		userId: string,
+	// ─── Peer identity ──────────────────────────────────────────
+
+	resolvePeer(peerId: string): PeerRef {
+		const parsed = parsePeerId(peerId);
+		if (!parsed) throw new BadRequestException("Malformed peer id");
+		return parsed;
+	}
+
+	peerIdOfUser(userId: string): PeerId {
+		return peerIdForUser(userId);
+	}
+
+	peerIdOfVisitor(visitorId: string): PeerId {
+		return peerIdForVisitor(visitorId);
+	}
+
+	private peerToParticipant(
+		peer: PeerRef,
+	): { userId: string } | { visitorId: string } {
+		return peer.kind === "user" ? { userId: peer.id } : { visitorId: peer.id };
+	}
+
+	private participantPeerId(row: {
+		userId: string | null;
+		visitorId: string | null;
+	}): PeerId {
+		if (row.userId) return peerIdForUser(row.userId);
+		if (row.visitorId) return peerIdForVisitor(row.visitorId);
+		throw new Error("Call participant has neither user nor visitor");
+	}
+
+	// ─── Visitor call tokens ────────────────────────────────────
+
+	/**
+	 * Mints a short-lived, conversation-bound token that lets a widget
+	 * visitor connect to the /calls namespace. The browser is identified by
+	 * the httpOnly visitor_session cookie (its value is Visitor.externalId);
+	 * the conversation must belong to that visitor.
+	 */
+	async createVisitorCallToken(
+		sessionId: string | undefined,
+		organizationId: string,
+		conversationId: string,
+	): Promise<{ token: string; visitorId: string; expiresIn: number }> {
+		if (!sessionId) {
+			throw new UnauthorizedException("No visitor session");
+		}
+		const visitor = await this.prisma.visitor.findFirst({
+			where: { organizationId, externalId: sessionId },
+			select: { id: true },
+		});
+		if (!visitor) throw new UnauthorizedException("Unknown visitor session");
+		const conversation = await this.prisma.conversation.findUnique({
+			where: { id: conversationId },
+			select: { id: true, visitorId: true, organizationId: true },
+		});
+		if (
+			!conversation ||
+			conversation.organizationId !== organizationId ||
+			conversation.visitorId !== visitor.id
+		) {
+			throw new ForbiddenException("Conversation does not belong to this visitor");
+		}
+		const token = await this.jwtService.signAsync({
+			visitorId: visitor.id,
+			conversationId,
+			organizationId,
+			scope: VISITOR_CALL_SCOPE,
+		});
+		return { token, visitorId: visitor.id, expiresIn: VISITOR_TOKEN_TTL_SECONDS };
+	}
+
+	async verifyVisitorCallToken(token: string): Promise<VisitorCallTokenPayload> {
+		try {
+			const payload =
+				await this.jwtService.verifyAsync<VisitorCallTokenPayload>(token);
+			if (payload?.scope !== VISITOR_CALL_SCOPE || !payload.visitorId) {
+				throw new Error("not a visitor call token");
+			}
+			return payload;
+		} catch {
+			throw new UnauthorizedException("Invalid visitor call token");
+		}
+	}
+
+	// ─── Membership ─────────────────────────────────────────────
+
+	/**
+	 * A peer may start or join a call only with standing in the conversation:
+	 * agents via organization membership, visitors only in their own
+	 * conversation.
+	 */
+	async requirePeerConversationMember(
+		peer: PeerRef,
 		conversationId: string,
 	): Promise<Conversation> {
 		const conversation = await this.prisma.conversation.findUnique({
 			where: { id: conversationId },
 		});
 		if (!conversation) throw new NotFoundException("Conversation not found");
-		const membership = await this.prisma.organizationMember.findUnique({
-			where: {
-				userId_organizationId: {
-					userId,
-					organizationId: conversation.organizationId,
+		if (peer.kind === "user") {
+			const membership = await this.prisma.organizationMember.findUnique({
+				where: {
+					userId_organizationId: {
+						userId: peer.id,
+						organizationId: conversation.organizationId,
+					},
 				},
-			},
-		});
-		if (!membership) {
-			throw new ForbiddenException("You are not a member of this conversation");
+			});
+			if (!membership) {
+				throw new ForbiddenException("You are not a member of this conversation");
+			}
+		} else if (conversation.visitorId !== peer.id) {
+			throw new ForbiddenException("This conversation is not yours");
 		}
 		return conversation;
 	}
 
-	async getActiveCallId(userId: string): Promise<string | null> {
-		return this.redis.get(userActiveCallKey(userId));
+	async getActiveCallId(peerId: string): Promise<string | null> {
+		return this.redis.get(peerActiveCallKey(peerId));
 	}
 
+	// ─── Invite / join / reject / leave ─────────────────────────
+
 	async startCall(
-		starterId: string,
+		starterPeerId: string,
 		conversationId: string,
 		type: "AUDIO" | "VIDEO",
 		inviteeIds: string[] | undefined,
 	): Promise<StartCallResult> {
-		const conversation = await this.requireConversationMember(
-			starterId,
+		const starter = this.resolvePeer(starterPeerId);
+		const conversation = await this.requirePeerConversationMember(
+			starter,
 			conversationId,
 		);
-		const busy = await this.getActiveCallId(starterId);
-		if (busy) {
+		if (await this.getActiveCallId(starterPeerId)) {
 			throw new ConflictException("You are already in a call");
 		}
 
-		// Default target: every other member of the conversation's org.
-		let targets = inviteeIds?.filter((id) => id !== starterId) ?? [];
+		// Normalize invitees to peer ids (bare ids mean agents).
+		const explicit =
+			inviteeIds?.map((id) => (parsePeerId(id) ? id : peerIdForUser(id))) ?? [];
+		let targets = explicit.filter((id) => id !== starterPeerId);
 		if (targets.length === 0 && !inviteeIds) {
+			// Default: ring every other member of the conversation's org (agents).
 			const members = await this.prisma.organizationMember.findMany({
 				where: { organizationId: conversation.organizationId },
 				select: { userId: true },
 			});
 			targets = members
-				.map((m) => m.userId)
-				.filter((id) => id !== starterId)
+				.map((m) => peerIdForUser(m.userId))
+				.filter((id) => id !== starterPeerId)
 				.slice(0, this.maxParticipants - 1);
 		}
 		if (targets.length === 0) {
@@ -151,51 +274,74 @@ export class CallsService {
 		// Glare: both sides ringing each other in the same conversation.
 		// Deterministic rule - the earlier call wins; the later invite merges
 		// into it instead of creating a second call.
-		for (const targetId of targets) {
-			const targetActiveId = await this.getActiveCallId(targetId);
+		for (const targetPeerId of targets) {
+			const targetActiveId = await this.getActiveCallId(targetPeerId);
 			if (!targetActiveId) continue;
 			const targetCall = await this.prisma.call.findUnique({
 				where: { id: targetActiveId },
+				select: {
+					id: true,
+					status: true,
+					conversationId: true,
+					startedById: true,
+					startedByVisitorId: true,
+				},
 			});
 			if (
-				targetCall?.status === "RINGING" &&
-				targetCall.conversationId === conversationId &&
-				targetCall.startedById === targetId
+				targetCall?.status !== "RINGING" ||
+				targetCall.conversationId !== conversationId
 			) {
-				const join = await this.joinCall(starterId, targetCall.id);
-				return { call: join.call, merged: true, rungUserIds: [], join };
+				continue;
+			}
+			const targetPeer = this.resolvePeer(targetPeerId);
+			const startedByOther =
+				(targetPeer.kind === "user" && targetCall.startedById === targetPeer.id) ||
+				(targetPeer.kind === "visitor" &&
+					targetCall.startedByVisitorId === targetPeer.id);
+			if (startedByOther) {
+				const join = await this.joinCall(starterPeerId, targetCall.id);
+				return { call: join.call, merged: true, rungPeerIds: [], join };
 			}
 		}
 
-		// Skip invitees who are busy or not members; fail if nobody is left.
-		const rungUserIds: string[] = [];
-		for (const targetId of targets) {
-			const member = await this.prisma.organizationMember.findUnique({
-				where: {
-					userId_organizationId: {
-						userId: targetId,
-						organizationId: conversation.organizationId,
-					},
-				},
-			});
-			if (!member) continue;
-			if (await this.getActiveCallId(targetId)) continue;
-			rungUserIds.push(targetId);
+		// Skip peers who are busy or lack standing; fail if nobody is left.
+		const rungPeerIds: PeerId[] = [];
+		for (const targetPeerId of targets) {
+			const target = this.resolvePeer(targetPeerId);
+			try {
+				await this.requirePeerConversationMember(target, conversationId);
+			} catch {
+				continue;
+			}
+			if (await this.getActiveCallId(targetPeerId)) continue;
+			rungPeerIds.push(targetPeerId as PeerId);
 		}
-		if (rungUserIds.length === 0) {
+		if (rungPeerIds.length === 0) {
 			throw new ConflictException("Everyone you are calling is busy");
 		}
 
+		const starterField =
+			starter.kind === "user" ? { userId: starter.id } : { visitorId: starter.id };
 		const call = await this.prisma.call.create({
 			data: {
 				conversationId,
-				startedById: starterId,
 				type,
 				status: "RINGING",
+				...(starter.kind === "user"
+					? { startedById: starter.id }
+					: { startedByVisitorId: starter.id }),
 				participants: {
 					create: [
-						{ userId: starterId, status: "JOINED", joinedAt: new Date() },
-						...rungUserIds.map((userId) => ({ userId, status: "INVITED" as const })),
+						{ ...starterField, status: "JOINED", joinedAt: new Date() },
+						...rungPeerIds.map((peerId) => {
+							const peer = this.resolvePeer(peerId);
+							return {
+								...(peer.kind === "user"
+									? { userId: peer.id }
+									: { visitorId: peer.id }),
+								status: "INVITED" as const,
+							};
+						}),
 					],
 				},
 			},
@@ -206,56 +352,59 @@ export class CallsService {
 		await this.redis.hSet(callKey(call.id), "conversationId", conversationId);
 		await this.redis.hSet(callKey(call.id), "type", type);
 		await this.redis.hSet(callKey(call.id), "ringDeadline", String(ringDeadline));
-		await this.redis.sAdd(callParticipantsKey(call.id), starterId);
+		await this.redis.sAdd(callParticipantsKey(call.id), starterPeerId);
 		await this.redis.hSet(
 			callMediaKey(call.id),
-			starterId,
+			starterPeerId,
 			JSON.stringify({ audio: true, video: type === "VIDEO" }),
 		);
 		// Ring marker expires on its own; the gateway timer + lazy expiry below
 		// handle the MISSED transition even if the scheduling instance dies.
 		await this.redis.set(callRingKey(call.id), "1", this.ringTimeoutSeconds);
 		await this.redis.set(
-			userActiveCallKey(starterId),
+			peerActiveCallKey(starterPeerId),
 			call.id,
 			CALL_PRESENCE_TTL_SECONDS,
 		);
-		for (const userId of rungUserIds) {
+		for (const peerId of rungPeerIds) {
 			await this.redis.set(
-				userActiveCallKey(userId),
+				peerActiveCallKey(peerId),
 				call.id,
 				CALL_PRESENCE_TTL_SECONDS,
 			);
 		}
 
-		return { call, merged: false, rungUserIds };
+		return { call, merged: false, rungPeerIds };
 	}
 
-	async joinCall(userId: string, callId: string): Promise<JoinCallResult> {
+	async joinCall(peerId: string, callId: string): Promise<JoinCallResult> {
+		const peer = this.resolvePeer(peerId);
 		const call = await this.getCall(callId);
-		await this.requireConversationMember(userId, call.conversationId);
+		await this.requirePeerConversationMember(peer, call.conversationId);
 		const expired = await this.expireRingIfDue(call);
 		if (expired) return { call, becameActive: false, peers: [], expired };
 
-		const active = await this.getActiveCallId(userId);
+		const active = await this.getActiveCallId(peerId);
 		if (active && active !== callId) {
 			throw new ConflictException("You are already in another call");
 		}
 
-		let participant = await this.prisma.callParticipant.findUnique({
-			where: { callId_userId: { callId, userId } },
-		});
+		const participant = await this.findParticipant(callId, peer);
 		if (!participant) {
-			// A conversation member may join a call they were not invited to
+			// A peer with standing may join a call they were not invited to
 			// (group call), subject to the cap.
-			const joined = await this.joinedCount(callId);
-			if (joined >= this.maxParticipants) {
+			if ((await this.joinedCount(callId)) >= this.maxParticipants) {
 				throw new ConflictException(
 					`Call is full (max ${this.maxParticipants} participants)`,
 				);
 			}
-			participant = await this.prisma.callParticipant.create({
-				data: { callId, userId, status: "JOINED", joinedAt: new Date() },
+			await this.prisma.callParticipant.create({
+				data: {
+					callId,
+					...this.peerToParticipant(peer),
+					status: "JOINED",
+					joinedAt: new Date(),
+				},
 			});
 		} else if (
 			participant.status === "REJECTED" ||
@@ -263,32 +412,31 @@ export class CallsService {
 		) {
 			throw new ConflictException("You cannot join this call anymore");
 		} else if (participant.status !== "JOINED") {
-			const joined = await this.joinedCount(callId);
-			if (joined >= this.maxParticipants) {
+			if ((await this.joinedCount(callId)) >= this.maxParticipants) {
 				throw new ConflictException(
 					`Call is full (max ${this.maxParticipants} participants)`,
 				);
 			}
-			participant = await this.prisma.callParticipant.update({
+			await this.prisma.callParticipant.update({
 				where: { id: participant.id },
 				data: { status: "JOINED", joinedAt: new Date(), leftAt: null },
 			});
 		}
 
 		await this.redis.set(
-			userActiveCallKey(userId),
+			peerActiveCallKey(peerId),
 			callId,
 			CALL_PRESENCE_TTL_SECONDS,
 		);
-		await this.redis.sAdd(callParticipantsKey(callId), userId);
+		await this.redis.sAdd(callParticipantsKey(callId), peerId);
 
 		let becameActive = false;
 		let updated = call;
 		if (call.status === "RINGING") {
-			// First invitee join flips RINGING -> ACTIVE.
+			// First non-starter join flips RINGING -> ACTIVE.
+			const starterPeerId = this.starterPeerIdOf(call);
 			const joinedIds = await this.redis.sMembers(callParticipantsKey(callId));
-			const othersJoined = joinedIds.some((id) => id !== call.startedById);
-			if (othersJoined || participant.userId !== call.startedById) {
+			if (joinedIds.some((id) => id !== starterPeerId)) {
 				updated = await this.prisma.call.update({
 					where: { id: callId },
 					data: { status: "ACTIVE", answeredAt: new Date() },
@@ -298,20 +446,20 @@ export class CallsService {
 				becameActive = true;
 			}
 		}
-		const peers = await this.getPeers(callId, userId);
+
+		const peers = await this.getPeers(callId, peerId);
 		return { call: updated, becameActive, peers };
 	}
 
 	async rejectCall(
-		userId: string,
+		peerId: string,
 		callId: string,
 	): Promise<EndCallResult | null> {
+		const peer = this.resolvePeer(peerId);
 		const call = await this.getCall(callId);
 		const expired = await this.expireRingIfDue(call);
 		if (expired) return expired;
-		const participant = await this.prisma.callParticipant.findUnique({
-			where: { callId_userId: { callId, userId } },
-		});
+		const participant = await this.findParticipant(callId, peer);
 		if (participant?.status !== "INVITED") {
 			throw new ConflictException("Nothing to reject");
 		}
@@ -319,14 +467,14 @@ export class CallsService {
 			where: { id: participant.id },
 			data: { status: "REJECTED" },
 		});
-		await this.redis.del(userActiveCallKey(userId));
+		await this.redis.del(peerActiveCallKey(peerId));
 
 		// Nobody left to ring and nobody joined -> ENDED(REJECTED).
 		// (The starter alone waiting goes MISSED via the ring timeout.)
 		const [stillInvited, joinedOthers] = await Promise.all([
 			this.prisma.callParticipant.count({ where: { callId, status: "INVITED" } }),
 			this.prisma.callParticipant.count({
-				where: { callId, status: "JOINED", userId: { not: call.startedById } },
+				where: { callId, status: "JOINED", NOT: this.starterFilter(call) },
 			}),
 		]);
 		if (stillInvited === 0 && joinedOthers === 0) {
@@ -336,15 +484,14 @@ export class CallsService {
 	}
 
 	async leaveCall(
-		userId: string,
+		peerId: string,
 		callId: string,
 	): Promise<EndCallResult | null> {
+		const peer = this.resolvePeer(peerId);
 		const call = await this.getCall(callId);
 		const expired = await this.expireRingIfDue(call);
 		if (expired) return expired;
-		const participant = await this.prisma.callParticipant.findUnique({
-			where: { callId_userId: { callId, userId } },
-		});
+		const participant = await this.findParticipant(callId, peer);
 		if (participant?.status !== "JOINED") {
 			throw new ConflictException("You are not in this call");
 		}
@@ -352,14 +499,12 @@ export class CallsService {
 			where: { id: participant.id },
 			data: { status: "LEFT", leftAt: new Date() },
 		});
-		await this.redis.sRem(callParticipantsKey(callId), userId);
-		await this.redis.hDel(callMediaKey(callId), userId);
-		await this.redis.del(userActiveCallKey(userId));
+		await this.redis.sRem(callParticipantsKey(callId), peerId);
+		await this.redis.hDel(callMediaKey(callId), peerId);
+		await this.redis.del(peerActiveCallKey(peerId));
 
 		// The call ends when the last joined participant leaves.
-		const stillJoined = await this.prisma.callParticipant.count({
-			where: { callId, status: "JOINED" },
-		});
+		const stillJoined = await this.joinedCount(callId);
 		if (stillJoined === 0) {
 			return this.endCall(
 				callId,
@@ -373,58 +518,62 @@ export class CallsService {
 	 * Guard for every relayed message: the call must allow signaling, and
 	 * both sender and target must be joined participants of the same call.
 	 */
-	async assertCanRelay(from: string, callId: string, to: string): Promise<void> {
+	async assertCanRelay(
+		fromPeerId: string,
+		callId: string,
+		toPeerId: string,
+	): Promise<void> {
+		const from = this.resolvePeer(fromPeerId);
+		const to = this.resolvePeer(toPeerId);
 		const call = await this.getCall(callId);
 		const expired = await this.expireRingIfDue(call);
 		if (expired) throw new ConflictException("Call already ended");
 		if (call.status !== "ACTIVE") {
 			throw new ConflictException("Call is not active");
 		}
-		const rows = await this.prisma.callParticipant.findMany({
-			where: { callId, userId: { in: [from, to] } },
-			select: { userId: true, status: true },
-		});
-		const byUser = new Map(rows.map((r) => [r.userId, r.status]));
-		if (byUser.get(from) !== "JOINED") {
+		const [fromRow, toRow] = await Promise.all([
+			this.findParticipant(callId, from),
+			this.findParticipant(callId, to),
+		]);
+		if (fromRow?.status !== "JOINED") {
 			throw new ForbiddenException("You are not in this call");
 		}
-		if (byUser.get(to) !== "JOINED") {
+		if (toRow?.status !== "JOINED") {
 			throw new ForbiddenException("Target is not in this call");
 		}
 	}
 
 	async setMediaState(
-		userId: string,
+		peerId: string,
 		callId: string,
 		audio: boolean,
 		video: boolean,
 	): Promise<void> {
-		const call = await this.getCallOrThrow(callId);
+		const peer = this.resolvePeer(peerId);
+		const call = await this.getCall(callId);
 		if (call.status !== "ACTIVE") {
 			throw new ConflictException("Call is not active");
 		}
-		const participant = await this.prisma.callParticipant.findUnique({
-			where: { callId_userId: { callId, userId } },
-		});
+		const participant = await this.findParticipant(callId, peer);
 		if (participant?.status !== "JOINED") {
 			throw new ForbiddenException("You are not in this call");
 		}
 		await this.redis.hSet(
 			callMediaKey(callId),
-			userId,
+			peerId,
 			JSON.stringify({ audio, video }),
 		);
 	}
 
 	async getPeers(
 		callId: string,
-		exceptUserId?: string,
+		exceptPeerId?: string,
 	): Promise<CallPeerInfo[]> {
 		const joinedIds = await this.redis.sMembers(callParticipantsKey(callId));
 		const media = await this.redis.hGetAll(callMediaKey(callId));
 		const peers: CallPeerInfo[] = [];
 		for (const id of joinedIds) {
-			if (id === exceptUserId) continue;
+			if (id === exceptPeerId) continue;
 			let audio = true;
 			let video = true;
 			try {
@@ -437,18 +586,21 @@ export class CallsService {
 			} catch {
 				// Corrupt entry - fall back to defaults.
 			}
-			peers.push({ userId: id, audio, video });
+			peers.push({ peerId: id as PeerId, audio, video });
 		}
 		return peers;
 	}
 
 	async getCallHistory(
-		userId: string,
+		peerId: string,
 		conversationId: string,
 		cursor: string | undefined,
 		limit: number,
 	) {
-		await this.requireConversationMember(userId, conversationId);
+		await this.requirePeerConversationMember(
+			this.resolvePeer(peerId),
+			conversationId,
+		);
 		const take = Math.min(Math.max(limit || 20, 1), 50);
 		const calls = await this.prisma.call.findMany({
 			where: { conversationId },
@@ -464,6 +616,7 @@ export class CallsService {
 				id: call.id,
 				conversationId: call.conversationId,
 				startedById: call.startedById,
+				startedByVisitorId: call.startedByVisitorId,
 				type: call.type,
 				status: call.status,
 				startedAt: call.startedAt.toISOString(),
@@ -479,6 +632,7 @@ export class CallsService {
 						: 0,
 				participants: call.participants.map((p) => ({
 					userId: p.userId,
+					visitorId: p.visitorId,
 					status: p.status,
 					joinedAt: p.joinedAt?.toISOString() ?? null,
 					leftAt: p.leftAt?.toISOString() ?? null,
@@ -506,15 +660,11 @@ export class CallsService {
 		return this.endCall(call.id, "MISSED");
 	}
 
-	private async getCallOrThrow(callId: string): Promise<Call> {
+	/** Public read for the gateway (join-sync and lazy-expiry paths). */
+	async getCall(callId: string): Promise<Call> {
 		const call = await this.prisma.call.findUnique({ where: { id: callId } });
 		if (!call) throw new NotFoundException("Call not found");
 		return call;
-	}
-
-	/** Public read for the gateway (join-sync and lazy-expiry paths). */
-	async getCall(callId: string): Promise<Call> {
-		return this.getCallOrThrow(callId);
 	}
 
 	/** Gateway entry for timer-driven and pre-operation lazy expiry. */
@@ -524,10 +674,33 @@ export class CallsService {
 		return this.expireRingIfDue(call);
 	}
 
+	private async findParticipant(callId: string, peer: PeerRef) {
+		if (peer.kind === "user") {
+			return this.prisma.callParticipant.findUnique({
+				where: { callId_userId: { callId, userId: peer.id } },
+			});
+		}
+		return this.prisma.callParticipant.findUnique({
+			where: { callId_visitorId: { callId, visitorId: peer.id } },
+		});
+	}
+
 	private async joinedCount(callId: string): Promise<number> {
 		return this.prisma.callParticipant.count({
 			where: { callId, status: "JOINED" },
 		});
+	}
+
+	private starterPeerIdOf(call: Call): string {
+		if (call.startedById) return peerIdForUser(call.startedById);
+		if (call.startedByVisitorId) return peerIdForVisitor(call.startedByVisitorId);
+		throw new Error(`Call ${call.id} has no starter`);
+	}
+
+	/** Prisma NOT-filter matching the starter (for "joined others" counts). */
+	private starterFilter(call: Call): object {
+		if (call.startedById) return { userId: call.startedById };
+		return { visitorId: call.startedByVisitorId };
 	}
 
 	/** Terminal transition: persists ENDED + statuses, clears all presence. */
@@ -538,22 +711,23 @@ export class CallsService {
 		const call = await this.prisma.call.findUnique({
 			where: { id: callId },
 			include: {
-				participants: { select: { id: true, userId: true, status: true } },
+				participants: {
+					select: { id: true, userId: true, visitorId: true, status: true },
+				},
 			},
 		});
 		if (!call) {
 			await this.clearPresence(callId, []);
-			return { callId, reason, memberUserIds: [] };
+			return { callId, reason, memberPeerIds: [] };
 		}
-		const participants = call.participants;
-		const memberUserIds = participants.map((p) => p.userId);
+		const memberPeerIds = call.participants.map((p) => this.participantPeerId(p));
 		if (call.status === "ENDED") {
 			// Already terminal (race between timer and lazy expiry) - still
 			// ensure presence is gone, then report the original outcome.
-			await this.clearPresence(callId, memberUserIds);
-			return { callId, reason: call.endReason ?? reason, memberUserIds };
+			await this.clearPresence(callId, memberPeerIds);
+			return { callId, reason: call.endReason ?? reason, memberPeerIds };
 		}
-		for (const p of participants) {
+		for (const p of call.participants) {
 			if (p.status === "INVITED") {
 				await this.prisma.callParticipant.update({
 					where: { id: p.id },
@@ -571,13 +745,13 @@ export class CallsService {
 			where: { id: callId },
 			data: { status: "ENDED", endedAt, endReason: reason },
 		});
-		await this.clearPresence(callId, memberUserIds);
+		await this.clearPresence(callId, memberPeerIds);
 		this.logger.log(`Call ${callId} ended (${reason})`);
 		// Best effort: a call summary in the thread must never fail the ending.
 		void this.postCallSystemMessage(call, reason, endedAt).catch((err) => {
 			this.logger.warn(`Call ${callId} system message failed: ${err}`);
 		});
-		return { callId, reason, memberUserIds };
+		return { callId, reason, memberPeerIds };
 	}
 
 	/**
@@ -632,13 +806,13 @@ export class CallsService {
 		});
 	}
 
-	private async clearPresence(callId: string, userIds: string[]): Promise<void> {
+	private async clearPresence(callId: string, peerIds: string[]): Promise<void> {
 		await this.redis.del(callKey(callId));
 		await this.redis.del(callParticipantsKey(callId));
 		await this.redis.del(callMediaKey(callId));
 		await this.redis.del(callRingKey(callId));
-		for (const userId of userIds) {
-			await this.redis.del(userActiveCallKey(userId));
+		for (const peerId of peerIds) {
+			await this.redis.del(peerActiveCallKey(peerId));
 		}
 	}
 }
