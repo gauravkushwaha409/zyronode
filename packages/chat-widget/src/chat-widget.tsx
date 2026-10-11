@@ -44,8 +44,6 @@ export default function ChatWidget() {
 						<VisitorCallProvider organizationId={organizationId ?? null}>
 							<WidgetWebSocketProvider namespace={SOCKET_NAMESPACES.VISITOR}>
 								<WidgetSseProvider>
-									{/* Always-mounted SSE listener: connects as soon as conversationId exists,
-						    stays subscribed while widget is hidden via <Activity>. */}
 									<WidgetSseListener isWidgetOpen={isWidgetOpen} />
 									<WidgetPresenceEmitter />
 
