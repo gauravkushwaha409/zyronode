@@ -1,22 +1,19 @@
 import { ChatWidget, configureChatWidget } from "@package/chat-widget";
 import { useMemo } from "react";
 
-declare global {
-  const __APP_CONFIG__: {
-    server_url: string;
-    websocket_url: string;
-    organization_id: string;
-  };
-}
+// Read straight from Vite env (envDir ../../env) - no `define` indirection.
+// Falls back to same-host URLs so the harness works even with a partial env.
+const SERVER_URL =
+	import.meta.env.VITE_CHAT_WIDGET_SERVER_URL ?? "http://localhost:8000";
+const ORGANIZATION_ID = import.meta.env.VITE_ORGANIZATION_ID ?? "";
 
 export function App() {
-  const visitorUuid = useMemo(() => crypto.randomUUID(), []);
+	const visitorUuid = useMemo(() => crypto.randomUUID(), []);
 
-  configureChatWidget({
-    serverUrl: __APP_CONFIG__.server_url,
-    websocketUrl: __APP_CONFIG__.websocket_url,
-    organizationId: __APP_CONFIG__.organization_id,
-  });
+	configureChatWidget({
+		serverUrl: SERVER_URL,
+		organizationId: ORGANIZATION_ID,
+	});
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -31,10 +28,10 @@ export function App() {
               Visitor: <span className="text-blue-600">{visitorUuid}</span>
             </p>
             <p className="font-mono text-gray-600 mt-1">
-              Server: <span className="text-blue-600">{__APP_CONFIG__.server_url}</span>
+              Server: <span className="text-blue-600">{SERVER_URL}</span>
             </p>
             <p className="font-mono text-gray-600 mt-1">
-              Org: <span className="text-blue-600">{__APP_CONFIG__.organization_id || "(not set)"}</span>
+              Org: <span className="text-blue-600">{ORGANIZATION_ID || "(not set)"}</span>
             </p>
           </div>
         </div>

@@ -80,7 +80,7 @@ export function VisitorCallProvider({
 	return (
 		<WebSocketProvider
 			options={{
-				url: `${toWebSocketUrl(getConfig().websocketUrl)}${SOCKET_NAMESPACES.CALLS}`,
+				url: `${toWebSocketUrl(getConfig().serverUrl)}${SOCKET_NAMESPACES.CALLS}`,
 				transports: ["websocket"],
 				reconnection: true,
 				reconnectionAttempts: 10,

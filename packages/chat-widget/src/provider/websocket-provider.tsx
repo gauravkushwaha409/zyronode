@@ -24,7 +24,7 @@ export function WidgetWebSocketProvider({
 	return (
 		<WebSocketProvider
 			options={{
-				url: `${toWebSocketUrl(config.websocketUrl)}${namespace}`,
+				url: `${toWebSocketUrl(config.serverUrl)}${namespace}`,
 				transports: ["websocket"],
 				reconnection: true,
 				reconnectionAttempts: 10,

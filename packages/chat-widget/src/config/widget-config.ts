@@ -1,6 +1,5 @@
 type ChatWidgetConfig = {
   serverUrl: string;
-  websocketUrl: string;
   organizationId: string;
 };
 

@@ -1,6 +1,7 @@
 import { SOCKET_NAMESPACES } from "@package/websocket";
 import { Activity, useCallback, useState } from "react";
 import { VisitorCallProvider } from "./calls";
+import { getConfig } from "./config";
 import { ChatWidgetChat, WidgetHeader, WidgetToggle } from "./features";
 import { useVisitorPresence } from "./hooks/events/ws";
 import {
@@ -15,14 +16,12 @@ import {
 } from "./provider";
 import { useChatWidgetStore } from "./store";
 
-interface ChatWidgetProps {
-	organizationId?: string;
-}
-
-export default function ChatWidget({ organizationId }: ChatWidgetProps) {
+export default function ChatWidget() {
 	const [isWidgetOpen, setWidgetOpen] = useState(false);
 	const unreadCount = useChatWidgetStore((s) => s.unreadCount);
 	const clearUnread = useChatWidgetStore((s) => s.clearUnread);
+
+	const { organizationId } = getConfig();
 
 	const handleToggle = useCallback(() => {
 		setWidgetOpen((prev) => {
