@@ -1,4 +1,5 @@
 import { Avatar, Button, cn, Icon, Typography } from "@package/ui";
+import { useCallActions, useCallStore } from "@/features/calls";
 import { AIInsight } from "./ai-insight";
 import { AssignConversationDialog } from "./assign-conversation-dialog";
 import { ConversationAction } from "./conversation-action";
@@ -26,6 +27,7 @@ interface ConversationHeaderProps {
 }
 
 export function ConversationHeader({
+	conversationUUID,
 	visitorName,
 	channel,
 	status,
@@ -37,6 +39,9 @@ export function ConversationHeader({
 	const isActive = status === "ACTIVE";
 	// Treat ACTIVE as online for demo — mirrors portal visitor.is_online
 	const isVisitorOnline = isActive;
+	const { startCall } = useCallActions();
+	const callPhase = useCallStore((s) => s.phase);
+	const callBusy = callPhase !== "idle";
 
 	return (
 		<div
@@ -89,7 +94,10 @@ export function ConversationHeader({
 						variant="ghost"
 						showTooltip
 						tooltipText="Audio call"
-						disabled={isResolved}
+						disabled={isResolved || callBusy || !conversationUUID}
+						onClick={() => {
+							if (conversationUUID) void startCall(conversationUUID, "AUDIO");
+						}}
 					/>
 					<Button
 						icon="video-call"
@@ -98,7 +106,10 @@ export function ConversationHeader({
 						variant="ghost"
 						showTooltip
 						tooltipText="Video call"
-						disabled={isResolved}
+						disabled={isResolved || callBusy || !conversationUUID}
+						onClick={() => {
+							if (conversationUUID) void startCall(conversationUUID, "VIDEO");
+						}}
 					/>
 				</div>
 			</div>

@@ -60,6 +60,32 @@ export class WebSocketClient {
     this.socket.emit(event, data);
   }
 
+  /**
+   * Emit with a server acknowledgement. Resolves with the ack payload;
+   * rejects on disconnect-guard or timeout. Note: NestJS handler errors
+   * arrive as an "exception" event (not the ack), so callers should also
+   * listen for those when the ack may never come.
+   */
+  emitWithAck<T>(event: string, data: unknown, timeoutMs = 15000): Promise<T> {
+    return new Promise<T>((resolve, reject) => {
+      if (!this.socket.connected) {
+        reject(
+          new WebSocketError(
+            `Cannot emit "${event}": socket is not connected`,
+          ),
+        );
+        return;
+      }
+      const timer = setTimeout(() => {
+        reject(new WebSocketError(`Ack timeout for "${event}"`));
+      }, timeoutMs);
+      this.socket.emit(event, data, (response: T) => {
+        clearTimeout(timer);
+        resolve(response);
+      });
+    });
+  }
+
   on<T>(event: string, handler: (data: T) => void): () => void {
     this.socket.on(event, handler);
     return () => {

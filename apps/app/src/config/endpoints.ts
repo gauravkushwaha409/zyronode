@@ -79,4 +79,7 @@ export const ENDPOINTS = {
 		COUNTRY_OPTIONS: (organizationId: string) =>
 			`/organizations/${organizationId}/visitors/filters/countries`,
 	},
+	CALLS: {
+		ICE_SERVERS: "/calls/ice-servers",
+	},
 };

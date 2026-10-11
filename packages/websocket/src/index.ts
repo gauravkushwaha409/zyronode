@@ -20,6 +20,7 @@ export const SOCKET_NAMESPACES = {
 	AGENT_INBOX: "/agent-inbox",
 	AGENT_VISITORS: "/agent-visitors",
 	VISITOR: "/visitor",
+	CALLS: "/calls",
 } as const;
 
 /** socket.io upgrades http(s) itself, but clients must pass ws(s)://. */
