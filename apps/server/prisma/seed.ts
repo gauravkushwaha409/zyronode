@@ -1,19 +1,40 @@
 import * as path from "node:path";
 import * as dotenv from "dotenv";
 
-// Resolved from cwd (npm scripts run with cwd = apps/server), not __dirname,
-// since __dirname's depth shifts depending on how this file was compiled.
-dotenv.config({
-	path: path.resolve(
-		process.cwd(),
-		`../../env/.env.${process.env.APP_ENV ?? "development"}`,
-	),
-	quiet: true,
-});
-
 import { PrismaPg } from "@prisma/adapter-pg";
 import * as bcryptjs from "bcryptjs";
 import { PlanType, PrismaClient } from "../src/generated/prisma/client";
+
+// SEED_MODE is the single knob: it selects WHICH database (env/.env.<mode>)
+// and WHAT gets seeded. APP_ENV is still honored as a fallback for the env
+// file so `APP_ENV=staging pnpm prisma:seed` keeps working.
+//   development → full demo data (test user + orgs + visitors + conversation)
+//   staging     → light seed (test user + orgs only, no visitors/chatter)
+//   production  → refuses unless ALLOW_PRODUCTION_SEED=true; then seeds
+//                 system essentials only (no demo users, no demo content)
+type SeedMode = "development" | "staging" | "production";
+
+function parseSeedMode(raw: string | undefined): SeedMode {
+	const value = (raw ?? "development").toLowerCase();
+	if (value === "staging" || value === "stg") return "staging";
+	if (value === "production" || value === "prod") return "production";
+	return "development";
+}
+
+function getSeedMode(): SeedMode {
+	return parseSeedMode(process.env.SEED_MODE ?? process.env.APP_ENV);
+}
+
+// NOTE: this must run BEFORE `new PrismaClient` below — the adapter reads
+// `process.env.DATABASE_URL` at construction time. Resolved from cwd (npm
+// scripts run with cwd = apps/server), not __dirname, since __dirname's
+// depth shifts depending on how this file was compiled. The mode is resolved
+// from the raw environment BEFORE loading any env file, so a single dotenv
+// call targets the right database.
+dotenv.config({
+	path: path.resolve(process.cwd(), `../../env/.env.${getSeedMode()}`),
+	quiet: true,
+});
 
 const prisma = new PrismaClient({
 	adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
@@ -227,6 +248,25 @@ async function seedOrganizationForUser(
 }
 
 async function main() {
+	const mode = getSeedMode();
+
+	if (mode === "production" && process.env.ALLOW_PRODUCTION_SEED !== "true") {
+		console.error(
+			"Refusing to seed production. Re-run with ALLOW_PRODUCTION_SEED=true " +
+				"if you really mean it (seeds system essentials only, no demo data).",
+		);
+		process.exitCode = 1;
+		return;
+	}
+
+	if (mode === "production") {
+		// System roles/permissions are seeded at server boot, so there is
+		// nothing else essential to seed. This branch exists so production
+		// runs are explicit, auditable, and never create demo content.
+		console.log("Production seed: nothing to do (no demo data seeded).");
+		return;
+	}
+
 	const user = await seedTestUser();
 
 	const organizations: Array<
@@ -242,13 +282,18 @@ async function main() {
 		data: { lastOrgId: organizations[0].id },
 	});
 
-	// visitors only on the active org - that is the one the app opens on
-	const visitorCount = await seedVisitorsForOrganization(
-		organizations[0].id,
-		user.id,
-	);
+	// Staging gets the user + orgs skeleton only — no fake visitors,
+	// page visits, notes, or conversations.
+	let visitorCount = 0;
+	if (mode === "development") {
+		// visitors only on the active org - that is the one the app opens on
+		visitorCount = await seedVisitorsForOrganization(
+			organizations[0].id,
+			user.id,
+		);
+	}
 
-	console.log("Seeded test user:");
+	console.log(`Seeded test user (${mode} mode):`);
 	console.log(`  email:    ${TEST_USER.email}`);
 	console.log(`  password: ${TEST_USER.password}`);
 	console.log(`  orgs:     ${organizations.map((o) => o.name).join(", ")}`);

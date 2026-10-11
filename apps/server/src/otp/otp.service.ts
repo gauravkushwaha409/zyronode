@@ -95,10 +95,11 @@ export class OtpService {
 		await this.redis.del(RedisKey.otp(purpose, email));
 
 		if (purpose === OtpPurpose.EMAIL_VERIFICATION) {
-			await this.prisma.user.update({
+			const verifiedUser = await this.prisma.user.update({
 				where: { email },
 				data: { isEmailVerified: true },
 			});
+			await this.redis.del(RedisKey.userProfile(verifiedUser.id));
 		}
 
 		this.logger.log(`OTP [${purpose}] verified for ${email}`);

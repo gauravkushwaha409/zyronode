@@ -25,6 +25,7 @@ import { VerifyEmailDto } from "./dto/verify-email.dto";
 import { AuthJwtService } from "./jwt.service";
 
 const RESET_TOKEN_TTL_SECONDS = 15 * 60; // 15 minutes
+const USER_PROFILE_TTL_SECONDS = 5 * 60; // 5 minutes
 
 @Injectable()
 export class AuthService {
@@ -158,6 +159,16 @@ export class AuthService {
 	}
 
 	async me(userId: string) {
+		const cached = await this.redis.get(RedisKey.userProfile(userId));
+		if (cached) {
+			return {
+				message: "User fetched successfully",
+				success: true,
+				statusCode: 200,
+				data: JSON.parse(cached),
+			};
+		}
+
 		const user = await this.prisma.user.findUnique({
 			where: { id: userId },
 			omit: {
@@ -167,6 +178,14 @@ export class AuthService {
 				isOnboarded: true,
 			},
 		});
+
+		if (user) {
+			await this.redis.set(
+				RedisKey.userProfile(userId),
+				JSON.stringify(user),
+				USER_PROFILE_TTL_SECONDS,
+			);
+		}
 
 		return {
 			message: "User fetched successfully",
@@ -226,6 +245,8 @@ export class AuthService {
 				data: { isEmailVerified: true },
 			});
 		}
+
+		await this.redis.del(RedisKey.userProfile(user.id));
 
 		const tokens = await this.authJwtService.generateAuthTokens({ id: user.id });
 
@@ -370,6 +391,8 @@ export class AuthService {
 			data: { password: hashedPassword },
 		});
 
+		await this.redis.del(RedisKey.userProfile(userId));
+
 		return {
 			message: "Password reset successfully",
 			data: { success: true },
@@ -450,6 +473,8 @@ export class AuthService {
 				isOnboarded: true,
 			},
 		});
+
+		await this.redis.del(RedisKey.userProfile(userId));
 
 		return {
 			message: "User onboarding completed successfully",

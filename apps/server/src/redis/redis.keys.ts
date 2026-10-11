@@ -13,6 +13,10 @@ export const RedisKey = {
 		`otp:${purpose}:${email}` as const,
 	/** STRING: userId for a password-reset token, expires after reset TTL. */
 	passwordReset: (token: string) => `password-reset:${token}` as const,
+	/** STRING: cached user profile JSON for GET /me, expires after profile TTL. */
+	userProfile: (userId: string) => `user:profile:${userId}` as const,
+	/** STRING: cached org list JSON for GET /organization/my, expires after orgs TTL. */
+	userOrganizations: (userId: string) => `user:organizations:${userId}` as const,
 } as const;
 
 export const RedisChannel = {

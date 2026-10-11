@@ -3,27 +3,6 @@
 name: zyronode-staging
 
 services:
-  postgres:
-    image: postgres:17.4
-    container_name: zyronode-staging-postgres
-    restart: unless-stopped
-    env_file:
-      - ../env/.env.staging
-    environment:
-      - PGPORT=${POSTGRES_PORT:?POSTGRES_PORT must be set in env/.env.staging}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "pg_isready -U ${POSTGRES_USER:-admin} -d ${POSTGRES_DB:-mydb} -p ${POSTGRES_PORT:?POSTGRES_PORT must be set in env/.env.staging}",
-        ]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 20s
-
   redis:
     image: redis:7-alpine
     container_name: zyronode-staging-redis
@@ -60,14 +39,12 @@ services:
     env_file:
       - ../env/.env.staging
     environment:
-      # Single source of truth stays in env/.env.staging (POSTGRES_*);
-      # compose interpolates them here to the in-network hostname.
-      - DATABASE_URL=postgresql://${POSTGRES_USER:-admin}:${POSTGRES_PASSWORD:-admin}@postgres:${POSTGRES_PORT:?POSTGRES_PORT must be set in env/.env.staging}/${POSTGRES_DB:-mydb}
+      # DATABASE_URL comes from env/.env.staging (Supabase pooled URL).
+      # It must be set there — no local postgres container in staging.
+      - DATABASE_URL=${DATABASE_URL:?DATABASE_URL must be set in env/.env.staging}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
     depends_on:
-      postgres:
-        condition: service_healthy
       redis:
         condition: service_healthy
 
@@ -133,5 +110,4 @@ services:
         condition: service_healthy
 
 volumes:
-  postgres_data:
   redis_data:

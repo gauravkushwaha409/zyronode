@@ -5,15 +5,21 @@ import {
 } from "@nestjs/common";
 import type { Response } from "express";
 import { PrismaService } from "../prisma/prisma.service";
+import { RedisKey } from "../redis/redis.keys";
+import { RedisService } from "../redis/redis.service";
 import { CreateOrganizationDto } from "./dto/create-organization.dto";
 import { UpdateOrganizationDto } from "./dto/update-organization.dto";
 
 const CURRENT_ORG_COOKIE = "organization";
 const COOKIE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+const USER_ORGANIZATIONS_TTL_SECONDS = 5 * 60; // 5 minutes
 
 @Injectable()
 export class OrganizationService {
-	constructor(private prisma: PrismaService) {}
+	constructor(
+		private prisma: PrismaService,
+		private redis: RedisService,
+	) {}
 
 	async create(createOrganizationDto: CreateOrganizationDto, userId: string) {
 		const organization = await this.prisma.$transaction(async (tx) => {
@@ -42,6 +48,8 @@ export class OrganizationService {
 
 			return org;
 		});
+
+		await this.redis.del(RedisKey.userOrganizations(userId));
 
 		return {
 			message: "Organization created successfully",
@@ -76,6 +84,8 @@ export class OrganizationService {
 			where: { id: userId },
 			data: { lastOrgId: organizationId },
 		});
+
+		await this.redis.del(RedisKey.userProfile(userId));
 
 		response.cookie(CURRENT_ORG_COOKIE, organizationId, {
 			httpOnly: true,
@@ -113,6 +123,16 @@ export class OrganizationService {
 	}
 
 	async getMyOrganizations(userId: string) {
+		const cached = await this.redis.get(RedisKey.userOrganizations(userId));
+		if (cached) {
+			return {
+				message: "Organizations fetched successfully",
+				success: true,
+				statusCode: 200,
+				data: JSON.parse(cached),
+			};
+		}
+
 		const organizations = await this.prisma.organization.findMany({
 			where: {
 				members: {
@@ -142,6 +162,12 @@ export class OrganizationService {
 		if (!organizations.length) {
 			throw new NotFoundException("No organizations found");
 		}
+
+		await this.redis.set(
+			RedisKey.userOrganizations(userId),
+			JSON.stringify(organizations),
+			USER_ORGANIZATIONS_TTL_SECONDS,
+		);
 
 		return {
 			message: "Organizations fetched successfully",
