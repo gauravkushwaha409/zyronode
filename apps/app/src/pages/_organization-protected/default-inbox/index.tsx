@@ -18,7 +18,7 @@ export function DefaultInboxPage({ organizationId }: DefaultInboxPageProps) {
 	return (
 		<InboxSseProvider organizationId={organizationId}>
 			<InboxSocketProvider organizationId={organizationId}>
-				<CallProvider>
+        <CallProvider organizationId={organizationId}>
 					<InboxLayout>
 						<ConversationList organizationId={organizationId} />
 						<Conversation organizationId={organizationId} />

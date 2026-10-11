@@ -187,14 +187,19 @@ export class CallsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		@MessageBody() dto: CallInviteDto,
 	) {
 		const from = this.userIdOf(client);
-		const started = await this.guard(() =>
-			this.callsService.startCall(
+		let started: Awaited<ReturnType<CallsService["startCall"]>>;
+		try {
+			started = await this.callsService.startCall(
 				from,
 				dto.conversationId,
 				dto.type,
 				dto.inviteeIds,
-			),
-		);
+			);
+		} catch (err) {
+			const activeCallId = await this.callsService.getActiveCallId(from);
+			this.emitCapacityEvent(from, activeCallId, err);
+			throw new WsException(err instanceof Error ? err.message : "Call failed");
+		}
 		if (started.merged && started.join) {
 			// Glare: folded into the other side's ringing call - sync like a join.
 			return this.syncJoin(client, from, started.join);
@@ -223,9 +228,13 @@ export class CallsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		@MessageBody() dto: CallIdDto,
 	) {
 		const userId = this.userIdOf(client);
-		const result = await this.guard(() =>
-			this.callsService.joinCall(userId, dto.callId),
-		);
+		let result: Awaited<ReturnType<CallsService["joinCall"]>>;
+		try {
+			result = await this.callsService.joinCall(userId, dto.callId);
+		} catch (err) {
+			this.emitCapacityEvent(userId, dto.callId, err);
+			throw new WsException(err instanceof Error ? err.message : "Join failed");
+		}
 		return this.syncJoin(client, userId, result);
 	}
 
@@ -331,6 +340,27 @@ export class CallsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			video: dto.video,
 		});
 		return { ok: true };
+	}
+
+	/**
+	 * Surfaces capacity failures as events too (clients already listen for
+	 * these; the throw still fails the ack so callers can't miss it).
+	 * No event is sent when there is no call to reference.
+	 */
+	private emitCapacityEvent(
+		userId: string,
+		callId: string | null,
+		err: unknown,
+	): void {
+		if (!callId) return;
+		const message = err instanceof Error ? err.message : "";
+		if (message.toLowerCase().includes("full")) {
+			this.server.to(userRoom(userId)).emit(ServerCallEvents.FULL, { callId });
+		} else if (message.toLowerCase().includes("busy")) {
+			this.server
+				.to(userRoom(userId))
+				.emit(ServerCallEvents.BUSY, { callId, userId });
+		}
 	}
 
 	private checkIceRateLimit(socketId: string): void {

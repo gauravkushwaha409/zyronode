@@ -1,5 +1,6 @@
 import { Avatar, Button, Icon, Typography } from "@package/ui";
 import { useEffect, useRef, useState } from "react";
+import { usePeerNames } from "../hooks/use-peer-names";
 import { useCallActions } from "../providers/call-actions-context";
 import { type RemotePeerState, useCallStore } from "../store/use-call.store";
 
@@ -59,7 +60,7 @@ function PeerVideo({
 
 function PeerTile({ peer, label }: { peer: RemotePeerState; label: string }) {
 	return (
-		<div className="relative rounded-xl overflow-hidden bg-gray-900 min-h-0">
+		<div className="relative rounded-xl overflow-hidden bg-gray-900 w-full h-full min-h-0">
 			<PeerVideo
 				stream={peer.stream}
 				muted={false}
@@ -166,6 +167,7 @@ export function CallScreen() {
 
 	const timer = useCallTimer(startedAt, phase === "active");
 	const peerList = Object.values(peers);
+	const names = usePeerNames(peerList.map((p) => p.userId));
 	const inCall = phase === "active" || phase === "outgoing";
 
 	if (!inCall && !error && !endedReason) return null;
@@ -177,9 +179,7 @@ export function CallScreen() {
 					<Typography.T3 weight="semibold" className="text-white">
 						{phase === "outgoing"
 							? "Calling…"
-							: type === "VIDEO"
-								? "Video call"
-								: "Audio call"}
+							: `${type === "VIDEO" ? "Video" : "Audio"} call · ${peerList.length + 1}`}
 					</Typography.T3>
 					<Typography.T5 className="text-gray-400 tabular-nums">
 						{timer}
@@ -206,11 +206,11 @@ export function CallScreen() {
 					</div>
 				)}
 
-				{/* Responsive tile grid: 1 col for 1-2, 2 cols for 3-4. */}
+				{/* Responsive tile grid: full width for 1-2 tiles, 2 cols for 3-4. */}
 				<div
 					className={`grid gap-2 min-h-0 flex-1 ${peerList.length + 1 > 2 ? "grid-cols-2" : "grid-cols-1"}`}
 				>
-					<div className="relative rounded-xl overflow-hidden bg-gray-900 min-h-40">
+					<div className="relative rounded-xl overflow-hidden bg-gray-900 min-h-40 aspect-video">
 						<PeerVideo
 							stream={localStream}
 							muted
@@ -224,8 +224,10 @@ export function CallScreen() {
 							</Typography.T6>
 						</div>
 					</div>
-					{peerList.map((peer, i) => (
-						<PeerTile key={peer.userId} peer={peer} label={`Peer ${i + 1}`} />
+					{peerList.map((peer) => (
+						<div key={peer.userId} className="min-h-0 aspect-video">
+							<PeerTile peer={peer} label={names[peer.userId] ?? peer.userId} />
+						</div>
 					))}
 				</div>
 

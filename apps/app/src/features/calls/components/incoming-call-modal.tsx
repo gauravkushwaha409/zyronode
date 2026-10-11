@@ -1,4 +1,5 @@
 import { Avatar, Button, Icon, Typography } from "@package/ui";
+import { usePeerNames } from "../hooks/use-peer-names";
 import { useCallActions } from "../providers/call-actions-context";
 import { useCallStore } from "../store/use-call.store";
 
@@ -6,21 +7,25 @@ export function IncomingCallModal() {
 	const incoming = useCallStore((s) => s.incoming);
 	const phase = useCallStore((s) => s.phase);
 	const { acceptCall, declineCall } = useCallActions();
+	const names = usePeerNames(incoming ? [incoming.from] : []);
 
 	if (phase !== "incoming" || !incoming) return null;
+	const caller = names[incoming.from] ?? "Someone";
 
 	return (
 		<div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60">
 			<div className="w-[320px] rounded-2xl bg-white p-6 flex flex-col items-center gap-4 shadow-xl">
 				<div className="relative">
-					<Avatar size="xl" fallbackType="text" fallbackText="?" />
+					<Avatar size="xl" fallbackType="text" fallbackText={caller.charAt(0)} />
 					<span className="absolute inset-0 rounded-full animate-ping bg-primary-500/20" />
 				</div>
 				<div className="flex flex-col items-center gap-1">
 					<Typography.T3 weight="semibold" className="text-gray-950">
-						Incoming {incoming.type === "VIDEO" ? "video" : "audio"} call
+						{caller} is calling
 					</Typography.T3>
-					<Typography.T5 className="text-gray-500">Ringing…</Typography.T5>
+					<Typography.T5 className="text-gray-500">
+						Incoming {incoming.type === "VIDEO" ? "video" : "audio"} call
+					</Typography.T5>
 				</div>
 				<div className="flex items-center gap-4">
 					<Button

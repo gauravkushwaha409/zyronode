@@ -39,6 +39,9 @@ interface CallStore {
 	audioDeviceId: string | null;
 	videoDeviceId: string | null;
 
+	/** Org scope for resolving peer display names (set by CallProvider). */
+	organizationId: string | null;
+
 	set: (partial: Partial<CallStore>) => void;
 	upsertPeer: (peer: RemotePeerState) => void;
 	removePeer: (userId: string) => void;
@@ -82,6 +85,7 @@ export const useCallStore = create<CallStore>()((set) => ({
 	...initial,
 	audioDeviceId: null,
 	videoDeviceId: null,
+	organizationId: null,
 
 	set: (partial) => set(partial),
 	upsertPeer: (peer) =>

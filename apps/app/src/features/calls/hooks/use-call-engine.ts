@@ -59,6 +59,8 @@ export function useCallEngine(): CallActions {
 	const pcs = useRef(new Map<string, PeerConnectionState>());
 	const iceServers = useRef<RTCIceServer[] | null>(null);
 	const ringtone = useRef(createRingtone());
+	/** True while a call:join ack is in flight (server errors arrive as events). */
+	const joiningRef = useRef(false);
 	const selfId = useRef<string | null>(null);
 	if (selfId.current === null) selfId.current = getSelfUserId();
 
@@ -414,11 +416,13 @@ export function useCallEngine(): CallActions {
 			return;
 		}
 		ringtone.current.stop();
+		joiningRef.current = true;
 		try {
 			const ack = await clientRef.current.emitWithAck<CallPeersPayload>(
 				ClientCallEvents.JOIN,
 				{ callId: incoming.callId },
 			);
+			joiningRef.current = false;
 			getStore().set({
 				phase: "active",
 				callId: incoming.callId,
@@ -443,6 +447,7 @@ export function useCallEngine(): CallActions {
 			}
 			sendMediaState(true, incoming.type === "VIDEO");
 		} catch (err) {
+			joiningRef.current = false;
 			fullCleanup();
 			getStore().set({
 				phase: "idle",
@@ -740,14 +745,16 @@ export function useCallEngine(): CallActions {
 		});
 
 		// Server-side handler errors (busy/full/validation) arrive here, not
-		// on the ack - fail a pending outgoing call with the message.
+		// on the ack - fail a pending outgoing call or join with the message.
 		on<{ message?: string }>("exception", (data) => {
 			const store = getStore();
-			if (store.phase === "outgoing") {
+			if (store.phase === "outgoing" || joiningRef.current) {
+				joiningRef.current = false;
 				ringtone.current.stop();
 				fullCleanup();
 				store.set({
 					phase: "idle",
+					incoming: null,
 					error: data?.message ?? "Could not start the call.",
 				});
 			}
