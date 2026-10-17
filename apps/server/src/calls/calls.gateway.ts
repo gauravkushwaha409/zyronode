@@ -350,6 +350,7 @@ export class CallsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		@MessageBody() dto: WebrtcOfferDto,
 	) {
 		const from = this.peerIdOf(client);
+		this.logger.log(`webrtc:offer from ${from} to ${dto.to} call ${dto.callId}`);
 		await this.guard(() =>
 			this.callsService.assertCanRelay(from, dto.callId, dto.to),
 		);
@@ -365,6 +366,7 @@ export class CallsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		@MessageBody() dto: WebrtcAnswerDto,
 	) {
 		const from = this.peerIdOf(client);
+		this.logger.log(`webrtc:answer from ${from} to ${dto.to} call ${dto.callId}`);
 		await this.guard(() =>
 			this.callsService.assertCanRelay(from, dto.callId, dto.to),
 		);
@@ -380,6 +382,7 @@ export class CallsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		@MessageBody() dto: WebrtcIceDto,
 	) {
 		const from = this.peerIdOf(client);
+		this.logger.log(`webrtc:ice from ${from} to ${dto.to}`);
 		this.checkIceRateLimit(client.id);
 		await this.guard(() =>
 			this.callsService.assertCanRelay(from, dto.callId, dto.to),

@@ -135,6 +135,7 @@ export function useVisitorCallEngine(
 	}, []);
 
 	const sendOffer = useCallback(async (peerId: string, iceRestart = false) => {
+		console.log("[call] visitor sendOffer to", peerId);
 		const entry = pcs.current.get(peerId);
 		if (!entry) return;
 		const { callId } = getStore();
@@ -210,6 +211,7 @@ export function useVisitorCallEngine(
 			};
 
 			pc.onicecandidate = (event) => {
+				console.log("[call] visitor ice candidate", event.candidate?.candidate?.slice(0, 40));
 				if (!event.candidate) return;
 				const { callId } = getStore();
 				if (!callId) return;
@@ -527,6 +529,7 @@ export function useVisitorCallEngine(
 		};
 
 		on<CallIncomingPayload>(ServerCallEvents.INCOMING, (data) => {
+			console.log("[call] visitor incoming", data);
 			const store = getStore();
 			if (store.phase !== "idle") {
 				try {

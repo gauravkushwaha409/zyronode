@@ -311,13 +311,9 @@ export class CallsService {
 		// ringing call answers it by inviting back. Deterministic rule -
 		// fold into the existing call when it covers every target instead
 		// of failing busy or forking a second call.
-		const existingActiveRaw = await this.getActiveCallId(starterPeerId);
-		// Stale markers (call gone/terminal/ring-expired) are cleared by the
-		// check itself - only a live call blocks a new invite.
-		const existingActiveId =
-			existingActiveRaw && (await this.isPeerActuallyBusy(starterPeerId))
-				? existingActiveRaw
-				: null;
+		// Busy/self-in-call checks disabled: allow starting a new call even if
+		// a stale or live marker exists for this peer.
+		const existingActiveId: string | null = null;
 		if (existingActiveId) {
 			const existing = await this.prisma.call.findUnique({
 				where: { id: existingActiveId },

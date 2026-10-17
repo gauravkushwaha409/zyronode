@@ -299,6 +299,7 @@ export function useCallEngine(): CallActions {
 	/** Perfect-negotiation receive path: the polite side rolls back on collision. */
 	const handleRemoteOffer = useCallback(
 		async (peerId: string, sdp: SdpPayload) => {
+			console.log("[call] handleRemoteOffer from", peerId);
 			let entry = pcs.current.get(peerId);
 			if (!entry) {
 				createPeerConnection(peerId);
