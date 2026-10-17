@@ -1,5 +1,5 @@
 import { createContext, type ReactNode, useContext } from "react";
-import { getConfig } from "../config";
+import { getChatWidgetConfig } from "../config";
 
 const OrganizationIdContext = createContext<string | null>(null);
 
@@ -21,7 +21,7 @@ export function OrganizationProvider({
 	let resolved: string | null = organizationId ?? null;
 	if (!resolved) {
 		try {
-			resolved = getConfig().organizationId ?? null;
+			resolved = getChatWidgetConfig().organizationId ?? null;
 		} catch {
 			resolved = null;
 		}

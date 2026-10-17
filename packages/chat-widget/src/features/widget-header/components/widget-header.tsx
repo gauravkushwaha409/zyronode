@@ -1,12 +1,14 @@
 import { useVisitorCallActions, useVisitorCallPhase } from "../../../calls";
-import { useConversation } from "../../../provider/conversation-provider";
+import { useVisitorSession } from "../../../provider/visitor-session-context-provider";
 
 interface WidgetHeaderProps {
 	onClose: () => void;
 }
 
 export function WidgetHeader({ onClose }: WidgetHeaderProps) {
-	const { conversationId } = useConversation();
+	const {
+		conversation: { id: conversationId },
+	} = useVisitorSession();
 	const { startCall } = useVisitorCallActions();
 	const callPhase = useVisitorCallPhase();
 	const canCall = Boolean(conversationId) && callPhase === "idle";

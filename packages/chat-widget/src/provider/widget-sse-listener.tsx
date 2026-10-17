@@ -2,7 +2,7 @@ import { useQueryClient } from "@package/query";
 import { useSseEvent } from "@package/sse";
 import { useChatWidgetStore } from "../store";
 import { applyChatMessageEvent, type ChatMessageEvent } from "../utility";
-import { useConversation } from "./conversation-provider";
+import { useVisitorSession } from "./visitor-session-context-provider";
 
 interface WidgetSseListenerProps {
 	isWidgetOpen: boolean;
@@ -17,7 +17,9 @@ interface WidgetSseListenerProps {
  *   when a non-visitor message arrives while hidden.
  */
 export function WidgetSseListener({ isWidgetOpen }: WidgetSseListenerProps) {
-	const { conversationId } = useConversation();
+	const {
+		conversation: { id: conversationId },
+	} = useVisitorSession();
 	const queryClient = useQueryClient();
 	const incrementUnread = useChatWidgetStore((s) => s.incrementUnread);
 

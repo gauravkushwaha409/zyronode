@@ -2,15 +2,17 @@ import { Button } from "@package/ui";
 import { useEffect, useRef, useState } from "react";
 import { useGetMessagesQuery, useSendMessageMutation } from "@/hooks";
 import { useTypingIndicator } from "@/hooks/events";
-import { useConversation } from "@/provider";
+import { useVisitorSession } from "@/provider";
 import type { ChatMessage } from "@/types";
 
 export default function ChatWidgetChat() {
 	const {
-		conversationId,
-		ensureConversation,
-		isCreating: isCreatingConversation,
-	} = useConversation();
+		conversation: {
+			id: conversationId,
+			ensure: ensureConversation,
+			isCreating: isCreatingConversation,
+		},
+	} = useVisitorSession();
 	const [content, setContent] = useState("");
 	const scrollRef = useRef<HTMLDivElement>(null);
 

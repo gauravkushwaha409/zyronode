@@ -4,14 +4,17 @@ import {
 	WebSocketProvider,
 } from "@package/websocket";
 import { useEffect, useState } from "react";
-import { getConfig } from "../../config";
-import { useConversation } from "../../provider/conversation-provider";
+import { useChatWidgetConfig } from "../../config";
+import { useVisitorSession } from "../../provider/visitor-session-context-provider";
 import { VisitorCallScreen } from "../components/visitor-call-screen";
 import { VisitorIncomingCallModal } from "../components/visitor-incoming-call-modal";
 import { useVisitorCallEngine } from "../hooks/use-visitor-call-engine";
 import { getVisitorCallApi } from "../services/visitor-call-api.service";
 import { useVisitorCallStore } from "../store/use-visitor-call.store";
-import { VisitorCallActionsProvider, disabledVisitorCallActions } from "./visitor-call-actions-context";
+import {
+	disabledVisitorCallActions,
+	VisitorCallActionsProvider,
+} from "./visitor-call-actions-context";
 
 function VisitorCallEngineHost({
 	organizationId,
@@ -48,7 +51,10 @@ export function VisitorCallProvider({
 	organizationId: string | null;
 	children: React.ReactNode;
 }) {
-	const { conversationId } = useConversation();
+	const {
+		conversation: { id: conversationId },
+	} = useVisitorSession();
+	const config = useChatWidgetConfig();
 	const [token, setToken] = useState<string | null>(null);
 	const setStore = useVisitorCallStore((s) => s.set);
 
@@ -80,7 +86,7 @@ export function VisitorCallProvider({
 	return (
 		<WebSocketProvider
 			options={{
-				url: `${toWebSocketUrl(getConfig().serverUrl)}${SOCKET_NAMESPACES.CALLS}`,
+				url: `${toWebSocketUrl(config.serverUrl)}${SOCKET_NAMESPACES.CALLS}`,
 				transports: ["websocket"],
 				reconnection: true,
 				reconnectionAttempts: 10,

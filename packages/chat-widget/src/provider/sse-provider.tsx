@@ -1,8 +1,7 @@
 import { SseProvider } from "@package/sse";
 import type { ReactNode } from "react";
-import { getConfig } from "../config";
-import { useConversation } from "./conversation-provider";
-import { useVisitorSession } from "./visitor-session-provider";
+import { useChatWidgetConfig } from "../config";
+import { useVisitorSession } from "./visitor-session-context-provider";
 
 /**
  * Server-sent events stream for the visitor, scoped to a single
@@ -10,9 +9,11 @@ import { useVisitorSession } from "./visitor-session-provider";
  * Renders children unconnected until a conversation exists.
  */
 export function WidgetSseProvider({ children }: { children: ReactNode }) {
-	const { conversationId } = useConversation();
-	const { visitorId } = useVisitorSession();
-	const config = getConfig();
+	const {
+		visitorId,
+		conversation: { id: conversationId },
+	} = useVisitorSession();
+	const config = useChatWidgetConfig();
 
 	if (!conversationId) return <>{children}</>;
 
