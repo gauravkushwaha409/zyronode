@@ -23,7 +23,7 @@ export function useVisitorCallActions(): VisitorCallActions {
 	const actions = useContext(VisitorCallActionsContext);
 	if (!actions) {
 		throw new Error(
-			"useVisitorCallActions must be used within VisitorCallProvider",
+			"useVisitorCallActions must be used within VisitorCallContextProvider",
 		);
 	}
 	return actions;

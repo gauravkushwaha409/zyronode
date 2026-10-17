@@ -1,6 +1,6 @@
 import { SOCKET_NAMESPACES } from "@package/websocket";
 import { Activity, useCallback, useState } from "react";
-import { VisitorCallProvider } from "./calls";
+import { VisitorCallContextProvider } from "./calls";
 import { useChatWidgetConfig } from "./config";
 import { ChatWidgetChat, WidgetHeader, WidgetToggle } from "./features";
 import { useVisitorPresence } from "./hooks/events/ws";
@@ -9,7 +9,6 @@ import {
 	VisitorSessionContextProvider,
 	WidgetConversationSseProvider,
 	WidgetQueryProvider,
-	WidgetSseListener,
 	WidgetVisitorSseProvider,
 	WidgetWebSocketProvider,
 } from "./provider";
@@ -37,26 +36,23 @@ export default function ChatWidget() {
 	console.log("ChatWidget rendered with organizationId:", organizationId);
 	return (
 		<VisitorSessionContextProvider organizationId={organizationId}>
-			<WidgetVisitorSseProvider>
-				<WidgetQueryProvider>
-					<VisitorCallProvider organizationId={organizationId ?? null}>
-						<WidgetWebSocketProvider namespace={SOCKET_NAMESPACES.VISITOR}>
-							<WidgetConversationSseProvider>
-								<WidgetSseListener isWidgetOpen={isWidgetOpen} />
-								<WidgetPresenceEmitter />
+			<WidgetQueryProvider>
+				<VisitorCallContextProvider>
+					<WidgetVisitorSseProvider />
+					<WidgetWebSocketProvider namespace={SOCKET_NAMESPACES.VISITOR}>
+						<WidgetConversationSseProvider isWidgetOpen={isWidgetOpen} />
+						<WidgetPresenceEmitter />
 
-								<WidgetWebSocketProvider namespace={SOCKET_NAMESPACES.AGENT_INBOX}>
-									<Activity mode={isWidgetOpen ? "visible" : "hidden"}>
-										<WidgetWindow onClose={handleClose} />
-									</Activity>
+						<WidgetWebSocketProvider namespace={SOCKET_NAMESPACES.AGENT_INBOX}>
+							<Activity mode={isWidgetOpen ? "visible" : "hidden"}>
+								<WidgetWindow onClose={handleClose} />
+							</Activity>
 
-									<WidgetToggle onClick={handleToggle} unreadCount={unreadCount} />
-								</WidgetWebSocketProvider>
-							</WidgetConversationSseProvider>
+							<WidgetToggle onClick={handleToggle} unreadCount={unreadCount} />
 						</WidgetWebSocketProvider>
-					</VisitorCallProvider>
-				</WidgetQueryProvider>
-			</WidgetVisitorSseProvider>
+					</WidgetWebSocketProvider>
+				</VisitorCallContextProvider>
+			</WidgetQueryProvider>
 		</VisitorSessionContextProvider>
 	);
 }
