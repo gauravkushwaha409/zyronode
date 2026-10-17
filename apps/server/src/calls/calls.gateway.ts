@@ -39,7 +39,7 @@ const ICE_RATE_LIMIT = 100;
 const ICE_RATE_WINDOW_MS = 10_000;
 
 /** How long a peer may have zero sockets before being dropped from a call. */
-const GONE_GRACE_MS = 20_000;
+const GONE_GRACE_MS = 5_000;
 
 /**
  * Signaling gateway for audio/video calls. Media never passes through here -

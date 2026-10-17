@@ -522,7 +522,8 @@ export function useCallEngine(): CallActions {
 	}, []);
 
 	const hangUp = useCallback(() => {
-		const { callId } = getStore();
+		const store = getStore();
+		const callId = store.callId ?? store.incoming?.callId ?? null;
 		if (callId && clientRef.current.connected) {
 			try {
 				clientRef.current.emit(ClientCallEvents.LEAVE, { callId });

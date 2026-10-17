@@ -248,6 +248,23 @@ export class CallsService {
 			const expired = await this.expireRingIfDue(call);
 			if (expired) return false;
 		}
+		// Self-heal: if this peer is no longer an active participant of the
+		// referenced call (e.g. they hung up but the marker lingered), treat
+		// them as free and drop the stale marker.
+		const peer = this.resolvePeer(peerId);
+		const participant = await this.prisma.callParticipant.findFirst({
+			where:
+				peer.kind === "user"
+					? { callId, userId: peer.id }
+					: { callId, visitorId: peer.id },
+		});
+		if (
+			!participant ||
+			(participant.status !== "JOINED" && participant.status !== "INVITED")
+		) {
+			await this.redis.del(peerActiveCallKey(peerId));
+			return false;
+		}
 		return true;
 	}
 
@@ -583,6 +600,26 @@ export class CallsService {
 		const expired = await this.expireRingIfDue(call);
 		if (expired) return expired;
 		const participant = await this.findParticipant(callId, peer);
+		if (participant?.status === "INVITED") {
+			// A ringing peer hanging up counts as a decline.
+			await this.prisma.callParticipant.update({
+				where: { id: participant.id },
+				data: { status: "REJECTED" },
+			});
+			await this.redis.del(peerActiveCallKey(peerId));
+			const [stillInvited, joinedOthers] = await Promise.all([
+				this.prisma.callParticipant.count({
+					where: { callId, status: "INVITED" },
+				}),
+				this.prisma.callParticipant.count({
+					where: { callId, status: "JOINED", NOT: this.starterFilter(call) },
+				}),
+			]);
+			if (stillInvited === 0 && joinedOthers === 0) {
+				return this.endCall(callId, "REJECTED");
+			}
+			return null;
+		}
 		if (participant?.status !== "JOINED") {
 			throw new ConflictException("You are not in this call");
 		}
