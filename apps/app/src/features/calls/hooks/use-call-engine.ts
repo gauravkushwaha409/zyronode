@@ -61,6 +61,7 @@ export function useCallEngine(): CallActions {
 
 	const pcs = useRef(new Map<string, PeerConnectionState>());
 	const iceServers = useRef<RTCIceServer[] | null>(null);
+	const localStreamRef = useRef<MediaStream | null>(null);
 	const ringtone = useRef(createRingtone());
 	/** True while a call:join ack is in flight (server errors arrive as events). */
 	const joiningRef = useRef(false);
@@ -148,9 +149,9 @@ export function useCallEngine(): CallActions {
 	}, []);
 
 	const attachLocalTracks = useCallback((pc: RTCPeerConnection) => {
-		const { localStream } = getStore();
+		const localStream = localStreamRef.current ?? getStore().localStream;
 		localStream?.getTracks().forEach((track) => {
-			pc.addTrack(track, localStream);
+			if (localStream) pc.addTrack(track, localStream);
 		});
 	}, []);
 
@@ -166,7 +167,8 @@ export function useCallEngine(): CallActions {
 				const offer = await entry.pc.createOffer({ iceRestart: true });
 				await entry.pc.setLocalDescription(offer);
 			} else {
-				await entry.pc.setLocalDescription();
+				const offer = await entry.pc.createOffer();
+				await entry.pc.setLocalDescription(offer);
 			}
 			const desc = entry.pc.localDescription;
 			if (!desc) return;
@@ -175,7 +177,8 @@ export function useCallEngine(): CallActions {
 				to: peerId,
 				sdp: { type: "offer", sdp: desc.sdp },
 			});
-		} catch {
+		} catch (err) {
+			console.log("[call] sendOffer error", err);
 			// Negotiation collision - the answer path resolves it.
 		} finally {
 			entry.makingOffer = false;
@@ -199,10 +202,12 @@ export function useCallEngine(): CallActions {
 
 	const createPeerConnection = useCallback(
 		(peerId: string): RTCPeerConnection => {
+			console.log("[call] agent createPeerConnection", peerId, "iceServers=", iceServers.current?.length);
 			cleanupPeer(peerId);
 			const pc = new RTCPeerConnection({
 				iceServers: iceServers.current ?? undefined,
 			});
+			pc.onicegatheringstatechange = () => console.log("[icegatheringstatechange]", pc.iceGatheringState);
 			const entry: PeerConnectionState = {
 				pc,
 				makingOffer: false,
@@ -233,6 +238,7 @@ export function useCallEngine(): CallActions {
 			};
 
 			pc.onicecandidate = (event) => {
+				console.log("[call] agent ice candidate", event.candidate?.candidate?.slice(0, 40));
 				if (!event.candidate) return;
 				const { callId } = getStore();
 				if (!callId) return;
@@ -316,7 +322,16 @@ export function useCallEngine(): CallActions {
 				if (collision) await pc.setRemoteDescription({ type: "rollback" });
 				await pc.setRemoteDescription({ type: "offer", sdp: sdp.sdp });
 				await flushQueuedCandidates(peerId);
-				await pc.setLocalDescription();
+				const answer = await pc.createAnswer();
+				await pc.setLocalDescription(answer);
+				console.log("[call] agent setLocalDescription answer done, gathering=", pc.iceGatheringState, "signaling=", pc.signalingState);
+				window.setTimeout(() => {
+					console.log("[call] agent iceGatheringState later=", pc.iceGatheringState);
+					if (pc.iceGatheringState === "new") {
+						console.log("[call] agent restarting ICE");
+						try { pc.restartIce(); } catch (e) { console.log(e); }
+					}
+				}, 1000);
 				const desc = pc.localDescription;
 				if (!desc) return;
 				const { callId } = getStore();
@@ -326,7 +341,8 @@ export function useCallEngine(): CallActions {
 					to: peerId,
 					sdp: { type: "answer", sdp: desc.sdp },
 				});
-			} catch {
+			} catch (err) {
+				console.log("[call] handleRemoteOffer error", err);
 				// Glare resolved against us - the polite side's offer wins.
 			}
 		},
@@ -366,6 +382,7 @@ export function useCallEngine(): CallActions {
 			stream.getVideoTracks().forEach((t) => {
 				t.enabled = store.localVideo;
 			});
+			localStreamRef.current = stream;
 			store.set({ localStream: stream });
 			return stream;
 		},
@@ -400,6 +417,7 @@ export function useCallEngine(): CallActions {
 				stream.getTracks().forEach((t) => {
 					t.stop();
 				});
+				localStreamRef.current = null;
 				store.set({ localStream: null });
 				return;
 			}
@@ -455,7 +473,8 @@ export function useCallEngine(): CallActions {
 			stream.getTracks().forEach((t) => {
 				t.stop();
 			});
-			store.set({ localStream: null });
+			localStreamRef.current = null;
+				store.set({ localStream: null });
 			return;
 		}
 		ringtone.current.stop();

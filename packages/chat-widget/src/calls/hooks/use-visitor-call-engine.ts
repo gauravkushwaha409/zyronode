@@ -61,6 +61,7 @@ export function useVisitorCallEngine(
 
 	const pcs = useRef(new Map<string, PeerConnectionState>());
 	const iceServers = useRef<RTCIceServer[] | null>(null);
+	const localStreamRef = useRef<MediaStream | null>(null);
 	const ringtone = useRef(createRingtone());
 	const joiningRef = useRef(false);
 	const selfPeerId = useRef<string | null>(null);
@@ -84,11 +85,10 @@ export function useVisitorCallEngine(
 
 	const fullCleanup = useCallback(() => {
 		for (const peerId of [...pcs.current.keys()]) cleanupPeer(peerId);
-		getStore()
-			.localStream?.getTracks()
-			.forEach((t) => {
-				t.stop();
-			});
+		(localStreamRef.current ?? getStore().localStream)?.getTracks().forEach((t) => {
+			t.stop();
+		});
+		localStreamRef.current = null;
 		ringtone.current.stop();
 	}, [cleanupPeer]);
 
@@ -128,9 +128,9 @@ export function useVisitorCallEngine(
 	}, []);
 
 	const attachLocalTracks = useCallback((pc: RTCPeerConnection) => {
-		const { localStream } = getStore();
+		const localStream = localStreamRef.current ?? getStore().localStream;
 		localStream?.getTracks().forEach((track) => {
-			pc.addTrack(track, localStream);
+			if (localStream) pc.addTrack(track, localStream);
 		});
 	}, []);
 
@@ -146,7 +146,17 @@ export function useVisitorCallEngine(
 				const offer = await entry.pc.createOffer({ iceRestart: true });
 				await entry.pc.setLocalDescription(offer);
 			} else {
-				await entry.pc.setLocalDescription();
+				const offer = await entry.pc.createOffer();
+				console.log("[call] visitor offer has ufrag:", /a=ice-ufrag/.test(offer.sdp ?? ""), "candidates:", ((offer.sdp ?? "").match(/a=candidate/g)||[]).length);
+				await entry.pc.setLocalDescription(offer);
+				console.log("[call] visitor setLocalDescription offer done, gathering=", entry.pc.iceGatheringState, "signaling=", entry.pc.signalingState);
+				window.setTimeout(() => {
+					console.log("[call] visitor iceGatheringState later=", entry.pc.iceGatheringState);
+					if (entry.pc.iceGatheringState === "new") {
+						console.log("[call] visitor restarting ICE");
+						try { entry.pc.restartIce(); } catch (e) { console.log(e); }
+					}
+				}, 1000);
 			}
 			const desc = entry.pc.localDescription;
 			if (!desc) return;
@@ -155,7 +165,8 @@ export function useVisitorCallEngine(
 				to: peerId,
 				sdp: { type: "offer", sdp: desc.sdp },
 			});
-		} catch {
+		} catch (err) {
+			console.log("[call] sendOffer error", err);
 			// Negotiation collision - the answer path resolves it.
 		} finally {
 			entry.makingOffer = false;
@@ -177,10 +188,12 @@ export function useVisitorCallEngine(
 
 	const createPeerConnection = useCallback(
 		(peerId: string): RTCPeerConnection => {
+			console.log("[call] visitor createPeerConnection", peerId, "iceServers=", JSON.stringify(iceServers.current));
 			cleanupPeer(peerId);
 			const pc = new RTCPeerConnection({
 				iceServers: iceServers.current ?? undefined,
 			});
+			pc.onicegatheringstatechange = () => console.log("[icegatheringstatechange]", pc.iceGatheringState);
 			const entry: PeerConnectionState = {
 				pc,
 				makingOffer: false,
@@ -191,6 +204,7 @@ export function useVisitorCallEngine(
 			};
 			pcs.current.set(peerId, entry);
 			attachLocalTracks(pc);
+			console.log("[call] visitor tracks attached:", pc.getSenders().map(s => s.track?.kind));
 
 			pc.ontrack = (event) => {
 				const [stream] = event.streams;
@@ -291,7 +305,8 @@ export function useVisitorCallEngine(
 				if (collision) await pc.setRemoteDescription({ type: "rollback" });
 				await pc.setRemoteDescription({ type: "offer", sdp: sdp.sdp });
 				await flushQueuedCandidates(peerId);
-				await pc.setLocalDescription();
+				const answer = await pc.createAnswer();
+				await pc.setLocalDescription(answer);
 				const desc = pc.localDescription;
 				if (!desc) return;
 				const { callId } = getStore();
@@ -301,7 +316,8 @@ export function useVisitorCallEngine(
 					to: peerId,
 					sdp: { type: "answer", sdp: desc.sdp },
 				});
-			} catch {
+			} catch (err) {
+				console.log("[call] handleRemoteOffer error", err);
 				// Glare resolved against us - the polite side's offer wins.
 			}
 		},
@@ -336,6 +352,7 @@ export function useVisitorCallEngine(
 			stream.getVideoTracks().forEach((t) => {
 				t.enabled = store.localVideo;
 			});
+			localStreamRef.current = stream;
 			store.set({ localStream: stream });
 			return stream;
 		},
@@ -362,6 +379,7 @@ export function useVisitorCallEngine(
 				stream.getTracks().forEach((t) => {
 					t.stop();
 				});
+				localStreamRef.current = null;
 				store.set({ localStream: null });
 				return;
 			}
@@ -403,6 +421,7 @@ export function useVisitorCallEngine(
 		let stream: MediaStream;
 		try {
 			stream = await acquireLocalMedia(incoming.type);
+			console.log("[call] visitor acceptCall acquired", stream.getTracks().map(t=>t.kind), "store localStream=", getStore().localStream?.getTracks().map(t=>t.kind));
 		} catch (err) {
 			store.set({ error: toMediaErrorMessage(err) });
 			return;
@@ -415,6 +434,7 @@ export function useVisitorCallEngine(
 				stream.getTracks().forEach((t) => {
 					t.stop();
 				});
+				localStreamRef.current = null;
 				store.set({ localStream: null });
 				return;
 			}
@@ -429,6 +449,7 @@ export function useVisitorCallEngine(
 				},
 			);
 			joiningRef.current = false;
+			console.log("[call] before setActive localStream=", getStore().localStream?.getTracks().map(t=>t.kind));
 			getStore().set({
 				phase: "active",
 				callId: incoming.callId,
@@ -439,6 +460,7 @@ export function useVisitorCallEngine(
 				localAudio: true,
 				localVideo: incoming.type === "VIDEO",
 			});
+			console.log("[call] after setActive localStream=", getStore().localStream?.getTracks().map(t=>t.kind));
 			for (const peer of ack.peers) {
 				createPeerConnection(peer.peerId);
 				getStore().upsertPeer({
@@ -697,6 +719,7 @@ export function useVisitorCallEngine(
 				},
 			);
 			for (const id of [...pcs.current.keys()]) cleanupPeer(id);
+			console.log("[call] visitor before createPC localStream=", getStore().localStream?.getTracks().map(t=>t.kind));
 			for (const peer of ack.peers) {
 				createPeerConnection(peer.peerId);
 				getStore().upsertPeer({
