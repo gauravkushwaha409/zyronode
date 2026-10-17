@@ -10,10 +10,9 @@ import { VisitorCallWebSocketProvider } from "./visitor-call-websocket-provider"
 /**
  * Owns visitor call state and wires the signaling side-car.
  *
- * Lazy: nothing is requested from the call server until the visitor starts a
- * call. `startCall` first flips `sessionRequested`, which makes
- * `VisitorCallWebSocketProvider` fetch a token and open `/calls`; the pending
- * call type is handed to the engine as soon as it is ready.
+ * The side-car connects as soon as a conversation exists so the widget can
+ * be rung by an agent; `startCall` either runs immediately (when the socket
+ * is ready) or queues until it is.
  *
  * `children` are never re-parented, so starting a call does not remount the
  * rest of the widget.
@@ -25,7 +24,6 @@ export function VisitorCallContextProvider({
 }) {
 	const [actions, setActions] = useState<VisitorCallActions | null>(null);
 	const actionsRef = useRef<VisitorCallActions | null>(null);
-	const [sessionRequested, setSessionRequested] = useState(false);
 	const [pendingStart, setPendingStart] = useState<CallType | null>(null);
 
 	const handleActionsChange = useCallback((next: VisitorCallActions | null) => {
@@ -37,7 +35,6 @@ export function VisitorCallContextProvider({
 
 	const startCall = useCallback(async (type: CallType) => {
 		if (actionsRef.current) return actionsRef.current.startCall(type);
-		setSessionRequested(true);
 		setPendingStart(type);
 	}, []);
 
@@ -50,7 +47,6 @@ export function VisitorCallContextProvider({
 		<VisitorCallActionsProvider actions={value}>
 			{children}
 			<VisitorCallWebSocketProvider
-				enabled={sessionRequested}
 				pendingStart={pendingStart}
 				onStartConsumed={handleStartConsumed}
 				onActionsChange={handleActionsChange}

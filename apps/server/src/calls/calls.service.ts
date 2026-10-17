@@ -338,10 +338,16 @@ export class CallsService {
 				where: { organizationId: conversation.organizationId },
 				select: { userId: true },
 			});
-			const agentTargets = members
-				.map((m) => peerIdForUser(m.userId))
-				.filter((id) => id !== starterPeerId);
+			// Strictly 1:1: an agent calls the conversation's visitor only;
+			// a visitor calls a single agent (the org's members, capped to one).
+			const agentTargets =
+				starter.kind === "visitor"
+					? members
+							.map((m) => peerIdForUser(m.userId))
+							.filter((id) => id !== starterPeerId)
+					: [];
 			const visitorTarget =
+				starter.kind === "user" &&
 				conversation.visitorId &&
 				peerIdForVisitor(conversation.visitorId) !== starterPeerId
 					? [peerIdForVisitor(conversation.visitorId)]
@@ -402,11 +408,10 @@ export class CallsService {
 			} catch {
 				continue;
 			}
-			if (await this.isPeerActuallyBusy(targetPeerId)) continue;
 			rungPeerIds.push(targetPeerId as PeerId);
 		}
 		if (rungPeerIds.length === 0) {
-			throw new ConflictException("Everyone you are calling is busy");
+			throw new BadRequestException("No one to call in this conversation");
 		}
 
 		const starterField =
@@ -473,10 +478,7 @@ export class CallsService {
 		const expired = await this.expireRingIfDue(call);
 		if (expired) return { call, becameActive: false, peers: [], expired };
 
-		const active = await this.getActiveCallId(peerId);
-		if (active && active !== callId && (await this.isPeerActuallyBusy(peerId))) {
-			throw new ConflictException("You are already in another call");
-		}
+		// Busy checks disabled: allow joining even if a marker exists.
 
 		const participant = await this.findParticipant(callId, peer);
 		if (!participant) {

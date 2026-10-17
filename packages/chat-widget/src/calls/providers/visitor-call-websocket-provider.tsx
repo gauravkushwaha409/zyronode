@@ -49,21 +49,15 @@ function VisitorCallEngineHost({
 }
 
 /**
- * Visitor signaling side-car. It is completely inert until `enabled` becomes
- * true (the visitor tapped call): only then does it fetch a call token, open
- * the `/calls` namespace, and run the call engine.
- *
- * Scope (organization + conversation) comes from the visitor session, and it
- * never wraps the widget's `children`, so connecting late never remounts the
- * widget tree.
+ * Visitor signaling side-car. Opens the `/calls` namespace as soon as a
+ * conversation exists so the widget can be rung by an agent; the engine is
+ * mounted once the call token lands.
  */
 export function VisitorCallWebSocketProvider({
-	enabled,
 	pendingStart,
 	onStartConsumed,
 	onActionsChange,
 }: {
-	enabled: boolean;
 	pendingStart: CallType | null;
 	onStartConsumed: () => void;
 	onActionsChange: (actions: VisitorCallActions | null) => void;
@@ -82,7 +76,7 @@ export function VisitorCallWebSocketProvider({
 	}, [organizationId, setStore]);
 
 	useEffect(() => {
-		if (!enabled || !organizationId || !conversationId) return;
+		if (!organizationId || !conversationId) return;
 		setStore({ conversationId });
 		let live = true;
 		void getVisitorCallApi()
@@ -96,9 +90,9 @@ export function VisitorCallWebSocketProvider({
 		return () => {
 			live = false;
 		};
-	}, [enabled, organizationId, conversationId, setStore]);
+	}, [organizationId, conversationId, setStore]);
 
-	if (!enabled || !organizationId || !token) return null;
+	if (!organizationId || !conversationId || !token) return null;
 
 	return (
 		<WebSocketProvider
