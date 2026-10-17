@@ -1,13 +1,12 @@
 # apps/chat-widget-test/docker/Dockerfile.production
 #
-# Release image for chat-widget-test (staging, uat, production). Build context is the
+# Release image for chat-widget-test (production). Build context is the
 # repo root (monorepo workspace). The APP_ENV build arg picks
 # env/.env.<APP_ENV> (default: production):
 #
 #   docker build -f apps/chat-widget-test/docker/Dockerfile.production .
-#   docker build -f apps/chat-widget-test/docker/Dockerfile.production --build-arg APP_ENV=staging .
 #
-# docker/docker-compose.{staging,uat,production}.yml wire this up.
+# docker/docker-compose.production.yml wires this up.
 #
 # Notes:
 # - pnpm comes from corepack and resolves to the root package.json
