@@ -11,7 +11,8 @@ export function getSocketUrl(): string {
 export function getAgentSocketUrl(
 	namespace:
 		| typeof SOCKET_NAMESPACES.AGENT_INBOX
-		| typeof SOCKET_NAMESPACES.AGENT_VISITORS,
+		| typeof SOCKET_NAMESPACES.AGENT_VISITORS
+		| typeof SOCKET_NAMESPACES.CALLS,
 ): string {
 	const base = getSocketUrl();
 	if (!base) return "";

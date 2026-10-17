@@ -12,6 +12,7 @@ WORKDIR /app
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY apps/app/package.json ./apps/app/
 COPY packages/api-client/package.json ./packages/api-client/
+COPY packages/call-signaling/package.json ./packages/call-signaling/
 COPY packages/form/package.json ./packages/form/
 COPY packages/hooks/package.json ./packages/hooks/
 COPY packages/icons/package.json ./packages/icons/
@@ -35,6 +36,7 @@ COPY apps/app/index.html \
 COPY apps/app/public ./apps/app/public
 
 COPY packages/api-client/tsconfig.json ./packages/api-client/tsconfig.json
+COPY packages/call-signaling/tsconfig.json ./packages/call-signaling/tsconfig.json
 COPY packages/form/tsconfig.json ./packages/form/tsconfig.json
 COPY packages/hooks/tsconfig.json ./packages/hooks/tsconfig.json
 COPY packages/icons/tsconfig.json ./packages/icons/tsconfig.json

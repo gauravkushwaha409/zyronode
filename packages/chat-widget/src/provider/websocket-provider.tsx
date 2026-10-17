@@ -4,7 +4,7 @@ import {
 	WebSocketProvider,
 } from "@package/websocket";
 import type { ReactNode } from "react";
-import { getConfig } from "../config";
+import { useChatWidgetConfig } from "../config";
 
 /**
  * Socket.io connection for the visitor, authenticated with the
@@ -19,12 +19,12 @@ export function WidgetWebSocketProvider({
 	namespace: (typeof SOCKET_NAMESPACES)[keyof typeof SOCKET_NAMESPACES];
 	children: ReactNode;
 }) {
-	const config = getConfig();
+	const config = useChatWidgetConfig();
 
 	return (
 		<WebSocketProvider
 			options={{
-				url: `${toWebSocketUrl(config.websocketUrl)}${namespace}`,
+				url: `${toWebSocketUrl(config.serverUrl)}${namespace}`,
 				transports: ["websocket"],
 				reconnection: true,
 				reconnectionAttempts: 10,

@@ -1,64 +1,83 @@
 import {
-  createContext,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-  type ReactNode,
+	createContext,
+	type ReactNode,
+	useContext,
+	useEffect,
+	useRef,
+	useState,
 } from "react";
+import type {
+	ConnectionStatus,
+	WebSocketClientOptions,
+} from "../types/index.js";
 import { WebSocketClient } from "../websocket-client.js";
-import type { ConnectionStatus, WebSocketClientOptions } from "../types/index.js";
 
 interface WebSocketContextValue {
-  client: WebSocketClient;
-  status: ConnectionStatus;
+	client: WebSocketClient;
+	status: ConnectionStatus;
 }
 
-export const WebSocketContext = createContext<WebSocketContextValue | null>(null);
+export const WebSocketContext = createContext<WebSocketContextValue | null>(
+	null,
+);
 
 export interface WebSocketProviderProps {
-  options: WebSocketClientOptions;
-  auth?: Record<string, unknown>;
-  children: ReactNode;
+	options: WebSocketClientOptions;
+	auth?: Record<string, unknown>;
+	children: ReactNode;
 }
 
 export function WebSocketProvider({
-  options,
-  auth,
-  children,
+	options,
+	auth,
+	children,
 }: WebSocketProviderProps) {
-  const [status, setStatus] = useState<ConnectionStatus>("disconnected");
-  const clientRef = useRef<WebSocketClient | null>(null);
+	const [status, setStatus] = useState<ConnectionStatus>("disconnected");
+	const clientRef = useRef<WebSocketClient | null>(null);
 
-  if (!clientRef.current) {
-    clientRef.current = new WebSocketClient(options);
-  }
+	if (!clientRef.current) {
+		clientRef.current = new WebSocketClient(options);
+	}
 
-  const client = clientRef.current;
+	const client = clientRef.current;
 
-  useEffect(() => {
-    return client.onStatus(setStatus);
-  }, [client]);
+	// Serialized auth: callers pass fresh object literals (`auth={{...}}`),
+	// so identity comparison would reconnect on every render. Reconnect only
+	// when the payload actually changes; disconnect only on unmount.
+	const authKey = auth ? JSON.stringify(auth) : "";
+	const lastAuthKey = useRef<string | null>(null);
 
-  useEffect(() => {
-    if (auth) {
-      client.connect(auth);
-    } else {
-      client.disconnect();
-    }
-  }, [client, auth]);
+	useEffect(() => {
+		return client.onStatus(setStatus);
+	}, [client]);
 
-  return (
-    <WebSocketContext.Provider value={{ client, status }}>
-      {children}
-    </WebSocketContext.Provider>
-  );
+	useEffect(() => {
+		if (lastAuthKey.current === authKey) return;
+		lastAuthKey.current = authKey;
+		if (auth) {
+			client.connect(auth);
+		} else {
+			client.disconnect();
+		}
+	}, [client, auth, authKey]);
+
+	useEffect(() => {
+		return () => {
+			client.disconnect();
+		};
+	}, [client]);
+
+	return (
+		<WebSocketContext.Provider value={{ client, status }}>
+			{children}
+		</WebSocketContext.Provider>
+	);
 }
 
 export function useWebSocket(): WebSocketContextValue {
-  const ctx = useContext(WebSocketContext);
-  if (!ctx) {
-    throw new Error("useWebSocket must be used within a <WebSocketProvider>");
-  }
-  return ctx;
+	const ctx = useContext(WebSocketContext);
+	if (!ctx) {
+		throw new Error("useWebSocket must be used within a <WebSocketProvider>");
+	}
+	return ctx;
 }

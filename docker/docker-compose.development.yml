@@ -37,6 +37,25 @@ services:
       timeout: 60s
       retries: 10
 
+  # Local TURN server for call testing. Uses the REST credential scheme
+  # (static-auth-secret must match TURN_SECRET in env/.env.development).
+  # Config lives in ../infra/coturn/turnserver.conf.
+  coturn:
+    image: coturn/coturn:4.6
+    container_name: zyronode-coturn
+    restart: unless-stopped
+    command:
+      - -c
+      - /etc/coturn/turnserver.conf
+      - --static-auth-secret=${TURN_SECRET:?TURN_SECRET must be set in env/.env.development}
+    ports:
+      - "3478:3478"
+      - "3478:3478/udp"
+      - "5349:5349"
+      - "5349:5349/udp"
+    volumes:
+      - ../infra/coturn/turnserver.conf:/etc/coturn/turnserver.conf:ro
+
   server:
     build:
       context: ..
@@ -95,7 +114,9 @@ services:
         condition: service_healthy
     volumes:
       - ../apps/app/src:/app/apps/app/src
+      - ../env:/app/env:ro
       - ../packages/api-client/src:/app/packages/api-client/src
+      - ../packages/call-signaling/src:/app/packages/call-signaling/src
       - ../packages/form/src:/app/packages/form/src
       - ../packages/hooks/src:/app/packages/hooks/src
       - ../packages/icons/src:/app/packages/icons/src
@@ -125,8 +146,10 @@ services:
         condition: service_healthy
     volumes:
       - ../apps/chat-widget-test/src:/app/apps/chat-widget-test/src
+      - ../env:/app/env:ro
       - ../packages/chat-widget/src:/app/packages/chat-widget/src
       - ../packages/api-client/src:/app/packages/api-client/src
+      - ../packages/call-signaling/src:/app/packages/call-signaling/src
       - ../packages/icons/src:/app/packages/icons/src
       - ../packages/query/src:/app/packages/query/src
       - ../packages/sse/src:/app/packages/sse/src

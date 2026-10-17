@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@package/api-client": "workspace:*",
+    "@package/call-signaling": "workspace:*",
     "@package/icons": "workspace:*",
     "@package/query": "workspace:*",
     "@package/sse": "workspace:*",

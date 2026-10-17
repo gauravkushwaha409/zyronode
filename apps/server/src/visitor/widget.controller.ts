@@ -7,9 +7,13 @@ import {
 	Query,
 	Req,
 	Res,
+	UnauthorizedException,
 } from "@nestjs/common";
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 import type { Request, Response } from "express";
+import { CallsService } from "../calls/calls.service";
+import { VisitorCallTokenDto } from "../calls/dto/call.dto";
+import { TurnService } from "../calls/turn.service";
 import { ConversationService } from "../inbox/conversation.service";
 import { CreateConversationDto } from "../inbox/dto/create-conversation.dto";
 import { ListMessagesDto } from "../message/dto/list-messages.dto";
@@ -30,6 +34,8 @@ export class WidgetController {
 		private readonly conversationService: ConversationService,
 		private readonly messageService: MessageService,
 		private readonly widgetEvents: WidgetEventsPublisher,
+		private readonly callsService: CallsService,
+		private readonly turnService: TurnService,
 	) {}
 
 	/**
@@ -139,5 +145,49 @@ export class WidgetController {
 			message: result.data,
 		});
 		return result;
+	}
+
+	/**
+	 * Public - mints a short-lived call token so the visitor's browser can
+	 * connect to the /calls signaling namespace. The browser is identified
+	 * by the httpOnly visitor_session cookie; the conversation must belong
+	 * to that visitor. Media stays peer-to-peer; the token only scopes
+	 * signaling to one conversation.
+	 */
+	@Post("calls/token")
+	@ApiOperation({ summary: "Mint a short-lived call token for this visitor" })
+	@ApiResponse({ status: 201, description: "Visitor call token" })
+	getCallToken(@Req() req: Request, @Body() dto: VisitorCallTokenDto) {
+		const sessionId = req.cookies?.[VISITOR_SESSION_COOKIE] as string | undefined;
+		return this.callsService.createVisitorCallToken(
+			sessionId,
+			dto.organizationId,
+			dto.conversationId,
+		);
+	}
+
+	/**
+	 * Public - STUN/TURN servers for the visitor's browser, scoped to its
+	 * session cookie like the token endpoint above.
+	 */
+	@Get("calls/ice-servers")
+	@ApiOperation({ summary: "Get ICE servers for this visitor" })
+	@ApiResponse({ status: 200, description: "ICE servers for WebRTC" })
+	async getVisitorIceServers(
+		@Req() req: Request,
+		@Query("organizationId") organizationId: string,
+	) {
+		const sessionId = req.cookies?.[VISITOR_SESSION_COOKIE] as string | undefined;
+		if (!sessionId || !organizationId) {
+			throw new UnauthorizedException("No visitor session");
+		}
+		const visitor = await this.visitorService.findBySession(
+			sessionId,
+			organizationId,
+		);
+		if (!visitor) {
+			throw new UnauthorizedException("Unknown visitor session");
+		}
+		return this.turnService.getIceServers(`visitor:${visitor.id}`);
 	}
 }

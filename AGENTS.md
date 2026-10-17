@@ -15,7 +15,7 @@
 
 ## Env & Ports
 
-- Env files live in `env/`: copy `env/.env.example` → `env/.env.<environment>` (`development` | `staging` | `uat` | `production`). Only the example is committed; the rest are gitignored.
+- Env files live in `env/`: copy `env/.env.example` → `env/.env.<environment>` (`development` | `production`). Only the example is committed; the rest are gitignored.
 - Which file loads: Vite reads `env/.env.<mode>` (`vite` dev = `development`, `vite build --mode <environment>`); server `main.ts`, `prisma.config.ts` and `prisma/seed.ts` read `env/.env.${APP_ENV:-development}`. Already-set vars (docker `env_file`) always win.
 - Single source of truth for ports: `SERVER_PORT` (8000), `APP_PORT` (3000), `CHAT_WIDGET_PORT` (4000).
 - Supports `${VAR}` expansion in `VITE_SERVER_URL`, `VITE_APP_URL`, `VITE_CHAT_WIDGET_SERVER_URL` (see `apps/app/vite.config.ts:8` and `apps/server/src/main.ts:11`).
@@ -24,14 +24,14 @@
 
 ## Docker
 
-Each app owns its Dockerfiles: `apps/<app>/docker/Dockerfile.development` (bind-mount dev image) and `apps/<app>/docker/Dockerfile.production` (release image for staging/uat/production; `APP_ENV` build arg picks `env/.env.<APP_ENV>`). Build context is always the repo root. Compose files live in `docker/docker-compose.<environment>.yml`. Compose paths are relative to `docker/`; each file sets its own project `name:` so volumes never collide.
+Each app owns its Dockerfiles: `apps/<app>/docker/Dockerfile.development` (bind-mount dev image) and `apps/<app>/docker/Dockerfile.production` (release image for production; `APP_ENV` build arg picks `env/.env.<APP_ENV>`). Build context is always the repo root. Compose files live in `docker/docker-compose.<environment>.yml`. Compose paths are relative to `docker/`; each file sets its own project `name:` so volumes never collide.
 
 ```sh
 pnpm docker:development:up      # postgres + redis + localstack + server + app + widget
 pnpm docker:development:logs
 pnpm docker:development:down
 pnpm docker:development:reset   # down -v + up -d (destroys DB)
-pnpm docker:<staging|uat|production>:<build|up|down|logs>
+pnpm docker:<production>:<build|up|down|logs>
 ```
 
 - Server container runs `pnpm prisma:generate && pnpm prisma:deploy && pnpm dev:server`.

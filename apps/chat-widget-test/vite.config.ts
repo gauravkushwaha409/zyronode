@@ -18,10 +18,7 @@ export default defineConfig(({ mode }) => {
   const chatWidgetPort = Number.parseInt(expandEnv(chatWidgetPortRaw, allEnv) ?? "4000", 10) || 4000;
 
   const rawServerUrl = env.VITE_CHAT_WIDGET_SERVER_URL;
-  const rawWebsocketUrl = env.VITE_CHAT_WIDGET_WEBSOCKET_URL;
   const serverUrl = expandEnv(rawServerUrl, allEnv) || rawServerUrl || `http://localhost:${serverPort}`;
-  const websocketUrl = expandEnv(rawWebsocketUrl, allEnv) || rawWebsocketUrl || `http://localhost:${serverPort}`;
-  const organizationId = env.VITE_ORGANIZATION_ID
 
   return {
     plugins: [react(), tailwindcss()],
@@ -69,13 +66,6 @@ export default defineConfig(({ mode }) => {
           secure: false,
         },
       },
-    },
-    define: {
-      __APP_CONFIG__: JSON.stringify({
-        server_url: serverUrl,
-        websocket_url: websocketUrl,
-        organization_id: organizationId,
-      }),
     },
     envDir,
   };

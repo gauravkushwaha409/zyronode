@@ -1,13 +1,13 @@
+export { WidgetConversationSseProvider } from "./conversation-sse-provider";
 export {
-	ConversationProvider,
-	useConversation,
-} from "./conversation-provider";
+	OrganizationProvider,
+	useOrganizationId,
+} from "./organization-provider";
 export { WidgetQueryProvider } from "./query-provider";
-export { WidgetSseProvider } from "./sse-provider";
-export { WidgetVisitorSseProvider } from "./visitor-sse-provider";
 export {
 	useVisitorSession,
-	VisitorSessionProvider,
-} from "./visitor-session-provider";
+	VisitorSessionContextProvider,
+} from "./visitor-session-context-provider";
+export { WidgetVisitorSseProvider } from "./visitor-sse-provider";
 export { WidgetWebSocketProvider } from "./websocket-provider";
 export { WidgetSseListener } from "./widget-sse-listener";

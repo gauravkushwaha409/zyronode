@@ -7,7 +7,7 @@ const HEARTBEAT_INTERVAL_MS = 20_000;
  * Heartbeats visitor:presence to the gateway (see apps/server VisitorGateway)
  * so Redis knows this visitor is online, and emits visitor:left on tab
  * close/navigate-away. Both organizationId and visitorId come from
- * VisitorSessionProvider - the gateway re-verifies them against the DB
+ * VisitorSessionContextProvider - the gateway re-verifies them against the DB
  * before trusting anything, so nothing here is a security boundary.
  *
  * Best-effort only: presence tracking must never throw into the widget.

@@ -1,13 +1,12 @@
 # apps/server/docker/Dockerfile.production
 #
-# Release image for server (staging, uat, production). Build context is the
+# Release image for server (production). Build context is the
 # repo root (monorepo workspace). The APP_ENV build arg picks
 # env/.env.<APP_ENV> (default: production):
 #
 #   docker build -f apps/server/docker/Dockerfile.production .
-#   docker build -f apps/server/docker/Dockerfile.production --build-arg APP_ENV=staging .
 #
-# docker/docker-compose.{staging,uat,production}.yml wire this up.
+# docker/docker-compose.production.yml wires this up.
 #
 # Notes:
 # - pnpm comes from corepack and resolves to the root package.json
@@ -43,6 +42,7 @@ COPY apps/app/package.json ./apps/app/
 COPY apps/server/package.json ./apps/server/
 COPY apps/chat-widget-test/package.json ./apps/chat-widget-test/
 COPY packages/api-client/package.json ./packages/api-client/
+COPY packages/call-signaling/package.json ./packages/call-signaling/
 COPY packages/chat-widget/package.json ./packages/chat-widget/
 COPY packages/form/package.json ./packages/form/
 COPY packages/hooks/package.json ./packages/hooks/
@@ -59,6 +59,8 @@ RUN pnpm install --frozen-lockfile
 # tooling + server source (no bind mounts in prod — everything is baked in)
 COPY turbo.json tsconfig.json ./
 COPY apps/server ./apps/server
+# workspace source for @package/* type imports (import type = erased at runtime)
+COPY packages/call-signaling ./packages/call-signaling
 
 # build-time env for prisma.config.ts dotenv (env/.env.$APP_ENV)
 COPY env/.env.${APP_ENV} ./env/
@@ -74,6 +76,7 @@ COPY apps/app/package.json ./apps/app/
 COPY apps/server/package.json ./apps/server/
 COPY apps/chat-widget-test/package.json ./apps/chat-widget-test/
 COPY packages/api-client/package.json ./packages/api-client/
+COPY packages/call-signaling/package.json ./packages/call-signaling/
 COPY packages/chat-widget/package.json ./packages/chat-widget/
 COPY packages/form/package.json ./packages/form/
 COPY packages/hooks/package.json ./packages/hooks/

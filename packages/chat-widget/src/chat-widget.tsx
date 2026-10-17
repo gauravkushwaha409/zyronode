@@ -1,27 +1,25 @@
 import { SOCKET_NAMESPACES } from "@package/websocket";
 import { Activity, useCallback, useState } from "react";
+import { VisitorCallContextProvider } from "./calls";
+import { useChatWidgetConfig } from "./config";
 import { ChatWidgetChat, WidgetHeader, WidgetToggle } from "./features";
 import { useVisitorPresence } from "./hooks/events/ws";
 import {
-	ConversationProvider,
 	useVisitorSession,
-	VisitorSessionProvider,
+	VisitorSessionContextProvider,
+	WidgetConversationSseProvider,
 	WidgetQueryProvider,
-	WidgetSseListener,
-	WidgetSseProvider,
 	WidgetVisitorSseProvider,
 	WidgetWebSocketProvider,
 } from "./provider";
 import { useChatWidgetStore } from "./store";
 
-interface ChatWidgetProps {
-	organizationId?: string;
-}
-
-export default function ChatWidget({ organizationId }: ChatWidgetProps) {
+export default function ChatWidget() {
 	const [isWidgetOpen, setWidgetOpen] = useState(false);
 	const unreadCount = useChatWidgetStore((s) => s.unreadCount);
 	const clearUnread = useChatWidgetStore((s) => s.clearUnread);
+
+	const { organizationId } = useChatWidgetConfig();
 
 	const handleToggle = useCallback(() => {
 		setWidgetOpen((prev) => {
@@ -37,30 +35,25 @@ export default function ChatWidget({ organizationId }: ChatWidgetProps) {
 
 	console.log("ChatWidget rendered with organizationId:", organizationId);
 	return (
-		<VisitorSessionProvider organizationId={organizationId}>
-			<WidgetVisitorSseProvider>
-				<WidgetQueryProvider>
-					<ConversationProvider organizationId={organizationId}>
-						<WidgetWebSocketProvider namespace={SOCKET_NAMESPACES.VISITOR}>
-							<WidgetSseProvider>
-								{/* Always-mounted SSE listener: connects as soon as conversationId exists,
-						    stays subscribed while widget is hidden via <Activity>. */}
-								<WidgetSseListener isWidgetOpen={isWidgetOpen} />
-								<WidgetPresenceEmitter />
+		<VisitorSessionContextProvider organizationId={organizationId}>
+			<WidgetQueryProvider>
+				<VisitorCallContextProvider>
+					<WidgetVisitorSseProvider />
+					<WidgetWebSocketProvider namespace={SOCKET_NAMESPACES.VISITOR}>
+						<WidgetConversationSseProvider isWidgetOpen={isWidgetOpen} />
+						<WidgetPresenceEmitter />
 
-								<WidgetWebSocketProvider namespace={SOCKET_NAMESPACES.AGENT_INBOX}>
-									<Activity mode={isWidgetOpen ? "visible" : "hidden"}>
-										<WidgetWindow onClose={handleClose} />
-									</Activity>
+						<WidgetWebSocketProvider namespace={SOCKET_NAMESPACES.AGENT_INBOX}>
+							<Activity mode={isWidgetOpen ? "visible" : "hidden"}>
+								<WidgetWindow onClose={handleClose} />
+							</Activity>
 
-									<WidgetToggle onClick={handleToggle} unreadCount={unreadCount} />
-								</WidgetWebSocketProvider>
-							</WidgetSseProvider>
+							<WidgetToggle onClick={handleToggle} unreadCount={unreadCount} />
 						</WidgetWebSocketProvider>
-					</ConversationProvider>
-				</WidgetQueryProvider>
-			</WidgetVisitorSseProvider>
-		</VisitorSessionProvider>
+					</WidgetWebSocketProvider>
+				</VisitorCallContextProvider>
+			</WidgetQueryProvider>
+		</VisitorSessionContextProvider>
 	);
 }
 
@@ -75,7 +68,8 @@ function WidgetPresenceEmitter() {
  * Rendered only while the widget is open.
  *
  * Lazy conversation: no network call until visitor sends first message.
- * ChatWidgetChat handles empty state + lazy creation via ConversationProvider.ensureConversation().
+ * ChatWidgetChat handles empty state + lazy creation via
+ * useVisitorSession().conversation.ensure().
  */
 function WidgetWindow({ onClose }: { onClose: () => void }) {
 	const { activeTab } = useChatWidgetStore();

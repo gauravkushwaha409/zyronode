@@ -31,6 +31,8 @@ model User {
   assignedVisitors Visitor[]     @relation("VisitorAssignedAgent")
   visitorNotes     VisitorNote[] @relation("VisitorNoteAuthor")
   deletedConversations Conversation[] @relation("ConversationDeletedBy")
+  startedCalls     Call[]        @relation("CallStartedBy")
+  callParticipations CallParticipant[] @relation("CallParticipations")
   leadingTeams     Team[]        @relation("TeamLeader")
   teamInvitations  TeamInvitation[] @relation("TeamInvitationInvitedBy")
 
@@ -243,6 +245,8 @@ model Visitor {
   notes         VisitorNote[]
   pageVisits    VisitorPageVisit[]
   conversations Conversation[]
+  startedCalls  Call[]            @relation("CallStartedByVisitor")
+  callParticipations CallParticipant[] @relation("CallParticipationsVisitor")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -332,6 +336,94 @@ enum MessageDeliveryStatus {
   READ
 }
 
+enum CallType {
+  AUDIO
+  VIDEO
+}
+
+enum CallStatus {
+  RINGING
+  ACTIVE
+  ENDED
+}
+
+enum CallEndReason {
+  COMPLETED
+  MISSED
+  REJECTED
+  CANCELLED
+  FAILED
+}
+
+enum CallParticipantStatus {
+  INVITED
+  JOINED
+  LEFT
+  REJECTED
+  MISSED
+}
+
+model Call {
+  id             String     @id @default(uuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  startedById String?
+  startedBy   User?  @relation("CallStartedBy", fields: [startedById], references: [id], onDelete: Cascade)
+
+  // Visitor starter (when the call was started from the chat widget).
+  // Exactly one of startedBy / startedByVisitor is set.
+  startedByVisitorId String?
+  startedByVisitor   Visitor? @relation("CallStartedByVisitor", fields: [startedByVisitorId], references: [id], onDelete: Cascade)
+
+  type   CallType
+  status CallStatus @default(RINGING)
+
+  startedAt  DateTime  @default(now()) @map("started_at")
+  answeredAt DateTime? @map("answered_at")
+  endedAt    DateTime? @map("ended_at")
+  endReason  CallEndReason? @map("end_reason")
+
+  participants CallParticipant[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([conversationId])
+  @@index([conversationId, startedAt(sort: Desc)])
+  @@index([status])
+  @@map("calls")
+}
+
+model CallParticipant {
+  id     String @id @default(uuid())
+  callId String
+  call   Call   @relation(fields: [callId], references: [id], onDelete: Cascade)
+
+  userId String?
+  user   User?  @relation("CallParticipations", fields: [userId], references: [id], onDelete: Cascade)
+
+  // Visitor participant (chat widget side). Exactly one of user / visitor
+  // is set per row; enforced in CallsService (not a DB check constraint).
+  visitorId String?
+  visitor   Visitor? @relation("CallParticipationsVisitor", fields: [visitorId], references: [id], onDelete: Cascade)
+
+  status CallParticipantStatus @default(INVITED)
+
+  joinedAt DateTime? @map("joined_at")
+  leftAt   DateTime? @map("left_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([callId, userId])
+  @@unique([callId, visitorId])
+  @@index([callId])
+  @@index([userId])
+  @@index([visitorId])
+  @@map("call_participants")
+}
+
 model Conversation {
   id             String       @id @default(uuid())
   organizationId String
@@ -353,6 +445,8 @@ model Conversation {
   metadata     Json?
 
   messages Message[]
+
+  calls Call[]
 
   deletedAt   DateTime? @map("deleted_at")
   deletedById String?   @map("deleted_by")

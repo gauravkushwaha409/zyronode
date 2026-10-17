@@ -14,7 +14,7 @@ type SendMessageVariables = {
 
 /**
  * Visitor message mutation — ONLY sends messages.
- * Conversation creation is handled separately by `ConversationProvider.ensureConversation()`.
+ * Conversation creation is handled separately by `useVisitorSession().conversation.ensure()`.
  *
  * Usage (in ChatWidgetChat.handleSend):
  *   let activeId = conversationId;
