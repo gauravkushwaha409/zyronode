@@ -7,9 +7,9 @@ import { useVisitorPresence } from "./hooks/events/ws";
 import {
 	useVisitorSession,
 	VisitorSessionContextProvider,
+	WidgetConversationSseProvider,
 	WidgetQueryProvider,
 	WidgetSseListener,
-	WidgetSseProvider,
 	WidgetVisitorSseProvider,
 	WidgetWebSocketProvider,
 } from "./provider";
@@ -41,7 +41,7 @@ export default function ChatWidget() {
 				<WidgetQueryProvider>
 					<VisitorCallProvider organizationId={organizationId ?? null}>
 						<WidgetWebSocketProvider namespace={SOCKET_NAMESPACES.VISITOR}>
-							<WidgetSseProvider>
+							<WidgetConversationSseProvider>
 								<WidgetSseListener isWidgetOpen={isWidgetOpen} />
 								<WidgetPresenceEmitter />
 
@@ -52,7 +52,7 @@ export default function ChatWidget() {
 
 									<WidgetToggle onClick={handleToggle} unreadCount={unreadCount} />
 								</WidgetWebSocketProvider>
-							</WidgetSseProvider>
+							</WidgetConversationSseProvider>
 						</WidgetWebSocketProvider>
 					</VisitorCallProvider>
 				</WidgetQueryProvider>

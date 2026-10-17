@@ -1,9 +1,9 @@
+export { WidgetConversationSseProvider } from "./conversation-sse-provider";
 export {
 	OrganizationProvider,
 	useOrganizationId,
 } from "./organization-provider";
 export { WidgetQueryProvider } from "./query-provider";
-export { WidgetSseProvider } from "./sse-provider";
 export {
 	useVisitorSession,
 	VisitorSessionContextProvider,

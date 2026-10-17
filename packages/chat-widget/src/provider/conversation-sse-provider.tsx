@@ -8,7 +8,7 @@ import { useVisitorSession } from "./visitor-session-context-provider";
  * conversation (GET /api/v1/sse/visitor/conversation/:conversationId).
  * Renders children unconnected until a conversation exists.
  */
-export function WidgetSseProvider({ children }: { children: ReactNode }) {
+export function WidgetConversationSseProvider({ children }: { children: ReactNode }) {
 	const {
 		visitorId,
 		conversation: { id: conversationId },

@@ -12,7 +12,7 @@ interface WidgetSseListenerProps {
  * Always-mounted SSE listener for visitor messages.
  *
  * - Mounted outside <Activity> so it stays subscribed even when widget is hidden.
- * - Requires <WidgetSseProvider> ancestor (gracefully no-ops if no conversationId yet).
+ * - Requires <WidgetConversationSseProvider> ancestor (gracefully no-ops if no conversationId yet).
  * - Patches react-query cache via applyChatMessageEvent and bumps unread badge
  *   when a non-visitor message arrives while hidden.
  */
