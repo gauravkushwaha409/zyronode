@@ -20,7 +20,7 @@ import {
 } from "@/features/team-management";
 
 export const Route = createFileRoute(
-	"/_organization-protected/$organization/settings/team-management",
+	"/_protected/$organization/settings/team-management",
 )({
 	component: RouteComponent,
 });

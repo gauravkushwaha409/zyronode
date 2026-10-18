@@ -6,7 +6,7 @@ import { z } from "zod";
 import { useMeQuery } from "@/features/auth/hooks";
 import { useState } from "react";
 
-export const Route = createFileRoute("/_organization-protected/$organization/settings/account-settings/security")({
+export const Route = createFileRoute("/_protected/$organization/settings/account-settings/security")({
   component: RouteComponent,
 });
 

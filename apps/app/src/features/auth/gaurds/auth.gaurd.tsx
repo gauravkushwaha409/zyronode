@@ -70,7 +70,7 @@ export function redirectAuthenticatedUserToApp(auth: RouterContext["auth"]) {
  * redirects to the same location with the org id replaced -
  * query params are preserved.
  *
- * Call from beforeLoad of the /_organization-protected/$organization
+ * Call from beforeLoad of the /_protected/$organization
  * route (parent auth guards run first).
  */
 export function activeOrganizationGuard({

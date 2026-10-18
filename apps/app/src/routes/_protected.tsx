@@ -2,7 +2,7 @@ import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { AuthGaurd } from "@/features/auth/gaurds";
 import { CreateOrganizationDialog } from "@/features/organization/components";
 
-export const Route = createFileRoute("/_organization-protected")({
+export const Route = createFileRoute("/_protected")({
 	component: RouteComponent,
 	beforeLoad: ({ context }) => {
 		const auth = context.auth;

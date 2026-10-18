@@ -4,7 +4,7 @@ import { Sidebar } from '@/components';
 import { activeOrganizationGuard } from '@/features/auth/gaurds';
 import { AgentSocketProvider } from '@/features/realtime/websocket';
 
-export const Route = createFileRoute('/_organization-protected/$organization')({
+export const Route = createFileRoute('/_protected/$organization')({
   beforeLoad: ({ context, params }) => {
     activeOrganizationGuard({
       auth: context.auth,

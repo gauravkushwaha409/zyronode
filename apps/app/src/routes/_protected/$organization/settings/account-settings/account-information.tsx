@@ -16,7 +16,7 @@ const schema = z.object({
 });
 
 export const Route = createFileRoute(
-  "/_organization-protected/$organization/settings/account-settings/account-information",
+  "/_protected/$organization/settings/account-settings/account-information",
 )({
   component: RouteComponent,
 });

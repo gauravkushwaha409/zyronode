@@ -1,9 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { LiveVisitorPage } from "@/pages/_organization-protected/$organization/visitor";
 
-export const Route = createFileRoute(
-	"/_organization-protected/$organization/live-visitor",
-)({
+export const Route = createFileRoute("/_protected/$organization/live-visitor")({
 	component: RouteComponent,
 });
 

@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader } from "@package/ui";
 
-export const Route = createFileRoute("/_organization-protected/$organization/settings/organization-settings/organization-information")({
+export const Route = createFileRoute("/_protected/$organization/settings/organization-settings/organization-information")({
   component: RouteComponent,
 });
 

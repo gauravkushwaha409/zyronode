@@ -8,9 +8,7 @@ import {
 import { InnerSidebar } from "@/components/shared/inner-sidebar";
 import { SETTINGS_SIDEBAR_DATA } from "@/features/settings/constants/settings-sidebar.constants";
 
-export const Route = createFileRoute(
-	"/_organization-protected/$organization/settings",
-)({
+export const Route = createFileRoute("/_protected/$organization/settings")({
 	beforeLoad: ({ location, params }) => {
 		const isRoot =
 			location.pathname === `/${params.organization}/settings` ||

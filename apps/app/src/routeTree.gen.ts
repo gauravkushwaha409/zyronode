@@ -12,7 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as VerifyRouteImport } from './routes/verify'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as OrganizationProtectedRouteImport } from './routes/_organization-protected'
+import { Route as ProtectedRouteImport } from './routes/_protected'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as VerifyEmailRouteImport } from './routes/verify/email'
 import { Route as OnboardingUserRouteImport } from './routes/onboarding/user'
@@ -22,19 +22,19 @@ import { Route as AuthSetPasswordRouteImport } from './routes/auth/set-password'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-password'
-import { Route as OrganizationProtectedSelectOrganizationRouteImport } from './routes/_organization-protected/select-organization'
-import { Route as OrganizationProtectedOrganizationRouteImport } from './routes/_organization-protected/$organization'
-import { Route as OrganizationProtectedOrganizationVisitorRouteImport } from './routes/_organization-protected/$organization/visitor'
-import { Route as OrganizationProtectedOrganizationTicketRouteImport } from './routes/_organization-protected/$organization/ticket'
-import { Route as OrganizationProtectedOrganizationSettingsRouteImport } from './routes/_organization-protected/$organization/settings'
-import { Route as OrganizationProtectedOrganizationPluginsRouteImport } from './routes/_organization-protected/$organization/plugins'
-import { Route as OrganizationProtectedOrganizationLiveVisitorRouteImport } from './routes/_organization-protected/$organization/live-visitor'
-import { Route as OrganizationProtectedOrganizationInboxRouteImport } from './routes/_organization-protected/$organization/inbox'
-import { Route as OrganizationProtectedOrganizationDashboardRouteImport } from './routes/_organization-protected/$organization/dashboard'
-import { Route as OrganizationProtectedOrganizationSettingsTeamManagementRouteImport } from './routes/_organization-protected/$organization/settings/team-management'
-import { Route as OrganizationProtectedOrganizationSettingsOrganizationSettingsOrganizationInformationRouteImport } from './routes/_organization-protected/$organization/settings/organization-settings/organization-information'
-import { Route as OrganizationProtectedOrganizationSettingsAccountSettingsSecurityRouteImport } from './routes/_organization-protected/$organization/settings/account-settings/security'
-import { Route as OrganizationProtectedOrganizationSettingsAccountSettingsAccountInformationRouteImport } from './routes/_organization-protected/$organization/settings/account-settings/account-information'
+import { Route as ProtectedSelectOrganizationRouteImport } from './routes/_protected/select-organization'
+import { Route as ProtectedOrganizationRouteImport } from './routes/_protected/$organization'
+import { Route as ProtectedOrganizationVisitorRouteImport } from './routes/_protected/$organization/visitor'
+import { Route as ProtectedOrganizationTicketRouteImport } from './routes/_protected/$organization/ticket'
+import { Route as ProtectedOrganizationSettingsRouteImport } from './routes/_protected/$organization/settings'
+import { Route as ProtectedOrganizationPluginsRouteImport } from './routes/_protected/$organization/plugins'
+import { Route as ProtectedOrganizationLiveVisitorRouteImport } from './routes/_protected/$organization/live-visitor'
+import { Route as ProtectedOrganizationInboxRouteImport } from './routes/_protected/$organization/inbox'
+import { Route as ProtectedOrganizationDashboardRouteImport } from './routes/_protected/$organization/dashboard'
+import { Route as ProtectedOrganizationSettingsTeamManagementRouteImport } from './routes/_protected/$organization/settings/team-management'
+import { Route as ProtectedOrganizationSettingsOrganizationSettingsOrganizationInformationRouteImport } from './routes/_protected/$organization/settings/organization-settings/organization-information'
+import { Route as ProtectedOrganizationSettingsAccountSettingsSecurityRouteImport } from './routes/_protected/$organization/settings/account-settings/security'
+import { Route as ProtectedOrganizationSettingsAccountSettingsAccountInformationRouteImport } from './routes/_protected/$organization/settings/account-settings/account-information'
 
 const VerifyRoute = VerifyRouteImport.update({
   id: '/verify',
@@ -51,8 +51,8 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const OrganizationProtectedRoute = OrganizationProtectedRouteImport.update({
-  id: '/_organization-protected',
+const ProtectedRoute = ProtectedRouteImport.update({
+  id: '/_protected',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -100,88 +100,85 @@ const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
   path: '/forgot-password',
   getParentRoute: () => AuthRoute,
 } as any)
-const OrganizationProtectedSelectOrganizationRoute =
-  OrganizationProtectedSelectOrganizationRouteImport.update({
+const ProtectedSelectOrganizationRoute =
+  ProtectedSelectOrganizationRouteImport.update({
     id: '/select-organization',
     path: '/select-organization',
-    getParentRoute: () => OrganizationProtectedRoute,
+    getParentRoute: () => ProtectedRoute,
   } as any)
-const OrganizationProtectedOrganizationRoute =
-  OrganizationProtectedOrganizationRouteImport.update({
-    id: '/$organization',
-    path: '/$organization',
-    getParentRoute: () => OrganizationProtectedRoute,
-  } as any)
-const OrganizationProtectedOrganizationVisitorRoute =
-  OrganizationProtectedOrganizationVisitorRouteImport.update({
+const ProtectedOrganizationRoute = ProtectedOrganizationRouteImport.update({
+  id: '/$organization',
+  path: '/$organization',
+  getParentRoute: () => ProtectedRoute,
+} as any)
+const ProtectedOrganizationVisitorRoute =
+  ProtectedOrganizationVisitorRouteImport.update({
     id: '/visitor',
     path: '/visitor',
-    getParentRoute: () => OrganizationProtectedOrganizationRoute,
+    getParentRoute: () => ProtectedOrganizationRoute,
   } as any)
-const OrganizationProtectedOrganizationTicketRoute =
-  OrganizationProtectedOrganizationTicketRouteImport.update({
+const ProtectedOrganizationTicketRoute =
+  ProtectedOrganizationTicketRouteImport.update({
     id: '/ticket',
     path: '/ticket',
-    getParentRoute: () => OrganizationProtectedOrganizationRoute,
+    getParentRoute: () => ProtectedOrganizationRoute,
   } as any)
-const OrganizationProtectedOrganizationSettingsRoute =
-  OrganizationProtectedOrganizationSettingsRouteImport.update({
+const ProtectedOrganizationSettingsRoute =
+  ProtectedOrganizationSettingsRouteImport.update({
     id: '/settings',
     path: '/settings',
-    getParentRoute: () => OrganizationProtectedOrganizationRoute,
+    getParentRoute: () => ProtectedOrganizationRoute,
   } as any)
-const OrganizationProtectedOrganizationPluginsRoute =
-  OrganizationProtectedOrganizationPluginsRouteImport.update({
+const ProtectedOrganizationPluginsRoute =
+  ProtectedOrganizationPluginsRouteImport.update({
     id: '/plugins',
     path: '/plugins',
-    getParentRoute: () => OrganizationProtectedOrganizationRoute,
+    getParentRoute: () => ProtectedOrganizationRoute,
   } as any)
-const OrganizationProtectedOrganizationLiveVisitorRoute =
-  OrganizationProtectedOrganizationLiveVisitorRouteImport.update({
+const ProtectedOrganizationLiveVisitorRoute =
+  ProtectedOrganizationLiveVisitorRouteImport.update({
     id: '/live-visitor',
     path: '/live-visitor',
-    getParentRoute: () => OrganizationProtectedOrganizationRoute,
+    getParentRoute: () => ProtectedOrganizationRoute,
   } as any)
-const OrganizationProtectedOrganizationInboxRoute =
-  OrganizationProtectedOrganizationInboxRouteImport.update({
+const ProtectedOrganizationInboxRoute =
+  ProtectedOrganizationInboxRouteImport.update({
     id: '/inbox',
     path: '/inbox',
-    getParentRoute: () => OrganizationProtectedOrganizationRoute,
+    getParentRoute: () => ProtectedOrganizationRoute,
   } as any)
-const OrganizationProtectedOrganizationDashboardRoute =
-  OrganizationProtectedOrganizationDashboardRouteImport.update({
+const ProtectedOrganizationDashboardRoute =
+  ProtectedOrganizationDashboardRouteImport.update({
     id: '/dashboard',
     path: '/dashboard',
-    getParentRoute: () => OrganizationProtectedOrganizationRoute,
+    getParentRoute: () => ProtectedOrganizationRoute,
   } as any)
-const OrganizationProtectedOrganizationSettingsTeamManagementRoute =
-  OrganizationProtectedOrganizationSettingsTeamManagementRouteImport.update({
+const ProtectedOrganizationSettingsTeamManagementRoute =
+  ProtectedOrganizationSettingsTeamManagementRouteImport.update({
     id: '/team-management',
     path: '/team-management',
-    getParentRoute: () => OrganizationProtectedOrganizationSettingsRoute,
+    getParentRoute: () => ProtectedOrganizationSettingsRoute,
   } as any)
-const OrganizationProtectedOrganizationSettingsOrganizationSettingsOrganizationInformationRoute =
-  OrganizationProtectedOrganizationSettingsOrganizationSettingsOrganizationInformationRouteImport.update(
+const ProtectedOrganizationSettingsOrganizationSettingsOrganizationInformationRoute =
+  ProtectedOrganizationSettingsOrganizationSettingsOrganizationInformationRouteImport.update(
     {
       id: '/organization-settings/organization-information',
       path: '/organization-settings/organization-information',
-      getParentRoute: () => OrganizationProtectedOrganizationSettingsRoute,
+      getParentRoute: () => ProtectedOrganizationSettingsRoute,
     } as any,
   )
-const OrganizationProtectedOrganizationSettingsAccountSettingsSecurityRoute =
-  OrganizationProtectedOrganizationSettingsAccountSettingsSecurityRouteImport.update(
-    {
-      id: '/account-settings/security',
-      path: '/account-settings/security',
-      getParentRoute: () => OrganizationProtectedOrganizationSettingsRoute,
-    } as any,
-  )
-const OrganizationProtectedOrganizationSettingsAccountSettingsAccountInformationRoute =
-  OrganizationProtectedOrganizationSettingsAccountSettingsAccountInformationRouteImport.update(
+const ProtectedOrganizationSettingsAccountSettingsSecurityRoute =
+  ProtectedOrganizationSettingsAccountSettingsSecurityRouteImport.update({
+    id: '/account-settings/security',
+    path: '/account-settings/security',
+    getParentRoute: () => ProtectedOrganizationSettingsRoute,
+  } as any)
+const ProtectedOrganizationSettingsAccountSettingsAccountInformationRoute =
+  ProtectedOrganizationSettingsAccountSettingsAccountInformationRouteImport.update(
     {
       id: '/account-settings/account-information',
       path: '/account-settings/account-information',
-      getParentRoute: () => OrganizationProtectedOrganizationSettingsRoute,
+      getParentRoute: () => ProtectedOrganizationSettingsRoute,
     } as any,
   )
 
@@ -190,8 +187,8 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRouteWithChildren
   '/onboarding': typeof OnboardingRouteWithChildren
   '/verify': typeof VerifyRouteWithChildren
-  '/$organization': typeof OrganizationProtectedOrganizationRouteWithChildren
-  '/select-organization': typeof OrganizationProtectedSelectOrganizationRoute
+  '/$organization': typeof ProtectedOrganizationRouteWithChildren
+  '/select-organization': typeof ProtectedSelectOrganizationRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
@@ -200,25 +197,25 @@ export interface FileRoutesByFullPath {
   '/onboarding/success': typeof OnboardingSuccessRoute
   '/onboarding/user': typeof OnboardingUserRoute
   '/verify/email': typeof VerifyEmailRoute
-  '/$organization/dashboard': typeof OrganizationProtectedOrganizationDashboardRoute
-  '/$organization/inbox': typeof OrganizationProtectedOrganizationInboxRoute
-  '/$organization/live-visitor': typeof OrganizationProtectedOrganizationLiveVisitorRoute
-  '/$organization/plugins': typeof OrganizationProtectedOrganizationPluginsRoute
-  '/$organization/settings': typeof OrganizationProtectedOrganizationSettingsRouteWithChildren
-  '/$organization/ticket': typeof OrganizationProtectedOrganizationTicketRoute
-  '/$organization/visitor': typeof OrganizationProtectedOrganizationVisitorRoute
-  '/$organization/settings/team-management': typeof OrganizationProtectedOrganizationSettingsTeamManagementRoute
-  '/$organization/settings/account-settings/account-information': typeof OrganizationProtectedOrganizationSettingsAccountSettingsAccountInformationRoute
-  '/$organization/settings/account-settings/security': typeof OrganizationProtectedOrganizationSettingsAccountSettingsSecurityRoute
-  '/$organization/settings/organization-settings/organization-information': typeof OrganizationProtectedOrganizationSettingsOrganizationSettingsOrganizationInformationRoute
+  '/$organization/dashboard': typeof ProtectedOrganizationDashboardRoute
+  '/$organization/inbox': typeof ProtectedOrganizationInboxRoute
+  '/$organization/live-visitor': typeof ProtectedOrganizationLiveVisitorRoute
+  '/$organization/plugins': typeof ProtectedOrganizationPluginsRoute
+  '/$organization/settings': typeof ProtectedOrganizationSettingsRouteWithChildren
+  '/$organization/ticket': typeof ProtectedOrganizationTicketRoute
+  '/$organization/visitor': typeof ProtectedOrganizationVisitorRoute
+  '/$organization/settings/team-management': typeof ProtectedOrganizationSettingsTeamManagementRoute
+  '/$organization/settings/account-settings/account-information': typeof ProtectedOrganizationSettingsAccountSettingsAccountInformationRoute
+  '/$organization/settings/account-settings/security': typeof ProtectedOrganizationSettingsAccountSettingsSecurityRoute
+  '/$organization/settings/organization-settings/organization-information': typeof ProtectedOrganizationSettingsOrganizationSettingsOrganizationInformationRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteWithChildren
   '/onboarding': typeof OnboardingRouteWithChildren
   '/verify': typeof VerifyRouteWithChildren
-  '/$organization': typeof OrganizationProtectedOrganizationRouteWithChildren
-  '/select-organization': typeof OrganizationProtectedSelectOrganizationRoute
+  '/$organization': typeof ProtectedOrganizationRouteWithChildren
+  '/select-organization': typeof ProtectedSelectOrganizationRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
@@ -227,27 +224,27 @@ export interface FileRoutesByTo {
   '/onboarding/success': typeof OnboardingSuccessRoute
   '/onboarding/user': typeof OnboardingUserRoute
   '/verify/email': typeof VerifyEmailRoute
-  '/$organization/dashboard': typeof OrganizationProtectedOrganizationDashboardRoute
-  '/$organization/inbox': typeof OrganizationProtectedOrganizationInboxRoute
-  '/$organization/live-visitor': typeof OrganizationProtectedOrganizationLiveVisitorRoute
-  '/$organization/plugins': typeof OrganizationProtectedOrganizationPluginsRoute
-  '/$organization/settings': typeof OrganizationProtectedOrganizationSettingsRouteWithChildren
-  '/$organization/ticket': typeof OrganizationProtectedOrganizationTicketRoute
-  '/$organization/visitor': typeof OrganizationProtectedOrganizationVisitorRoute
-  '/$organization/settings/team-management': typeof OrganizationProtectedOrganizationSettingsTeamManagementRoute
-  '/$organization/settings/account-settings/account-information': typeof OrganizationProtectedOrganizationSettingsAccountSettingsAccountInformationRoute
-  '/$organization/settings/account-settings/security': typeof OrganizationProtectedOrganizationSettingsAccountSettingsSecurityRoute
-  '/$organization/settings/organization-settings/organization-information': typeof OrganizationProtectedOrganizationSettingsOrganizationSettingsOrganizationInformationRoute
+  '/$organization/dashboard': typeof ProtectedOrganizationDashboardRoute
+  '/$organization/inbox': typeof ProtectedOrganizationInboxRoute
+  '/$organization/live-visitor': typeof ProtectedOrganizationLiveVisitorRoute
+  '/$organization/plugins': typeof ProtectedOrganizationPluginsRoute
+  '/$organization/settings': typeof ProtectedOrganizationSettingsRouteWithChildren
+  '/$organization/ticket': typeof ProtectedOrganizationTicketRoute
+  '/$organization/visitor': typeof ProtectedOrganizationVisitorRoute
+  '/$organization/settings/team-management': typeof ProtectedOrganizationSettingsTeamManagementRoute
+  '/$organization/settings/account-settings/account-information': typeof ProtectedOrganizationSettingsAccountSettingsAccountInformationRoute
+  '/$organization/settings/account-settings/security': typeof ProtectedOrganizationSettingsAccountSettingsSecurityRoute
+  '/$organization/settings/organization-settings/organization-information': typeof ProtectedOrganizationSettingsOrganizationSettingsOrganizationInformationRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/_organization-protected': typeof OrganizationProtectedRouteWithChildren
+  '/_protected': typeof ProtectedRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
   '/onboarding': typeof OnboardingRouteWithChildren
   '/verify': typeof VerifyRouteWithChildren
-  '/_organization-protected/$organization': typeof OrganizationProtectedOrganizationRouteWithChildren
-  '/_organization-protected/select-organization': typeof OrganizationProtectedSelectOrganizationRoute
+  '/_protected/$organization': typeof ProtectedOrganizationRouteWithChildren
+  '/_protected/select-organization': typeof ProtectedSelectOrganizationRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
@@ -256,17 +253,17 @@ export interface FileRoutesById {
   '/onboarding/success': typeof OnboardingSuccessRoute
   '/onboarding/user': typeof OnboardingUserRoute
   '/verify/email': typeof VerifyEmailRoute
-  '/_organization-protected/$organization/dashboard': typeof OrganizationProtectedOrganizationDashboardRoute
-  '/_organization-protected/$organization/inbox': typeof OrganizationProtectedOrganizationInboxRoute
-  '/_organization-protected/$organization/live-visitor': typeof OrganizationProtectedOrganizationLiveVisitorRoute
-  '/_organization-protected/$organization/plugins': typeof OrganizationProtectedOrganizationPluginsRoute
-  '/_organization-protected/$organization/settings': typeof OrganizationProtectedOrganizationSettingsRouteWithChildren
-  '/_organization-protected/$organization/ticket': typeof OrganizationProtectedOrganizationTicketRoute
-  '/_organization-protected/$organization/visitor': typeof OrganizationProtectedOrganizationVisitorRoute
-  '/_organization-protected/$organization/settings/team-management': typeof OrganizationProtectedOrganizationSettingsTeamManagementRoute
-  '/_organization-protected/$organization/settings/account-settings/account-information': typeof OrganizationProtectedOrganizationSettingsAccountSettingsAccountInformationRoute
-  '/_organization-protected/$organization/settings/account-settings/security': typeof OrganizationProtectedOrganizationSettingsAccountSettingsSecurityRoute
-  '/_organization-protected/$organization/settings/organization-settings/organization-information': typeof OrganizationProtectedOrganizationSettingsOrganizationSettingsOrganizationInformationRoute
+  '/_protected/$organization/dashboard': typeof ProtectedOrganizationDashboardRoute
+  '/_protected/$organization/inbox': typeof ProtectedOrganizationInboxRoute
+  '/_protected/$organization/live-visitor': typeof ProtectedOrganizationLiveVisitorRoute
+  '/_protected/$organization/plugins': typeof ProtectedOrganizationPluginsRoute
+  '/_protected/$organization/settings': typeof ProtectedOrganizationSettingsRouteWithChildren
+  '/_protected/$organization/ticket': typeof ProtectedOrganizationTicketRoute
+  '/_protected/$organization/visitor': typeof ProtectedOrganizationVisitorRoute
+  '/_protected/$organization/settings/team-management': typeof ProtectedOrganizationSettingsTeamManagementRoute
+  '/_protected/$organization/settings/account-settings/account-information': typeof ProtectedOrganizationSettingsAccountSettingsAccountInformationRoute
+  '/_protected/$organization/settings/account-settings/security': typeof ProtectedOrganizationSettingsAccountSettingsSecurityRoute
+  '/_protected/$organization/settings/organization-settings/organization-information': typeof ProtectedOrganizationSettingsOrganizationSettingsOrganizationInformationRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -326,12 +323,12 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/_organization-protected'
+    | '/_protected'
     | '/auth'
     | '/onboarding'
     | '/verify'
-    | '/_organization-protected/$organization'
-    | '/_organization-protected/select-organization'
+    | '/_protected/$organization'
+    | '/_protected/select-organization'
     | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/register'
@@ -340,22 +337,22 @@ export interface FileRouteTypes {
     | '/onboarding/success'
     | '/onboarding/user'
     | '/verify/email'
-    | '/_organization-protected/$organization/dashboard'
-    | '/_organization-protected/$organization/inbox'
-    | '/_organization-protected/$organization/live-visitor'
-    | '/_organization-protected/$organization/plugins'
-    | '/_organization-protected/$organization/settings'
-    | '/_organization-protected/$organization/ticket'
-    | '/_organization-protected/$organization/visitor'
-    | '/_organization-protected/$organization/settings/team-management'
-    | '/_organization-protected/$organization/settings/account-settings/account-information'
-    | '/_organization-protected/$organization/settings/account-settings/security'
-    | '/_organization-protected/$organization/settings/organization-settings/organization-information'
+    | '/_protected/$organization/dashboard'
+    | '/_protected/$organization/inbox'
+    | '/_protected/$organization/live-visitor'
+    | '/_protected/$organization/plugins'
+    | '/_protected/$organization/settings'
+    | '/_protected/$organization/ticket'
+    | '/_protected/$organization/visitor'
+    | '/_protected/$organization/settings/team-management'
+    | '/_protected/$organization/settings/account-settings/account-information'
+    | '/_protected/$organization/settings/account-settings/security'
+    | '/_protected/$organization/settings/organization-settings/organization-information'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  OrganizationProtectedRoute: typeof OrganizationProtectedRouteWithChildren
+  ProtectedRoute: typeof ProtectedRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
   OnboardingRoute: typeof OnboardingRouteWithChildren
   VerifyRoute: typeof VerifyRouteWithChildren
@@ -384,11 +381,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_organization-protected': {
-      id: '/_organization-protected'
+    '/_protected': {
+      id: '/_protected'
       path: ''
       fullPath: '/'
-      preLoaderRoute: typeof OrganizationProtectedRouteImport
+      preLoaderRoute: typeof ProtectedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -454,173 +451,163 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthForgotPasswordRouteImport
       parentRoute: typeof AuthRoute
     }
-    '/_organization-protected/select-organization': {
-      id: '/_organization-protected/select-organization'
+    '/_protected/select-organization': {
+      id: '/_protected/select-organization'
       path: '/select-organization'
       fullPath: '/select-organization'
-      preLoaderRoute: typeof OrganizationProtectedSelectOrganizationRouteImport
-      parentRoute: typeof OrganizationProtectedRoute
+      preLoaderRoute: typeof ProtectedSelectOrganizationRouteImport
+      parentRoute: typeof ProtectedRoute
     }
-    '/_organization-protected/$organization': {
-      id: '/_organization-protected/$organization'
+    '/_protected/$organization': {
+      id: '/_protected/$organization'
       path: '/$organization'
       fullPath: '/$organization'
-      preLoaderRoute: typeof OrganizationProtectedOrganizationRouteImport
-      parentRoute: typeof OrganizationProtectedRoute
+      preLoaderRoute: typeof ProtectedOrganizationRouteImport
+      parentRoute: typeof ProtectedRoute
     }
-    '/_organization-protected/$organization/visitor': {
-      id: '/_organization-protected/$organization/visitor'
+    '/_protected/$organization/visitor': {
+      id: '/_protected/$organization/visitor'
       path: '/visitor'
       fullPath: '/$organization/visitor'
-      preLoaderRoute: typeof OrganizationProtectedOrganizationVisitorRouteImport
-      parentRoute: typeof OrganizationProtectedOrganizationRoute
+      preLoaderRoute: typeof ProtectedOrganizationVisitorRouteImport
+      parentRoute: typeof ProtectedOrganizationRoute
     }
-    '/_organization-protected/$organization/ticket': {
-      id: '/_organization-protected/$organization/ticket'
+    '/_protected/$organization/ticket': {
+      id: '/_protected/$organization/ticket'
       path: '/ticket'
       fullPath: '/$organization/ticket'
-      preLoaderRoute: typeof OrganizationProtectedOrganizationTicketRouteImport
-      parentRoute: typeof OrganizationProtectedOrganizationRoute
+      preLoaderRoute: typeof ProtectedOrganizationTicketRouteImport
+      parentRoute: typeof ProtectedOrganizationRoute
     }
-    '/_organization-protected/$organization/settings': {
-      id: '/_organization-protected/$organization/settings'
+    '/_protected/$organization/settings': {
+      id: '/_protected/$organization/settings'
       path: '/settings'
       fullPath: '/$organization/settings'
-      preLoaderRoute: typeof OrganizationProtectedOrganizationSettingsRouteImport
-      parentRoute: typeof OrganizationProtectedOrganizationRoute
+      preLoaderRoute: typeof ProtectedOrganizationSettingsRouteImport
+      parentRoute: typeof ProtectedOrganizationRoute
     }
-    '/_organization-protected/$organization/plugins': {
-      id: '/_organization-protected/$organization/plugins'
+    '/_protected/$organization/plugins': {
+      id: '/_protected/$organization/plugins'
       path: '/plugins'
       fullPath: '/$organization/plugins'
-      preLoaderRoute: typeof OrganizationProtectedOrganizationPluginsRouteImport
-      parentRoute: typeof OrganizationProtectedOrganizationRoute
+      preLoaderRoute: typeof ProtectedOrganizationPluginsRouteImport
+      parentRoute: typeof ProtectedOrganizationRoute
     }
-    '/_organization-protected/$organization/live-visitor': {
-      id: '/_organization-protected/$organization/live-visitor'
+    '/_protected/$organization/live-visitor': {
+      id: '/_protected/$organization/live-visitor'
       path: '/live-visitor'
       fullPath: '/$organization/live-visitor'
-      preLoaderRoute: typeof OrganizationProtectedOrganizationLiveVisitorRouteImport
-      parentRoute: typeof OrganizationProtectedOrganizationRoute
+      preLoaderRoute: typeof ProtectedOrganizationLiveVisitorRouteImport
+      parentRoute: typeof ProtectedOrganizationRoute
     }
-    '/_organization-protected/$organization/inbox': {
-      id: '/_organization-protected/$organization/inbox'
+    '/_protected/$organization/inbox': {
+      id: '/_protected/$organization/inbox'
       path: '/inbox'
       fullPath: '/$organization/inbox'
-      preLoaderRoute: typeof OrganizationProtectedOrganizationInboxRouteImport
-      parentRoute: typeof OrganizationProtectedOrganizationRoute
+      preLoaderRoute: typeof ProtectedOrganizationInboxRouteImport
+      parentRoute: typeof ProtectedOrganizationRoute
     }
-    '/_organization-protected/$organization/dashboard': {
-      id: '/_organization-protected/$organization/dashboard'
+    '/_protected/$organization/dashboard': {
+      id: '/_protected/$organization/dashboard'
       path: '/dashboard'
       fullPath: '/$organization/dashboard'
-      preLoaderRoute: typeof OrganizationProtectedOrganizationDashboardRouteImport
-      parentRoute: typeof OrganizationProtectedOrganizationRoute
+      preLoaderRoute: typeof ProtectedOrganizationDashboardRouteImport
+      parentRoute: typeof ProtectedOrganizationRoute
     }
-    '/_organization-protected/$organization/settings/team-management': {
-      id: '/_organization-protected/$organization/settings/team-management'
+    '/_protected/$organization/settings/team-management': {
+      id: '/_protected/$organization/settings/team-management'
       path: '/team-management'
       fullPath: '/$organization/settings/team-management'
-      preLoaderRoute: typeof OrganizationProtectedOrganizationSettingsTeamManagementRouteImport
-      parentRoute: typeof OrganizationProtectedOrganizationSettingsRoute
+      preLoaderRoute: typeof ProtectedOrganizationSettingsTeamManagementRouteImport
+      parentRoute: typeof ProtectedOrganizationSettingsRoute
     }
-    '/_organization-protected/$organization/settings/organization-settings/organization-information': {
-      id: '/_organization-protected/$organization/settings/organization-settings/organization-information'
+    '/_protected/$organization/settings/organization-settings/organization-information': {
+      id: '/_protected/$organization/settings/organization-settings/organization-information'
       path: '/organization-settings/organization-information'
       fullPath: '/$organization/settings/organization-settings/organization-information'
-      preLoaderRoute: typeof OrganizationProtectedOrganizationSettingsOrganizationSettingsOrganizationInformationRouteImport
-      parentRoute: typeof OrganizationProtectedOrganizationSettingsRoute
+      preLoaderRoute: typeof ProtectedOrganizationSettingsOrganizationSettingsOrganizationInformationRouteImport
+      parentRoute: typeof ProtectedOrganizationSettingsRoute
     }
-    '/_organization-protected/$organization/settings/account-settings/security': {
-      id: '/_organization-protected/$organization/settings/account-settings/security'
+    '/_protected/$organization/settings/account-settings/security': {
+      id: '/_protected/$organization/settings/account-settings/security'
       path: '/account-settings/security'
       fullPath: '/$organization/settings/account-settings/security'
-      preLoaderRoute: typeof OrganizationProtectedOrganizationSettingsAccountSettingsSecurityRouteImport
-      parentRoute: typeof OrganizationProtectedOrganizationSettingsRoute
+      preLoaderRoute: typeof ProtectedOrganizationSettingsAccountSettingsSecurityRouteImport
+      parentRoute: typeof ProtectedOrganizationSettingsRoute
     }
-    '/_organization-protected/$organization/settings/account-settings/account-information': {
-      id: '/_organization-protected/$organization/settings/account-settings/account-information'
+    '/_protected/$organization/settings/account-settings/account-information': {
+      id: '/_protected/$organization/settings/account-settings/account-information'
       path: '/account-settings/account-information'
       fullPath: '/$organization/settings/account-settings/account-information'
-      preLoaderRoute: typeof OrganizationProtectedOrganizationSettingsAccountSettingsAccountInformationRouteImport
-      parentRoute: typeof OrganizationProtectedOrganizationSettingsRoute
+      preLoaderRoute: typeof ProtectedOrganizationSettingsAccountSettingsAccountInformationRouteImport
+      parentRoute: typeof ProtectedOrganizationSettingsRoute
     }
   }
 }
 
-interface OrganizationProtectedOrganizationSettingsRouteChildren {
-  OrganizationProtectedOrganizationSettingsTeamManagementRoute: typeof OrganizationProtectedOrganizationSettingsTeamManagementRoute
-  OrganizationProtectedOrganizationSettingsAccountSettingsAccountInformationRoute: typeof OrganizationProtectedOrganizationSettingsAccountSettingsAccountInformationRoute
-  OrganizationProtectedOrganizationSettingsAccountSettingsSecurityRoute: typeof OrganizationProtectedOrganizationSettingsAccountSettingsSecurityRoute
-  OrganizationProtectedOrganizationSettingsOrganizationSettingsOrganizationInformationRoute: typeof OrganizationProtectedOrganizationSettingsOrganizationSettingsOrganizationInformationRoute
+interface ProtectedOrganizationSettingsRouteChildren {
+  ProtectedOrganizationSettingsTeamManagementRoute: typeof ProtectedOrganizationSettingsTeamManagementRoute
+  ProtectedOrganizationSettingsAccountSettingsAccountInformationRoute: typeof ProtectedOrganizationSettingsAccountSettingsAccountInformationRoute
+  ProtectedOrganizationSettingsAccountSettingsSecurityRoute: typeof ProtectedOrganizationSettingsAccountSettingsSecurityRoute
+  ProtectedOrganizationSettingsOrganizationSettingsOrganizationInformationRoute: typeof ProtectedOrganizationSettingsOrganizationSettingsOrganizationInformationRoute
 }
 
-const OrganizationProtectedOrganizationSettingsRouteChildren: OrganizationProtectedOrganizationSettingsRouteChildren =
+const ProtectedOrganizationSettingsRouteChildren: ProtectedOrganizationSettingsRouteChildren =
   {
-    OrganizationProtectedOrganizationSettingsTeamManagementRoute:
-      OrganizationProtectedOrganizationSettingsTeamManagementRoute,
-    OrganizationProtectedOrganizationSettingsAccountSettingsAccountInformationRoute:
-      OrganizationProtectedOrganizationSettingsAccountSettingsAccountInformationRoute,
-    OrganizationProtectedOrganizationSettingsAccountSettingsSecurityRoute:
-      OrganizationProtectedOrganizationSettingsAccountSettingsSecurityRoute,
-    OrganizationProtectedOrganizationSettingsOrganizationSettingsOrganizationInformationRoute:
-      OrganizationProtectedOrganizationSettingsOrganizationSettingsOrganizationInformationRoute,
+    ProtectedOrganizationSettingsTeamManagementRoute:
+      ProtectedOrganizationSettingsTeamManagementRoute,
+    ProtectedOrganizationSettingsAccountSettingsAccountInformationRoute:
+      ProtectedOrganizationSettingsAccountSettingsAccountInformationRoute,
+    ProtectedOrganizationSettingsAccountSettingsSecurityRoute:
+      ProtectedOrganizationSettingsAccountSettingsSecurityRoute,
+    ProtectedOrganizationSettingsOrganizationSettingsOrganizationInformationRoute:
+      ProtectedOrganizationSettingsOrganizationSettingsOrganizationInformationRoute,
   }
 
-const OrganizationProtectedOrganizationSettingsRouteWithChildren =
-  OrganizationProtectedOrganizationSettingsRoute._addFileChildren(
-    OrganizationProtectedOrganizationSettingsRouteChildren,
+const ProtectedOrganizationSettingsRouteWithChildren =
+  ProtectedOrganizationSettingsRoute._addFileChildren(
+    ProtectedOrganizationSettingsRouteChildren,
   )
 
-interface OrganizationProtectedOrganizationRouteChildren {
-  OrganizationProtectedOrganizationDashboardRoute: typeof OrganizationProtectedOrganizationDashboardRoute
-  OrganizationProtectedOrganizationInboxRoute: typeof OrganizationProtectedOrganizationInboxRoute
-  OrganizationProtectedOrganizationLiveVisitorRoute: typeof OrganizationProtectedOrganizationLiveVisitorRoute
-  OrganizationProtectedOrganizationPluginsRoute: typeof OrganizationProtectedOrganizationPluginsRoute
-  OrganizationProtectedOrganizationSettingsRoute: typeof OrganizationProtectedOrganizationSettingsRouteWithChildren
-  OrganizationProtectedOrganizationTicketRoute: typeof OrganizationProtectedOrganizationTicketRoute
-  OrganizationProtectedOrganizationVisitorRoute: typeof OrganizationProtectedOrganizationVisitorRoute
+interface ProtectedOrganizationRouteChildren {
+  ProtectedOrganizationDashboardRoute: typeof ProtectedOrganizationDashboardRoute
+  ProtectedOrganizationInboxRoute: typeof ProtectedOrganizationInboxRoute
+  ProtectedOrganizationLiveVisitorRoute: typeof ProtectedOrganizationLiveVisitorRoute
+  ProtectedOrganizationPluginsRoute: typeof ProtectedOrganizationPluginsRoute
+  ProtectedOrganizationSettingsRoute: typeof ProtectedOrganizationSettingsRouteWithChildren
+  ProtectedOrganizationTicketRoute: typeof ProtectedOrganizationTicketRoute
+  ProtectedOrganizationVisitorRoute: typeof ProtectedOrganizationVisitorRoute
 }
 
-const OrganizationProtectedOrganizationRouteChildren: OrganizationProtectedOrganizationRouteChildren =
-  {
-    OrganizationProtectedOrganizationDashboardRoute:
-      OrganizationProtectedOrganizationDashboardRoute,
-    OrganizationProtectedOrganizationInboxRoute:
-      OrganizationProtectedOrganizationInboxRoute,
-    OrganizationProtectedOrganizationLiveVisitorRoute:
-      OrganizationProtectedOrganizationLiveVisitorRoute,
-    OrganizationProtectedOrganizationPluginsRoute:
-      OrganizationProtectedOrganizationPluginsRoute,
-    OrganizationProtectedOrganizationSettingsRoute:
-      OrganizationProtectedOrganizationSettingsRouteWithChildren,
-    OrganizationProtectedOrganizationTicketRoute:
-      OrganizationProtectedOrganizationTicketRoute,
-    OrganizationProtectedOrganizationVisitorRoute:
-      OrganizationProtectedOrganizationVisitorRoute,
-  }
+const ProtectedOrganizationRouteChildren: ProtectedOrganizationRouteChildren = {
+  ProtectedOrganizationDashboardRoute: ProtectedOrganizationDashboardRoute,
+  ProtectedOrganizationInboxRoute: ProtectedOrganizationInboxRoute,
+  ProtectedOrganizationLiveVisitorRoute: ProtectedOrganizationLiveVisitorRoute,
+  ProtectedOrganizationPluginsRoute: ProtectedOrganizationPluginsRoute,
+  ProtectedOrganizationSettingsRoute:
+    ProtectedOrganizationSettingsRouteWithChildren,
+  ProtectedOrganizationTicketRoute: ProtectedOrganizationTicketRoute,
+  ProtectedOrganizationVisitorRoute: ProtectedOrganizationVisitorRoute,
+}
 
-const OrganizationProtectedOrganizationRouteWithChildren =
-  OrganizationProtectedOrganizationRoute._addFileChildren(
-    OrganizationProtectedOrganizationRouteChildren,
+const ProtectedOrganizationRouteWithChildren =
+  ProtectedOrganizationRoute._addFileChildren(
+    ProtectedOrganizationRouteChildren,
   )
 
-interface OrganizationProtectedRouteChildren {
-  OrganizationProtectedOrganizationRoute: typeof OrganizationProtectedOrganizationRouteWithChildren
-  OrganizationProtectedSelectOrganizationRoute: typeof OrganizationProtectedSelectOrganizationRoute
+interface ProtectedRouteChildren {
+  ProtectedOrganizationRoute: typeof ProtectedOrganizationRouteWithChildren
+  ProtectedSelectOrganizationRoute: typeof ProtectedSelectOrganizationRoute
 }
 
-const OrganizationProtectedRouteChildren: OrganizationProtectedRouteChildren = {
-  OrganizationProtectedOrganizationRoute:
-    OrganizationProtectedOrganizationRouteWithChildren,
-  OrganizationProtectedSelectOrganizationRoute:
-    OrganizationProtectedSelectOrganizationRoute,
+const ProtectedRouteChildren: ProtectedRouteChildren = {
+  ProtectedOrganizationRoute: ProtectedOrganizationRouteWithChildren,
+  ProtectedSelectOrganizationRoute: ProtectedSelectOrganizationRoute,
 }
 
-const OrganizationProtectedRouteWithChildren =
-  OrganizationProtectedRoute._addFileChildren(
-    OrganizationProtectedRouteChildren,
-  )
+const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(
+  ProtectedRouteChildren,
+)
 
 interface AuthRouteChildren {
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
@@ -667,7 +654,7 @@ const VerifyRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  OrganizationProtectedRoute: OrganizationProtectedRouteWithChildren,
+  ProtectedRoute: ProtectedRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
   OnboardingRoute: OnboardingRouteWithChildren,
   VerifyRoute: VerifyRouteWithChildren,
