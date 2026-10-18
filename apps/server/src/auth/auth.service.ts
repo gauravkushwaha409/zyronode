@@ -159,6 +159,7 @@ export class AuthService {
 	}
 
 	async me(userId: string) {
+		console.log("Fetching user profile for userId:", userId);
 		const cached = await this.redis.get(RedisKey.userProfile(userId));
 		if (cached) {
 			return {

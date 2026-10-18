@@ -1,8 +1,7 @@
 import * as path from "node:path";
-import * as dotenv from "dotenv";
-
 import { PrismaPg } from "@prisma/adapter-pg";
 import * as bcryptjs from "bcryptjs";
+import * as dotenv from "dotenv";
 import { PlanType, PrismaClient } from "../src/generated/prisma/client";
 
 // SEED_MODE is the single knob: it selects WHICH database (env/.env.<mode>)

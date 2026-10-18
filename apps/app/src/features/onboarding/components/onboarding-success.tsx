@@ -17,10 +17,10 @@ export function OnboardingSuccess() {
 			<div className="bg-white flex items-center justify-center gap-y-3">
 				<div className="max-w-screen-3xl mx-auto flex flex-col items-center justify-center">
 					<Typography.D1 className="text-gray-950 font-semibold">
-						Welcome to ChatApp!
+						Welcome to zyronode!
 					</Typography.D1>
 					<Typography.H6 className="text-gray-500 font-normal text-center">
-						ChatApp helps businesses engage visitors, automate
+						Zyronode helps businesses engage visitors, automate
 						conversations, and manage customer messages in one
 						inbox.
 					</Typography.H6>

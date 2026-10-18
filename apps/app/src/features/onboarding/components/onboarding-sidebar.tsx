@@ -1,4 +1,6 @@
 import { Button, Icon, OnboardingSlider, Typography } from "@package/ui";
+import { useRouter } from "@tanstack/react-router";
+import { useLogoutMutation } from "@/features/auth/hooks";
 import { ONBOARDING_STEPS } from "@/features/onboarding/config";
 import type { OnboardingStep } from "@/features/onboarding/types";
 
@@ -11,6 +13,15 @@ export function OnboardingSidebar({
 	currentData,
 	currentFlowStepKey,
 }: OnboardingSidebarProps) {
+	const router = useRouter();
+	const logoutMutation = useLogoutMutation();
+
+	const handleLogout = () => {
+		logoutMutation.mutate(undefined, {
+			onSuccess: () => router.navigate({ to: "/auth/login" }),
+		});
+	};
+
 	return (
 		<div className="flex w-3/10 flex-col 2xl:w-137.5 pl-8 2xl:pl-11 bg-primary-100 gap-8 2xl:gap-16 h-full overflow-hidden">
 			<div className="mt-8 2xl:mt-16 flex justify-between items-center pr-8 2xl:pr-11 z-10">
@@ -22,11 +33,10 @@ export function OnboardingSidebar({
 					variant="alert"
 					size="lg"
 					className="w-26 flex items-center justify-center cursor-pointer"
-					onClick={() => {
-						window.location.href = "/auth/logout";
-					}}
+					onClick={handleLogout}
+					disabled={logoutMutation.isPending}
 				>
-					Sign out
+					{logoutMutation.isPending ? "Signing out..." : "Sign out"}
 				</Button>
 			</div>
 
