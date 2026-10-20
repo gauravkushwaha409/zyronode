@@ -37,7 +37,6 @@ export function ConversationHeader({
 }: ConversationHeaderProps) {
 	const isResolved = status === "CLOSED" || status === "resolved";
 	const isActive = status === "ACTIVE";
-	// Treat ACTIVE as online for demo — mirrors portal visitor.is_online
 	const isVisitorOnline = isActive;
 	const { startCall } = useCallActions();
 	const callPhase = useCallStore((s) => s.phase);

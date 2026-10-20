@@ -55,18 +55,22 @@ export interface CallActions {
 export function useCallEngine(): CallActions {
 	const { client, status } = useWebSocket();
 	const queryClient = useQueryClient();
+
 	const clientRef = useRef(client);
 	clientRef.current = client;
+	
 	console.log("[call] engine mounted, socket status:", status);
 
 	const pcs = useRef(new Map<string, PeerConnectionState>());
 	const iceServers = useRef<RTCIceServer[] | null>(null);
 	const localStreamRef = useRef<MediaStream | null>(null);
 	const ringtone = useRef(createRingtone());
+
 	/** True while a call:join ack is in flight (server errors arrive as events). */
 	const joiningRef = useRef(false);
 	const selfId = useRef<string | null>(null);
 	if (selfId.current === null) selfId.current = getSelfUserId();
+	
 	const selfPeerId = useRef<string | null>(null);
 	if (selfPeerId.current === null && selfId.current) {
 		selfPeerId.current = `user:${selfId.current}`;
@@ -82,7 +86,7 @@ export function useCallEngine(): CallActions {
 			.then((id) => {
 				if (live && id && !selfPeerId.current) selfPeerId.current = `user:${id}`;
 			})
-			.catch(() => {});
+			.catch(() => { });
 		return () => {
 			live = false;
 		};
@@ -389,6 +393,9 @@ export function useCallEngine(): CallActions {
 		[],
 	);
 
+	/**
+	 * Start a new call.
+	 */
 	const startCall = useCallback(
 		async (conversationId: string, type: CallType) => {
 			console.log("[call] startCall clicked", { conversationId, type });
@@ -474,7 +481,7 @@ export function useCallEngine(): CallActions {
 				t.stop();
 			});
 			localStreamRef.current = null;
-				store.set({ localStream: null });
+			store.set({ localStream: null });
 			return;
 		}
 		ringtone.current.stop();
