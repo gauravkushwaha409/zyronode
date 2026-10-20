@@ -18,17 +18,3 @@ export function toMediaErrorMessage(err: unknown): string {
 	}
 	return "Could not access microphone/camera.";
 }
-
-/** Identity for politeness only (never auth) - decoded from the stored JWT. */
-export function getSelfUserId(): string | null {
-	try {
-		const token = localStorage.getItem("token");
-		if (!token) return null;
-		const payload = JSON.parse(atob(token.split(".")[1] ?? "")) as {
-			id?: string;
-		};
-		return payload.id ?? null;
-	} catch {
-		return null;
-	}
-}

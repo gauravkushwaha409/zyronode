@@ -16,9 +16,10 @@ import { ClientCallEvents, ServerCallEvents } from "@package/call-signaling";
 import { useQueryClient } from "@package/query";
 import { useWebSocket } from "@package/websocket";
 import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useMeQuery } from "@/features/auth/hooks/query/use-me.query";
 import { callApiService } from "../services/call-api.service";
 import { useCallStore } from "../store/use-call.store";
-import { getSelfUserId, toMediaErrorMessage } from "../utility/media-errors";
+import { toMediaErrorMessage } from "../utility/media-errors";
 import { createRingtone } from "../utility/ringtone";
 
 interface PeerConnectionState {
@@ -58,7 +59,7 @@ export function useCallEngine(): CallActions {
 
 	const clientRef = useRef(client);
 	clientRef.current = client;
-	
+
 	console.log("[call] engine mounted, socket status:", status);
 
 	const pcs = useRef(new Map<string, PeerConnectionState>());
@@ -68,29 +69,16 @@ export function useCallEngine(): CallActions {
 
 	/** True while a call:join ack is in flight (server errors arrive as events). */
 	const joiningRef = useRef(false);
-	const selfId = useRef<string | null>(null);
-	if (selfId.current === null) selfId.current = getSelfUserId();
-	
 	const selfPeerId = useRef<string | null>(null);
-	if (selfPeerId.current === null && selfId.current) {
-		selfPeerId.current = `user:${selfId.current}`;
-	}
-	// The dashboard authenticates over cookies, so no token may sit in
-	// storage - resolve our peer id from /auth/me as a fallback (used only
-	// for deterministic offer/answer politeness, never for auth).
+	// The dashboard authenticates over cookies, so resolve our peer id from
+	// /auth/me (identity only, used for deterministic offer/answer
+	// politeness, never for auth). The query is usually already cached by
+	// the auth features.
+	const { data: me } = useMeQuery();
 	useEffect(() => {
-		if (selfPeerId.current) return;
-		let live = true;
-		void callApiService
-			.getSelfId()
-			.then((id) => {
-				if (live && id && !selfPeerId.current) selfPeerId.current = `user:${id}`;
-			})
-			.catch(() => { });
-		return () => {
-			live = false;
-		};
-	}, []);
+		const id = me?.data.data.id;
+		if (id && !selfPeerId.current) selfPeerId.current = `user:${id}`;
+	}, [me]);
 
 	const getStore = useCallStore.getState;
 
@@ -206,12 +194,18 @@ export function useCallEngine(): CallActions {
 
 	const createPeerConnection = useCallback(
 		(peerId: string): RTCPeerConnection => {
-			console.log("[call] agent createPeerConnection", peerId, "iceServers=", iceServers.current?.length);
+			console.log(
+				"[call] agent createPeerConnection",
+				peerId,
+				"iceServers=",
+				iceServers.current?.length,
+			);
 			cleanupPeer(peerId);
 			const pc = new RTCPeerConnection({
 				iceServers: iceServers.current ?? undefined,
 			});
-			pc.onicegatheringstatechange = () => console.log("[icegatheringstatechange]", pc.iceGatheringState);
+			pc.onicegatheringstatechange = () =>
+				console.log("[icegatheringstatechange]", pc.iceGatheringState);
 			const entry: PeerConnectionState = {
 				pc,
 				makingOffer: false,
@@ -242,7 +236,10 @@ export function useCallEngine(): CallActions {
 			};
 
 			pc.onicecandidate = (event) => {
-				console.log("[call] agent ice candidate", event.candidate?.candidate?.slice(0, 40));
+				console.log(
+					"[call] agent ice candidate",
+					event.candidate?.candidate?.slice(0, 40),
+				);
 				if (!event.candidate) return;
 				const { callId } = getStore();
 				if (!callId) return;
@@ -328,12 +325,24 @@ export function useCallEngine(): CallActions {
 				await flushQueuedCandidates(peerId);
 				const answer = await pc.createAnswer();
 				await pc.setLocalDescription(answer);
-				console.log("[call] agent setLocalDescription answer done, gathering=", pc.iceGatheringState, "signaling=", pc.signalingState);
+				console.log(
+					"[call] agent setLocalDescription answer done, gathering=",
+					pc.iceGatheringState,
+					"signaling=",
+					pc.signalingState,
+				);
 				window.setTimeout(() => {
-					console.log("[call] agent iceGatheringState later=", pc.iceGatheringState);
+					console.log(
+						"[call] agent iceGatheringState later=",
+						pc.iceGatheringState,
+					);
 					if (pc.iceGatheringState === "new") {
 						console.log("[call] agent restarting ICE");
-						try { pc.restartIce(); } catch (e) { console.log(e); }
+						try {
+							pc.restartIce();
+						} catch (e) {
+							console.log(e);
+						}
 					}
 				}, 1000);
 				const desc = pc.localDescription;
@@ -438,7 +447,10 @@ export function useCallEngine(): CallActions {
 			});
 			ringtone.current.start();
 			try {
-				console.log("[call] sending invite, socket connected:", clientRef.current.connected);
+				console.log(
+					"[call] sending invite, socket connected:",
+					clientRef.current.connected,
+				);
 				const ack = await clientRef.current.emitWithAck<{ callId: string }>(
 					ClientCallEvents.INVITE,
 					{ conversationId, type },
@@ -455,7 +467,8 @@ export function useCallEngine(): CallActions {
 				fullCleanup();
 				getStore().set({
 					phase: "idle",
-					error: err instanceof Error ? err.message : "Could not start the call.",
+					error:
+						err instanceof Error ? err.message : "Could not start the call.",
 				});
 			}
 		},
@@ -583,7 +596,9 @@ export function useCallEngine(): CallActions {
 
 	const replaceVideoTrack = useCallback((newTrack: MediaStreamTrack | null) => {
 		for (const [, entry] of pcs.current) {
-			const sender = entry.pc.getSenders().find((s) => s.track?.kind === "video");
+			const sender = entry.pc
+				.getSenders()
+				.find((s) => s.track?.kind === "video");
 			if (sender) void sender.replaceTrack(newTrack);
 		}
 	}, []);
@@ -600,7 +615,9 @@ export function useCallEngine(): CallActions {
 			if (!newTrack) return;
 			newTrack.enabled = store.localAudio;
 			for (const [, entry] of pcs.current) {
-				const sender = entry.pc.getSenders().find((s) => s.track?.kind === "audio");
+				const sender = entry.pc
+					.getSenders()
+					.find((s) => s.track?.kind === "audio");
 				if (sender) await sender.replaceTrack(newTrack);
 			}
 			store.localStream.getAudioTracks().forEach((t) => {
@@ -784,7 +801,10 @@ export function useCallEngine(): CallActions {
 			const entry = pcs.current.get(data.from);
 			if (!entry) return;
 			try {
-				await entry.pc.setRemoteDescription({ type: "answer", sdp: data.sdp.sdp });
+				await entry.pc.setRemoteDescription({
+					type: "answer",
+					sdp: data.sdp.sdp,
+				});
 				await flushQueuedCandidates(data.from);
 			} catch {
 				// Late/stale answer after a rollback - safe to ignore.
