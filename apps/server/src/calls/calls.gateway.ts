@@ -257,7 +257,6 @@ export class CallsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				from,
 				dto.conversationId,
 				dto.type,
-				dto.inviteeIds,
 			);
 		} catch (err) {
 			const activeCallId = await this.callsService.getActiveCallId(from);

@@ -109,11 +109,6 @@ export type ClientCallEvent =
 export interface CallInvitePayload {
 	conversationId: string;
 	type: CallType;
-	/**
-	 * Peer ids to ring. Empty = ring every other member of the conversation.
-	 * Agents pass user ids or full peer ids; each is normalized server-side.
-	 */
-	inviteeIds?: string[];
 }
 
 export interface CallJoinPayload {

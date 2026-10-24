@@ -294,7 +294,6 @@ export class CallsService {
 		starterPeerId: string,
 		conversationId: string,
 		type: "AUDIO" | "VIDEO",
-		inviteeIds: string[] | undefined,
 	): Promise<StartCallResult> {
 		const starter = this.resolvePeer(starterPeerId);
 		const conversation = await this.requirePeerConversationMember(
@@ -302,15 +301,10 @@ export class CallsService {
 			conversationId,
 		);
 
-		// Normalize invitees to peer ids (bare ids mean agents).
-		const explicit =
-			inviteeIds?.map((id) => (parsePeerId(id) ? id : peerIdForUser(id))) ?? [];
-		const wanted = explicit.filter((id) => id !== starterPeerId);
-
 		// Counter-invite glare: a peer who is being rung (INVITED) in a
 		// ringing call answers it by inviting back. Deterministic rule -
-		// fold into the existing call when it covers every target instead
-		// of failing busy or forking a second call.
+		// fold into the existing call instead of failing busy or forking a
+		// second call.
 		// Busy/self-in-call checks disabled: allow starting a new call even if
 		// a stale or live marker exists for this peer.
 		const existingActiveId: string | null = null;
@@ -326,16 +320,10 @@ export class CallsService {
 					? p.userId === starter.id
 					: p.visitorId === starter.id,
 			);
-			const memberIds = (existing?.participants ?? []).map((p) =>
-				this.participantPeerId(p),
-			);
-			const covers =
-				!inviteeIds || wanted.every((t) => memberIds.includes(t as PeerId));
 			if (
 				existing?.status === "RINGING" &&
 				existing.conversationId === conversationId &&
-				starterRow?.status === "INVITED" &&
-				covers
+				starterRow?.status === "INVITED"
 			) {
 				const join = await this.joinCall(starterPeerId, existing.id);
 				return { call: join.call, merged: true, rungPeerIds: [], join };
@@ -345,31 +333,28 @@ export class CallsService {
 
 		// Default target: the conversation's visitor (if any) plus every
 		// other member of the conversation's org (agents), capped.
-		let targets = explicit.filter((id) => id !== starterPeerId);
-		if (targets.length === 0 && !inviteeIds) {
-			const members = await this.prisma.organizationMember.findMany({
-				where: { organizationId: conversation.organizationId },
-				select: { userId: true },
-			});
-			// Strictly 1:1: an agent calls the conversation's visitor only;
-			// a visitor calls a single agent (the org's members, capped to one).
-			const agentTargets =
-				starter.kind === "visitor"
-					? members
-							.map((m) => peerIdForUser(m.userId))
-							.filter((id) => id !== starterPeerId)
-					: [];
-			const visitorTarget =
-				starter.kind === "user" &&
-				conversation.visitorId &&
-				peerIdForVisitor(conversation.visitorId) !== starterPeerId
-					? [peerIdForVisitor(conversation.visitorId)]
-					: [];
-			targets = [...visitorTarget, ...agentTargets].slice(
-				0,
-				this.maxParticipants - 1,
-			);
-		}
+		const members = await this.prisma.organizationMember.findMany({
+			where: { organizationId: conversation.organizationId },
+			select: { userId: true },
+		});
+		// Strictly 1:1: an agent calls the conversation's visitor only;
+		// a visitor calls a single agent (the org's members, capped to one).
+		const agentTargets =
+			starter.kind === "visitor"
+				? members
+						.map((m) => peerIdForUser(m.userId))
+						.filter((id) => id !== starterPeerId)
+				: [];
+		const visitorTarget =
+			starter.kind === "user" &&
+			conversation.visitorId &&
+			peerIdForVisitor(conversation.visitorId) !== starterPeerId
+				? [peerIdForVisitor(conversation.visitorId)]
+				: [];
+		const targets = [...visitorTarget, ...agentTargets].slice(
+			0,
+			this.maxParticipants - 1,
+		);
 		if (targets.length === 0) {
 			throw new BadRequestException("No one to call in this conversation");
 		}

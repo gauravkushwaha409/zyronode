@@ -1,7 +1,5 @@
 import { Type } from "class-transformer";
 import {
-	ArrayMaxSize,
-	IsArray,
 	IsBoolean,
 	IsEnum,
 	IsNotEmpty,
@@ -23,13 +21,6 @@ export class CallInviteDto {
 
 	@IsEnum(CallTypeValues)
 	type!: (typeof CallTypeValues)[number];
-
-	/** Users to ring. Empty/omitted = ring every other member of the conversation. */
-	@IsOptional()
-	@IsArray()
-	@ArrayMaxSize(10)
-	@IsString({ each: true })
-	inviteeIds?: string[];
 }
 
 export class CallIdDto {

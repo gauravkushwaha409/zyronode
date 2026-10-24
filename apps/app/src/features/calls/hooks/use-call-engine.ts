@@ -57,8 +57,8 @@ export function useCallEngine(): CallActions {
 	const { client, status } = useWebSocket();
 	const queryClient = useQueryClient();
 
-	const clientRef = useRef(client);
-	clientRef.current = client;
+	const webSocketClientRef = useRef(client);
+	webSocketClientRef.current = client;
 
 	console.log("[call] engine mounted, socket status:", status);
 
@@ -126,9 +126,9 @@ export function useCallEngine(): CallActions {
 
 	const sendMediaState = useCallback((audio: boolean, video: boolean) => {
 		const { callId } = getStore();
-		if (!callId || !clientRef.current.connected) return;
+		if (!callId || !webSocketClientRef.current.connected) return;
 		try {
-			clientRef.current.emit(ClientCallEvents.MEDIA_STATE, {
+			webSocketClientRef.current.emit(ClientCallEvents.MEDIA_STATE, {
 				callId,
 				audio,
 				video,
@@ -164,7 +164,7 @@ export function useCallEngine(): CallActions {
 			}
 			const desc = entry.peerConnection.localDescription;
 			if (!desc) return;
-			clientRef.current.emit(ClientCallEvents.OFFER, {
+			webSocketClientRef.current.emit(ClientCallEvents.OFFER, {
 				callId,
 				to: peerId,
 				sdp: { type: "offer", sdp: desc.sdp },
@@ -247,7 +247,7 @@ export function useCallEngine(): CallActions {
 				const { callId } = getStore();
 				if (!callId) return;
 				try {
-					clientRef.current.emit(ClientCallEvents.ICE, {
+					webSocketClientRef.current.emit(ClientCallEvents.ICE, {
 						callId,
 						to: peerId,
 						candidate: {
@@ -361,7 +361,7 @@ export function useCallEngine(): CallActions {
 				if (!desc) return;
 				const { callId } = getStore();
 				if (!callId) return;
-				clientRef.current.emit(ClientCallEvents.ANSWER, {
+				webSocketClientRef.current.emit(ClientCallEvents.ANSWER, {
 					callId,
 					to: peerId,
 					sdp: { type: "answer", sdp: desc.sdp },
@@ -483,12 +483,13 @@ export function useCallEngine(): CallActions {
 			try {
 				console.log(
 					"[call] sending invite, socket connected:",
-					clientRef.current.connected,
+					webSocketClientRef.current.connected,
 				);
-				const ack = await clientRef.current.emitWithAck<{ callId: string }>(
-					ClientCallEvents.INVITE,
-					{ conversationId, type },
-				);
+				const ack =
+					await webSocketClientRef.current.emitWithAck<{ callId: string }>(
+						ClientCallEvents.INVITE,
+						{ conversationId, type },
+					);
 				console.log("[call] invite ack", ack);
 				getStore().set({
 					callId: ack.callId,
@@ -534,10 +535,11 @@ export function useCallEngine(): CallActions {
 		ringtone.current.stop();
 		joiningRef.current = true;
 		try {
-			const ack = await clientRef.current.emitWithAck<CallPeersPayload>(
-				ClientCallEvents.JOIN,
-				{ callId: incoming.callId },
-			);
+			const ack =
+				await webSocketClientRef.current.emitWithAck<CallPeersPayload>(
+					ClientCallEvents.JOIN,
+					{ callId: incoming.callId },
+				);
 			joiningRef.current = false;
 			getStore().set({
 				phase: "active",
@@ -583,9 +585,9 @@ export function useCallEngine(): CallActions {
 	const declineCall = useCallback(() => {
 		const { incoming } = getStore();
 		ringtone.current.stop();
-		if (incoming && clientRef.current.connected) {
+		if (incoming && webSocketClientRef.current.connected) {
 			try {
-				clientRef.current.emit(ClientCallEvents.REJECT, {
+				webSocketClientRef.current.emit(ClientCallEvents.REJECT, {
 					callId: incoming.callId,
 				});
 			} catch {
@@ -598,9 +600,9 @@ export function useCallEngine(): CallActions {
 	const hangUp = useCallback(() => {
 		const store = getStore();
 		const callId = store.callId ?? store.incoming?.callId ?? null;
-		if (callId && clientRef.current.connected) {
+		if (callId && webSocketClientRef.current.connected) {
 			try {
-				clientRef.current.emit(ClientCallEvents.LEAVE, { callId });
+				webSocketClientRef.current.emit(ClientCallEvents.LEAVE, { callId });
 			} catch {
 				// Best effort - presence TTLs clear the server state.
 			}
@@ -919,7 +921,7 @@ export function useCallEngine(): CallActions {
 		const callId = store.callId;
 		if (!callId || store.phase !== "active") return;
 		try {
-			const ack = await clientRef.current.emitWithAck<CallPeersPayload>(
+			const ack = await webSocketClientRef.current.emitWithAck<CallPeersPayload>(
 				ClientCallEvents.JOIN,
 				{ callId },
 			);
