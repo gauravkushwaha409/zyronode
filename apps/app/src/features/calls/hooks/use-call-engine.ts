@@ -23,7 +23,7 @@ import { toMediaErrorMessage } from "../utility/media-errors";
 import { createRingtone } from "../utility/ringtone";
 
 interface PeerConnectionState {
-	pc: RTCPeerConnection;
+	peerConnection: RTCPeerConnection;
 	makingOffer: boolean;
 	ignoreOffer: boolean;
 	pendingCandidates: IceCandidatePayload[];
@@ -62,7 +62,7 @@ export function useCallEngine(): CallActions {
 
 	console.log("[call] engine mounted, socket status:", status);
 
-	const pcs = useRef(new Map<string, PeerConnectionState>());
+	const peerConnections = useRef(new Map<string, PeerConnectionState>());
 	const iceServers = useRef<RTCIceServer[] | null>(null);
 	const localStreamRef = useRef<MediaStream | null>(null);
 	const ringtone = useRef(createRingtone());
@@ -70,10 +70,7 @@ export function useCallEngine(): CallActions {
 	/** True while a call:join ack is in flight (server errors arrive as events). */
 	const joiningRef = useRef(false);
 	const selfPeerId = useRef<string | null>(null);
-	// The dashboard authenticates over cookies, so resolve our peer id from
-	// /auth/me (identity only, used for deterministic offer/answer
-	// politeness, never for auth). The query is usually already cached by
-	// the auth features.
+
 	const { data: me } = useMeQuery();
 	useEffect(() => {
 		const id = me?.data.data.id;
@@ -83,18 +80,19 @@ export function useCallEngine(): CallActions {
 	const getStore = useCallStore.getState;
 
 	const cleanupPeer = useCallback((peerId: string) => {
-		const entry = pcs.current.get(peerId);
+		const entry = peerConnections.current.get(peerId);
 		if (entry) {
 			if (entry.disconnectTimer !== null)
 				window.clearTimeout(entry.disconnectTimer);
-			entry.pc.close();
-			pcs.current.delete(peerId);
+			entry.peerConnection.close();
+			peerConnections.current.delete(peerId);
 		}
 		getStore().removePeer(peerId);
 	}, []);
 
 	const fullCleanup = useCallback(() => {
-		for (const peerId of [...pcs.current.keys()]) cleanupPeer(peerId);
+		for (const peerId of [...peerConnections.current.keys()])
+			cleanupPeer(peerId);
 		const { localStream, screenStream } = getStore();
 		localStream?.getTracks().forEach((t) => {
 			t.stop();
@@ -140,15 +138,15 @@ export function useCallEngine(): CallActions {
 		}
 	}, []);
 
-	const attachLocalTracks = useCallback((pc: RTCPeerConnection) => {
+	const attachLocalTracks = useCallback((peerConnection: RTCPeerConnection) => {
 		const localStream = localStreamRef.current ?? getStore().localStream;
 		localStream?.getTracks().forEach((track) => {
-			if (localStream) pc.addTrack(track, localStream);
+			if (localStream) peerConnection.addTrack(track, localStream);
 		});
 	}, []);
 
 	const sendOffer = useCallback(async (peerId: string, iceRestart = false) => {
-		const entry = pcs.current.get(peerId);
+		const entry = peerConnections.current.get(peerId);
 		if (!entry) return;
 		const { callId } = getStore();
 		if (!callId) return;
@@ -156,13 +154,15 @@ export function useCallEngine(): CallActions {
 			entry.makingOffer = true;
 			if (iceRestart) {
 				// Fresh ICE gathering on the existing (failed) connection.
-				const offer = await entry.pc.createOffer({ iceRestart: true });
-				await entry.pc.setLocalDescription(offer);
+				const offer = await entry.peerConnection.createOffer({
+					iceRestart: true,
+				});
+				await entry.peerConnection.setLocalDescription(offer);
 			} else {
-				const offer = await entry.pc.createOffer();
-				await entry.pc.setLocalDescription(offer);
+				const offer = await entry.peerConnection.createOffer();
+				await entry.peerConnection.setLocalDescription(offer);
 			}
-			const desc = entry.pc.localDescription;
+			const desc = entry.peerConnection.localDescription;
 			if (!desc) return;
 			clientRef.current.emit(ClientCallEvents.OFFER, {
 				callId,
@@ -179,7 +179,7 @@ export function useCallEngine(): CallActions {
 
 	const restartIce = useCallback(
 		async (peerId: string) => {
-			const entry = pcs.current.get(peerId);
+			const entry = peerConnections.current.get(peerId);
 			if (!entry || entry.restartAttempts >= MAX_RESTART_ATTEMPTS) {
 				if (entry) {
 					getStore().set({ error: "Connection to a participant was lost." });
@@ -201,23 +201,26 @@ export function useCallEngine(): CallActions {
 				iceServers.current?.length,
 			);
 			cleanupPeer(peerId);
-			const pc = new RTCPeerConnection({
+			const peerConnection = new RTCPeerConnection({
 				iceServers: iceServers.current ?? undefined,
 			});
-			pc.onicegatheringstatechange = () =>
-				console.log("[icegatheringstatechange]", pc.iceGatheringState);
+			peerConnection.onicegatheringstatechange = () =>
+				console.log(
+					"[icegatheringstatechange]",
+					peerConnection.iceGatheringState,
+				);
 			const entry: PeerConnectionState = {
-				pc,
+				peerConnection,
 				makingOffer: false,
 				ignoreOffer: false,
 				pendingCandidates: [],
 				restartAttempts: 0,
 				disconnectTimer: null,
 			};
-			pcs.current.set(peerId, entry);
-			attachLocalTracks(pc);
+			peerConnections.current.set(peerId, entry);
+			attachLocalTracks(peerConnection);
 
-			pc.ontrack = (event) => {
+			peerConnection.ontrack = (event) => {
 				const [stream] = event.streams;
 				console.log(`[call] ontrack from ${peerId}`, {
 					streams: event.streams.length,
@@ -231,11 +234,11 @@ export function useCallEngine(): CallActions {
 					stream,
 					audio: existing?.audio ?? true,
 					video: existing?.video ?? true,
-					connection: pc.connectionState,
+					connection: peerConnection.connectionState,
 				});
 			};
 
-			pc.onicecandidate = (event) => {
+			peerConnection.onicecandidate = (event) => {
 				console.log(
 					"[call] agent ice candidate",
 					event.candidate?.candidate?.slice(0, 40),
@@ -258,25 +261,29 @@ export function useCallEngine(): CallActions {
 				}
 			};
 
-			pc.onconnectionstatechange = () => {
+			peerConnection.onconnectionstatechange = () => {
 				console.log(
-					`[call] pc ${peerId}: connection=${pc.connectionState} ice=${pc.iceConnectionState} signaling=${pc.signalingState}`,
+					`[call] pc ${peerId}: connection=${peerConnection.connectionState} ice=${peerConnection.iceConnectionState} signaling=${peerConnection.signalingState}`,
 				);
 				const store = getStore();
 				const existing = store.peers[peerId];
 				if (existing)
-					store.upsertPeer({ ...existing, connection: pc.connectionState });
-				if (pc.connectionState === "failed") {
+					store.upsertPeer({
+						...existing,
+						connection: peerConnection.connectionState,
+					});
+				if (peerConnection.connectionState === "failed") {
 					void restartIce(peerId);
-				} else if (pc.connectionState === "disconnected") {
+				} else if (peerConnection.connectionState === "disconnected") {
 					// Transient blips recover alone - restart only if it persists.
 					if (entry.disconnectTimer !== null)
 						window.clearTimeout(entry.disconnectTimer);
 					entry.disconnectTimer = window.setTimeout(() => {
 						entry.disconnectTimer = null;
-						if (pc.connectionState === "disconnected") void restartIce(peerId);
+						if (peerConnection.connectionState === "disconnected")
+							void restartIce(peerId);
 					}, ICE_RESTART_DELAY_MS);
-				} else if (pc.connectionState === "connected") {
+				} else if (peerConnection.connectionState === "connected") {
 					entry.restartAttempts = 0;
 					if (entry.disconnectTimer !== null) {
 						window.clearTimeout(entry.disconnectTimer);
@@ -285,18 +292,18 @@ export function useCallEngine(): CallActions {
 				}
 			};
 
-			return pc;
+			return peerConnection;
 		},
 		[attachLocalTracks, cleanupPeer, restartIce],
 	);
 
 	const flushQueuedCandidates = useCallback(async (peerId: string) => {
-		const entry = pcs.current.get(peerId);
+		const entry = peerConnections.current.get(peerId);
 		if (!entry) return;
 		const queued = entry.pendingCandidates.splice(0);
 		for (const c of queued) {
 			try {
-				await entry.pc.addIceCandidate(c);
+				await entry.peerConnection.addIceCandidate(c);
 			} catch {
 				// Stale candidate - safe to drop.
 			}
@@ -307,45 +314,50 @@ export function useCallEngine(): CallActions {
 	const handleRemoteOffer = useCallback(
 		async (peerId: string, sdp: SdpPayload) => {
 			console.log("[call] handleRemoteOffer from", peerId);
-			let entry = pcs.current.get(peerId);
+			let entry = peerConnections.current.get(peerId);
 			if (!entry) {
 				createPeerConnection(peerId);
-				entry = pcs.current.get(peerId);
+				entry = peerConnections.current.get(peerId);
 				if (!entry) return;
 			}
-			const { pc } = entry;
+			const { peerConnection } = entry;
 			// Deterministic politeness from peer ids (identity only, not auth).
 			const polite = (selfPeerId.current ?? "") < peerId;
-			const collision = entry.makingOffer || pc.signalingState !== "stable";
+			const collision =
+				entry.makingOffer || peerConnection.signalingState !== "stable";
 			entry.ignoreOffer = !polite && collision;
 			if (entry.ignoreOffer) return;
 			try {
-				if (collision) await pc.setRemoteDescription({ type: "rollback" });
-				await pc.setRemoteDescription({ type: "offer", sdp: sdp.sdp });
+				if (collision)
+					await peerConnection.setRemoteDescription({ type: "rollback" });
+				await peerConnection.setRemoteDescription({
+					type: "offer",
+					sdp: sdp.sdp,
+				});
 				await flushQueuedCandidates(peerId);
-				const answer = await pc.createAnswer();
-				await pc.setLocalDescription(answer);
+				const answer = await peerConnection.createAnswer();
+				await peerConnection.setLocalDescription(answer);
 				console.log(
 					"[call] agent setLocalDescription answer done, gathering=",
-					pc.iceGatheringState,
+					peerConnection.iceGatheringState,
 					"signaling=",
-					pc.signalingState,
+					peerConnection.signalingState,
 				);
 				window.setTimeout(() => {
 					console.log(
 						"[call] agent iceGatheringState later=",
-						pc.iceGatheringState,
+						peerConnection.iceGatheringState,
 					);
-					if (pc.iceGatheringState === "new") {
+					if (peerConnection.iceGatheringState === "new") {
 						console.log("[call] agent restarting ICE");
 						try {
-							pc.restartIce();
+							peerConnection.restartIce();
 						} catch (e) {
 							console.log(e);
 						}
 					}
 				}, 1000);
-				const desc = pc.localDescription;
+				const desc = peerConnection.localDescription;
 				if (!desc) return;
 				const { callId } = getStore();
 				if (!callId) return;
@@ -362,6 +374,13 @@ export function useCallEngine(): CallActions {
 		[createPeerConnection, flushQueuedCandidates],
 	);
 
+	/**
+	 * Returns the STUN/TURN config that lets two browsers behind NATs find
+	 * each other and move media. Fetches it from the call server (TURN
+	 * credentials are short-lived and server-managed) once per session and
+	 * caches it in a ref for reuse. Call before creating the first
+	 * RTCPeerConnection, e.g. before invite/accept.
+	 */
 	const ensureIceServers = useCallback(async (): Promise<RTCIceServer[]> => {
 		if (iceServers.current) return iceServers.current;
 		const res = await callApiService.getIceServers();
@@ -374,12 +393,24 @@ export function useCallEngine(): CallActions {
 		return servers;
 	}, []);
 
+	/**
+	 * Asks the browser for the local media the call needs: always the
+	 * microphone, plus the camera only for "VIDEO" calls. Honors the
+	 * previously selected devices (audioDeviceId/videoDeviceId) and applies
+	 * the current mute state (localAudio/localVideo) to the new tracks.
+	 * Saves the stream into the store and returns it, ready to attach to new
+	 * peer connections.
+	 * Rejects on browser errors (denied permission, no device found, ...) —
+	 * map them with toMediaErrorMessage before showing to the user.
+	 */
 	const acquireLocalMedia = useCallback(
 		async (type: CallType): Promise<MediaStream> => {
 			const store = getStore();
 			const stream = await navigator.mediaDevices.getUserMedia({
 				audio: store.audioDeviceId
-					? { deviceId: { exact: store.audioDeviceId } }
+					? {
+							deviceId: { exact: store.audioDeviceId },
+						}
 					: true,
 				video:
 					type === "VIDEO"
@@ -395,6 +426,7 @@ export function useCallEngine(): CallActions {
 			stream.getVideoTracks().forEach((t) => {
 				t.enabled = store.localVideo;
 			});
+
 			localStreamRef.current = stream;
 			store.set({ localStream: stream });
 			return stream;
@@ -414,6 +446,7 @@ export function useCallEngine(): CallActions {
 				return;
 			}
 			let stream: MediaStream;
+
 			try {
 				stream = await acquireLocalMedia(type);
 				console.log(
@@ -425,6 +458,7 @@ export function useCallEngine(): CallActions {
 				store.set({ error: toMediaErrorMessage(err) });
 				return;
 			}
+
 			try {
 				await ensureIceServers();
 			} catch {
@@ -595,8 +629,8 @@ export function useCallEngine(): CallActions {
 	}, [sendMediaState]);
 
 	const replaceVideoTrack = useCallback((newTrack: MediaStreamTrack | null) => {
-		for (const [, entry] of pcs.current) {
-			const sender = entry.pc
+		for (const [, entry] of peerConnections.current) {
+			const sender = entry.peerConnection
 				.getSenders()
 				.find((s) => s.track?.kind === "video");
 			if (sender) void sender.replaceTrack(newTrack);
@@ -614,8 +648,8 @@ export function useCallEngine(): CallActions {
 			const [newTrack] = stream.getAudioTracks();
 			if (!newTrack) return;
 			newTrack.enabled = store.localAudio;
-			for (const [, entry] of pcs.current) {
-				const sender = entry.pc
+			for (const [, entry] of peerConnections.current) {
+				const sender = entry.peerConnection
 					.getSenders()
 					.find((s) => s.track?.kind === "audio");
 				if (sender) await sender.replaceTrack(newTrack);
@@ -798,10 +832,10 @@ export function useCallEngine(): CallActions {
 		on<WebrtcAnswerRelayPayload>(ServerCallEvents.ANSWER, async (data) => {
 			const store = getStore();
 			if (store.callId !== data.callId) return;
-			const entry = pcs.current.get(data.from);
+			const entry = peerConnections.current.get(data.from);
 			if (!entry) return;
 			try {
-				await entry.pc.setRemoteDescription({
+				await entry.peerConnection.setRemoteDescription({
 					type: "answer",
 					sdp: data.sdp.sdp,
 				});
@@ -814,16 +848,16 @@ export function useCallEngine(): CallActions {
 		on<WebrtcIceRelayPayload>(ServerCallEvents.ICE, async (data) => {
 			const store = getStore();
 			if (store.callId !== data.callId) return;
-			const entry = pcs.current.get(data.from);
+			const entry = peerConnections.current.get(data.from);
 			if (!entry) return;
 			const candidate: RTCIceCandidateInit = {
 				candidate: data.candidate.candidate,
 				sdpMid: data.candidate.sdpMid,
 				sdpMLineIndex: data.candidate.sdpMLineIndex,
 			};
-			if (entry.pc.remoteDescription) {
+			if (entry.peerConnection.remoteDescription) {
 				try {
-					await entry.pc.addIceCandidate(candidate);
+					await entry.peerConnection.addIceCandidate(candidate);
 				} catch {
 					// Stale candidate - safe to drop.
 				}
@@ -890,7 +924,7 @@ export function useCallEngine(): CallActions {
 				{ callId },
 			);
 			// Fresh mesh: drop possibly-dead connections, re-offer to everyone.
-			for (const id of [...pcs.current.keys()]) cleanupPeer(id);
+			for (const id of [...peerConnections.current.keys()]) cleanupPeer(id);
 			for (const peer of ack.peers) {
 				createPeerConnection(peer.peerId);
 				getStore().upsertPeer({

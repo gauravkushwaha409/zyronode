@@ -29,6 +29,7 @@ interface CallStore {
 
 	localStream: MediaStream | null;
 	screenStream: MediaStream | null;
+	/** Mic/camera mute switches (true = unmuted). Toggled by the mute buttons and applied to fresh getUserMedia tracks in acquireLocalMedia. Deliberately NOT reset between calls, so a user who muted themselves stays muted next call. */
 	localAudio: boolean;
 	localVideo: boolean;
 	isSharingScreen: boolean;
@@ -36,6 +37,7 @@ interface CallStore {
 	peers: Record<string, RemotePeerState>;
 	startedAt: number | null;
 
+	/** Previously chosen mic/camera; null = use the browser default. Used by acquireLocalMedia as an exact-device constraint. */
 	audioDeviceId: string | null;
 	videoDeviceId: string | null;
 
