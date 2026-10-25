@@ -30,6 +30,7 @@ const INBOX_EVENTS = new Set([
 	WIDGET_SSE_EVENTS.MESSAGE_CREATED,
 	WIDGET_SSE_EVENTS.CONVERSATION_CREATED,
 	WIDGET_SSE_EVENTS.CONVERSATION_UPDATED,
+	WIDGET_SSE_EVENTS.CONVERSATION_DELETED,
 	WIDGET_SSE_EVENTS.CONVERSATION_PRESENCE,
 ]);
 const AGENT_VISITOR_EVENTS = new Set([
@@ -74,7 +75,10 @@ export class SseController {
 		required: true,
 	})
 	@ApiResponse({ status: 200, description: "SSE stream opened" })
-	@ApiResponse({ status: 403, description: "Not a member of this organization" })
+	@ApiResponse({
+		status: 403,
+		description: "Not a member of this organization",
+	})
 	async agentInboxStream(
 		@Query("organizationId") organizationId: string,
 		@CurrentUser("id") userId: string,
@@ -118,7 +122,10 @@ export class SseController {
 		required: true,
 	})
 	@ApiResponse({ status: 200, description: "SSE stream opened" })
-	@ApiResponse({ status: 403, description: "Not a member of this organization" })
+	@ApiResponse({
+		status: 403,
+		description: "Not a member of this organization",
+	})
 	async agentVisitorStream(
 		@Query("organizationId") organizationId: string,
 		@CurrentUser("id") userId: string,

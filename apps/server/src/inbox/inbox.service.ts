@@ -1,7 +1,16 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { RedisService } from "../redis/redis.service";
 import { RedisKey } from "../redis/redis.keys";
+import {
+  conversationListInclude,
+  toConversationListItem,
+} from "./conversation-list-item.mapper";
 import { InboxSsePublisher } from "./inbox-sse.publisher";
 
 const ONLINE_WINDOW_MS = 60_000;
@@ -9,14 +18,20 @@ const ONLINE_WINDOW_MS = 60_000;
 const onlinePresenceKey = RedisKey.visitorPresence;
 
 function encodeCursor(conversation: { updatedAt: Date; id: string }): string {
-  return Buffer.from(JSON.stringify({ updatedAt: conversation.updatedAt.toISOString(), id: conversation.id })).toString("base64url");
+  return Buffer.from(
+    JSON.stringify({
+      updatedAt: conversation.updatedAt.toISOString(),
+      id: conversation.id,
+    }),
+  ).toString("base64url");
 }
 
 function decodeCursor(cursor: string): { updatedAt: Date; id: string } {
   try {
     const json = Buffer.from(cursor, "base64url").toString("utf-8");
     const parsed = JSON.parse(json) as { updatedAt: string; id: string };
-    if (!parsed.updatedAt || !parsed.id) throw new Error("Invalid cursor payload");
+    if (!parsed.updatedAt || !parsed.id)
+      throw new Error("Invalid cursor payload");
     const updatedAt = new Date(parsed.updatedAt);
     if (Number.isNaN(updatedAt.getTime())) throw new Error("Invalid cursor date");
     return { updatedAt, id: parsed.id };
@@ -37,8 +52,13 @@ export class InboxService {
     return Date.now() - ONLINE_WINDOW_MS;
   }
 
-  private async getOnlineVisitorIds(organizationId: string): Promise<Set<string>> {
-    const ids = await this.redis.zRangeByScore(onlinePresenceKey(organizationId), this.onlineCutoffMs());
+  private async getOnlineVisitorIds(
+    organizationId: string,
+  ): Promise<Set<string>> {
+    const ids = await this.redis.zRangeByScore(
+      onlinePresenceKey(organizationId),
+      this.onlineCutoffMs(),
+    );
     return new Set(ids);
   }
 
@@ -56,7 +76,10 @@ export class InboxService {
     const direction = filters?.direction ?? "next";
     const cursor = filters?.cursor;
 
-    const baseWhere: Record<string, unknown> = { organizationId, deletedAt: null };
+    const baseWhere: Record<string, unknown> = {
+      organizationId,
+      deletedAt: null,
+    };
     if (filters?.status) baseWhere.status = filters.status;
     if (filters?.search) {
       baseWhere.OR = [
@@ -70,8 +93,18 @@ export class InboxService {
       const { updatedAt: cursorDate, id: cursorId } = decodeCursor(cursor);
       const cursorWhere =
         direction === "prev"
-          ? { OR: [{ updatedAt: { gt: cursorDate } }, { updatedAt: cursorDate, id: { gt: cursorId } }] }
-          : { OR: [{ updatedAt: { lt: cursorDate } }, { updatedAt: cursorDate, id: { lt: cursorId } }] };
+          ? {
+                OR: [
+                  { updatedAt: { gt: cursorDate } },
+                  { updatedAt: cursorDate, id: { gt: cursorId } },
+                ],
+              }
+          : {
+                OR: [
+                  { updatedAt: { lt: cursorDate } },
+                  { updatedAt: cursorDate, id: { lt: cursorId } },
+                ],
+              };
       where = { AND: [baseWhere, cursorWhere] };
     }
 
@@ -80,46 +113,19 @@ export class InboxService {
         where: where as never,
         orderBy: [{ updatedAt: "desc" }, { id: "desc" }],
         take: limit + 1,
-        include: {
-          messages: {
-            orderBy: { createdAt: "desc" },
-            take: 1,
-            select: { id: true, content: true, senderType: true, messageType: true, createdAt: true, replyTo: true, replyToId: true },
-          },
-          _count: { select: { messages: { where: { senderType: "VISITOR", status: { not: "READ" } } } } },
-          visitor: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-            },
-          },
-        },
+        include: conversationListInclude,
       }),
       this.getOnlineVisitorIds(organizationId),
     ]);
 
     const hasExtra = conversationsPlusOne.length > limit;
-    const conversations = hasExtra ? conversationsPlusOne.slice(0, limit) : conversationsPlusOne;
+    const conversations = hasExtra
+      ? conversationsPlusOne.slice(0, limit)
+      : conversationsPlusOne;
 
-    const data = conversations.map((conversation) => {
-      const lastMessage = conversation.messages[0] ?? null;
-      const visitor = conversation.visitor
-        ? { ...conversation.visitor, isOnline: onlineIds.has(conversation.visitor.id) }
-        : null;
-      return {
-        id: conversation.id,
-        status: conversation.status,
-        channel: conversation.channel,
-        visitor,
-        lastMessageAt: conversation.updatedAt,
-        createdAt: conversation.createdAt,
-        lastMessage: lastMessage
-          ? { content: lastMessage.content, senderType: lastMessage.senderType, messageType: lastMessage.messageType, createdAt: lastMessage.createdAt }
-          : null,
-        unreadCount: conversation._count.messages,
-      };
-    });
+    const data = conversations.map((conversation) =>
+      toConversationListItem(conversation, onlineIds),
+    );
 
     return {
       message: "Inbox conversations fetched successfully...",
@@ -135,21 +141,34 @@ export class InboxService {
                 ? encodeCursor(conversations[conversations.length - 1] as never)
                 : null
               : conversations.length
-                ? encodeCursor(conversations[conversations.length - 1] as never)
-                : null,
+                  ? encodeCursor(conversations[conversations.length - 1] as never)
+                  : null,
           prevCursor:
             direction === "prev"
               ? hasExtra
                 ? encodeCursor(conversations[0] as never)
                 : null
               : cursor && conversations.length
-                ? encodeCursor(conversations[0] as never)
-                : null,
+                  ? encodeCursor(conversations[0] as never)
+                  : null,
           hasNext: direction === "next" ? hasExtra : conversations.length > 0,
           hasPrev: direction === "prev" ? hasExtra : !!cursor,
         },
       },
     };
+  }
+
+  /** Returns a conversation in the exact shape used by the conversation list endpoint. */
+  async getConversationListItem(organizationId: string, conversationId: string) {
+    const [conversation, onlineIds] = await Promise.all([
+      this.prisma.conversation.findFirst({
+        where: { id: conversationId, organizationId, deletedAt: null },
+        include: conversationListInclude,
+      }),
+      this.getOnlineVisitorIds(organizationId),
+    ]);
+
+    return conversation ? toConversationListItem(conversation, onlineIds) : null;
   }
 
   async getConversationDetails(organizationId: string, conversationId: string) {
@@ -196,10 +215,13 @@ export class InboxService {
       data: { status: "CLOSED" },
     });
 
-    await this.inboxSse.conversationUpdated({
-      conversationId,
+    const item = await this.getConversationListItem(
       organizationId,
-      conversation: updated,
+      conversationId,
+    );
+    await this.inboxSse.conversationUpdated({
+      organizationId,
+      conversation: item ?? updated,
     });
 
     return {
@@ -222,10 +244,13 @@ export class InboxService {
       data: { status: "ACTIVE" },
     });
 
-    await this.inboxSse.conversationUpdated({
-      conversationId,
+    const item = await this.getConversationListItem(
       organizationId,
-      conversation: updated,
+      conversationId,
+    );
+    await this.inboxSse.conversationUpdated({
+      organizationId,
+      conversation: item ?? updated,
     });
 
     return {
@@ -234,10 +259,16 @@ export class InboxService {
     };
   }
 
-  async softDeleteConversation(organizationId: string, conversationId: string, deletedById?: string) {
+  async softDeleteConversation(
+    organizationId: string,
+    conversationId: string,
+    deletedById?: string,
+  ) {
     if (deletedById) {
       const membership = await this.prisma.organizationMember.findUnique({
-        where: { userId_organizationId: { userId: deletedById, organizationId } },
+        where: {
+          userId_organizationId: { userId: deletedById, organizationId },
+        },
       });
       if (!membership) {
         throw new ForbiddenException("You are not a member of this organization");

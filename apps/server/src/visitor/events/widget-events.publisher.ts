@@ -1,5 +1,11 @@
 import { Injectable, Logger } from "@nestjs/common";
+import {
+	conversationListInclude,
+	toConversationListItem,
+} from "../../inbox/conversation-list-item.mapper";
 import { PrismaService } from "../../prisma/prisma.service";
+import { RedisKey } from "../../redis/redis.keys";
+import { RedisService } from "../../redis/redis.service";
 import { SseKey } from "../../sse/keys";
 import { SseService } from "../../sse/sse.service";
 import { WebsocketService } from "../../websocket/websocket.service";
@@ -20,7 +26,19 @@ export class WidgetEventsPublisher {
 		private readonly websocketService: WebsocketService,
 		private readonly sse: SseService,
 		private readonly prisma: PrismaService,
+		private readonly redis: RedisService,
 	) {}
+
+	private async getOnlineVisitorIds(
+		organizationId: string | null,
+	): Promise<Set<string>> {
+		if (!organizationId) return new Set();
+		const ids = await this.redis.zRangeByScore(
+			RedisKey.visitorPresence(organizationId),
+			Date.now() - 60_000,
+		);
+		return new Set(ids);
+	}
 
 	/* ───────────────────────── key helpers — centralized in sse/keys.ts ───────────────────────── */
 
@@ -157,6 +175,32 @@ export class WidgetEventsPublisher {
 			data: data as Record<string, unknown>,
 		});
 		await this.emitSse(keys, WIDGET_SSE_EVENTS.MESSAGE_CREATED, data);
+
+		// Conversation list items need the new last message + senderType. Emit a
+		// conversation.updated alongside message.created so the list can patch
+		// itself without refetching.
+		const [conversation, onlineIds] = await Promise.all([
+			this.prisma.conversation.findFirst({
+				where: { id: params.conversationId, deletedAt: null },
+				include: conversationListInclude,
+			}),
+			this.getOnlineVisitorIds(orgId),
+		]);
+
+		if (conversation) {
+			const conversationItem = toConversationListItem(conversation, onlineIds);
+			this.emitWs({
+				conversationId: params.conversationId,
+				organizationId: orgId,
+				wsEvent: SSE_TO_WS_EVENT_MAP[WIDGET_SSE_EVENTS.CONVERSATION_UPDATED],
+				data: conversationItem as unknown as Record<string, unknown>,
+			});
+			await this.emitSse(
+				keys,
+				WIDGET_SSE_EVENTS.CONVERSATION_UPDATED,
+				conversationItem,
+			);
+		}
 	}
 
 	/** Message edited (agent). Dual broadcast — mirrors messageCreated. */
@@ -350,7 +394,6 @@ export class WidgetEventsPublisher {
 			params.organizationId !== undefined
 				? params.organizationId
 				: await this.resolveOrgId(params.conversationId);
-		const data = { conversation: params.conversation };
 		const keys = orgId
 			? this.orgKeys(orgId)
 			: this.conversationKeys(params.conversationId);
@@ -358,9 +401,13 @@ export class WidgetEventsPublisher {
 			conversationId: params.conversationId,
 			organizationId: orgId,
 			wsEvent: SSE_TO_WS_EVENT_MAP[WIDGET_SSE_EVENTS.CONVERSATION_CREATED],
-			data: data as Record<string, unknown>,
+			data: params.conversation as Record<string, unknown>,
 		});
-		await this.emitSse(keys, WIDGET_SSE_EVENTS.CONVERSATION_CREATED, data);
+		await this.emitSse(
+			keys,
+			WIDGET_SSE_EVENTS.CONVERSATION_CREATED,
+			params.conversation,
+		);
 	}
 
 	async conversationUpdated(params: {
@@ -372,7 +419,7 @@ export class WidgetEventsPublisher {
 			params.organizationId !== undefined
 				? params.organizationId
 				: await this.resolveOrgId(params.conversationId);
-		const data = { conversation: params.conversation };
+		const data = params.conversation;
 		const keys = orgId
 			? this.orgKeys(orgId)
 			: this.conversationKeys(params.conversationId);

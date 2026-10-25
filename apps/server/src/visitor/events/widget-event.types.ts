@@ -21,6 +21,7 @@ export const WIDGET_SSE_EVENTS = {
 	VISITOR_NOTE_CREATED: "visitor.note.created",
 	CONVERSATION_CREATED: "conversation.created",
 	CONVERSATION_UPDATED: "conversation.updated",
+	CONVERSATION_DELETED: "conversation.deleted",
 	CONVERSATION_PRESENCE: "conversation.presence",
 	TYPING_UPDATE: "typing.update",
 } as const;
@@ -38,6 +39,7 @@ export const WIDGET_WS_EVENTS = {
 	VISITOR_NOTE_CREATED: "visitor.note.created",
 	CONVERSATION_CREATED: "conversation:created",
 	CONVERSATION_UPDATED: "conversation:updated",
+	CONVERSATION_DELETED: "conversation:deleted",
 	CONVERSATION_PRESENCE: "conversation:presence",
 	TYPING_UPDATE: "typing:update",
 } as const;
@@ -59,6 +61,8 @@ export const SSE_TO_WS_EVENT_MAP: Record<string, string> = {
 		WIDGET_WS_EVENTS.CONVERSATION_CREATED,
 	[WIDGET_SSE_EVENTS.CONVERSATION_UPDATED]:
 		WIDGET_WS_EVENTS.CONVERSATION_UPDATED,
+	[WIDGET_SSE_EVENTS.CONVERSATION_DELETED]:
+		WIDGET_WS_EVENTS.CONVERSATION_DELETED,
 	[WIDGET_SSE_EVENTS.CONVERSATION_PRESENCE]:
 		WIDGET_WS_EVENTS.CONVERSATION_PRESENCE,
 	[WIDGET_SSE_EVENTS.TYPING_UPDATE]: WIDGET_WS_EVENTS.TYPING_UPDATE,
@@ -91,13 +95,9 @@ export interface MessageDeletedPayload {
 	messageId: string;
 }
 
-export interface ConversationUpdatedPayload {
-	conversation: unknown;
-}
-
-export interface ConversationCreatedPayload {
-	conversation: unknown;
-}
+export type ConversationUpdatedPayload = Record<string, unknown>;
+export type ConversationCreatedPayload = Record<string, unknown>;
+export type ConversationDeletedPayload = string;
 
 export interface TypingUpdatePayload {
 	conversationId: string;
@@ -125,9 +125,13 @@ export type WidgetEventPayloadMap = {
 	[WIDGET_SSE_EVENTS.VISITOR_CREATED]: { visitor: unknown };
 	[WIDGET_SSE_EVENTS.VISITOR_UPDATED]: { visitor: unknown };
 	[WIDGET_SSE_EVENTS.VISITOR_ASSIGNED]: { visitor: unknown };
-	[WIDGET_SSE_EVENTS.VISITOR_NOTE_CREATED]: { visitorId: string; note: unknown };
+	[WIDGET_SSE_EVENTS.VISITOR_NOTE_CREATED]: {
+		visitorId: string;
+		note: unknown;
+	};
 	[WIDGET_SSE_EVENTS.CONVERSATION_CREATED]: ConversationCreatedPayload;
 	[WIDGET_SSE_EVENTS.CONVERSATION_UPDATED]: ConversationUpdatedPayload;
+	[WIDGET_SSE_EVENTS.CONVERSATION_DELETED]: ConversationDeletedPayload;
 	[WIDGET_SSE_EVENTS.CONVERSATION_PRESENCE]: ConversationPresencePayload;
 	[WIDGET_SSE_EVENTS.TYPING_UPDATE]: TypingUpdatePayload;
 };

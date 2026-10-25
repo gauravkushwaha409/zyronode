@@ -1,176 +1,186 @@
 import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
+	BadRequestException,
+	Injectable,
+	NotFoundException,
 } from "@nestjs/common";
 import { Prisma } from "../generated/prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateConversationDto } from "./dto/create-conversation.dto";
 import { InboxSsePublisher } from "./inbox-sse.publisher";
+import { InboxService } from "./inbox.service";
 
 @Injectable()
 export class ConversationService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly inboxSse: InboxSsePublisher,
-  ) {}
+	constructor(
+		private readonly prisma: PrismaService,
+		private readonly inboxSse: InboxSsePublisher,
+		private readonly inboxService: InboxService,
+	) {}
 
-  /**
-   * Widget-facing lookup: the conversation must exist and belong to an
-   * active organization. Throws 404 otherwise.
-   */
-  async assertWidgetConversation(conversationId: string): Promise<void> {
-    const conversation = await this.prisma.conversation.findFirst({
-      where: {
-        id: conversationId,
-        deletedAt: null,
-        organization: { isActive: true },
-      },
-      select: { id: true },
-    });
-    if (!conversation) {
-      throw new NotFoundException("Conversation not found");
-    }
-  }
+	/**
+	 * Widget-facing lookup: the conversation must exist and belong to an
+	 * active organization. Throws 404 otherwise.
+	 */
+	async assertWidgetConversation(conversationId: string): Promise<void> {
+		const conversation = await this.prisma.conversation.findFirst({
+			where: {
+				id: conversationId,
+				deletedAt: null,
+				organization: { isActive: true },
+			},
+			select: { id: true },
+		});
+		if (!conversation) {
+			throw new NotFoundException("Conversation not found");
+		}
+	}
 
-  async create(dto: CreateConversationDto, ip?: string, userAgent?: string) {
-    return this.createConversation(dto, ip, userAgent);
-  }
+	async create(dto: CreateConversationDto, ip?: string, userAgent?: string) {
+		return this.createConversation(dto, ip, userAgent);
+	}
 
-  async createConversation(
-    dto: CreateConversationDto,
-    ip?: string,
-    userAgent?: string,
-  ) {
-    try {
-      const visitor = await this.prisma.visitor.findFirst({
-        where: {
-          id: dto.visitorId,
-          organizationId: dto.organizationId,
-          organization: { isActive: true },
-        },
-        select: { id: true },
-      });
-      if (!visitor) {
-        throw new BadRequestException("Invalid visitorId for organization");
-      }
+	async createConversation(
+		dto: CreateConversationDto,
+		ip?: string,
+		userAgent?: string,
+	) {
+		try {
+			const visitor = await this.prisma.visitor.findFirst({
+				where: {
+					id: dto.visitorId,
+					organizationId: dto.organizationId,
+					organization: { isActive: true },
+				},
+				select: { id: true },
+			});
+			if (!visitor) {
+				throw new BadRequestException("Invalid visitorId for organization");
+			}
 
-      const conversation = await this.prisma.conversation.create({
-        data: {
-          organizationId: dto.organizationId,
-          visitorId: dto.visitorId,
-          channel: dto.channel ?? "web",
-          ...(ip ? { ipAddress: ip } : {}),
-          ...(userAgent ? { userAgent } : {}),
-        },
-        include: {
-          organization: {
-            select: { id: true, name: true },
-          },
-          visitor: {
-            select: { id: true, name: true, email: true },
-          },
-        },
-      });
+			const conversation = await this.prisma.conversation.create({
+				data: {
+					organizationId: dto.organizationId,
+					visitorId: dto.visitorId,
+					channel: dto.channel ?? "web",
+					...(ip ? { ipAddress: ip } : {}),
+					...(userAgent ? { userAgent } : {}),
+				},
+				include: {
+					organization: {
+						select: { id: true, name: true },
+					},
+					visitor: {
+						select: { id: true, name: true, email: true },
+					},
+				},
+			});
 
-      await this.inboxSse.conversationCreated({
-        organizationId: conversation.organizationId,
-        conversation,
-      });
+			const item = await this.inboxService.getConversationListItem(
+				conversation.organizationId,
+				conversation.id,
+			);
+			await this.inboxSse.conversationCreated({
+				organizationId: conversation.organizationId,
+				conversation: item ?? conversation,
+			});
 
-      return {
-        message: "Conversation created successfully",
-        data: conversation,
-      };
-    } catch (err) {
-      const error = err as Prisma.PrismaClientKnownRequestError;
-      if (error.code === "P2003") {
-        throw new BadRequestException(
-          "Invalid organization. Please provide a valid organization ID.",
-        );
-      }
+			return {
+				message: "Conversation created successfully",
+				data: conversation,
+			};
+		} catch (err) {
+			const error = err as Prisma.PrismaClientKnownRequestError;
+			if (error.code === "P2003") {
+				throw new BadRequestException(
+					"Invalid organization. Please provide a valid organization ID.",
+				);
+			}
 
-      throw error;
-    }
-  }
+			throw error;
+		}
+	}
 
-  async findById(conversationId: string) {
-    const conversation = await this.prisma.conversation.findFirst({
-      where: { id: conversationId, deletedAt: null },
-      include: {
-        messages: {
-          orderBy: { createdAt: "desc" },
-          take: 50,
-          include: {
-            replyTo: {
-              select: {
-                id: true,
-                content: true,
-                senderType: true,
-                senderId: true,
-              },
-            },
-          },
-        },
-        organization: {
-          select: { id: true, name: true },
-        },
-      },
-    });
+	async findById(conversationId: string) {
+		const conversation = await this.prisma.conversation.findFirst({
+			where: { id: conversationId, deletedAt: null },
+			include: {
+				messages: {
+					orderBy: { createdAt: "desc" },
+					take: 50,
+					include: {
+						replyTo: {
+							select: {
+								id: true,
+								content: true,
+								senderType: true,
+								senderId: true,
+							},
+						},
+					},
+				},
+				organization: {
+					select: { id: true, name: true },
+				},
+			},
+		});
 
-    if (!conversation) {
-      throw new NotFoundException("Conversation not found");
-    }
+		if (!conversation) {
+			throw new NotFoundException("Conversation not found");
+		}
 
-    return {
-      message: "Conversation fetched successfully",
-      data: conversation,
-    };
-  }
+		return {
+			message: "Conversation fetched successfully",
+			data: conversation,
+		};
+	}
 
-  async findByOrganizationId(organizationId: string) {
-    const conversations = await this.prisma.conversation.findMany({
-      where: { organizationId, deletedAt: null },
-      orderBy: { updatedAt: "desc" },
-      include: {
-        messages: {
-          orderBy: { createdAt: "desc" },
-          take: 1,
-        },
-      },
-    });
+	async findByOrganizationId(organizationId: string) {
+		const conversations = await this.prisma.conversation.findMany({
+			where: { organizationId, deletedAt: null },
+			orderBy: { updatedAt: "desc" },
+			include: {
+				messages: {
+					orderBy: { createdAt: "desc" },
+					take: 1,
+				},
+			},
+		});
 
-    return {
-      message: "Conversations fetched successfully",
-      data: conversations,
-    };
-  }
+		return {
+			message: "Conversations fetched successfully",
+			data: conversations,
+		};
+	}
 
-  async updateStatus(
-    conversationId: string,
-    status: "ACTIVE" | "IDLE" | "CLOSED" | "PENDING",
-  ) {
-    const conversation = await this.prisma.conversation.findFirst({
-      where: { id: conversationId, deletedAt: null },
-    });
+	async updateStatus(
+		conversationId: string,
+		status: "ACTIVE" | "IDLE" | "CLOSED" | "PENDING",
+	) {
+		const conversation = await this.prisma.conversation.findFirst({
+			where: { id: conversationId, deletedAt: null },
+		});
 
-    if (!conversation) {
-      throw new NotFoundException("Conversation not found");
-    }
+		if (!conversation) {
+			throw new NotFoundException("Conversation not found");
+		}
 
-    const updated = await this.prisma.conversation.update({
-      where: { id: conversationId },
-      data: { status },
-    });
+		const updated = await this.prisma.conversation.update({
+			where: { id: conversationId },
+			data: { status },
+		});
 
-    await this.inboxSse.conversationUpdated({
-      organizationId: updated.organizationId,
-      conversation: updated,
-    });
+		const item = await this.inboxService.getConversationListItem(
+			updated.organizationId,
+			updated.id,
+		);
+		await this.inboxSse.conversationUpdated({
+			organizationId: updated.organizationId,
+			conversation: item ?? updated,
+		});
 
-    return {
-      message: "Conversation status updated",
-      data: updated,
-    };
-  }
+		return {
+			message: "Conversation status updated",
+			data: updated,
+		};
+	}
 }

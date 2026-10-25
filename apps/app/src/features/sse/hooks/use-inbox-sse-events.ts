@@ -1,16 +1,22 @@
 import { useQueryClient } from "@package/query";
 import { useCallback } from "react";
 import {
-	refreshConversationListOnConversationCreated,
+	removeConversationCachesOnConversationDeleted,
+	updateConversationDetailOnConversationUpdated,
 	updateConversationDetailOnMessageCreated,
 	updateConversationDetailOnMessageDeleted,
 	updateConversationDetailOnMessageUpdated,
+	updateConversationListOnConversationCreated,
+	updateConversationListOnConversationDeleted,
+	updateConversationListOnConversationUpdated,
 	updateConversationListOnMessageCreated,
 	updateMessageListOnMessageCreated,
 	updateMessageListOnMessageDeleted,
 	updateMessageListOnMessageUpdated,
 } from "@/features/default-inbox/realtime";
 import { useConversationCreatedSse } from "./use-conversation-created-sse";
+import { useConversationDeletedSse } from "./use-conversation-deleted-sse";
+import { useConversationUpdatedSse } from "./use-conversation-updated-sse";
 import { useMessageCreatedSse } from "./use-message-created-sse";
 import { useMessageDeletedSse } from "./use-message-deleted-sse";
 import { useMessageUpdatedSse } from "./use-message-updated-sse";
@@ -29,12 +35,52 @@ export function useInboxSseEvents({
 	const queryClient = useQueryClient();
 
 	useConversationCreatedSse(
-		useCallback(() => {
-			refreshConversationListOnConversationCreated(
-				queryClient,
-				organizationId,
-			);
-		}, [queryClient, organizationId]),
+		useCallback(
+			(data) => {
+				updateConversationListOnConversationCreated(
+					queryClient,
+					organizationId,
+					data,
+				);
+			},
+			[queryClient, organizationId],
+		),
+	);
+
+	useConversationUpdatedSse(
+		useCallback(
+			(conversation) => {
+				updateConversationListOnConversationUpdated(
+					queryClient,
+					organizationId,
+					conversation,
+				);
+				updateConversationDetailOnConversationUpdated(
+					queryClient,
+					organizationId,
+					conversation,
+				);
+			},
+			[queryClient, organizationId],
+		),
+	);
+
+	useConversationDeletedSse(
+		useCallback(
+			(conversationId) => {
+				updateConversationListOnConversationDeleted(
+					queryClient,
+					organizationId,
+					conversationId,
+				);
+				removeConversationCachesOnConversationDeleted(
+					queryClient,
+					organizationId,
+					conversationId,
+				);
+			},
+			[queryClient, organizationId],
+		),
 	);
 
 	useMessageCreatedSse(

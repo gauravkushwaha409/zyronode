@@ -39,21 +39,29 @@ export interface SseMessageDeletedEvent {
 }
 
 export interface SseConversationCreatedEvent {
-	conversation: {
+	id: string;
+	status: "ACTIVE" | "IDLE" | "CLOSED" | "PENDING";
+	channel: string;
+	visitor: {
 		id: string;
-		organizationId?: string;
-		visitorId?: string | null;
-		status?: "ACTIVE" | "IDLE" | "CLOSED" | "PENDING";
-		channel?: string;
-		visitor?: {
-			id: string;
-			name: string | null;
-			email: string | null;
-		} | null;
-		createdAt?: string;
-		updatedAt?: string;
-	};
+		name: string | null;
+		email: string | null;
+		isOnline: boolean;
+	} | null;
+	lastMessageAt: string;
+	createdAt: string;
+	lastMessage: {
+		content: string;
+		senderType: "VISITOR" | "AGENT" | "SYSTEM";
+		messageType: "TEXT" | "FILE" | "INTERNAL_NOTE";
+		createdAt: string;
+	} | null;
+	unreadCount: number;
 }
+
+export type SseConversationUpdatedEvent = SseConversationCreatedEvent;
+
+export type SseConversationDeletedEvent = string;
 
 /** Server -> client event names. Keep in sync with apps/server SSE publisher. */
 export const SSE_EVENTS = {
@@ -62,4 +70,6 @@ export const SSE_EVENTS = {
 	MESSAGE_UPDATED: "message.updated",
 	MESSAGE_DELETED: "message.deleted",
 	CONVERSATION_CREATED: "conversation.created",
+	CONVERSATION_UPDATED: "conversation.updated",
+	CONVERSATION_DELETED: "conversation.deleted",
 } as const;
