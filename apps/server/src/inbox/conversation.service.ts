@@ -5,6 +5,7 @@ import {
 } from "@nestjs/common";
 import { Prisma } from "../generated/prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
+import { ConversationCacheService } from "./conversation-cache.service";
 import { CreateConversationDto } from "./dto/create-conversation.dto";
 import { InboxSsePublisher } from "./inbox-sse.publisher";
 import { InboxService } from "./inbox.service";
@@ -15,6 +16,7 @@ export class ConversationService {
 		private readonly prisma: PrismaService,
 		private readonly inboxSse: InboxSsePublisher,
 		private readonly inboxService: InboxService,
+		private readonly conversationCache: ConversationCacheService,
 	) {}
 
 	/**
@@ -169,6 +171,10 @@ export class ConversationService {
 			data: { status },
 		});
 
+		await this.conversationCache.deleteDetail(
+			updated.organizationId,
+			conversationId,
+		);
 		const item = await this.inboxService.getConversationListItem(
 			updated.organizationId,
 			updated.id,

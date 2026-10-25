@@ -4,6 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
+import { ConversationCacheService } from "../inbox/conversation-cache.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { SendMessageDto } from "./dto/send-message.dto";
 
@@ -26,7 +27,10 @@ function decodeMessageCursor(cursor: string): { createdAt: Date; id: string } {
 
 @Injectable()
 export class MessageService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly conversationCache: ConversationCacheService,
+  ) {}
 
   async create(
     conversationId: string,
@@ -78,6 +82,10 @@ export class MessageService {
       where: { id: conversationId },
       data: { updatedAt: new Date() },
     });
+    await this.conversationCache.deleteDetail(
+      conversation.organizationId,
+      conversationId,
+    );
 
     return {
       message: "Message sent successfully",
@@ -175,6 +183,9 @@ export class MessageService {
   ) {
     const message = await this.prisma.message.findFirst({
       where: { id: messageId, conversationId, deletedAt: null },
+      include: {
+        conversation: { select: { organizationId: true } },
+      },
     });
     if (!message) {
       throw new NotFoundException("Message not found");
@@ -186,7 +197,11 @@ export class MessageService {
   }
 
   async edit(conversationId: string, messageId: string, userId: string, content: string) {
-    await this.findOwnMessageOrThrow(conversationId, messageId, userId);
+    const existing = await this.findOwnMessageOrThrow(
+      conversationId,
+      messageId,
+      userId,
+    );
 
     const message = await this.prisma.message.update({
       where: { id: messageId },
@@ -198,6 +213,11 @@ export class MessageService {
       },
     });
 
+    await this.conversationCache.deleteDetail(
+      existing.conversation.organizationId,
+      conversationId,
+    );
+
     return {
       message: "Message edited successfully",
       data: message,
@@ -205,17 +225,31 @@ export class MessageService {
   }
 
   async softDelete(conversationId: string, messageId: string, userId: string) {
-    await this.findOwnMessageOrThrow(conversationId, messageId, userId);
+    const existing = await this.findOwnMessageOrThrow(
+      conversationId,
+      messageId,
+      userId,
+    );
 
     await this.prisma.message.update({
       where: { id: messageId },
       data: { deletedAt: new Date() },
     });
 
+    await this.conversationCache.deleteDetail(
+      existing.conversation.organizationId,
+      conversationId,
+    );
+
     return { message: "Message deleted successfully" };
   }
 
   async markAsRead(conversationId: string, senderType: "VISITOR" | "AGENT") {
+    const conversation = await this.prisma.conversation.findFirst({
+      where: { id: conversationId, deletedAt: null },
+      select: { organizationId: true },
+    });
+
     await this.prisma.message.updateMany({
       where: {
         conversationId,
@@ -224,6 +258,13 @@ export class MessageService {
       },
       data: { status: "READ" },
     });
+
+    if (conversation) {
+      await this.conversationCache.deleteDetail(
+        conversation.organizationId,
+        conversationId,
+      );
+    }
 
     return { message: "Messages marked as read" };
   }

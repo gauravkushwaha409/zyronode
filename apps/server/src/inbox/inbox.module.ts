@@ -4,6 +4,9 @@ import { MessageModule } from "../message/message.module";
 import { SseModule } from "../sse/sse.module";
 import { WidgetEventsModule } from "../visitor/events/widget-events.module";
 import { AgentVisitorsGateway } from "./agent-visitors.gateway";
+import { ConversationCacheModule } from "./conversation-cache.module";
+import { ConversationReadService } from "./conversation-read.service";
+import { ConversationRepository } from "./conversation.repository";
 import { ConversationService } from "./conversation.service";
 import { InboxController } from "./inbox.controller";
 import { InboxGateway } from "./inbox.gateway";
@@ -20,16 +23,25 @@ import { InternalNotesService } from "./internal-notes.service";
 		MessageModule,
 		WidgetEventsModule,
 		SseModule,
+		ConversationCacheModule,
 	],
 	controllers: [InboxController, InternalNotesController],
 	providers: [
 		InboxService,
 		ConversationService,
+		ConversationRepository,
+		ConversationReadService,
 		InboxGateway,
 		AgentVisitorsGateway,
 		InboxSsePublisher,
 		InternalNotesService,
 	],
-	exports: [ConversationService, InboxService, InboxSsePublisher, InternalNotesService],
+	exports: [
+		ConversationService,
+		ConversationReadService,
+		InboxService,
+		InboxSsePublisher,
+		InternalNotesService,
+	],
 })
 export class InboxModule {}
