@@ -6,12 +6,9 @@ import {
 import { CONFIG } from "@/config";
 import { apiClient } from "@/lib";
 import type { CursorPaginationParams } from "@/types/cursor-pagination.types";
-import type {
-	ConversationTypes,
-	InternalNoteTypes,
-	MessageTypes,
-	UploadTypes,
-} from "../types/inbox-api.types";
+import type { ConversationTypes } from "../types/conversation-api.types";
+import type { InternalNoteTypes } from "../types/internal-note-api.types";
+import type { MessageTypes, UploadTypes } from "../types/message-api.types";
 
 export type InboxConversationsFilters = {
 	status?: string;

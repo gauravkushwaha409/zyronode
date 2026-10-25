@@ -2,7 +2,7 @@ import type { ApiResponse } from "@package/api-client";
 import type { QueryClient } from "@package/query";
 import type { InfiniteData } from "@tanstack/react-query";
 import { CONFIG } from "@/config";
-import type { ConversationTypes } from "../types/inbox-api.types";
+import type { ConversationTypes } from "../types/conversation-api.types";
 
 export type ConversationsInfinite = InfiniteData<
 	ApiResponse<ConversationTypes.InboxConversationsData>

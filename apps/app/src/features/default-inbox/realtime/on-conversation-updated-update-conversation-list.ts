@@ -1,5 +1,5 @@
 import type { QueryClient } from "@package/query";
-import type { ConversationTypes } from "../types/inbox-api.types";
+import type { ConversationTypes } from "../types/conversation-api.types";
 import {
 	findConversationListItem,
 	forEachConversationList,

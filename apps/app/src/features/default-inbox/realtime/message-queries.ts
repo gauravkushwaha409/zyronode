@@ -1,4 +1,4 @@
-import type { MessageTypes } from "../types/inbox-api.types";
+import type { MessageTypes } from "../types/message-api.types";
 
 export interface MessagesPageData {
 	messages: MessageTypes.InboxMessage[];
