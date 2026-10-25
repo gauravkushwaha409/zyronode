@@ -1,7 +1,10 @@
 import type { APIError, ApiResponse } from "@package/api-client";
 import { useMutation, useQueryClient } from "@package/query";
 import { inboxApiService } from "../../services/inbox-api.service";
-import { applyInboxMessageDeletedEvent } from "../../utility";
+import {
+	updateConversationDetailOnMessageDeleted,
+	updateMessageListOnMessageDeleted,
+} from "../../realtime";
 
 export function useDeleteMessageMutation(organizationId: string) {
 	const queryClient = useQueryClient();
@@ -15,10 +18,16 @@ export function useDeleteMessageMutation(organizationId: string) {
 			inboxApiService.deleteMessage(conversationId, messageId),
 		{
 			onSuccess: (_response, variables) => {
-				applyInboxMessageDeletedEvent(queryClient, organizationId, {
+				const event = {
 					conversation: { id: variables.conversationId },
 					messageId: variables.messageId,
-				});
+				};
+				updateMessageListOnMessageDeleted(queryClient, event);
+				updateConversationDetailOnMessageDeleted(
+					queryClient,
+					organizationId,
+					event,
+				);
 			},
 		},
 	);

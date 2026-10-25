@@ -6,9 +6,14 @@ import {
 	WebSocketProvider,
 } from "@package/websocket";
 import { useCallback } from "react";
-import { CONFIG } from "@/config";
 import { getAgentSocketUrl } from "@/config/socket";
-import { applyInboxMessageEvent, type InboxMessageEvent } from "../utility";
+import {
+	refreshConversationListOnConversationUpdated,
+	type MessageCreatedEvent,
+	updateConversationDetailOnMessageCreated,
+	updateConversationListOnMessageCreated,
+	updateMessageListOnMessageCreated,
+} from "../realtime";
 
 interface InboxSocketProviderProps {
 	organizationId: string;
@@ -24,11 +29,21 @@ function InboxSocketEvents({ organizationId }: { organizationId: string }) {
 
 	useChannel("agent:join", { organizationId });
 
-	useEvent<InboxMessageEvent>(
+	useEvent<MessageCreatedEvent>(
 		"message:new",
 		useCallback(
 			(data) => {
-				applyInboxMessageEvent(queryClient, organizationId, data);
+				updateMessageListOnMessageCreated(queryClient, data);
+				updateConversationDetailOnMessageCreated(
+					queryClient,
+					organizationId,
+					data,
+				);
+				updateConversationListOnMessageCreated(
+					queryClient,
+					organizationId,
+					data,
+				);
 			},
 			[queryClient, organizationId],
 		),
@@ -37,9 +52,7 @@ function InboxSocketEvents({ organizationId }: { organizationId: string }) {
 	useEvent<ConversationUpdatedEvent>(
 		"conversation:updated",
 		useCallback(() => {
-			queryClient.invalidateQueries({
-				queryKey: CONFIG.QUERY_KEY.INBOX.CONVERSATIONS(organizationId),
-			});
+			refreshConversationListOnConversationUpdated(queryClient, organizationId);
 		}, [queryClient, organizationId]),
 	);
 

@@ -2,7 +2,11 @@ import type { APIError, ApiResponse } from "@package/api-client";
 import { useMutation, useQueryClient } from "@package/query";
 import { inboxApiService } from "../../services/inbox-api.service";
 import type { MessageTypes } from "../../types/inbox-api.types";
-import { applyInboxMessageEvent } from "../../utility";
+import {
+	updateConversationDetailOnMessageCreated,
+	updateConversationListOnMessageCreated,
+	updateMessageListOnMessageCreated,
+} from "../../realtime";
 
 export function useSendAgentMessageMutation(organizationId: string) {
 	const queryClient = useQueryClient();
@@ -18,10 +22,21 @@ export function useSendAgentMessageMutation(organizationId: string) {
 			onSuccess: (response, variables) => {
 				const message = response.data?.data;
 				if (!message) return;
-				applyInboxMessageEvent(queryClient, organizationId, {
+				const event = {
 					conversation: { id: variables.conversationId },
 					message,
-				});
+				};
+				updateMessageListOnMessageCreated(queryClient, event);
+				updateConversationDetailOnMessageCreated(
+					queryClient,
+					organizationId,
+					event,
+				);
+				updateConversationListOnMessageCreated(
+					queryClient,
+					organizationId,
+					event,
+				);
 			},
 		},
 	);

@@ -2,7 +2,10 @@ import type { APIError, ApiResponse } from "@package/api-client";
 import { useMutation, useQueryClient } from "@package/query";
 import { inboxApiService } from "../../services/inbox-api.service";
 import type { MessageTypes } from "../../types/inbox-api.types";
-import { applyInboxMessageUpdatedEvent } from "../../utility";
+import {
+	updateConversationDetailOnMessageUpdated,
+	updateMessageListOnMessageUpdated,
+} from "../../realtime";
 
 export function useEditMessageMutation(organizationId: string) {
 	const queryClient = useQueryClient();
@@ -21,10 +24,16 @@ export function useEditMessageMutation(organizationId: string) {
 			onSuccess: (response, variables) => {
 				const message = response.data?.data;
 				if (!message) return;
-				applyInboxMessageUpdatedEvent(queryClient, organizationId, {
+				const event = {
 					conversation: { id: variables.conversationId },
 					message,
-				});
+				};
+				updateMessageListOnMessageUpdated(queryClient, event);
+				updateConversationDetailOnMessageUpdated(
+					queryClient,
+					organizationId,
+					event,
+				);
 			},
 		},
 	);

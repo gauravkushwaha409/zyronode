@@ -1,10 +1,14 @@
 import { useQueryClient } from "@package/query";
 import { useCallback } from "react";
 import {
-	applyInboxMessageDeletedEvent,
-	applyInboxMessageEvent,
-	applyInboxMessageUpdatedEvent,
-} from "@/features/default-inbox/utility";
+	updateConversationDetailOnMessageCreated,
+	updateConversationDetailOnMessageDeleted,
+	updateConversationDetailOnMessageUpdated,
+	updateConversationListOnMessageCreated,
+	updateMessageListOnMessageCreated,
+	updateMessageListOnMessageDeleted,
+	updateMessageListOnMessageUpdated,
+} from "@/features/default-inbox/realtime";
 import { useMessageCreatedSse } from "./use-message-created-sse";
 import { useMessageDeletedSse } from "./use-message-deleted-sse";
 import { useMessageUpdatedSse } from "./use-message-updated-sse";
@@ -25,7 +29,17 @@ export function useInboxSseEvents({
 	useMessageCreatedSse(
 		useCallback(
 			(data) => {
-				applyInboxMessageEvent(queryClient, organizationId, data);
+				updateMessageListOnMessageCreated(queryClient, data);
+				updateConversationDetailOnMessageCreated(
+					queryClient,
+					organizationId,
+					data,
+				);
+				updateConversationListOnMessageCreated(
+					queryClient,
+					organizationId,
+					data,
+				);
 			},
 			[queryClient, organizationId],
 		),
@@ -34,7 +48,12 @@ export function useInboxSseEvents({
 	useMessageUpdatedSse(
 		useCallback(
 			(data) => {
-				applyInboxMessageUpdatedEvent(queryClient, organizationId, data);
+				updateMessageListOnMessageUpdated(queryClient, data);
+				updateConversationDetailOnMessageUpdated(
+					queryClient,
+					organizationId,
+					data,
+				);
 			},
 			[queryClient, organizationId],
 		),
@@ -43,7 +62,12 @@ export function useInboxSseEvents({
 	useMessageDeletedSse(
 		useCallback(
 			(data) => {
-				applyInboxMessageDeletedEvent(queryClient, organizationId, data);
+				updateMessageListOnMessageDeleted(queryClient, data);
+				updateConversationDetailOnMessageDeleted(
+					queryClient,
+					organizationId,
+					data,
+				);
 			},
 			[queryClient, organizationId],
 		),
