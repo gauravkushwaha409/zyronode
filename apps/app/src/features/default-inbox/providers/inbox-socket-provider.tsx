@@ -8,7 +8,6 @@ import {
 import { useCallback } from "react";
 import { getAgentSocketUrl } from "@/config/socket";
 import {
-	refreshConversationListOnConversationUpdated,
 	type MessageCreatedEvent,
 	updateConversationDetailOnMessageCreated,
 	updateConversationListOnMessageCreated,
@@ -18,10 +17,6 @@ import {
 interface InboxSocketProviderProps {
 	organizationId: string;
 	children: React.ReactNode;
-}
-
-interface ConversationUpdatedEvent {
-	conversation: { id: string };
 }
 
 function InboxSocketEvents({ organizationId }: { organizationId: string }) {
@@ -47,13 +42,6 @@ function InboxSocketEvents({ organizationId }: { organizationId: string }) {
 			},
 			[queryClient, organizationId],
 		),
-	);
-
-	useEvent<ConversationUpdatedEvent>(
-		"conversation:updated",
-		useCallback(() => {
-			refreshConversationListOnConversationUpdated(queryClient, organizationId);
-		}, [queryClient, organizationId]),
 	);
 
 	return null;
