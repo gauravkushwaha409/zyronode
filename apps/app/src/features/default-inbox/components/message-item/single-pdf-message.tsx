@@ -1,9 +1,9 @@
 import { Typography } from '@package/ui';
 import { format, parseISO } from 'date-fns';
-import type { ConversationMessageTypes } from '../../types';
+import type { Message } from '../../types';
 
 interface MessageTypePdfProps {
-  message: ConversationMessageTypes.ConversationMessage;
+  message: Message.ConversationMessage;
 }
 
 export function MessageTypePdf({ message }: MessageTypePdfProps) {

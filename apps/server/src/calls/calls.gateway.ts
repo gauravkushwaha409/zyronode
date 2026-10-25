@@ -251,6 +251,7 @@ export class CallsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		@MessageBody() dto: CallInviteDto,
 	) {
 		const from = this.peerIdOf(client);
+		console.log(`call:invite from ${from} conversation ${dto.conversationId}`);
 		let started: Awaited<ReturnType<CallsService["startCall"]>>;
 		try {
 			started = await this.callsService.startCall(

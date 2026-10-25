@@ -1,9 +1,9 @@
 import { create } from 'zustand';
-import type { ConversationMessageTypes } from '../types';
+import type { Message } from '../types';
 
 interface MessageDeleteStore {
-  message: ConversationMessageTypes.ConversationMessage | null;
-  setMessage: (message: ConversationMessageTypes.ConversationMessage) => void;
+  message: Message.ConversationMessage | null;
+  setMessage: (message: Message.ConversationMessage) => void;
   clearMessage: () => void;
   isDeleting: (messageUuid: string) => boolean;
 }

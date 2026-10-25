@@ -1,10 +1,10 @@
 import { Button, Typography } from '@package/ui';
 import { format, parseISO } from 'date-fns';
 import { useState } from 'react';
-import type { ConversationMessageTypes } from '../../types';
+import type { Message } from '../../types';
 
 interface InternalNotesMessageItemProps {
-  message: ConversationMessageTypes.ConversationMessage;
+  message: Message.ConversationMessage;
 }
 
 export function InternalNotesMessageItem({ message }: InternalNotesMessageItemProps) {

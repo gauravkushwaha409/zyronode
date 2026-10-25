@@ -1,16 +1,16 @@
 import { format, isToday, isYesterday } from 'date-fns';
-import type { ConversationMessageTypes } from '../types';
+import type { Message } from '../types';
 
 export interface MessageGroup {
   date: string;
   label: string;
-  messages: ConversationMessageTypes.ConversationMessage[];
+  messages: Message.ConversationMessage[];
 }
 
 export interface MessageCluster {
-  senderType: ConversationMessageTypes.ConversationMessage['sender_type'];
-  sender: ConversationMessageTypes.MessageSender;
-  messages: ConversationMessageTypes.ConversationMessage[];
+  senderType: Message.ConversationMessage['sender_type'];
+  sender: Message.MessageSender;
+  messages: Message.ConversationMessage[];
 }
 
 export function formatMessageTime(date: Date): string {
@@ -18,9 +18,9 @@ export function formatMessageTime(date: Date): string {
 }
 
 export function groupMessagesByDate(
-  messages: ConversationMessageTypes.ConversationMessage[],
+  messages: Message.ConversationMessage[],
 ): MessageGroup[] {
-  const groups: Record<string, ConversationMessageTypes.ConversationMessage[]> = {};
+  const groups: Record<string, Message.ConversationMessage[]> = {};
 
   for (const message of messages) {
     const date = new Date(message.created_at);
@@ -46,7 +46,7 @@ export function groupMessagesByDate(
 }
 
 export function groupConsecutiveMessages(
-  messages: ConversationMessageTypes.ConversationMessage[],
+  messages: Message.ConversationMessage[],
 ): MessageCluster[] {
   const clusters: MessageCluster[] = [];
 

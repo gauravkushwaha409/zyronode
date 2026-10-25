@@ -12,11 +12,11 @@ import {
   useMessageEditStore,
   useMessageReplyStore,
 } from '../../store';
-import type { ConversationMessageTypes } from '../../types';
+import type { Message } from '../../types';
 import { formatMessageTime } from '../../utility';
 
 interface TextMessageProps {
-  message: ConversationMessageTypes.ConversationMessage;
+  message: Message.ConversationMessage;
 }
 
 export function TextMessage({ message }: TextMessageProps) {

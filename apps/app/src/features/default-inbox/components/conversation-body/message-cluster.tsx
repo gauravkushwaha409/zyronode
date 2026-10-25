@@ -1,5 +1,5 @@
 import { Avatar } from '@package/ui';
-import type { ConversationMessageTypes } from '../../types';
+import type { Message } from '../../types';
 import type { MessageCluster as MessageClusterType } from '../../utility';
 import { InternalNotesMessageItem } from '../message-item/internal-notes';
 import { TextMessage } from '../message-item/text-message';
@@ -32,7 +32,7 @@ export function MessageCluster({ cluster }: MessageClusterProps) {
   );
 }
 
-function MessageContent({ message }: { message: ConversationMessageTypes.ConversationMessage }) {
+function MessageContent({ message }: { message: Message.ConversationMessage }) {
   const isVisitor = message.sender_type === 'visitor';
   const isAgent = message.sender_type === 'agent';
 
