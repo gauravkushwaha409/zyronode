@@ -25,7 +25,9 @@ export const QUERY_KEY = {
 	},
 	INBOX: {
 		CONVERSATIONS: (organizationId: string, filters?: Record<string, unknown>) =>
-			["inbox", "conversations", organizationId, filters] as const,
+			filters
+				? (["inbox", "conversations", organizationId, filters] as const)
+				: (["inbox", "conversations", organizationId] as const),
 		CONVERSATION_DETAIL: (
 			conversationId: string | null,
 			organizationId: string,

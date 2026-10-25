@@ -1,6 +1,7 @@
 import { useQueryClient } from "@package/query";
 import { useCallback } from "react";
 import {
+	refreshConversationListOnConversationCreated,
 	updateConversationDetailOnMessageCreated,
 	updateConversationDetailOnMessageDeleted,
 	updateConversationDetailOnMessageUpdated,
@@ -9,6 +10,7 @@ import {
 	updateMessageListOnMessageDeleted,
 	updateMessageListOnMessageUpdated,
 } from "@/features/default-inbox/realtime";
+import { useConversationCreatedSse } from "./use-conversation-created-sse";
 import { useMessageCreatedSse } from "./use-message-created-sse";
 import { useMessageDeletedSse } from "./use-message-deleted-sse";
 import { useMessageUpdatedSse } from "./use-message-updated-sse";
@@ -25,6 +27,15 @@ export function useInboxSseEvents({
 	organizationId,
 }: UseInboxSseEventsOptions) {
 	const queryClient = useQueryClient();
+
+	useConversationCreatedSse(
+		useCallback(() => {
+			refreshConversationListOnConversationCreated(
+				queryClient,
+				organizationId,
+			);
+		}, [queryClient, organizationId]),
+	);
 
 	useMessageCreatedSse(
 		useCallback(
