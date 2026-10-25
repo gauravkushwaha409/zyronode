@@ -1,16 +1,13 @@
 import { useQueryClient } from "@package/query";
-import { useSseEvent } from "@package/sse";
 import { useCallback } from "react";
 import {
 	applyInboxMessageDeletedEvent,
 	applyInboxMessageEvent,
 	applyInboxMessageUpdatedEvent,
 } from "@/features/default-inbox/utility";
-import type {
-	SseMessageCreatedEvent,
-	SseMessageDeletedEvent,
-	SseMessageUpdatedEvent,
-} from "../types";
+import { useMessageCreatedSse } from "./use-message-created-sse";
+import { useMessageDeletedSse } from "./use-message-deleted-sse";
+import { useMessageUpdatedSse } from "./use-message-updated-sse";
 
 interface UseInboxSseEventsOptions {
 	organizationId: string;
@@ -25,8 +22,7 @@ export function useInboxSseEvents({
 }: UseInboxSseEventsOptions) {
 	const queryClient = useQueryClient();
 
-	useSseEvent<SseMessageCreatedEvent>(
-		"message.created",
+	useMessageCreatedSse(
 		useCallback(
 			(data) => {
 				applyInboxMessageEvent(queryClient, organizationId, data);
@@ -35,8 +31,7 @@ export function useInboxSseEvents({
 		),
 	);
 
-	useSseEvent<SseMessageUpdatedEvent>(
-		"message.updated",
+	useMessageUpdatedSse(
 		useCallback(
 			(data) => {
 				applyInboxMessageUpdatedEvent(queryClient, organizationId, data);
@@ -45,8 +40,7 @@ export function useInboxSseEvents({
 		),
 	);
 
-	useSseEvent<SseMessageDeletedEvent>(
-		"message.deleted",
+	useMessageDeletedSse(
 		useCallback(
 			(data) => {
 				applyInboxMessageDeletedEvent(queryClient, organizationId, data);
