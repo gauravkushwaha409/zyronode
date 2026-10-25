@@ -2,8 +2,8 @@ import type { ApiResponse } from "@package/api-client";
 import type { QueryClient } from "@package/query";
 import type { InfiniteData } from "@tanstack/react-query";
 import {
-	messagesQueryPredicate,
 	type MessagesPageData,
+	messagesQueryPredicate,
 } from "./message-queries";
 import type { MessageDeletedEvent } from "./types";
 

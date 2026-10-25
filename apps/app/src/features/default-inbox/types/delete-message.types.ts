@@ -1,4 +1,4 @@
 export interface DeleteMessagePayload {
-  conversationUUID: string;
-  messageUUID: string;
+	conversationUUID: string;
+	messageUUID: string;
 }

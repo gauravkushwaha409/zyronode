@@ -1,4 +1,4 @@
 export interface DeleteInternalNotePayload {
-  noteUUID: string;
-  conversationUUID: string;
+	noteUUID: string;
+	conversationUUID: string;
 }

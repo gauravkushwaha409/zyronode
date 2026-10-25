@@ -28,7 +28,10 @@ function isConversationOpen(
 ): boolean {
 	return Boolean(
 		queryClient.getQueryData(
-			CONFIG.QUERY_KEY.INBOX.CONVERSATION_DETAIL(conversationId, organizationId),
+			CONFIG.QUERY_KEY.INBOX.CONVERSATION_DETAIL(
+				conversationId,
+				organizationId,
+			),
 		),
 	);
 }

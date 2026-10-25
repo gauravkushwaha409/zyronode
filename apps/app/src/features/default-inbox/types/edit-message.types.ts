@@ -1,7 +1,7 @@
 export interface EditMessagePayload {
-  conversationUUID: string;
-  messageUUID: string;
-  data: {
-    content: string;
-  };
+	conversationUUID: string;
+	messageUUID: string;
+	data: {
+		content: string;
+	};
 }

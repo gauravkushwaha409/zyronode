@@ -13,7 +13,9 @@ export function updateConversationDetailOnMessageDeleted(
 	const { conversation, messageId } = event;
 	if (!conversation?.id || !messageId) return;
 
-	queryClient.setQueryData<ApiResponse<ConversationTypes.InboxConversationDetail>>(
+	queryClient.setQueryData<
+		ApiResponse<ConversationTypes.InboxConversationDetail>
+	>(
 		CONFIG.QUERY_KEY.INBOX.CONVERSATION_DETAIL(conversation.id, organizationId),
 		(previous) => {
 			const detail = previous?.data?.data;

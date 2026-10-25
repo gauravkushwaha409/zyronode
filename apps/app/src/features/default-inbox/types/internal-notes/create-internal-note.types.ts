@@ -1,7 +1,7 @@
 export interface SendInternalNotePayload {
-  content: string;
+	content: string;
 }
 
 export interface SendInternalNotePathParams {
-  conversationIdentifier: string;
+	conversationIdentifier: string;
 }

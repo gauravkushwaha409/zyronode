@@ -3,7 +3,6 @@ import type { QueryClient } from "@package/query";
 import type { InfiniteData } from "@tanstack/react-query";
 import { CONFIG } from "@/config";
 import type { ConversationTypes } from "../types/inbox-api.types";
-import type { ConversationEventData } from "./types";
 
 export type ConversationsInfinite = InfiniteData<
 	ApiResponse<ConversationTypes.InboxConversationsData>
@@ -117,49 +116,4 @@ export function matchesConversationFilters(
 	}
 
 	return true;
-}
-
-export function mergeConversationListItem(
-	item: ConversationTypes.InboxConversationListItem,
-	conversation: ConversationEventData,
-): ConversationTypes.InboxConversationListItem {
-	const visitor =
-		conversation.visitor !== undefined
-			? conversation.visitor
-				? {
-						id: conversation.visitor.id,
-						name: conversation.visitor.name,
-						email: conversation.visitor.email,
-						isOnline:
-							conversation.visitor.isOnline ?? item.visitor?.isOnline ?? false,
-					}
-				: null
-			: conversation.visitorId !== undefined ||
-					conversation.visitorName !== undefined ||
-					conversation.visitorEmail !== undefined
-				? {
-						id: conversation.visitorId ?? item.visitor?.id ?? "",
-						name: conversation.visitorName ?? item.visitor?.name ?? null,
-						email: conversation.visitorEmail ?? item.visitor?.email ?? null,
-						isOnline: item.visitor?.isOnline ?? false,
-					}
-				: item.visitor;
-
-	return {
-		...item,
-		status: conversation.status ?? item.status,
-		channel: conversation.channel ?? item.channel,
-		visitor,
-		createdAt: conversation.createdAt ?? item.createdAt,
-		lastMessage:
-			conversation.lastMessage === undefined
-				? item.lastMessage
-				: conversation.lastMessage,
-		lastMessageAt:
-			conversation.lastMessageAt ??
-			conversation.lastMessage?.createdAt ??
-			conversation.updatedAt ??
-			item.lastMessageAt,
-		unreadCount: conversation.unreadCount ?? item.unreadCount,
-	};
 }
