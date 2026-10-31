@@ -1,159 +1,106 @@
-# Turborepo starter
+# Zyronode
 
-This Turborepo starter is maintained by the Turborepo core team.
+A multi-tenant, real-time customer-support chat platform. A visitor opens an embeddable chat widget on an organization's website; agents in that organization's inbox dashboard reply in real time. Includes 1:1/group audio/video calls over WebRTC.
 
-## Using this example
+## Features
 
-Run the following command:
+- Embeddable visitor chat widget (lazy conversation creation, real-time)
+- Agent inbox dashboard with live conversations, typing indicators, presence
+- Multi-tenant organization scoping with roles and permissions
+- Dual real-time transport: Socket.IO (WebSocket) + SSE (Redis fanout)
+- Audio/video calls (peer-to-peer mesh, configurable participant cap) with native WebRTC and coturn TURN
+- Internal notes, live visitor tracking, cursor-based inbox pagination
+- JWT auth (Bearer + `access` cookie for SSE/EventSource), Google OAuth, email OTP
 
-```sh
-npx create-turbo@latest
+## Tech Stack
+
+- **Monorepo:** pnpm workspaces + Turborepo
+- **Frontend:** React 19, Vite 8, TanStack Router, TanStack Query, Zustand
+- **Backend:** NestJS 11 (CommonJS), Prisma, PostgreSQL, Redis
+- **Real-time:** socket.io, Server-Sent Events, Redis pub/sub
+- **Tooling:** Biome (lint + format), TypeScript
+
+## Monorepo Layout
+
+```
+apps/
+  app/               Agent dashboard (React + TanStack Router + react-query)
+  server/            NestJS API (REST + WebSocket gateways + SSE)
+  chat-widget-test/  Test harness page for the widget
+packages/
+  chat-widget/       Embeddable visitor chat widget
+  call-signaling/    Shared WebRTC signaling event names/payloads
+  websocket/         socket.io-client wrapper (WebSocketProvider, useChannel)
+  sse/               EventSource wrapper (SseClient)
+  api-client/        Typed Axios API client
+  query/             Shared react-query setup (CONFIG.QUERY_KEY)
+  ui/, form/, hooks/, icons/, text-editor/   Shared UI primitives
+  typescript-config/ Shared tsconfig
 ```
 
-## What's inside?
+## Prerequisites
 
-This Turborepo includes the following packages/apps:
+- Node.js >= 18
+- pnpm 12.4.2 (`corepack enable` recommended)
+- PostgreSQL and Redis (or use Docker)
 
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+## Getting Started
 
 ```sh
-cd my-turborepo
-turbo build
+# 1. Install dependencies
+pnpm install
+
+# 2. Create your environment file
+cp env/.env.example env/.env.development
+#    then fill in secrets (JWT_SECRET, OAuth, Resend, TURN, etc.)
+
+# 3. Generate Prisma client and apply migrations
+pnpm prisma:generate
+pnpm prisma:migrate
+pnpm prisma:seed          # optional demo data
+
+# 4. Run everything (app + server + chat-widget-test)
+pnpm dev
 ```
 
-Without global `turbo`, use your package manager:
+- Agent dashboard: http://localhost:3000
+- API + Swagger: http://localhost:8000/api/v1/docs
+- Widget harness: http://localhost:4000
+
+### Common Commands
+
+| Command | Description |
+|---|---|
+| `pnpm dev` | Start all apps (turbo) |
+| `pnpm dev:app` / `dev:server` / `dev:chat-widget` | Start one app |
+| `pnpm build` | Build all apps/packages |
+| `pnpm check-types` | Typecheck |
+| `pnpm lint` / `pnpm format` / `pnpm check` | Biome lint / format / lint+fix+organize imports |
+| `pnpm prisma:studio` | Open Prisma Studio |
+
+## Environment & Ports
+
+Env files live in `env/`: copy `env/.env.example` to `env/.env.<environment>` (`development` | `production`). Only the example is committed; the rest are gitignored.
+
+- Vite reads `env/.env.<mode>` (dev = `development`).
+- Server, Prisma and seed read `env/.env.${APP_ENV:-development}`.
+- Ports are driven by `SERVER_PORT` (8000), `APP_PORT` (3000), `CHAT_WIDGET_PORT` (4000).
+
+## Docker
 
 ```sh
-cd my-turborepo
-npx turbo build
-pnpm dlx turbo build
-pnpm exec turbo build
+pnpm docker:development:up      # postgres + redis + localstack + server + app + widget
+pnpm docker:development:logs
+pnpm docker:development:down
+pnpm docker:development:reset   # down -v + up -d (destroys DB)
+pnpm docker:production:<build|up|down|logs>
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+With `PROXY=true`, Vite proxies `/api/v1` and `/socket.io` to the server, so the browser only talks to the app origin.
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+## Documentation
 
-```sh
-turbo build --filter=docs
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
-
-### Develop
-
-To develop all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo dev
-```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo dev
-pnpm exec turbo dev
-pnpm exec turbo dev
-```
-
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo dev --filter=web
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
-
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo login
-```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo login
-pnpm exec turbo login
-pnpm exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo link
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo link
-pnpm exec turbo link
-pnpm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+- [`ARCHITECTURE.md`](ARCHITECTURE.md) — real-time messaging, rooms, org scoping, event lifecycle, known gaps
+- [`docs/calls.md`](docs/calls.md) — audio/video calling: signaling, state machine, TURN, manual tests
+- [`AGENTS.md`](AGENTS.md) — contributor/agent commands, conventions, and tooling quirks
+- [`docs/`](docs) — subsystem guides; [`plans/`](plans) — historical implementation plans

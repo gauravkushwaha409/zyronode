@@ -1,5 +1,6 @@
 {
-  "name": "turbo-repo",
+  "name": "zyronode",
+  "description": "Multi-tenant real-time customer-support chat platform: embeddable visitor chat widget, agent inbox dashboard, and WebRTC audio/video calls.",
   "private": true,
   "type": "module",
   "scripts": {
