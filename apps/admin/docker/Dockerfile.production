@@ -1,0 +1,73 @@
+# apps/admin/docker/Dockerfile.production
+#
+# Release image for admin (production). Build context is the repo root
+# (monorepo workspace). The APP_ENV build arg picks env/.env.<APP_ENV>
+# (default: production):
+#
+#   docker build -f apps/admin/docker/Dockerfile.production .
+#
+# docker/docker-compose.production.yml wires this up.
+#
+# Notes:
+# - Vite bakes VITE_* values into the bundles at BUILD time, so the admin
+#   image must be rebuilt after changing public URLs.
+# - ADMIN_PORT must be provided via env (compose passes it from
+#   env/.env.<APP_ENV>); the container fails fast if it is missing.
+
+ARG APP_ENV=production
+
+# ── base ──────────────────────────────────────────────────────────
+FROM node:22-alpine AS base
+ARG APP_ENV
+ENV APP_ENV=${APP_ENV}
+RUN corepack enable
+WORKDIR /app
+
+# ── admin: builder ────────────────────────────────────────────────
+FROM base AS builder
+
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY apps/admin/package.json ./apps/admin/
+COPY packages/icons/package.json ./packages/icons/
+COPY packages/query/package.json ./packages/query/
+COPY packages/ui/package.json ./packages/ui/
+COPY packages/typescript-config/package.json ./packages/typescript-config/
+
+RUN pnpm install --frozen-lockfile
+
+COPY turbo.json tsconfig.json ./
+# admin resolves @package/* via tsconfigPaths, so package sources are needed
+COPY apps/admin ./apps/admin
+COPY packages ./packages
+
+# build-time env: vite reads envDir ../../env (.env.<mode>) and bakes
+# VITE_* values into the bundle
+COPY env/.env.${APP_ENV} ./env/
+
+RUN pnpm --filter admin build --mode ${APP_ENV}
+
+# ── admin: runtime (vite preview) ─────────────────────────────────
+FROM base AS runtime
+
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY apps/admin/package.json ./apps/admin/
+COPY packages/icons/package.json ./packages/icons/
+COPY packages/query/package.json ./packages/query/
+COPY packages/ui/package.json ./packages/ui/
+COPY packages/typescript-config/package.json ./packages/typescript-config/
+
+# Full install: `vite preview` needs vite + the vite.config.ts plugin
+# imports (tailwindcss, tanstack router, react plugin) = devDependencies.
+RUN pnpm install --frozen-lockfile
+
+COPY --from=builder /app/apps/admin/dist ./apps/admin/dist
+COPY --from=builder /app/apps/admin/vite.config.ts /app/apps/admin/index.html /app/apps/admin/tsconfig.json /app/apps/admin/components.json ./apps/admin/
+# The TanStack Router plugin regenerates routeTree.gen.ts when vite starts,
+# so `src/routes` must exist in the preview runtime too.
+COPY --from=builder /app/apps/admin/src ./apps/admin/src
+COPY --from=builder /app/apps/admin/public ./apps/admin/public
+
+# ADMIN_PORT must be provided via env (no fallback).
+EXPOSE 3001
+
+CMD sh -c "pnpm --filter admin exec vite preview --host 0.0.0.0 --port ${ADMIN_PORT:?ADMIN_PORT must be provided}"
