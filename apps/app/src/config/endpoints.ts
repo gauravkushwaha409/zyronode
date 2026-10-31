@@ -83,4 +83,8 @@ export const ENDPOINTS = {
 		ICE_SERVERS: "/calls/ice-servers",
 		HISTORY: "/calls/history",
 	},
+	NOTIFICATIONS: {
+		REGISTER_TOKEN: "/notifications/tokens",
+		REMOVE_TOKEN: (token: string) => `/notifications/tokens/${token}`,
+	},
 };
