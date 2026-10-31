@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 import { CallsModule } from "../calls/calls.module";
 import { InboxModule } from "../inbox/inbox.module";
 import { MessageModule } from "../message/message.module";
+import { NotificationsModule } from "../notifications/notifications.module";
 import { SseModule } from "../sse/sse.module";
 import { WidgetEventsModule } from "./events/widget-events.module";
 import { VisitorController } from "./visitor.controller";
@@ -16,6 +17,7 @@ import { WidgetController } from "./widget.controller";
 		InboxModule,
 		MessageModule,
 		SseModule,
+		NotificationsModule,
 	],
 	controllers: [VisitorController, WidgetController],
 	providers: [VisitorService, VisitorGateway],

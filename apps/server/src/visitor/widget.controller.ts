@@ -1,7 +1,10 @@
 import {
 	Body,
 	Controller,
+	Delete,
 	Get,
+	Headers,
+	HttpCode,
 	Param,
 	Post,
 	Query,
@@ -19,6 +22,8 @@ import { CreateConversationDto } from "../inbox/dto/create-conversation.dto";
 import { ListMessagesDto } from "../message/dto/list-messages.dto";
 import { SendMessageDto } from "../message/dto/send-message.dto";
 import { MessageService } from "../message/message.service";
+import { RegisterWidgetPushTokenDto } from "../notifications/dto/register-push-token.dto";
+import { PushTokensService } from "../notifications/push-tokens.service";
 import { StartVisitorSessionDto } from "./dto/start-visitor-session.dto";
 import { WidgetEventsPublisher } from "./events/widget-events.publisher";
 import { VISITOR_SESSION_COOKIE } from "./visitor.controller";
@@ -36,6 +41,7 @@ export class WidgetController {
 		private readonly widgetEvents: WidgetEventsPublisher,
 		private readonly callsService: CallsService,
 		private readonly turnService: TurnService,
+		private readonly pushTokens: PushTokensService,
 	) {}
 
 	/**
@@ -189,5 +195,54 @@ export class WidgetController {
 			throw new UnauthorizedException("Unknown visitor session");
 		}
 		return this.turnService.getIceServers(`visitor:${visitor.id}`);
+	}
+
+	/**
+	 * Public - registers this browser's FCM Web Push token for the visitor
+	 * identified by the session cookie. The organization id in the body is
+	 * only a scope hint; ownership is always derived from the cookie.
+	 */
+	@Post("push/tokens")
+	@ApiOperation({ summary: "Register this widget browser's push token" })
+	@ApiResponse({ status: 201, description: "Push token registered" })
+	async registerPushToken(
+		@Req() req: Request,
+		@Body() dto: RegisterWidgetPushTokenDto,
+		@Headers("user-agent") userAgent?: string,
+	) {
+		const sessionId = req.cookies?.[VISITOR_SESSION_COOKIE] as string | undefined;
+		if (!sessionId) throw new UnauthorizedException("No visitor session");
+		const visitor = await this.visitorService.findBySession(
+			sessionId,
+			dto.organizationId,
+		);
+		if (!visitor) throw new UnauthorizedException("Unknown visitor session");
+
+		const row = await this.pushTokens.registerForVisitor(
+			visitor.id,
+			dto.organizationId,
+			{ token: dto.token, userAgent: dto.userAgent ?? userAgent },
+		);
+		return { message: "Push token registered", data: { id: row.id } };
+	}
+
+	@Delete("push/tokens/:token")
+	@HttpCode(200)
+	@ApiOperation({ summary: "Unregister this widget browser's push token" })
+	@ApiParam({ name: "token", description: "FCM registration token" })
+	@ApiResponse({ status: 200, description: "Token removed" })
+	async removePushToken(@Req() req: Request, @Param("token") token: string) {
+		const sessionId = req.cookies?.[VISITOR_SESSION_COOKIE] as string | undefined;
+		const organizationId = req.query.organizationId as string | undefined;
+		if (!sessionId || !organizationId) {
+			throw new UnauthorizedException("No visitor session");
+		}
+		const visitor = await this.visitorService.findBySession(
+			sessionId,
+			organizationId,
+		);
+		if (!visitor) throw new UnauthorizedException("Unknown visitor session");
+		await this.pushTokens.removeForVisitor(visitor.id, token);
+		return { message: "Push token removed", data: null };
 	}
 }

@@ -20,6 +20,7 @@ import {
 } from "@package/call-signaling";
 import type { Call, Conversation } from "../generated/prisma/client";
 import { MessageService } from "../message/message.service";
+import { PushNotifierService } from "../notifications/push-notifier.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { RedisService } from "../redis/redis.service";
 import { WidgetEventsPublisher } from "../visitor/events/widget-events.publisher";
@@ -92,6 +93,7 @@ export class CallsService {
 		private readonly jwtService: JwtService,
 		private readonly messageService: MessageService,
 		private readonly widgetEvents: WidgetEventsPublisher,
+		private readonly pushNotifier: PushNotifierService,
 	) {}
 
 	get maxParticipants(): number {
@@ -856,6 +858,22 @@ export class CallsService {
 		});
 		await this.clearPresence(callId, memberPeerIds);
 		this.logger.log(`Call ${callId} ended (${reason})`);
+
+		if (reason === "MISSED") {
+			const missed = call.participants.filter((p) => p.status === "INVITED");
+			void this.pushNotifier.onMissedCall({
+				callId,
+				conversationId: call.conversationId,
+				callType: call.type,
+				userIds: missed
+					.map((p) => p.userId)
+					.filter((id): id is string => Boolean(id)),
+				visitorIds: missed
+					.map((p) => p.visitorId)
+					.filter((id): id is string => Boolean(id)),
+			});
+		}
+
 		// Best effort: a call summary in the thread must never fail the ending.
 		void this.postCallSystemMessage(call, reason, endedAt).catch((err) => {
 			this.logger.warn(`Call ${callId} system message failed: ${err}`);

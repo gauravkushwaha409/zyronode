@@ -35,6 +35,7 @@ model User {
   callParticipations CallParticipant[] @relation("CallParticipations")
   leadingTeams     Team[]        @relation("TeamLeader")
   teamInvitations  TeamInvitation[] @relation("TeamInvitationInvitedBy")
+  pushTokens       PushToken[]    @relation("PushTokenUser")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -53,6 +54,7 @@ model Organization {
   conversations Conversation[]
   teams         Team[]
   teamInvitations TeamInvitation[]
+  pushTokens    PushToken[]
 
   // back-relation for lastOrg
   lastOrgUsers User[] @relation("UserLastOrg")
@@ -247,6 +249,7 @@ model Visitor {
   conversations Conversation[]
   startedCalls  Call[]            @relation("CallStartedByVisitor")
   callParticipations CallParticipant[] @relation("CallParticipationsVisitor")
+  pushTokens    PushToken[]       @relation("PushTokenVisitor")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -490,4 +493,33 @@ model Message {
   @@index([conversationId, createdAt(sort: Desc)])
   @@index([senderId])
   @@map("messages")
+}
+
+/// Browser (FCM Web Push) registration token. Exactly one of userId /
+/// visitorId is set: agents authenticate via JWT, visitors via the widget
+/// session cookie. Tokens are unique per browser install; re-registering the
+/// same token reassigns ownership (shared browser / logout).
+model PushToken {
+  id             String  @id @default(uuid())
+  userId         String?
+  user           User?   @relation("PushTokenUser", fields: [userId], references: [id], onDelete: Cascade)
+  visitorId      String?
+  visitor        Visitor? @relation("PushTokenVisitor", fields: [visitorId], references: [id], onDelete: Cascade)
+
+  /// Visitor tokens are scoped to the organization whose site issued them.
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  token     String  @unique
+  userAgent String?
+  isActive  Boolean @default(true)
+
+  lastUsedAt DateTime?
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@index([visitorId])
+  @@index([organizationId])
+  @@map("push_tokens")
 }

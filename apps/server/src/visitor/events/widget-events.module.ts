@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import { NotificationsModule } from "../../notifications/notifications.module";
 import { SseModule } from "../../sse/sse.module";
 import { WebsocketModule } from "../../websocket/websocket.module";
 import { WidgetEventsPublisher } from "./widget-events.publisher";
@@ -10,7 +11,7 @@ import { WidgetEventsPublisher } from "./widget-events.publisher";
  * InboxModule, VisitorModule can all import this without circularity.
  */
 @Module({
-	imports: [WebsocketModule, SseModule],
+	imports: [WebsocketModule, SseModule, NotificationsModule],
 	providers: [WidgetEventsPublisher],
 	exports: [WidgetEventsPublisher],
 })

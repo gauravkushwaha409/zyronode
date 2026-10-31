@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { JwtModule } from "@nestjs/jwt";
 import { MessageModule } from "../message/message.module";
+import { NotificationsModule } from "../notifications/notifications.module";
 import { WidgetEventsModule } from "../visitor/events/widget-events.module";
 import { CallsController } from "./calls.controller";
 import { CallsGateway } from "./calls.gateway";
@@ -14,6 +15,7 @@ import { TurnService } from "./turn.service";
 		}),
 		MessageModule,
 		WidgetEventsModule,
+		NotificationsModule,
 	],
 	controllers: [CallsController],
 	providers: [CallsGateway, CallsService, TurnService],

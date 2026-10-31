@@ -6,6 +6,7 @@ import { AuthModule } from "./auth/auth.module";
 import { CallsModule } from "./calls/calls.module";
 import { InboxModule } from "./inbox/inbox.module";
 import { MessageModule } from "./message/message.module";
+import { NotificationsModule } from "./notifications/notifications.module";
 import { OrganizationModule } from "./organization/organization.module";
 import { OtpModule } from "./otp/otp.module";
 import { PrismaModule } from "./prisma/prisma.module";
@@ -34,6 +35,7 @@ const hasObserveCreds = !!observeAppKey && !!observeAppSecret;
 		AuthModule,
 		CallsModule,
 		OrganizationModule,
+		NotificationsModule,
 		OtpModule,
 		MessageModule,
 		InboxModule,

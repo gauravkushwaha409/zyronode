@@ -20,6 +20,7 @@ import {
 import { Server, Socket } from "socket.io";
 import { tokenFromHandshake } from "../common/auth/socket-token";
 import { getCorsOrigins } from "../common/cors";
+import { PushNotifierService } from "../notifications/push-notifier.service";
 import {
 	CallsService,
 	type EndCallResult,
@@ -72,6 +73,7 @@ export class CallsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	constructor(
 		private readonly jwtService: JwtService,
 		private readonly callsService: CallsService,
+		private readonly pushNotifier: PushNotifierService,
 	) {}
 
 	/**
@@ -282,6 +284,14 @@ export class CallsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				conversationId: started.call.conversationId,
 			});
 		}
+		// Best-effort browser push for peers whose tab/socket is not open.
+		void this.pushNotifier.onIncomingCall({
+			callId: started.call.id,
+			conversationId: started.call.conversationId,
+			callType: started.call.type,
+			callerPeerId: from,
+			targetPeerIds: started.rungPeerIds,
+		});
 		this.scheduleRingTimeout(started.call.id);
 		return { callId: started.call.id };
 	}

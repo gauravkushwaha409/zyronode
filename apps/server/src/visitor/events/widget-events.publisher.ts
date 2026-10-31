@@ -3,6 +3,7 @@ import {
 	conversationListInclude,
 	toConversationListItem,
 } from "../../inbox/conversation-list-item.mapper";
+import { PushNotifierService } from "../../notifications/push-notifier.service";
 import { PrismaService } from "../../prisma/prisma.service";
 import { RedisKey } from "../../redis/redis.keys";
 import { RedisService } from "../../redis/redis.service";
@@ -27,6 +28,7 @@ export class WidgetEventsPublisher {
 		private readonly sse: SseService,
 		private readonly prisma: PrismaService,
 		private readonly redis: RedisService,
+		private readonly pushNotifier: PushNotifierService,
 	) {}
 
 	private async getOnlineVisitorIds(
@@ -201,6 +203,18 @@ export class WidgetEventsPublisher {
 				conversationItem,
 			);
 		}
+
+		// Browser push is best-effort and must never block realtime delivery.
+		void this.pushNotifier.onMessageCreated({
+			conversationId: params.conversationId,
+			organizationId: orgId,
+			message: params.message as {
+				id?: string;
+				content?: string;
+				senderType?: string;
+				messageType?: string;
+			},
+		});
 	}
 
 	/** Message edited (agent). Dual broadcast — mirrors messageCreated. */
