@@ -1,4 +1,5 @@
-import type { ConversationTypes, MessageTypes } from "../types/inbox-api.types";
+import type { ConversationTypes } from "../types/conversation-api.types";
+import type { MessageTypes } from "../types/message-api.types";
 
 export interface MessageCreatedEvent {
 	conversation: { id: string };

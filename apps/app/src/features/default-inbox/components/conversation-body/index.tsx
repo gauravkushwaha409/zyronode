@@ -2,7 +2,7 @@ import type React from 'react';
 import { useEffect, useRef } from 'react';
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
 import { useMessagesQuery } from '../../hooks';
-import type { MessageTypes } from '../../types/inbox-api.types';
+import type { MessageTypes } from '../../types/message-api.types';
 import {
   groupConsecutiveMessages,
   groupMessagesByDate,

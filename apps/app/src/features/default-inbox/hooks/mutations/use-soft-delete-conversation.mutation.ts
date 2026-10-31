@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from "@package/query";
 import type { InfiniteData } from "@tanstack/react-query";
 import { CONFIG } from "@/config";
 import { inboxApiService } from "../../services/inbox-api.service";
-import type { ConversationTypes } from "../../types/inbox-api.types";
+import type { ConversationTypes } from "../../types/conversation-api.types";
 import { useConversationItem } from "../custom/use-conversation-item.custom";
 
 export function useSoftDeleteConversationMutation(organizationId: string) {

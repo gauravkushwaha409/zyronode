@@ -1,7 +1,7 @@
 import type { APIError, ApiResponse } from "@package/api-client";
 import { useMutation, useQueryClient } from "@package/query";
 import { inboxApiService } from "../../services/inbox-api.service";
-import type { MessageTypes } from "../../types/inbox-api.types";
+import type { MessageTypes } from "../../types/message-api.types";
 import {
 	updateConversationDetailOnMessageUpdated,
 	updateMessageListOnMessageUpdated,

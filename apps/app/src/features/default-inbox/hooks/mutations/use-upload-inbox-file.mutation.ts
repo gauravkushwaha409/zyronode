@@ -1,7 +1,7 @@
 import type { APIError, ApiResponse } from "@package/api-client";
 import { useMutation } from "@package/query";
 import { inboxApiService } from "../../services/inbox-api.service";
-import type { UploadTypes } from "../../types/inbox-api.types";
+import type { UploadTypes } from "../../types/message-api.types";
 
 export function useUploadInboxFileMutation(
 	conversationId: string,

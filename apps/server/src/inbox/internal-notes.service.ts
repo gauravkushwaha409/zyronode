@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { WIDGET_SSE_EVENTS } from "../visitor/events/widget-event.types";
+import { ConversationCacheService } from "./conversation-cache.service";
 import { InboxSsePublisher } from "./inbox-sse.publisher";
 
 function encodeNoteCursor(note: { createdAt: Date; id: string }): string {
@@ -32,6 +33,7 @@ export class InternalNotesService {
 	constructor(
 		private readonly prisma: PrismaService,
 		private readonly inboxSse: InboxSsePublisher,
+		private readonly conversationCache: ConversationCacheService,
 	) {}
 
 	private async assertConversationInOrg(organizationId: string, conversationId: string) {
@@ -68,6 +70,8 @@ export class InternalNotesService {
 				},
 			},
 		});
+
+		await this.conversationCache.deleteDetail(organizationId, conversationId);
 
 		// Org key only — never the conversation key, which the visitor
 		// widget's SSE stream also subscribes to. Internal notes must never

@@ -3,7 +3,7 @@ import { CONFIG } from "@/config";
 import { useCursorPagination } from "@/hooks/use-cursor-pagination";
 import type { CursorPaginationParams } from "@/types/cursor-pagination.types";
 import { inboxApiService } from "../../services/inbox-api.service";
-import type { ConversationTypes } from "../../types/inbox-api.types";
+import type { ConversationTypes } from "../../types/conversation-api.types";
 
 /**
  * Cursor-paginated inbox conversations — uses reusable `useCursorPagination`.

@@ -17,6 +17,9 @@ export const RedisKey = {
 	userProfile: (userId: string) => `user:profile:${userId}` as const,
 	/** STRING: cached org list JSON for GET /organization/my, expires after orgs TTL. */
 	userOrganizations: (userId: string) => `user:organizations:${userId}` as const,
+	/** STRING: cached conversation detail JSON, tenant-scoped. */
+	conversationDetail: (organizationId: string, conversationId: string) =>
+		`conversation:detail:${organizationId}:${conversationId}` as const,
 } as const;
 
 export const RedisChannel = {

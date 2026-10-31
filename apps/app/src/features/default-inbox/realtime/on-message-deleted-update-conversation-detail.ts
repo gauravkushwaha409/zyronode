@@ -1,7 +1,7 @@
 import type { ApiResponse } from "@package/api-client";
 import type { QueryClient } from "@package/query";
 import { CONFIG } from "@/config";
-import type { ConversationTypes } from "../types/inbox-api.types";
+import type { ConversationTypes } from "../types/conversation-api.types";
 import type { MessageDeletedEvent } from "./types";
 
 /** Removes a deleted message from the cached conversation detail, when it is loaded. */

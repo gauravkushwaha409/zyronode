@@ -5,12 +5,14 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import { RedisService } from "../redis/redis.service";
 import { RedisKey } from "../redis/redis.keys";
+import { RedisService } from "../redis/redis.service";
+import { ConversationCacheService } from "./conversation-cache.service";
 import {
   conversationListInclude,
   toConversationListItem,
 } from "./conversation-list-item.mapper";
+import { ConversationReadService } from "./conversation-read.service";
 import { InboxSsePublisher } from "./inbox-sse.publisher";
 
 const ONLINE_WINDOW_MS = 60_000;
@@ -46,6 +48,8 @@ export class InboxService {
     private readonly prisma: PrismaService,
     private readonly redis: RedisService,
     private readonly inboxSse: InboxSsePublisher,
+    private readonly conversationRead: ConversationReadService,
+    private readonly conversationCache: ConversationCacheService,
   ) {}
 
   private onlineCutoffMs(): number {
@@ -94,17 +98,17 @@ export class InboxService {
       const cursorWhere =
         direction === "prev"
           ? {
-                OR: [
-                  { updatedAt: { gt: cursorDate } },
-                  { updatedAt: cursorDate, id: { gt: cursorId } },
-                ],
-              }
+              OR: [
+                { updatedAt: { gt: cursorDate } },
+                { updatedAt: cursorDate, id: { gt: cursorId } },
+              ],
+            }
           : {
-                OR: [
-                  { updatedAt: { lt: cursorDate } },
-                  { updatedAt: cursorDate, id: { lt: cursorId } },
-                ],
-              };
+              OR: [
+                { updatedAt: { lt: cursorDate } },
+                { updatedAt: cursorDate, id: { lt: cursorId } },
+              ],
+            };
       where = { AND: [baseWhere, cursorWhere] };
     }
 
@@ -141,16 +145,16 @@ export class InboxService {
                 ? encodeCursor(conversations[conversations.length - 1] as never)
                 : null
               : conversations.length
-                  ? encodeCursor(conversations[conversations.length - 1] as never)
-                  : null,
+                ? encodeCursor(conversations[conversations.length - 1] as never)
+                : null,
           prevCursor:
             direction === "prev"
               ? hasExtra
                 ? encodeCursor(conversations[0] as never)
                 : null
               : cursor && conversations.length
-                  ? encodeCursor(conversations[0] as never)
-                  : null,
+                ? encodeCursor(conversations[0] as never)
+                : null,
           hasNext: direction === "next" ? hasExtra : conversations.length > 0,
           hasPrev: direction === "prev" ? hasExtra : !!cursor,
         },
@@ -172,33 +176,10 @@ export class InboxService {
   }
 
   async getConversationDetails(organizationId: string, conversationId: string) {
-    const conversation = await this.prisma.conversation.findFirst({
-      where: { id: conversationId, organizationId, deletedAt: null },
-      include: {
-        messages: {
-          orderBy: { createdAt: "asc" },
-          include: {
-            replyTo: {
-              select: {
-                id: true,
-                content: true,
-                senderType: true,
-                senderId: true,
-              },
-            },
-          },
-        },
-      },
-    });
-
-    if (!conversation) {
-      throw new NotFoundException("Conversation not found");
-    }
-
-    return {
-      message: "Conversation details fetched successfully",
-      data: conversation,
-    };
+    return this.conversationRead.getConversationDetails(
+      organizationId,
+      conversationId,
+    );
   }
 
   async closeConversation(organizationId: string, conversationId: string) {
@@ -215,6 +196,10 @@ export class InboxService {
       data: { status: "CLOSED" },
     });
 
+    await this.conversationCache.deleteDetail(
+      organizationId,
+      conversationId,
+    );
     const item = await this.getConversationListItem(
       organizationId,
       conversationId,
@@ -244,6 +229,10 @@ export class InboxService {
       data: { status: "ACTIVE" },
     });
 
+    await this.conversationCache.deleteDetail(
+      organizationId,
+      conversationId,
+    );
     const item = await this.getConversationListItem(
       organizationId,
       conversationId,
@@ -288,6 +277,10 @@ export class InboxService {
       data: { deletedAt: new Date(), deletedById: deletedById ?? null },
     });
 
+    await this.conversationCache.deleteDetail(
+      organizationId,
+      conversationId,
+    );
     await this.inboxSse.conversationDeleted({
       conversationId,
       organizationId,
