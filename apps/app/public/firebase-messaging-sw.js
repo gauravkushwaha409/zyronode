@@ -30,7 +30,9 @@ messaging.onBackgroundMessage((payload) => {
 		body: data.body || "",
 		icon: "/favicon.svg",
 		badge: "/favicon.svg",
-		tag: data.conversationId || data.callId || undefined,
+		// One OS notification per message. Calls keep a stable tag so repeated
+		// ring pushes for the same call replace each other.
+		tag: data.messageId || data.callId || undefined,
 		data: { link: data.link || "/" },
 	});
 });

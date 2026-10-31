@@ -76,6 +76,9 @@ export class PushNotifierService {
 			const body = this.previewBody(message);
 			const data = {
 				type: "message",
+				// Unique per message so the service worker does not replace (and
+				// silently swallow) the previous notification for the same chat.
+				messageId: message.id ?? "",
 				conversationId: conversation.id,
 				organizationId,
 				senderType: message.senderType,
