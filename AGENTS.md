@@ -3,11 +3,11 @@
 ## Commands
 
 - **Install:** `pnpm install` (requires `pnpm@11.3.0`, `node>=18`)
-- **Dev all:** `pnpm dev` (turbo) — starts `app` + `server` + `chat-widget-test`
-- **Dev filtered:** `pnpm dev:app` | `pnpm dev:server` | `pnpm dev:chat-widget` (wrappers for `turbo dev --filter <pkg>`)
+- **Dev all:** `pnpm dev` (turbo) — starts `app` + `admin` + `server` + `chat-widget-test`
+- **Dev filtered:** `pnpm dev:app` | `pnpm dev:admin` | `pnpm dev:server` | `pnpm dev:chat-widget` (wrappers for `turbo dev --filter <pkg>`)
 - **Build:** `pnpm build` (`turbo build`, respects `dependsOn: ^build`)
 - **Single package build:** `pnpm --filter <name> build` or `turbo build --filter=<name>`
-- **Typecheck:** `pnpm check-types` (`turbo run check-types` — only `app` has this task; server uses `tsc --noEmit` via tsconfig)
+- **Typecheck:** `pnpm check-types` (`turbo run check-types` — `app` + `admin`; server uses `tsc --noEmit` via tsconfig)
 - **Lint:** `pnpm lint` (`biome lint .`)
 - **Format:** `pnpm format` (`biome format --write .`) — **tabs**, double quotes
 - **Lint+format+organizeImports:** `pnpm check` (`biome check --write .`)
@@ -17,7 +17,7 @@
 
 - Env files live in `env/`: copy `env/.env.example` → `env/.env.<environment>` (`development` | `production`). Only the example is committed; the rest are gitignored.
 - Which file loads: Vite reads `env/.env.<mode>` (`vite` dev = `development`, `vite build --mode <environment>`); server `main.ts`, `prisma.config.ts` and `prisma/seed.ts` read `env/.env.${APP_ENV:-development}`. Already-set vars (docker `env_file`) always win.
-- Single source of truth for ports: `SERVER_PORT` (8000), `APP_PORT` (3000), `CHAT_WIDGET_PORT` (4000).
+- Single source of truth for ports: `SERVER_PORT` (8000), `APP_PORT` (3000), `ADMIN_PORT` (3001), `CHAT_WIDGET_PORT` (4000).
 - Supports `${VAR}` expansion in `VITE_SERVER_URL`, `VITE_APP_URL`, `VITE_CHAT_WIDGET_SERVER_URL` (see `apps/app/vite.config.ts:8` and `apps/server/src/main.ts:11`).
 - Vite `envDir` is `../../env` — env is per-environment, not per-app.
 - CORS origins derived from `APP_PORT`/`CHAT_WIDGET_PORT`/`VITE_APP_URL`/`CORS_ORIGINS` in `apps/server/src/main.ts:16`.
@@ -27,7 +27,7 @@
 Each app owns its Dockerfiles: `apps/<app>/docker/Dockerfile.development` (bind-mount dev image) and `apps/<app>/docker/Dockerfile.production` (release image for production; `APP_ENV` build arg picks `env/.env.<APP_ENV>`). Build context is always the repo root. Compose files live in `docker/docker-compose.<environment>.yml`. Compose paths are relative to `docker/`; each file sets its own project `name:` so volumes never collide.
 
 ```sh
-pnpm docker:development:up      # postgres + redis + localstack + server + app + widget
+pnpm docker:development:up      # postgres + redis + localstack + server + app + admin + widget
 pnpm docker:development:logs
 pnpm docker:development:down
 pnpm docker:development:reset   # down -v + up -d (destroys DB)
@@ -58,7 +58,7 @@ pnpm resource                 # nest generate resource
 ## Monorepo Layout
 
 - `pnpm-workspace.yaml`: `apps/*`, `packages/*`
-- **Apps:** `apps/app` (agent dashboard: React 19 + Vite 8 + TanStack Router + react-query + Zustand), `apps/server` (NestJS 11, commonjs), `apps/chat-widget-test` (widget harness)
+- **Apps:** `apps/app` (agent dashboard: React 19 + Vite 8 + TanStack Router + react-query + Zustand), `apps/admin` (platform admin: same React/Vite/TanStack stack as app), `apps/server` (NestJS 11, commonjs), `apps/chat-widget-test` (widget harness)
 - **Packages:** `chat-widget` (embeddable visitor widget), `websocket` (socket.io wrapper), `sse` (EventSource wrapper), `api-client` (typed Axios), `query` (shared react-query, `CONFIG.QUERY_KEY`), `ui`/`form`/`hooks`/`icons`/`text-editor`/`typescript-config`
 - Path aliases in root `tsconfig.json` map `@package/*` → `packages/*/src/index.ts`. App resolves via `tsconfigPaths: true` in `vite.config.ts:65`.
 - Turbo outputs `dist/**`; tasks cache except `dev`, `prisma:*`, `prisma:generate`.
