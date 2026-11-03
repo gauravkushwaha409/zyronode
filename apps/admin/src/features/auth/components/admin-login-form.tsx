@@ -1,5 +1,5 @@
 import { Button, Input, Typography } from "@package/ui";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@package/query";
 import { useNavigate } from "@tanstack/react-router";
 import { type FormEvent, useState } from "react";
 import { ADMIN_ROUTES } from "@/config";

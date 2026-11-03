@@ -1,5 +1,5 @@
 import { Avatar, cn, Icon, Typography } from "@package/ui";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@package/query";
 import { useNavigate } from "@tanstack/react-router";
 import {
 	useAdminLogoutMutation,

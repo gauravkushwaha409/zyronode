@@ -190,9 +190,6 @@ importers:
       '@package/ui':
         specifier: workspace:*
         version: link:../../packages/ui
-      '@tanstack/react-query':
-        specifier: ^5.105.0
-        version: 5.105.0(@types/react@19.2.14)(react@19.2.6)
       '@tanstack/react-router':
         specifier: ^1.170.46
         version: 1.170.46(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
@@ -3392,9 +3389,6 @@ packages:
   '@tanstack/query-core@5.101.0':
     resolution: {integrity: sha512-cQetA74EB+seWySv1TTKr828TnP0u39m6LykwDXIo84SNortpDkp30TMEjkqtYCNP9c40uT/iwl6MLiufEt0Ow==}
 
-  '@tanstack/query-core@5.105.0':
-    resolution: {integrity: sha512-7p56vRmT/z4UJ6sctGIdl5WRUQyUv53IUpUwEKi2g97zMbO7zh8ZsCLffGAvCPBR4xD72e3VXsDyLwXHhoNTMQ==}
-
   '@tanstack/query-devtools@5.101.0':
     resolution: {integrity: sha512-MVqw17k08RQtGGLEL654+dX/btbX9p/8WjkznO//zusLTMaObxi3Q+MoFwGVkC9K3tqjn8qrrNhJevXx4fJTeQ==}
 
@@ -3417,15 +3411,6 @@ packages:
     resolution: {integrity: sha512-rLlJXSpkqfizLWgkR5+eLeIk0MvTx/meEIR7LRjxic+qxiQP8zVjq7BqQkiCMNLQBlLfuOLqqr6KO5GtrDlmSg==}
     peerDependencies:
       react: ^18 || ^19
-
-  '@tanstack/react-query@5.105.0':
-    resolution: {integrity: sha512-y+hMuDERvgg6ay1da0V1a6ZC0ZONt7dELxSFkqRZuwm7p1TTZs0MoXrPlBRflIpRoYjvzQVYxycnLImpFLhWrw==}
-    peerDependencies:
-      '@types/react': ^18 || ^19
-      react: ^18 || ^19
-    peerDependenciesMeta:
-      '@types/react':
-        optional: true
 
   '@tanstack/react-router-devtools@1.167.0':
     resolution: {integrity: sha512-nGw095EG7IHx0h5NtlEmzf6vcCTaFNPWdTSuDKazajhN0ct/v/TkekJ9J6KYUCeV1a8/2ZmToc58M+0rrOyn7w==}
@@ -10164,8 +10149,6 @@ snapshots:
 
   '@tanstack/query-core@5.101.0': {}
 
-  '@tanstack/query-core@5.105.0': {}
-
   '@tanstack/query-devtools@5.101.0': {}
 
   '@tanstack/query-persist-client-core@5.101.0':
@@ -10188,13 +10171,6 @@ snapshots:
     dependencies:
       '@tanstack/query-core': 5.101.0
       react: 19.2.6
-
-  '@tanstack/react-query@5.105.0(@types/react@19.2.14)(react@19.2.6)':
-    dependencies:
-      '@tanstack/query-core': 5.105.0
-      react: 19.2.6
-    optionalDependencies:
-      '@types/react': 19.2.14
 
   '@tanstack/react-router-devtools@1.167.0(@tanstack/react-router@1.170.11(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(@tanstack/router-core@1.171.39)(csstype@3.2.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
