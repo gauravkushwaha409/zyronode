@@ -28,6 +28,7 @@ FROM base AS builder
 
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY apps/admin/package.json ./apps/admin/
+COPY packages/api-client/package.json ./packages/api-client/
 COPY packages/icons/package.json ./packages/icons/
 COPY packages/query/package.json ./packages/query/
 COPY packages/ui/package.json ./packages/ui/
@@ -51,6 +52,7 @@ FROM base AS runtime
 
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY apps/admin/package.json ./apps/admin/
+COPY packages/api-client/package.json ./packages/api-client/
 COPY packages/icons/package.json ./packages/icons/
 COPY packages/query/package.json ./packages/query/
 COPY packages/ui/package.json ./packages/ui/

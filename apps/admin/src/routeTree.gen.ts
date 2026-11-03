@@ -8,154 +8,185 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from "./routes/__root";
-import { Route as ShellRouteImport } from "./routes/_shell";
-import { Route as ShellDashboardRouteImport } from "./routes/_shell/dashboard";
-import { Route as ShellOrganizationsRouteImport } from "./routes/_shell/organizations";
-import { Route as ShellSettingsRouteImport } from "./routes/_shell/settings";
-import { Route as ShellUsersRouteImport } from "./routes/_shell/users";
-import { Route as IndexRouteImport } from "./routes/index";
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as ShellRouteImport } from './routes/_shell'
+import { Route as ShellDashboardRouteImport } from './routes/_shell/dashboard'
+import { Route as ShellOrganizationsRouteImport } from './routes/_shell/organizations'
+import { Route as ShellSettingsRouteImport } from './routes/_shell/settings'
+import { Route as ShellUsersRouteImport } from './routes/_shell/users'
+import { Route as AuthLoginRouteImport } from './routes/auth/login'
 
 const IndexRoute = IndexRouteImport.update({
-	id: "/",
-	path: "/",
-	getParentRoute: () => rootRouteImport,
-} as any);
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ShellRoute = ShellRouteImport.update({
-	id: "/_shell",
-	getParentRoute: () => rootRouteImport,
-} as any);
+  id: '/_shell',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ShellDashboardRoute = ShellDashboardRouteImport.update({
-	id: "/dashboard",
-	path: "/dashboard",
-	getParentRoute: () => ShellRoute,
-} as any);
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => ShellRoute,
+} as any)
 const ShellOrganizationsRoute = ShellOrganizationsRouteImport.update({
-	id: "/organizations",
-	path: "/organizations",
-	getParentRoute: () => ShellRoute,
-} as any);
+  id: '/organizations',
+  path: '/organizations',
+  getParentRoute: () => ShellRoute,
+} as any)
 const ShellSettingsRoute = ShellSettingsRouteImport.update({
-	id: "/settings",
-	path: "/settings",
-	getParentRoute: () => ShellRoute,
-} as any);
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => ShellRoute,
+} as any)
 const ShellUsersRoute = ShellUsersRouteImport.update({
-	id: "/users",
-	path: "/users",
-	getParentRoute: () => ShellRoute,
-} as any);
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => ShellRoute,
+} as any)
+const AuthLoginRoute = AuthLoginRouteImport.update({
+  id: '/auth/login',
+  path: '/auth/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
-	"/": typeof IndexRoute;
-	"/dashboard": typeof ShellDashboardRoute;
-	"/organizations": typeof ShellOrganizationsRoute;
-	"/settings": typeof ShellSettingsRoute;
-	"/users": typeof ShellUsersRoute;
+  '/': typeof IndexRoute
+  '/dashboard': typeof ShellDashboardRoute
+  '/organizations': typeof ShellOrganizationsRoute
+  '/settings': typeof ShellSettingsRoute
+  '/users': typeof ShellUsersRoute
+  '/auth/login': typeof AuthLoginRoute
 }
 export interface FileRoutesByTo {
-	"/": typeof IndexRoute;
-	"/dashboard": typeof ShellDashboardRoute;
-	"/organizations": typeof ShellOrganizationsRoute;
-	"/settings": typeof ShellSettingsRoute;
-	"/users": typeof ShellUsersRoute;
+  '/': typeof IndexRoute
+  '/dashboard': typeof ShellDashboardRoute
+  '/organizations': typeof ShellOrganizationsRoute
+  '/settings': typeof ShellSettingsRoute
+  '/users': typeof ShellUsersRoute
+  '/auth/login': typeof AuthLoginRoute
 }
 export interface FileRoutesById {
-	__root__: typeof rootRouteImport;
-	"/": typeof IndexRoute;
-	"/_shell": typeof ShellRouteWithChildren;
-	"/_shell/dashboard": typeof ShellDashboardRoute;
-	"/_shell/organizations": typeof ShellOrganizationsRoute;
-	"/_shell/settings": typeof ShellSettingsRoute;
-	"/_shell/users": typeof ShellUsersRoute;
+  __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
+  '/_shell': typeof ShellRouteWithChildren
+  '/_shell/dashboard': typeof ShellDashboardRoute
+  '/_shell/organizations': typeof ShellOrganizationsRoute
+  '/_shell/settings': typeof ShellSettingsRoute
+  '/_shell/users': typeof ShellUsersRoute
+  '/auth/login': typeof AuthLoginRoute
 }
 export interface FileRouteTypes {
-	fileRoutesByFullPath: FileRoutesByFullPath;
-	fullPaths: "/" | "/dashboard" | "/organizations" | "/settings" | "/users";
-	fileRoutesByTo: FileRoutesByTo;
-	to: "/" | "/dashboard" | "/organizations" | "/settings" | "/users";
-	id:
-		| "__root__"
-		| "/"
-		| "/_shell"
-		| "/_shell/dashboard"
-		| "/_shell/organizations"
-		| "/_shell/settings"
-		| "/_shell/users";
-	fileRoutesById: FileRoutesById;
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths:
+    | '/'
+    | '/dashboard'
+    | '/organizations'
+    | '/settings'
+    | '/users'
+    | '/auth/login'
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | '/'
+    | '/dashboard'
+    | '/organizations'
+    | '/settings'
+    | '/users'
+    | '/auth/login'
+  id:
+    | '__root__'
+    | '/'
+    | '/_shell'
+    | '/_shell/dashboard'
+    | '/_shell/organizations'
+    | '/_shell/settings'
+    | '/_shell/users'
+    | '/auth/login'
+  fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-	IndexRoute: typeof IndexRoute;
-	ShellRoute: typeof ShellRouteWithChildren;
+  IndexRoute: typeof IndexRoute
+  ShellRoute: typeof ShellRouteWithChildren
+  AuthLoginRoute: typeof AuthLoginRoute
 }
 
-declare module "@tanstack/react-router" {
-	interface FileRoutesByPath {
-		"/": {
-			id: "/";
-			path: "/";
-			fullPath: "/";
-			preLoaderRoute: typeof IndexRouteImport;
-			parentRoute: typeof rootRouteImport;
-		};
-		"/_shell": {
-			id: "/_shell";
-			path: "";
-			fullPath: "/";
-			preLoaderRoute: typeof ShellRouteImport;
-			parentRoute: typeof rootRouteImport;
-		};
-		"/_shell/dashboard": {
-			id: "/_shell/dashboard";
-			path: "/dashboard";
-			fullPath: "/dashboard";
-			preLoaderRoute: typeof ShellDashboardRouteImport;
-			parentRoute: typeof ShellRoute;
-		};
-		"/_shell/organizations": {
-			id: "/_shell/organizations";
-			path: "/organizations";
-			fullPath: "/organizations";
-			preLoaderRoute: typeof ShellOrganizationsRouteImport;
-			parentRoute: typeof ShellRoute;
-		};
-		"/_shell/settings": {
-			id: "/_shell/settings";
-			path: "/settings";
-			fullPath: "/settings";
-			preLoaderRoute: typeof ShellSettingsRouteImport;
-			parentRoute: typeof ShellRoute;
-		};
-		"/_shell/users": {
-			id: "/_shell/users";
-			path: "/users";
-			fullPath: "/users";
-			preLoaderRoute: typeof ShellUsersRouteImport;
-			parentRoute: typeof ShellRoute;
-		};
-	}
+declare module '@tanstack/react-router' {
+  interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_shell': {
+      id: '/_shell'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof ShellRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_shell/dashboard': {
+      id: '/_shell/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof ShellDashboardRouteImport
+      parentRoute: typeof ShellRoute
+    }
+    '/_shell/organizations': {
+      id: '/_shell/organizations'
+      path: '/organizations'
+      fullPath: '/organizations'
+      preLoaderRoute: typeof ShellOrganizationsRouteImport
+      parentRoute: typeof ShellRoute
+    }
+    '/_shell/settings': {
+      id: '/_shell/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof ShellSettingsRouteImport
+      parentRoute: typeof ShellRoute
+    }
+    '/_shell/users': {
+      id: '/_shell/users'
+      path: '/users'
+      fullPath: '/users'
+      preLoaderRoute: typeof ShellUsersRouteImport
+      parentRoute: typeof ShellRoute
+    }
+    '/auth/login': {
+      id: '/auth/login'
+      path: '/auth/login'
+      fullPath: '/auth/login'
+      preLoaderRoute: typeof AuthLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+  }
 }
 
 interface ShellRouteChildren {
-	ShellDashboardRoute: typeof ShellDashboardRoute;
-	ShellOrganizationsRoute: typeof ShellOrganizationsRoute;
-	ShellSettingsRoute: typeof ShellSettingsRoute;
-	ShellUsersRoute: typeof ShellUsersRoute;
+  ShellDashboardRoute: typeof ShellDashboardRoute
+  ShellOrganizationsRoute: typeof ShellOrganizationsRoute
+  ShellSettingsRoute: typeof ShellSettingsRoute
+  ShellUsersRoute: typeof ShellUsersRoute
 }
 
 const ShellRouteChildren: ShellRouteChildren = {
-	ShellDashboardRoute: ShellDashboardRoute,
-	ShellOrganizationsRoute: ShellOrganizationsRoute,
-	ShellSettingsRoute: ShellSettingsRoute,
-	ShellUsersRoute: ShellUsersRoute,
-};
+  ShellDashboardRoute: ShellDashboardRoute,
+  ShellOrganizationsRoute: ShellOrganizationsRoute,
+  ShellSettingsRoute: ShellSettingsRoute,
+  ShellUsersRoute: ShellUsersRoute,
+}
 
-const ShellRouteWithChildren = ShellRoute._addFileChildren(ShellRouteChildren);
+const ShellRouteWithChildren = ShellRoute._addFileChildren(ShellRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
-	IndexRoute: IndexRoute,
-	ShellRoute: ShellRouteWithChildren,
-};
+  IndexRoute: IndexRoute,
+  ShellRoute: ShellRouteWithChildren,
+  AuthLoginRoute: AuthLoginRoute,
+}
 export const routeTree = rootRouteImport
-	._addFileChildren(rootRouteChildren)
-	._addFileTypes<FileRouteTypes>();
+  ._addFileChildren(rootRouteChildren)
+  ._addFileTypes<FileRouteTypes>()

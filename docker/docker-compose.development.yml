@@ -149,6 +149,7 @@ services:
     volumes:
       - ../apps/admin/src:/app/apps/admin/src
       - ../env:/app/env:ro
+      - ../packages/api-client/src:/app/packages/api-client/src
       - ../packages/icons/src:/app/packages/icons/src
       - ../packages/query/src:/app/packages/query/src
       - ../packages/ui/src:/app/packages/ui/src

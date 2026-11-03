@@ -26,11 +26,25 @@ export default defineConfig(({ mode }) => {
 	const adminPort =
 		Number.parseInt(expandEnv(adminPortRaw, allEnv) ?? "3001", 10) || 3001;
 
+	const serverPort = allEnv.SERVER_PORT ?? process.env.SERVER_PORT ?? "8000";
+	const serverUrl =
+		expandEnv(viteEnv.VITE_SERVER_URL, allEnv) ||
+		`http://localhost:${serverPort}`;
+	const enableProxy = (allEnv.PROXY ?? process.env.PROXY) === "true";
+
 	return {
 		envDir: "../../env",
 		server: {
 			port: adminPort,
 			host: true,
+			...(enableProxy && {
+				proxy: {
+					"/api/v1": {
+						target: serverUrl,
+						changeOrigin: true,
+					},
+				},
+			}),
 		},
 		plugins: [
 			tanstackRouter({
@@ -42,6 +56,10 @@ export default defineConfig(({ mode }) => {
 		],
 		css: {
 			transformer: "postcss",
+		},
+		define: {
+			__PROXY_ENABLED__: enableProxy,
+			__SERVER_URL__: JSON.stringify(serverUrl),
 		},
 		resolve: {
 			tsconfigPaths: true,

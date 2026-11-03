@@ -10,6 +10,7 @@
 		"check-types": "tsc --noEmit"
 	},
 	"dependencies": {
+		"@package/api-client": "workspace:*",
 		"@package/icons": "workspace:*",
 		"@package/query": "workspace:*",
 		"@package/ui": "workspace:*",

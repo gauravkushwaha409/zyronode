@@ -1,8 +1,22 @@
 import { Icon, Input } from "@package/ui";
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { Sidebar } from "@/components";
+import { ADMIN_QUERY_KEY } from "@/config/admin-api";
+import { adminAuthService } from "@/features/auth/services/admin-auth.service";
+import { queryClient } from "@/lib/query-client";
 
 export const Route = createFileRoute("/_shell")({
+	beforeLoad: async () => {
+		try {
+			await queryClient.ensureQueryData({
+				queryKey: ADMIN_QUERY_KEY.AUTH.ME,
+				queryFn: () => adminAuthService.me(),
+				staleTime: 1000 * 60 * 5,
+			});
+		} catch {
+			throw redirect({ to: "/auth/login" });
+		}
+	},
 	component: RouteComponent,
 });
 
