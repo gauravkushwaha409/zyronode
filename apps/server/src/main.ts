@@ -31,7 +31,7 @@ function expandEnv(value?: string): string | undefined {
 
 function getCorsOrigins(): string[] {
 	const appPort = process.env.APP_PORT ?? "3000";
-	const adminPort = process.env.ADMIN_PORT ?? "3001";
+	const adminPort = process.env.ADMIN_PORT ?? "5000";
 	const chatWidgetPort = process.env.CHAT_WIDGET_PORT ?? "4000";
 	const viteAppUrl = expandEnv(process.env.VITE_APP_URL);
 	const viteAdminUrl = expandEnv(process.env.VITE_ADMIN_URL);

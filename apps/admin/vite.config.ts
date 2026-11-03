@@ -22,9 +22,9 @@ export default defineConfig(({ mode }) => {
 		allEnv.ADMIN_PORT ??
 		viteEnv.VITE_ADMIN_PORT ??
 		process.env.ADMIN_PORT ??
-		"3001";
+		"5000";
 	const adminPort =
-		Number.parseInt(expandEnv(adminPortRaw, allEnv) ?? "3001", 10) || 3001;
+		Number.parseInt(expandEnv(adminPortRaw, allEnv) ?? "5000", 10) || 5000;
 
 	const serverPort = allEnv.SERVER_PORT ?? process.env.SERVER_PORT ?? "8000";
 	const serverUrl =

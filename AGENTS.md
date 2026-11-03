@@ -17,7 +17,7 @@
 
 - Env files live in `env/`: copy `env/.env.example` → `env/.env.<environment>` (`development` | `production`). Only the example is committed; the rest are gitignored.
 - Which file loads: Vite reads `env/.env.<mode>` (`vite` dev = `development`, `vite build --mode <environment>`); server `main.ts`, `prisma.config.ts` and `prisma/seed.ts` read `env/.env.${APP_ENV:-development}`. Already-set vars (docker `env_file`) always win.
-- Single source of truth for ports: `SERVER_PORT` (8000), `APP_PORT` (3000), `ADMIN_PORT` (3001), `CHAT_WIDGET_PORT` (4000).
+- Single source of truth for ports: `SERVER_PORT` (8000), `APP_PORT` (3000), `ADMIN_PORT` (5000), `CHAT_WIDGET_PORT` (4000).
 - Supports `${VAR}` expansion in `VITE_SERVER_URL`, `VITE_APP_URL`, `VITE_CHAT_WIDGET_SERVER_URL` (see `apps/app/vite.config.ts:8` and `apps/server/src/main.ts:11`).
 - Vite `envDir` is `../../env` — env is per-environment, not per-app.
 - CORS origins derived from `APP_PORT`/`CHAT_WIDGET_PORT`/`VITE_APP_URL`/`CORS_ORIGINS` in `apps/server/src/main.ts:16`.

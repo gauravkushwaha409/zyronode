@@ -308,7 +308,7 @@ async function main() {
 		`  app:      http://localhost:${process.env.APP_PORT ?? "3000"}/${organizations[0].id}/dashboard (after logging in)`,
 	);
 	console.log(
-		`  admin:    http://localhost:${process.env.ADMIN_PORT ?? "3001"}/auth/login (same credentials)`,
+		`  admin:    http://localhost:${process.env.ADMIN_PORT ?? "5000"}/auth/login (same credentials)`,
 	);
 }
 

@@ -70,6 +70,6 @@ COPY --from=builder /app/apps/admin/src ./apps/admin/src
 COPY --from=builder /app/apps/admin/public ./apps/admin/public
 
 # ADMIN_PORT must be provided via env (no fallback).
-EXPOSE 3001
+EXPOSE 5000
 
 CMD sh -c "pnpm --filter admin exec vite preview --host 0.0.0.0 --port ${ADMIN_PORT:?ADMIN_PORT must be provided}"

@@ -39,4 +39,4 @@ COPY packages/typescript-config/base.json \
 
 # Port is configurable via ADMIN_PORT env (vite.config.ts reads ADMIN_PORT,
 # docker-compose maps ${ADMIN_PORT}).
-EXPOSE 3001
+EXPOSE 5000
