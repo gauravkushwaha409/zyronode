@@ -62,6 +62,7 @@ export default defineConfig(({ mode }) => {
 			__SERVER_URL__: JSON.stringify(serverUrl),
 		},
 		resolve: {
+			dedupe: ["react", "react-dom"],
 			tsconfigPaths: true,
 		},
 	};
