@@ -31,17 +31,20 @@ function expandEnv(value?: string): string | undefined {
 
 function getCorsOrigins(): string[] {
 	const appPort = process.env.APP_PORT ?? "3000";
+	const adminPort = process.env.ADMIN_PORT ?? "3001";
 	const chatWidgetPort = process.env.CHAT_WIDGET_PORT ?? "4000";
 	const viteAppUrl = expandEnv(process.env.VITE_APP_URL);
+	const viteAdminUrl = expandEnv(process.env.VITE_ADMIN_URL);
 	const origins = new Set<string>([
 		`http://localhost:${appPort}`,
+		`http://localhost:${adminPort}`,
 		`http://localhost:${chatWidgetPort}`,
 		"http://localhost:4100",
 	]);
-	if (viteAppUrl) {
+	for (const candidate of [viteAppUrl, viteAdminUrl]) {
+		if (!candidate) continue;
 		try {
-			const u = new URL(viteAppUrl);
-			origins.add(u.origin);
+			origins.add(new URL(candidate).origin);
 		} catch {
 			// ignore invalid URL
 		}

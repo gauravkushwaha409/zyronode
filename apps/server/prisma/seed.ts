@@ -2,7 +2,11 @@ import * as path from "node:path";
 import { PrismaPg } from "@prisma/adapter-pg";
 import * as bcryptjs from "bcryptjs";
 import * as dotenv from "dotenv";
-import { PlanType, PrismaClient } from "../src/generated/prisma/client";
+import {
+	PlanType,
+	PlatformRole,
+	PrismaClient,
+} from "../src/generated/prisma/client";
 
 // SEED_MODE is the single knob: it selects WHICH database (env/.env.<mode>)
 // and WHAT gets seeded. APP_ENV is still honored as a fallback for the env
@@ -213,9 +217,11 @@ async function seedVisitorsForOrganization(
 async function seedTestUser() {
 	const hashedPassword = await bcryptjs.hash(TEST_USER.password, 10);
 
+	const platformRole = PlatformRole.SUPER_ADMIN;
+
 	return prisma.user.upsert({
 		where: { email: TEST_USER.email },
-		update: {},
+		update: { platformRole },
 		create: {
 			email: TEST_USER.email,
 			password: hashedPassword,
@@ -223,6 +229,7 @@ async function seedTestUser() {
 			lastName: TEST_USER.lastName,
 			isEmailVerified: true,
 			isOnboarded: true,
+			platformRole,
 		},
 	});
 }
@@ -299,6 +306,9 @@ async function main() {
 	console.log(`  visitors: ${visitorCount} on ${organizations[0].name}`);
 	console.log(
 		`  app:      http://localhost:${process.env.APP_PORT ?? "3000"}/${organizations[0].id}/dashboard (after logging in)`,
+	);
+	console.log(
+		`  admin:    http://localhost:${process.env.ADMIN_PORT ?? "3001"}/auth/login (same credentials)`,
 	);
 }
 

@@ -19,6 +19,10 @@ model User {
   authProvider    String  @default("email")
   isEmailVerified Boolean @default(false)
 
+  // Platform-level admin access. Separate from organization roles: this is
+  // the ONLY role that grants access to the /admin API surface.
+  platformRole PlatformRole @default(NONE)
+
   theme          String? @default("light")
   referralSource String?
   isOnboarded    Boolean @default(false)
@@ -39,6 +43,8 @@ model User {
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([platformRole])
 }
 
 model Organization {
@@ -522,4 +528,11 @@ model PushToken {
   @@index([visitorId])
   @@index([organizationId])
   @@map("push_tokens")
+}
+
+enum PlatformRole {
+  NONE
+  SUPPORT
+  ADMIN
+  SUPER_ADMIN
 }
