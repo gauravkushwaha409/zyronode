@@ -63,6 +63,17 @@ pnpm resource                 # nest generate resource
 - Path aliases in root `tsconfig.json` map `@package/*` → `packages/*/src/index.ts`. App resolves via `tsconfigPaths: true` in `vite.config.ts:65`.
 - Turbo outputs `dist/**`; tasks cache except `dev`, `prisma:*`, `prisma:generate`.
 
+## Platform Admin Auth
+
+The admin app uses the same `User` table but a separate platform role and token scope. Do not reuse organization roles for platform access.
+
+- `User.platformRole` (`PlatformRole`: `NONE` | `SUPPORT` | `ADMIN` | `SUPER_ADMIN`); only non-`NONE` users can log in to admin. Dev seed promotes `test@gmail.com` to `SUPER_ADMIN`.
+- Endpoints: `POST /api/v1/admin/auth/login`, `GET /api/v1/admin/auth/me`, `POST /api/v1/admin/auth/logout` (`apps/server/src/auth/admin-auth.controller.ts`).
+- Cookies are `admin_access` / `admin_refresh` (httpOnly), distinct from portal `access` / `refresh`; both sessions can coexist in one browser.
+- Admin JWTs carry `scope: "admin"`. `AdminJwtStrategy` accepts only that scope, and `JwtStrategy` rejects admin-scoped tokens, so admin and portal tokens are not interchangeable.
+- `PlatformAdminGuard` re-checks the DB role on every request; guard future admin controllers with `@UseGuards(AdminJwtAuthGuard, PlatformAdminGuard)`.
+- CORS allows `ADMIN_PORT` and `VITE_ADMIN_URL`; set `VITE_ADMIN_URL` for the production admin origin.
+
 ## Tooling Quirks
 
 - **Biome** (not ESLint/Prettier): `biome.json` — tabs, double quotes, `organizeImports` on, `useImportType: off`, `unsafeParameterDecoratorsEnabled: true` for Nest.
