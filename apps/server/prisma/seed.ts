@@ -7,6 +7,7 @@ import {
 	PlatformRole,
 	PrismaClient,
 } from "../src/generated/prisma/client";
+import { SYSTEM_ROLE_IDS } from "../src/role/role.constants";
 
 // SEED_MODE is the single knob: it selects WHICH database (env/.env.<mode>)
 // and WHAT gets seeded. APP_ENV is still honored as a fallback for the env
@@ -246,8 +247,12 @@ async function seedOrganizationForUser(
 		where: {
 			userId_organizationId: { userId, organizationId: organization.id },
 		},
-		update: {},
-		create: { userId, organizationId: organization.id },
+		update: { roleId: SYSTEM_ROLE_IDS.OWNER },
+		create: {
+			userId,
+			organizationId: organization.id,
+			roleId: SYSTEM_ROLE_IDS.OWNER,
+		},
 	});
 
 	return organization;

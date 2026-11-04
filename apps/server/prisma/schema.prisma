@@ -532,7 +532,7 @@ model PushToken {
 
 enum PlatformRole {
   NONE
-  SUPPORT
+  MANAGER
   ADMIN
   SUPER_ADMIN
 }

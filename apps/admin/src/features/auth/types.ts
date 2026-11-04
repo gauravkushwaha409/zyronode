@@ -1,6 +1,6 @@
 import type { APIError, ApiResponse } from "@package/api-client";
 
-export type PlatformRole = "NONE" | "SUPPORT" | "ADMIN" | "SUPER_ADMIN";
+export type PlatformRole = "NONE" | "MANAGER" | "ADMIN" | "SUPER_ADMIN";
 
 export interface AdminUser {
 	id: string;

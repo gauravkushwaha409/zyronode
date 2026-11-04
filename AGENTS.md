@@ -67,10 +67,11 @@ pnpm resource                 # nest generate resource
 
 The admin app uses the same `User` table but a separate platform role and token scope. Do not reuse organization roles for platform access.
 
-- `User.platformRole` (`PlatformRole`: `NONE` | `SUPPORT` | `ADMIN` | `SUPER_ADMIN`); only non-`NONE` users can log in to admin. Dev seed promotes `test@gmail.com` to `SUPER_ADMIN`.
+- `User.platformRole` (`PlatformRole`: `NONE` | `MANAGER` | `ADMIN` | `SUPER_ADMIN`); only non-`NONE` users can log in to admin. Dev seed promotes `test@gmail.com` to `SUPER_ADMIN`.
 - Endpoints: `POST /api/v1/admin/auth/login`, `GET /api/v1/admin/auth/me`, `POST /api/v1/admin/auth/logout` (`apps/server/src/auth/admin-auth.controller.ts`).
 - Cookies are `admin_access` / `admin_refresh` (httpOnly), distinct from portal `access` / `refresh`; both sessions can coexist in one browser.
 - Admin JWTs carry `scope: "admin"`. `AdminJwtStrategy` accepts only that scope, and `JwtStrategy` rejects admin-scoped tokens, so admin and portal tokens are not interchangeable.
+- Organization system roles are `Owner`, `Manager`, `Agent`, and `None`; system roles are immutable. New organizations assign `Owner`, and invitations without a role default to `None`.
 - `PlatformAdminGuard` re-checks the DB role on every request; guard future admin controllers with `@UseGuards(AdminJwtAuthGuard, PlatformAdminGuard)`.
 - CORS allows `ADMIN_PORT` and `VITE_ADMIN_URL`; set `VITE_ADMIN_URL` for the production admin origin.
 

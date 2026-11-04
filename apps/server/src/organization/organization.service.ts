@@ -7,6 +7,7 @@ import type { Response } from "express";
 import { PrismaService } from "../prisma/prisma.service";
 import { RedisKey } from "../redis/redis.keys";
 import { RedisService } from "../redis/redis.service";
+import { SYSTEM_ROLE_IDS } from "../role/role.constants";
 import { CreateOrganizationDto } from "./dto/create-organization.dto";
 import { UpdateOrganizationDto } from "./dto/update-organization.dto";
 
@@ -38,6 +39,7 @@ export class OrganizationService {
 				data: {
 					userId,
 					organizationId: org.id,
+					roleId: SYSTEM_ROLE_IDS.OWNER,
 				},
 			});
 
