@@ -16,7 +16,8 @@
 ## Env & Ports
 
 - Env files live in `env/`: copy `env/.env.example` → `env/.env.<environment>` (`development` | `production`). Only the example is committed; the rest are gitignored.
-- Which file loads: Vite reads `env/.env.<mode>` (`vite` dev = `development`, `vite build --mode <environment>`); server `main.ts`, `prisma.config.ts` and `prisma/seed.ts` read `env/.env.${APP_ENV:-development}`. Already-set vars (docker `env_file`) always win.
+- Only `development` and `production` are supported. There is no staging environment or staging mode.
+- Which file loads: Vite reads `env/.env.<mode>` (`vite` dev = `development`, `vite build --mode <environment>`); server `main.ts` and `prisma.config.ts` read `env/.env.${APP_ENV:-development}`; `prisma/seed.ts` requires `SEED_MODE` and loads `env/.env.${SEED_MODE}`. Already-set vars (docker `env_file`) always win.
 - Single source of truth for ports: `SERVER_PORT` (8000), `APP_PORT` (3000), `ADMIN_PORT` (5000), `CHAT_WIDGET_PORT` (4000).
 - Supports `${VAR}` expansion in `VITE_SERVER_URL`, `VITE_APP_URL`, `VITE_CHAT_WIDGET_SERVER_URL` (see `apps/app/vite.config.ts:8` and `apps/server/src/main.ts:11`).
 - Vite `envDir` is `../../env` — env is per-environment, not per-app.
@@ -44,12 +45,21 @@ pnpm docker:<production>:<build|up|down|logs>
 pnpm prisma:generate          # turbo --filter server
 pnpm prisma:migrate           # migrate dev (interactive, needs DATABASE_URL)
 pnpm prisma:deploy            # migrate deploy
-pnpm prisma:seed              # tsc -p tsconfig.seed.json && node dist-seed/prisma/seed.js
-pnpm prisma:reset             # migrate reset (no seed)
-pnpm prisma:reset:hard        # migrate reset --force && seed
+pnpm prisma:seed              # requires SEED_MODE + SEED_TARGETS; no default
+pnpm prisma:development:seed:superadmin
+pnpm prisma:development:seed:user
+pnpm prisma:production:seed:superadmin
+pnpm prisma:production:seed:user
+pnpm prisma:reset             # migrate reset --skip-seed
+pnpm prisma:reset:hard        # reset --force --skip-seed, then development superadmin seed
 pnpm prisma:studio
 pnpm resource                 # nest generate resource
 ```
+
+- `SEED_TARGETS` is required; valid targets are `superadmin` and `user`. There is no demo data seed.
+- `superadmin` only creates/promotes the platform superadmin. `user` only creates a regular portal user. Neither creates organizations.
+- Superadmin seeding requires `SEED_SUPERADMIN_EMAIL`, `SEED_SUPERADMIN_PASSWORD`, `SEED_SUPERADMIN_FIRST_NAME`, and `SEED_SUPERADMIN_LAST_NAME` in the environment; there are no code fallbacks.
+- Production seeding requires `ALLOW_PRODUCTION_SEED=true` and explicit credentials.
 
 - Schema: `apps/server/prisma/schema.prisma` — client output `src/generated/prisma` (cjs).
 - `prisma:migrate` and `prisma:reset` are interactive turbo tasks; `DATABASE_URL` must be set.
@@ -67,7 +77,7 @@ pnpm resource                 # nest generate resource
 
 The admin app uses the same `User` table but a separate platform role and token scope. Do not reuse organization roles for platform access.
 
-- `User.platformRole` (`PlatformRole`: `NONE` | `MANAGER` | `ADMIN` | `SUPER_ADMIN`); only non-`NONE` users can log in to admin. Dev seed promotes `test@gmail.com` to `SUPER_ADMIN`.
+- `User.platformRole` (`PlatformRole`: `NONE` | `MANAGER` | `ADMIN` | `SUPER_ADMIN`); only non-`NONE` users can log in to admin. The `superadmin` seed promotes the configured superadmin to `SUPER_ADMIN`.
 - Endpoints: `POST /api/v1/admin/auth/login`, `GET /api/v1/admin/auth/me`, `POST /api/v1/admin/auth/logout` (`apps/server/src/auth/admin-auth.controller.ts`).
 - Cookies are `admin_access` / `admin_refresh` (httpOnly), distinct from portal `access` / `refresh`; both sessions can coexist in one browser.
 - Admin JWTs carry `scope: "admin"`. `AdminJwtStrategy` accepts only that scope, and `JwtStrategy` rejects admin-scoped tokens, so admin and portal tokens are not interchangeable.
