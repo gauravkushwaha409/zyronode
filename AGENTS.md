@@ -46,17 +46,20 @@ pnpm prisma:generate          # turbo --filter server
 pnpm prisma:migrate           # migrate dev (interactive, needs DATABASE_URL)
 pnpm prisma:deploy            # migrate deploy
 pnpm prisma:seed              # requires SEED_MODE + SEED_TARGETS; no default
+pnpm prisma:development:seed:roles
 pnpm prisma:development:seed:superadmin
 pnpm prisma:development:seed:user
+pnpm prisma:production:seed:roles
 pnpm prisma:production:seed:superadmin
 pnpm prisma:production:seed:user
 pnpm prisma:reset             # migrate reset --skip-seed
-pnpm prisma:reset:hard        # reset --force --skip-seed, then development superadmin seed
+pnpm prisma:reset:hard        # reset --force --skip-seed, then development roles + superadmin seed
 pnpm prisma:studio
 pnpm resource                 # nest generate resource
 ```
 
-- `SEED_TARGETS` is required; valid targets are `superadmin` and `user`. There is no demo data seed.
+- `SEED_TARGETS` is required; valid targets are `roles`, `superadmin`, and `user`. There is no demo data seed.
+- `roles` seeds the system permissions, system roles, and role-permission matrix. This data is seed-owned, not inserted by migrations.
 - `superadmin` only creates/promotes the platform superadmin. `user` only creates a regular portal user. Neither creates organizations.
 - Seed credentials come only from the environment; there are no code fallbacks. `superadmin` requires `SEED_SUPERADMIN_*` and `user` requires `SEED_USER_*` (`EMAIL`, `PASSWORD`, `FIRST_NAME`, `LAST_NAME`).
 - Production seeding requires `ALLOW_PRODUCTION_SEED=true` and explicit credentials.

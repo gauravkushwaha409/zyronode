@@ -1,9 +1,10 @@
 import type { PrismaClient } from "../../src/generated/prisma/client";
 import { assertProductionCredentials, type SeedMode } from "./config";
+import { seedRoles } from "./roles";
 import { seedSuperadmin } from "./superadmin";
 import { seedUser } from "./user";
 
-export const SEED_TARGETS = ["superadmin", "user"] as const;
+export const SEED_TARGETS = ["superadmin", "user", "roles"] as const;
 
 export type SeedTarget = (typeof SEED_TARGETS)[number];
 
@@ -16,12 +17,16 @@ export interface SeedSummary {
 		email: string;
 		password: string;
 	};
+	roles?: {
+		roles: number;
+		permissions: number;
+	};
 }
 
 export function parseSeedTargets(raw: string | undefined): SeedTarget[] {
 	if (!raw?.trim()) {
 		throw new Error(
-			"SEED_TARGETS is required. Choose one or more of: superadmin, user.",
+			"SEED_TARGETS is required. Choose one or more of: superadmin, user, roles.",
 		);
 	}
 
@@ -73,6 +78,10 @@ export async function runSeedTargets(
 					email: result.config.email,
 					password: result.config.password,
 				};
+				break;
+			}
+			case "roles": {
+				summary.roles = await seedRoles(prisma);
 				break;
 			}
 		}

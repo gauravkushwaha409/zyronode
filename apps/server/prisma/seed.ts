@@ -41,6 +41,12 @@ async function main() {
 		console.log(`  user:       ${summary.user.email}`);
 		console.log(`  password:   ${summary.user.password}`);
 	}
+
+	if (summary.roles) {
+		console.log(
+			`  roles:      ${summary.roles.roles} roles, ${summary.roles.permissions} permissions`,
+		);
+	}
 }
 
 main()
