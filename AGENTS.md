@@ -58,7 +58,7 @@ pnpm resource                 # nest generate resource
 
 - `SEED_TARGETS` is required; valid targets are `superadmin` and `user`. There is no demo data seed.
 - `superadmin` only creates/promotes the platform superadmin. `user` only creates a regular portal user. Neither creates organizations.
-- Superadmin seeding requires `SEED_SUPERADMIN_EMAIL`, `SEED_SUPERADMIN_PASSWORD`, `SEED_SUPERADMIN_FIRST_NAME`, and `SEED_SUPERADMIN_LAST_NAME` in the environment; there are no code fallbacks.
+- Seed credentials come only from the environment; there are no code fallbacks. `superadmin` requires `SEED_SUPERADMIN_*` and `user` requires `SEED_USER_*` (`EMAIL`, `PASSWORD`, `FIRST_NAME`, `LAST_NAME`).
 - Production seeding requires `ALLOW_PRODUCTION_SEED=true` and explicit credentials.
 
 - Schema: `apps/server/prisma/schema.prisma` — client output `src/generated/prisma` (cjs).
