@@ -11,8 +11,8 @@ import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
 import { AdminJwtAuthGuard } from "./gaurds/admin-jwt-auth.guard";
 import { PlatformAdminGuard } from "./gaurds/platform-admin.guard";
-import { AdminJwtStrategy } from "./strategies/admin-jwt.strategy";
 import { AuthJwtService } from "./jwt.service";
+import { AdminJwtStrategy } from "./strategies/admin-jwt.strategy";
 import { GoogleStrategy } from "./strategies/google.strategy";
 import { JwtStrategy } from "./strategies/jwt.strategy";
 
@@ -37,6 +37,12 @@ import { JwtStrategy } from "./strategies/jwt.strategy";
 		OnboardingGuard,
 		EmailVerifiedGuard,
 	],
-	exports: [OnboardingGuard, EmailVerifiedGuard,PassportModule],
+	exports: [
+		OnboardingGuard,
+		EmailVerifiedGuard,
+		AdminJwtAuthGuard,
+		PlatformAdminGuard,
+		PassportModule,
+	],
 })
 export class AuthModule {}
