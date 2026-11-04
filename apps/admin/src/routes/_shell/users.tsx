@@ -1,12 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AdminPage } from "@/pages/admin-page";
+import { UsersList } from "@/features/users/components/users-list";
 
 export const Route = createFileRoute("/_shell/users")({
-	component: UsersPage,
+	component: UsersList,
 });
-
-function UsersPage() {
-	return (
-		<AdminPage title="Users" description="Browse and manage platform users." />
-	);
-}

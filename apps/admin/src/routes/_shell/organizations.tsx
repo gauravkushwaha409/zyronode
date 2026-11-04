@@ -1,15 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AdminPage } from "@/pages/admin-page";
+import { OrganizationsList } from "@/features/organizations/components/organizations-list";
 
 export const Route = createFileRoute("/_shell/organizations")({
-	component: OrganizationsPage,
+	component: OrganizationsList,
 });
-
-function OrganizationsPage() {
-	return (
-		<AdminPage
-			title="Organizations"
-			description="Manage every organization on the platform."
-		/>
-	);
-}
