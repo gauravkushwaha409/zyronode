@@ -49,11 +49,16 @@ pnpm prisma:seed              # requires SEED_MODE + SEED_TARGETS; no default
 pnpm prisma:development:seed:roles
 pnpm prisma:development:seed:superadmin
 pnpm prisma:development:seed:user
+pnpm prisma:development:seed:all
 pnpm prisma:production:seed:roles
 pnpm prisma:production:seed:superadmin
 pnpm prisma:production:seed:user
-pnpm prisma:reset             # migrate reset --skip-seed
-pnpm prisma:reset:hard        # reset --force --skip-seed, then development roles + superadmin seed
+pnpm prisma:production:seed:all
+pnpm prisma:setup             # generate + deploy + development seed all
+pnpm prisma:migrate:init      # create/apply an init migration
+pnpm prisma:migrate:recreate  # delete migrations, reset DB, recreate init migration
+pnpm prisma:reset             # migrate reset
+pnpm prisma:reset:hard        # reset, then development roles + superadmin seed
 pnpm prisma:studio
 pnpm resource                 # nest generate resource
 ```
@@ -65,7 +70,8 @@ pnpm resource                 # nest generate resource
 - Production seeding requires `ALLOW_PRODUCTION_SEED=true` and explicit credentials.
 
 - Schema: `apps/server/prisma/schema.prisma` — client output `src/generated/prisma` (cjs).
-- `prisma:migrate` and `prisma:reset` are interactive turbo tasks; `DATABASE_URL` must be set.
+- Prisma is pinned to `7.8.0`; `migrate reset` no longer supports `--skip-seed`.
+- `prisma:migrate` is an interactive turbo task; `DATABASE_URL` must be set.
 - Seed compiled separately via `tsconfig.seed.json` → `dist-seed/`.
 
 ## Monorepo Layout
