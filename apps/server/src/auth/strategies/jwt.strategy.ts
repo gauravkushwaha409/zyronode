@@ -13,12 +13,20 @@ export class JwtStrategy extends PassportStrategy(Strategy,"jwt") {
                     return req?.cookies?.access;
                 },
             ]),
-            secretOrKey: process.env['JWT_SECRET'] ?? "sec",
+            secretOrKey: process.env.JWT_SECRET ?? "sec",
             algorithms: ["HS256"],
         })
     }
 
-    async validate(payload) {
+    async validate(payload: { id?: string; scope?: string }) {
+        // Admin tokens are scoped and must never authenticate portal users.
+        if (!payload?.id || payload.scope === "admin") {
+            throw new UnauthorizedException({
+                message: "Token is invalid or expired",
+                error_code: "UNAUTHENTICATED",
+            });
+        }
+
         return {
             id: payload.id,
         };

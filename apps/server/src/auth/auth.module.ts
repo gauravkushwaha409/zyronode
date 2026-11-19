@@ -5,9 +5,14 @@ import { PassportModule } from "@nestjs/passport";
 import { EmailVerifiedGuard } from "../common/gaurds/email-verified.guard";
 import { OnboardingGuard } from "../common/gaurds/onboarding.guard";
 import { OtpModule } from "../otp/otp.module";
+import { AdminAuthController } from "./admin-auth.controller";
+import { AdminAuthService } from "./admin-auth.service";
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
+import { AdminJwtAuthGuard } from "./gaurds/admin-jwt-auth.guard";
+import { PlatformAdminGuard } from "./gaurds/platform-admin.guard";
 import { AuthJwtService } from "./jwt.service";
+import { AdminJwtStrategy } from "./strategies/admin-jwt.strategy";
 import { GoogleStrategy } from "./strategies/google.strategy";
 import { JwtStrategy } from "./strategies/jwt.strategy";
 
@@ -19,15 +24,25 @@ import { JwtStrategy } from "./strategies/jwt.strategy";
 		}),
 		OtpModule,
 	],
-	controllers: [AuthController],
+	controllers: [AuthController, AdminAuthController],
 	providers: [
 		AuthService,
+		AdminAuthService,
 		AuthJwtService,
 		JwtStrategy,
+		AdminJwtStrategy,
+		AdminJwtAuthGuard,
+		PlatformAdminGuard,
 		GoogleStrategy,
 		OnboardingGuard,
 		EmailVerifiedGuard,
 	],
-	exports: [OnboardingGuard, EmailVerifiedGuard,PassportModule],
+	exports: [
+		OnboardingGuard,
+		EmailVerifiedGuard,
+		AdminJwtAuthGuard,
+		PlatformAdminGuard,
+		PassportModule,
+	],
 })
 export class AuthModule {}

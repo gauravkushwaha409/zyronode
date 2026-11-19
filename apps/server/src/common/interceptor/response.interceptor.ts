@@ -35,7 +35,11 @@ export class ResponseInterceptor<T>
 			map((data) => {
 				// allow controller to override message via data.message
 				const message = data?.message ?? this.resolveMessage(request.method);
-				const payload = data?.message ? (data.data ?? data) : data;
+				const payload = data?.message
+					? data.data !== undefined
+						? data.data
+						: data
+					: data;
 
 				return ApiResponse.success(payload, message, response.statusCode);
 			}),

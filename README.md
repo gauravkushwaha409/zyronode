@@ -57,7 +57,7 @@ cp env/.env.example env/.env.development
 # 3. Generate Prisma client and apply migrations
 pnpm prisma:generate
 pnpm prisma:migrate
-pnpm prisma:seed          # optional demo data
+pnpm prisma:development:seed:all   # requires SEED_SUPERADMIN_* + SEED_USER_* in env
 
 # 4. Run everything (app + server + chat-widget-test)
 pnpm dev

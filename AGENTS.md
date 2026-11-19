@@ -3,11 +3,11 @@
 ## Commands
 
 - **Install:** `pnpm install` (requires `pnpm@11.3.0`, `node>=18`)
-- **Dev all:** `pnpm dev` (turbo) — starts `app` + `server` + `chat-widget-test`
-- **Dev filtered:** `pnpm dev:app` | `pnpm dev:server` | `pnpm dev:chat-widget` (wrappers for `turbo dev --filter <pkg>`)
+- **Dev all:** `pnpm dev` (turbo) — starts `app` + `admin` + `server` + `chat-widget-test`
+- **Dev filtered:** `pnpm dev:app` | `pnpm dev:admin` | `pnpm dev:server` | `pnpm dev:chat-widget` (wrappers for `turbo dev --filter <pkg>`)
 - **Build:** `pnpm build` (`turbo build`, respects `dependsOn: ^build`)
 - **Single package build:** `pnpm --filter <name> build` or `turbo build --filter=<name>`
-- **Typecheck:** `pnpm check-types` (`turbo run check-types` — only `app` has this task; server uses `tsc --noEmit` via tsconfig)
+- **Typecheck:** `pnpm check-types` (`turbo run check-types` — `app` + `admin`; server uses `tsc --noEmit` via tsconfig)
 - **Lint:** `pnpm lint` (`biome lint .`)
 - **Format:** `pnpm format` (`biome format --write .`) — **tabs**, double quotes
 - **Lint+format+organizeImports:** `pnpm check` (`biome check --write .`)
@@ -16,8 +16,9 @@
 ## Env & Ports
 
 - Env files live in `env/`: copy `env/.env.example` → `env/.env.<environment>` (`development` | `production`). Only the example is committed; the rest are gitignored.
-- Which file loads: Vite reads `env/.env.<mode>` (`vite` dev = `development`, `vite build --mode <environment>`); server `main.ts`, `prisma.config.ts` and `prisma/seed.ts` read `env/.env.${APP_ENV:-development}`. Already-set vars (docker `env_file`) always win.
-- Single source of truth for ports: `SERVER_PORT` (8000), `APP_PORT` (3000), `CHAT_WIDGET_PORT` (4000).
+- Only `development` and `production` are supported. There is no staging environment or staging mode.
+- Which file loads: Vite reads `env/.env.<mode>` (`vite` dev = `development`, `vite build --mode <environment>`); server `main.ts` and `prisma.config.ts` read `env/.env.${APP_ENV:-development}`; `prisma/seed.ts` requires `SEED_MODE` and loads `env/.env.${SEED_MODE}`. Already-set vars (docker `env_file`) always win.
+- Single source of truth for ports: `SERVER_PORT` (8000), `APP_PORT` (3000), `ADMIN_PORT` (5000), `CHAT_WIDGET_PORT` (4000).
 - Supports `${VAR}` expansion in `VITE_SERVER_URL`, `VITE_APP_URL`, `VITE_CHAT_WIDGET_SERVER_URL` (see `apps/app/vite.config.ts:8` and `apps/server/src/main.ts:11`).
 - Vite `envDir` is `../../env` — env is per-environment, not per-app.
 - CORS origins derived from `APP_PORT`/`CHAT_WIDGET_PORT`/`VITE_APP_URL`/`CORS_ORIGINS` in `apps/server/src/main.ts:16`.
@@ -27,7 +28,7 @@
 Each app owns its Dockerfiles: `apps/<app>/docker/Dockerfile.development` (bind-mount dev image) and `apps/<app>/docker/Dockerfile.production` (release image for production; `APP_ENV` build arg picks `env/.env.<APP_ENV>`). Build context is always the repo root. Compose files live in `docker/docker-compose.<environment>.yml`. Compose paths are relative to `docker/`; each file sets its own project `name:` so volumes never collide.
 
 ```sh
-pnpm docker:development:up      # postgres + redis + localstack + server + app + widget
+pnpm docker:development:up      # postgres + redis + localstack + server + app + admin + widget
 pnpm docker:development:logs
 pnpm docker:development:down
 pnpm docker:development:reset   # down -v + up -d (destroys DB)
@@ -44,24 +45,54 @@ pnpm docker:<production>:<build|up|down|logs>
 pnpm prisma:generate          # turbo --filter server
 pnpm prisma:migrate           # migrate dev (interactive, needs DATABASE_URL)
 pnpm prisma:deploy            # migrate deploy
-pnpm prisma:seed              # tsc -p tsconfig.seed.json && node dist-seed/prisma/seed.js
-pnpm prisma:reset             # migrate reset (no seed)
-pnpm prisma:reset:hard        # migrate reset --force && seed
+pnpm prisma:seed              # requires SEED_MODE + SEED_TARGETS; no default
+pnpm prisma:development:seed:roles
+pnpm prisma:development:seed:superadmin
+pnpm prisma:development:seed:user
+pnpm prisma:development:seed:all
+pnpm prisma:production:seed:roles
+pnpm prisma:production:seed:superadmin
+pnpm prisma:production:seed:user
+pnpm prisma:production:seed:all
+pnpm prisma:setup             # generate + deploy + development seed all
+pnpm prisma:migrate:init      # create/apply an init migration
+pnpm prisma:migrate:recreate  # delete migrations, reset DB, recreate init migration
+pnpm prisma:reset             # migrate reset
+pnpm prisma:reset:hard        # reset, then development roles + superadmin seed
 pnpm prisma:studio
 pnpm resource                 # nest generate resource
 ```
 
+- `SEED_TARGETS` is required; valid targets are `roles`, `superadmin`, and `user`. There is no demo data seed.
+- `roles` seeds the system permissions, system roles, and role-permission matrix. This data is seed-owned, not inserted by migrations.
+- `superadmin` only creates/promotes the platform superadmin. `user` only creates a regular portal user. Neither creates organizations.
+- Seed credentials come only from the environment; there are no code fallbacks. `superadmin` requires `SEED_SUPERADMIN_*` and `user` requires `SEED_USER_*` (`EMAIL`, `PASSWORD`, `FIRST_NAME`, `LAST_NAME`).
+- Production seeding requires `ALLOW_PRODUCTION_SEED=true` and explicit credentials.
+
 - Schema: `apps/server/prisma/schema.prisma` — client output `src/generated/prisma` (cjs).
-- `prisma:migrate` and `prisma:reset` are interactive turbo tasks; `DATABASE_URL` must be set.
+- Prisma is pinned to `7.8.0`; `migrate reset` no longer supports `--skip-seed`.
+- `prisma:migrate` is an interactive turbo task; `DATABASE_URL` must be set.
 - Seed compiled separately via `tsconfig.seed.json` → `dist-seed/`.
 
 ## Monorepo Layout
 
 - `pnpm-workspace.yaml`: `apps/*`, `packages/*`
-- **Apps:** `apps/app` (agent dashboard: React 19 + Vite 8 + TanStack Router + react-query + Zustand), `apps/server` (NestJS 11, commonjs), `apps/chat-widget-test` (widget harness)
+- **Apps:** `apps/app` (agent dashboard: React 19 + Vite 8 + TanStack Router + react-query + Zustand), `apps/admin` (platform admin: same React/Vite/TanStack stack as app), `apps/server` (NestJS 11, commonjs), `apps/chat-widget-test` (widget harness)
 - **Packages:** `chat-widget` (embeddable visitor widget), `websocket` (socket.io wrapper), `sse` (EventSource wrapper), `api-client` (typed Axios), `query` (shared react-query, `CONFIG.QUERY_KEY`), `ui`/`form`/`hooks`/`icons`/`text-editor`/`typescript-config`
 - Path aliases in root `tsconfig.json` map `@package/*` → `packages/*/src/index.ts`. App resolves via `tsconfigPaths: true` in `vite.config.ts:65`.
 - Turbo outputs `dist/**`; tasks cache except `dev`, `prisma:*`, `prisma:generate`.
+
+## Platform Admin Auth
+
+The admin app uses the same `User` table but a separate platform role and token scope. Do not reuse organization roles for platform access.
+
+- `User.platformRole` (`PlatformRole`: `NONE` | `MANAGER` | `ADMIN` | `SUPER_ADMIN`); only non-`NONE` users can log in to admin. The `superadmin` seed promotes the configured superadmin to `SUPER_ADMIN`.
+- Endpoints: `POST /api/v1/admin/auth/login`, `GET /api/v1/admin/auth/me`, `POST /api/v1/admin/auth/logout` (`apps/server/src/auth/admin-auth.controller.ts`).
+- Cookies are `admin_access` / `admin_refresh` (httpOnly), distinct from portal `access` / `refresh`; both sessions can coexist in one browser.
+- Admin JWTs carry `scope: "admin"`. `AdminJwtStrategy` accepts only that scope, and `JwtStrategy` rejects admin-scoped tokens, so admin and portal tokens are not interchangeable.
+- Organization system roles are `Owner`, `Manager`, `Agent`, and `None`; system roles are immutable. New organizations assign `Owner`, and invitations without a role default to `None`.
+- `PlatformAdminGuard` re-checks the DB role on every request; guard future admin controllers with `@UseGuards(AdminJwtAuthGuard, PlatformAdminGuard)`.
+- CORS allows `ADMIN_PORT` and `VITE_ADMIN_URL`; set `VITE_ADMIN_URL` for the production admin origin.
 
 ## Tooling Quirks
 

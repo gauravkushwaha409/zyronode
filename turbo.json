@@ -6,6 +6,7 @@
     "DATABASE_URL",
     "SERVER_PORT",
     "APP_PORT",
+    "ADMIN_PORT",
     "CHAT_WIDGET_PORT"
   ],
   "tasks": {
@@ -25,8 +26,10 @@
         "NODE_ENV",
         "SERVER_PORT",
         "APP_PORT",
+        "ADMIN_PORT",
         "CHAT_WIDGET_PORT",
         "VITE_PORT",
+        "VITE_ADMIN_PORT",
         "VITE_CHAT_WIDGET_PORT",
         "CORS_ORIGINS",
         "DATABASE_URL",

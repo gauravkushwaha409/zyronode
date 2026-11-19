@@ -6,6 +6,7 @@ import {
 	NotFoundException,
 } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
+import { SYSTEM_ROLE_IDS } from "../role/role.constants";
 import { CreateTeamInvitationDto } from "./dto/create-team-invitation.dto";
 
 const INVITATION_INCLUDE = {
@@ -103,7 +104,7 @@ export class TeamInvitationService {
 				organizationId,
 				email,
 				invitedById: userId,
-				roleId: dto.roleId,
+				roleId: dto.roleId ?? SYSTEM_ROLE_IDS.NONE,
 				teamId: dto.teamId,
 			},
 			include: INVITATION_INCLUDE,

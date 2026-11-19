@@ -5,6 +5,11 @@ export interface TokenPayload {
   id: string;
 }
 
+export interface AdminTokenPayload {
+  id: string;
+  scope: 'admin';
+}
+
 @Injectable()
 export class AuthJwtService {
   constructor(private readonly jwtService: JwtService) {}
@@ -13,6 +18,25 @@ export class AuthJwtService {
     const [accessToken, refreshToken] = await Promise.all([
       this.issueAccessToken(payload),
       this.issueRefreshToken(payload),
+    ]);
+
+    return {
+      access: accessToken,
+      refresh: refreshToken,
+    };
+  }
+
+  async generateAdminTokens(payload: Pick<TokenPayload, 'id'>) {
+    const adminPayload: AdminTokenPayload = { id: payload.id, scope: 'admin' };
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwtService.signAsync(adminPayload, {
+        expiresIn: '24h',
+        subject: 'admin_access',
+      }),
+      this.jwtService.signAsync(adminPayload, {
+        expiresIn: '24h',
+        subject: 'admin_refresh',
+      }),
     ]);
 
     return {
