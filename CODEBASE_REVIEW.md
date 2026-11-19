@@ -42,7 +42,7 @@ zyronode/
 
 | Module | Purpose |
 |--------|---------|
-| `AuthModule` | Registration, login (bcrypt + Turnstile CAPTCHA), Google OAuth, JWT (access + refresh cookies), email verification (OTP via Resend), password reset |
+| `AuthModule` | Registration, login (bcrypt + Turnstile CAPTCHA), Google OAuth, JWT (access + refresh cookies), email verification (OTP), password reset |
 | `PrismaModule` | Global PrismaClient with `PrismaPg` adapter |
 | `RedisModule` | Global ioredis client (Redis 7) |
 | `OrganizationModule` | Create org, list user's orgs |
@@ -51,7 +51,7 @@ zyronode/
 | `ChatModule` | Socket.io gateway — room-based events, typing indicators |
 | `SseModule` | Server-Sent Events with Redis pub/sub for cross-instance fanout |
 | `InboxModule` | Inbox listing with unread counts, close/reopen conversations |
-| `OtpModule` | OTP generation, verification, email sending via Resend |
+| `OtpModule` | OTP generation and verification |
 
 ### Key Server Files
 
@@ -220,7 +220,6 @@ The Vite config uses a single `PROXY` env var:
 | `REDIS_HOST` | Redis hostname |
 | `VITE_SERVER_URL` | Frontend API origin |
 | `PROXY` | Enable/disable Vite proxy (set in docker-compose) |
-| `RESEND_API_KEY` | Email service |
 | `GOOGLE_CLIENT_ID/SECRET` | Google OAuth |
 | `CLOUDFLARE_TURNSTILE_*` | CAPTCHA verification |
 

@@ -14,7 +14,7 @@ export class OtpController {
 	@ApiOperation({ summary: 'Send OTP to email' })
 	@ApiResponse({ status: 200, description: 'OTP sent successfully' })
 	sendOtp(@Body() dto: SendOtpDto) {
-		return this.otpService.generateAndSendOtp(dto.email);
+		return this.otpService.generateOtp(dto.email);
 	}
 
 	@Post("verify")

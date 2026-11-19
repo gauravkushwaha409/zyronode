@@ -52,7 +52,7 @@ pnpm install
 
 # 2. Create your environment file
 cp env/.env.example env/.env.development
-#    then fill in secrets (JWT_SECRET, OAuth, Resend, TURN, etc.)
+#    then fill in secrets (JWT_SECRET, OAuth, email, TURN, etc.)
 
 # 3. Generate Prisma client and apply migrations
 pnpm prisma:generate
