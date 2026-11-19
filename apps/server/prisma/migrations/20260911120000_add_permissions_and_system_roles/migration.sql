@@ -1,2 +1,0 @@
--- Permissions and system roles are seed-owned.
--- Apply them with `pnpm prisma:development:seed:roles` (or the production equivalent).

@@ -1,2 +1,0 @@
--- The organization-level NONE role is seed-owned.
--- Apply it with `pnpm prisma:development:seed:roles` (or the production equivalent).
