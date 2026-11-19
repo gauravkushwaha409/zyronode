@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable, Logger } from "@nestjs/common";
+import { EmailService } from "../email/email.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { RedisKey } from "../redis/redis.keys";
 import { RedisService } from "../redis/redis.service";
@@ -14,6 +15,7 @@ export class OtpService {
 	constructor(
 		private prisma: PrismaService,
 		private redis: RedisService,
+		private email: EmailService,
 	) {}
 
 	private generateCode(): string {
@@ -30,9 +32,10 @@ export class OtpService {
 		const code = this.generateCode();
 
 		await this.redis.set(RedisKey.otp(purpose, email), code, OTP_TTL_SECONDS);
+		await this.email.sendOtp(email, code);
 
-		this.logger.log(`OTP [${purpose}] generated for ${email}`);
-		return { message: "Verification code generated successfully" };
+		this.logger.log(`OTP [${purpose}] sent to ${email}`);
+		return { message: "Verification code sent successfully" };
 	}
 
 	async verifyOtp(

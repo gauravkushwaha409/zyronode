@@ -51,7 +51,12 @@
         "S3_ENDPOINT",
         "S3_BUCKET",
         "S3_PUBLIC_URL",
-        "AWS_REGION"
+        "AWS_REGION",
+        "AWS_ACCESS_KEY_ID",
+        "AWS_SECRET_ACCESS_KEY",
+        "AWS_SESSION_TOKEN",
+        "SES_FROM_EMAIL",
+        "SES_FROM_NAME"
       ]
     },
     "prisma:migrate": {

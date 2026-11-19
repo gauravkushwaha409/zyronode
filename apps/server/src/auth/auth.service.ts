@@ -1,4 +1,6 @@
 // apps/server/src/auth/auth.service.ts
+
+import { randomBytes } from "node:crypto";
 import {
 	ConflictException,
 	Injectable,
@@ -7,8 +9,8 @@ import {
 	UnauthorizedException,
 } from "@nestjs/common";
 import * as bcryptjs from "bcryptjs";
-import { randomBytes } from "crypto";
 import type { Response } from "express";
+import { EmailService } from "../email/email.service";
 import { OtpService } from "../otp/otp.service";
 import { OtpPurpose } from "../otp/types/otp-purpose.type";
 import { PrismaService } from "../prisma/prisma.service";
@@ -20,7 +22,6 @@ import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
 import { SetPasswordDto } from "./dto/set-password.dto";
 import { UserOnboardingDto } from "./dto/user-onboarding.dto";
-import { VerifyEmailDto } from "./dto/verify-email.dto";
 import { AuthJwtService } from "./jwt.service";
 
 const RESET_TOKEN_TTL_SECONDS = 15 * 60; // 15 minutes
@@ -35,6 +36,7 @@ export class AuthService {
 		private authJwtService: AuthJwtService,
 		private otpService: OtpService,
 		private redis: RedisService,
+		private email: EmailService,
 	) {}
 
 	private async hashPassword(password: string) {
@@ -85,7 +87,7 @@ export class AuthService {
 		try {
 			await this.otpService.generateOtp(dto.email);
 		} catch (error) {
-			this.logger.error(`Failed to send verification OTP: ${error}`);
+			this.logger.error(`Failed to send verification email: ${error}`);
 		}
 
 		return {
@@ -111,7 +113,7 @@ export class AuthService {
 				email: dto.email,
 			},
 		});
-		if (!user || !user.password) {
+		if (!user?.password) {
 			throw new UnauthorizedException({
 				error: "Invalid credentials",
 				error_code: "INVALID_CREDENTIALS",
@@ -330,6 +332,22 @@ export class AuthService {
 			user.id,
 			RESET_TOKEN_TTL_SECONDS,
 		);
+
+		const appUrl =
+			(process.env.VITE_APP_URL ?? "").replace(
+				/\$\{([^}]+)\}|\$([A-Z0-9_]+)/g,
+				(_, b, c) => process.env[b ?? c] ?? "",
+			) || `http://localhost:${process.env.APP_PORT ?? "3000"}`;
+		const resetUrl = `${appUrl}/auth/set-password?token=${token}`;
+
+		try {
+			await this.email.sendPasswordReset(dto.email, resetUrl);
+			this.logger.log(`Password reset email sent to ${dto.email}`);
+		} catch (error) {
+			this.logger.error(
+				`Failed to send password reset email: ${(error as Error).message}`,
+			);
+		}
 	}
 
 	async setPassword(dto: SetPasswordDto) {
