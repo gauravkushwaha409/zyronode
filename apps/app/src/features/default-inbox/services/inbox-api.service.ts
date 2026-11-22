@@ -6,6 +6,7 @@ import {
 import { CONFIG } from "@/config";
 import { apiClient } from "@/lib";
 import type { CursorPaginationParams } from "@/types/cursor-pagination.types";
+import type { AiTypes } from "../types/ai-api.types";
 import type { ConversationTypes } from "../types/conversation-api.types";
 import type { InternalNoteTypes } from "../types/internal-note-api.types";
 import type { MessageTypes, UploadTypes } from "../types/message-api.types";
@@ -202,6 +203,29 @@ class InboxApiService extends BaseAPIService {
 			params: { ...filters },
 			...axiosConfiguration,
 		});
+	}
+
+	async aiRewrite(
+		payload: AiTypes.RewritePayload,
+		axiosConfiguration?: AxiosRequestConfig,
+	) {
+		return super.post<AiTypes.AiTextResult>(
+			CONFIG.ENDPOINTS.AI.REWRITE,
+			payload,
+			axiosConfiguration,
+		);
+	}
+
+	async aiSuggestReply(
+		conversationId: string,
+		payload: AiTypes.SuggestReplyPayload,
+		axiosConfiguration?: AxiosRequestConfig,
+	) {
+		return super.post<AiTypes.AiTextResult>(
+			CONFIG.ENDPOINTS.AI.SUGGEST_REPLY(conversationId),
+			payload,
+			axiosConfiguration,
+		);
 	}
 }
 

@@ -109,6 +109,7 @@ async function bootstrap() {
 		.addTag("OTP", "OTP verification endpoints")
 		.addTag("SSE", "Server-Sent Events endpoints")
 		.addTag("Calls", "Audio/video call signaling and ICE servers")
+		.addTag("AI", "AI reply assistant endpoints")
 		.addBearerAuth()
 		.build();
 

@@ -1,3 +1,5 @@
+export { useAiRewriteMutation } from "./use-ai-rewrite.mutation";
+export { useAiSuggestReplyMutation } from "./use-ai-suggest-reply.mutation";
 export { useCreateConversationMutation } from "./use-create-conversation.mutation";
 export { useDeleteMessageMutation } from "./use-delete-message.mutation";
 export { useEditMessageMutation } from "./use-edit-message.mutation";
