@@ -13,7 +13,7 @@ import {
 } from "../shadcn";
 
 const buttonVariants = cva(
-	"group/button aria-invalid:border-destructive aria-invalid:ring-destructive/20 inline-flex cursor-pointer items-center justify-center rounded-md border border-transparent bg-clip-padding text-base font-medium whitespace-nowrap transition-all outline-none select-none active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none aria-invalid:ring-3 [&_svg]:pointer-events-none  [&_svg:not([class*='size-'])]:size-4 w-full",
+	"group/button aria-invalid:border-destructive aria-invalid:ring-destructive/20 inline-flex cursor-pointer items-center justify-center rounded-md border border-transparent bg-clip-padding text-base font-medium whitespace-nowrap transition-all outline-none select-none active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none aria-invalid:ring-3 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4",
 	{
 		variants: {
 			variant: {
@@ -71,120 +71,110 @@ const getIconSize = (size: VariantProps<typeof buttonVariants>["size"]) => {
 	return iconSizeMap[size ?? "default"] ?? 20;
 };
 
-const Button = React.forwardRef<
-	HTMLButtonElement,
-	React.ComponentProps<"button"> &
-		VariantProps<typeof buttonVariants> & {
-			asChild?: boolean;
-			icon?: IconName;
-			leftIcon?: IconName;
-			rightIcon?: IconName;
-			isPending?: boolean;
-			pendingText?: string;
-			showTooltip?: boolean;
-			tooltipText?: string;
-			tooltipPrimaryText?: string;
-			tooltipSecondaryText?: string;
-			tooltipPlacement?: TooltipContentProps["placement"];
-			showTipArrow?: TooltipContentProps["showTipArrow"];
-			showLoading?: boolean;
-		}
->(
-	(
-		{
-			className,
-			variant = "default",
-			size = "default",
-			asChild = false,
-			icon,
-			leftIcon,
-			isPending,
-			pendingText,
-			rightIcon,
-			showTooltip,
-			tooltipText,
-			tooltipPrimaryText,
-			tooltipSecondaryText,
-			tooltipPlacement,
-			showTipArrow,
-			showLoading = true,
-			children,
-			...props
-		},
-		ref,
-	) => {
-		const Comp = asChild ? Slot.Root : "button";
+interface ButtonProps
+	extends React.ComponentProps<"button">,
+		VariantProps<typeof buttonVariants> {
+	asChild?: boolean;
+	icon?: IconName;
+	leftIcon?: IconName;
+	rightIcon?: IconName;
+	isPending?: boolean;
+	pendingText?: string;
+	showTooltip?: boolean;
+	tooltipText?: string;
+	tooltipPrimaryText?: string;
+	tooltipSecondaryText?: string;
+	tooltipPlacement?: TooltipContentProps["placement"];
+	showTipArrow?: TooltipContentProps["showTipArrow"];
+	showLoading?: boolean;
+}
 
-		const isIconOnly = !children && (!!icon || !!leftIcon || !!rightIcon);
-		const activeIcon = icon || leftIcon || rightIcon;
-		const iconSize = getIconSize(size);
+function Button({
+	className,
+	variant = "default",
+	size = "default",
+	asChild = false,
+	icon,
+	leftIcon,
+	isPending,
+	pendingText,
+	rightIcon,
+	showTooltip,
+	tooltipText,
+	tooltipPrimaryText,
+	tooltipSecondaryText,
+	tooltipPlacement,
+	showTipArrow,
+	showLoading = true,
+	children,
+	...props
+}: ButtonProps) {
+	const Comp = asChild ? Slot.Root : "button";
 
-		const content = isIconOnly ? (
-			<Icon name={activeIcon as IconName} size={iconSize} />
-		) : (
-			<>
-				{leftIcon && !isPending && (
-					<Icon name={leftIcon} size={iconSize} data-icon="inline-start" />
-				)}
-				{isPending && showLoading && (
-					<Icon
-						name="load"
-						className="animate-spin"
-						size={iconSize}
-						data-icon="inline-start"
-					/>
-				)}
-				{isPending && pendingText ? pendingText : children}
-				{rightIcon && !isPending && (
-					<Icon
-						name={rightIcon as IconName}
-						size={iconSize}
-						data-icon="inline-end"
-					/>
-				)}
-			</>
-		);
+	const isIconOnly = !children && (!!icon || !!leftIcon || !!rightIcon);
+	const activeIcon = icon || leftIcon || rightIcon;
+	const iconSize = getIconSize(size);
 
-		const button = (
-			<Comp
-				type="button"
-				data-slot="button"
-				data-variant={variant}
-				data-size={size}
-				disabled={isPending}
-				data-icon-only={isIconOnly || undefined}
-				className={cn(buttonVariants({ variant, size, className }))}
-				ref={ref}
-				{...props}
-			>
-				{content}
-			</Comp>
-		);
+	const content = isIconOnly ? (
+		<Icon name={activeIcon as IconName} size={iconSize} />
+	) : (
+		<>
+			{leftIcon && !isPending && (
+				<Icon name={leftIcon} size={iconSize} data-icon="inline-start" />
+			)}
+			{isPending && showLoading && (
+				<Icon
+					name="load"
+					className="animate-spin"
+					size={iconSize}
+					data-icon="inline-start"
+				/>
+			)}
+			{isPending && pendingText ? pendingText : children}
+			{rightIcon && !isPending && (
+				<Icon name={rightIcon as IconName} size={iconSize} data-icon="inline-end" />
+			)}
+		</>
+	);
 
-		if (
-			!showTooltip ||
-			(!tooltipText && !tooltipPrimaryText && !tooltipSecondaryText)
-		) {
-			return button;
-		}
+	const button = (
+		<Comp
+			type="button"
+			data-slot="button"
+			data-variant={variant}
+			data-size={size}
+			disabled={isPending}
+			data-icon-only={isIconOnly || undefined}
+			className={cn(buttonVariants({ variant, size, className }))}
+			{...props}
+		>
+			{content}
+		</Comp>
+	);
 
-		return (
-			<TooltipProvider>
-				<Tooltip>
-					<TooltipTrigger asChild>{button}</TooltipTrigger>
-					<TooltipContent
-						placement={tooltipPlacement ?? "top"}
-						showTipArrow={showTipArrow ?? true}
-						tooltipPrimaryText={tooltipPrimaryText}
-						tooltipSecondaryText={tooltipSecondaryText}
-					>
-						{tooltipText}
-					</TooltipContent>
-				</Tooltip>
-			</TooltipProvider>
-		);
-	},
-);
+	if (
+		!showTooltip ||
+		(!tooltipText && !tooltipPrimaryText && !tooltipSecondaryText)
+	) {
+		return button;
+	}
+
+	return (
+		<TooltipProvider>
+			<Tooltip>
+				<TooltipTrigger asChild>{button}</TooltipTrigger>
+				<TooltipContent
+					placement={tooltipPlacement ?? "top"}
+					showTipArrow={showTipArrow ?? true}
+					tooltipPrimaryText={tooltipPrimaryText}
+					tooltipSecondaryText={tooltipSecondaryText}
+				>
+					{tooltipText}
+				</TooltipContent>
+			</Tooltip>
+		</TooltipProvider>
+	);
+}
 Button.displayName = "Button";
 
-export { Button, buttonVariants };
+export { Button, type ButtonProps, buttonVariants };

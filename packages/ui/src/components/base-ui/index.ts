@@ -1,6 +1,6 @@
-export { Label } from './label'
-export { Button } from './button'
-export { Checkbox } from './checkbox'
+export { Button, type ButtonProps } from "./button";
+export { Checkbox } from "./checkbox";
+export { Label } from "./label";
 export {
 	Sheet,
 	SheetBody,
@@ -9,9 +9,8 @@ export {
 	SheetDescription,
 	SheetFooter,
 	SheetHeader,
-	SheetTitle,
-	SheetTrigger,
 	type SheetSide,
 	type SheetSize,
-} from './sheet'
-
+	SheetTitle,
+	SheetTrigger,
+} from "./sheet";

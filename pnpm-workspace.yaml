@@ -4,7 +4,7 @@ packages:
 allowBuilds:
   '@firebase/util': true
   '@nestjs/core': true
-  '@openrouter/sdk': set this to true or false
+  '@openrouter/sdk': true
   '@prisma/engines': true
   '@scarf/scarf': false
   prisma: true
