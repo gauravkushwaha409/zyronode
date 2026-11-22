@@ -1,6 +1,11 @@
 import type { APIError, ApiResponse } from "@package/api-client";
 
-export type PlatformRole = "NONE" | "MANAGER" | "ADMIN" | "SUPER_ADMIN";
+export interface PlatformRole {
+	id: string;
+	name: string;
+	isSystem: boolean;
+	scope: "PLATFORM";
+}
 
 export interface AdminUser {
 	id: string;
@@ -8,7 +13,7 @@ export interface AdminUser {
 	firstName: string | null;
 	lastName: string | null;
 	profile: string | null;
-	platformRole: PlatformRole;
+	platformRole: PlatformRole | null;
 }
 
 export interface AdminUserResponse {

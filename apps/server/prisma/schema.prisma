@@ -19,9 +19,10 @@ model User {
   authProvider    String  @default("email")
   isEmailVerified Boolean @default(false)
 
-  // Platform-level admin access. Separate from organization roles: this is
-  // the ONLY role that grants access to the /admin API surface.
-  platformRole PlatformRole @default(NONE)
+  // Platform-level admin access. Platform roles are database-backed and use
+  // the same immutable/custom role model as organization roles.
+  platformRoleId String?
+  platformRole   Role?   @relation("UserPlatformRole", fields: [platformRoleId], references: [id], onDelete: SetNull)
 
   theme          String? @default("light")
   referralSource String?
@@ -44,7 +45,7 @@ model User {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@index([platformRole])
+  @@index([platformRoleId])
 }
 
 model Organization {
@@ -114,12 +115,13 @@ model Permission {
   @@map("permissions")
 }
 
-// Access roles. `organizationId = null` marks a system role (platform-wide,
-// seeded, immutable); custom roles are organization-scoped and editable.
+// Database-backed roles for both scopes. `isSystem` marks seeded roles that
+// application APIs must never mutate; custom roles are editable.
 model Role {
   id             String           @id @default(uuid())
   organizationId String?
   organization   Organization?    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  scope          RoleScope        @default(ORGANIZATION)
   name           String
   description    String?
   isSystem       Boolean          @default(false)
@@ -127,6 +129,7 @@ model Role {
   permissions RolePermission[]
   members     OrganizationMember[]
   invitations TeamInvitation[]
+  platformUsers User[]              @relation("UserPlatformRole")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -530,9 +533,7 @@ model PushToken {
   @@map("push_tokens")
 }
 
-enum PlatformRole {
-  NONE
-  MANAGER
-  ADMIN
-  SUPER_ADMIN
+enum RoleScope {
+  PLATFORM
+  ORGANIZATION
 }

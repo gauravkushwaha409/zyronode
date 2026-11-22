@@ -1,6 +1,5 @@
 import * as bcryptjs from "bcryptjs";
 import type { PrismaClient } from "../../src/generated/prisma/client";
-import { PlatformRole } from "../../src/generated/prisma/client";
 import { getUserConfig } from "./config";
 
 export async function seedUser(prisma: PrismaClient) {
@@ -23,7 +22,6 @@ export async function seedUser(prisma: PrismaClient) {
 			lastName: config.lastName,
 			isEmailVerified: true,
 			isOnboarded: true,
-			platformRole: PlatformRole.NONE,
 		},
 	});
 

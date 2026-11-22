@@ -10,6 +10,19 @@ export const ADMIN_ENDPOINTS = {
 	USERS: {
 		LIST: "/admin/users",
 	},
+	ROLES: {
+		LIST: "/admin/roles",
+		CREATE: "/admin/roles",
+		UPDATE: (roleId: string) => `/admin/roles/${roleId}`,
+		DELETE: (roleId: string) => `/admin/roles/${roleId}`,
+	},
+	PERMISSIONS: {
+		LIST: "/admin/permissions",
+	},
+	PLATFORM_STAFF: {
+		LIST: "/admin/platform-staff",
+		UPDATE_ROLE: (userId: string) => `/admin/users/${userId}/platform-role`,
+	},
 } as const;
 
 export const ADMIN_QUERY_KEY = {
@@ -21,5 +34,14 @@ export const ADMIN_QUERY_KEY = {
 	},
 	USERS: {
 		LIST: ["admin", "users", "list"] as const,
+	},
+	ROLES: {
+		LIST: ["admin", "roles", "list"] as const,
+	},
+	PERMISSIONS: {
+		LIST: ["admin", "permissions", "list"] as const,
+	},
+	PLATFORM_STAFF: {
+		LIST: ["admin", "platform-staff", "list"] as const,
 	},
 } as const;

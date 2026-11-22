@@ -118,56 +118,20 @@ const PERMISSIONS = [
 	},
 ] as const;
 
-const MANAGER_PERMISSIONS = [
-	"inbox.read",
-	"inbox.write",
-	"visitors.read",
-	"visitors.write",
-	"analytics.read",
-	"team.members.read",
-	"team.members.write",
-	"team.invitations.read",
-	"team.invitations.write",
-	"team.teams.read",
-	"team.teams.write",
-	"team.roles.read",
-	"settings.organization.read",
-	"settings.widget.read",
-	"settings.billing.read",
-] as const;
-
-const AGENT_PERMISSIONS = [
-	"inbox.read",
-	"inbox.write",
-	"visitors.read",
-	"visitors.write",
-	"analytics.read",
-] as const;
-
 const SYSTEM_ROLES = [
 	{
 		id: SYSTEM_ROLE_IDS.OWNER,
 		name: "Owner",
 		description: "Full access to the organization, teams and billing.",
+		scope: "ORGANIZATION" as const,
 		permissions: PERMISSIONS.map((permission) => permission.key),
 	},
 	{
-		id: SYSTEM_ROLE_IDS.MANAGER,
-		name: "Manager",
-		description: "Manage teams, members and conversations.",
-		permissions: MANAGER_PERMISSIONS,
-	},
-	{
-		id: SYSTEM_ROLE_IDS.AGENT,
-		name: "Agent",
-		description: "Handle conversations and visitors.",
-		permissions: AGENT_PERMISSIONS,
-	},
-	{
-		id: SYSTEM_ROLE_IDS.NONE,
-		name: "None",
-		description: "No organization permissions.",
-		permissions: [],
+		id: SYSTEM_ROLE_IDS.SUPERADMIN,
+		name: "superadmin",
+		description: "Full access to the platform administration surface.",
+		scope: "PLATFORM" as const,
+		permissions: PERMISSIONS.map((permission) => permission.key),
 	},
 ] as const;
 
@@ -202,6 +166,7 @@ export async function seedRoles(prisma: PrismaClient) {
 				name: role.name,
 				description: role.description,
 				isSystem: true,
+				scope: role.scope,
 				organizationId: null,
 			},
 			create: {
@@ -209,6 +174,7 @@ export async function seedRoles(prisma: PrismaClient) {
 				name: role.name,
 				description: role.description,
 				isSystem: true,
+				scope: role.scope,
 			},
 		});
 
@@ -227,15 +193,6 @@ export async function seedRoles(prisma: PrismaClient) {
 			});
 		}
 	}
-
-	await prisma.organizationMember.updateMany({
-		where: { roleId: null },
-		data: { roleId: SYSTEM_ROLE_IDS.NONE },
-	});
-	await prisma.teamInvitation.updateMany({
-		where: { roleId: null },
-		data: { roleId: SYSTEM_ROLE_IDS.NONE },
-	});
 
 	return {
 		roles: SYSTEM_ROLES.length,

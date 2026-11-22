@@ -29,10 +29,12 @@ export class PlatformAdminGuard implements CanActivate {
 
 		const dbUser = await this.prisma.user.findUnique({
 			where: { id: user.id },
-			select: { platformRole: true },
+			select: {
+				platformRole: { select: { id: true, name: true, isSystem: true, scope: true } },
+			},
 		});
 
-		if (!dbUser || dbUser.platformRole === "NONE") {
+		if (!dbUser?.platformRole) {
 			throw new ForbiddenException({
 				message: "Platform admin access is required",
 				error_code: "FORBIDDEN",
