@@ -32,6 +32,11 @@ export class AdminAuthService {
 	async login(dto: AdminLoginDto, response: Response) {
 		const user = await this.prisma.user.findUnique({
 			where: { email: dto.email },
+			include: {
+				platformRole: {
+					select: { id: true, name: true, isSystem: true, scope: true },
+				},
+			},
 		});
 
 		// Same error for unknown users, wrong passwords, and non-admins so the
