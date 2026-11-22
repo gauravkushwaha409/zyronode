@@ -2,10 +2,12 @@ export { $generateHtmlFromNodes, $generateNodesFromDOM } from '@lexical/html';
 export type { LexicalEditor } from 'lexical';
 export {
   $createParagraphNode,
+  $createTextNode,
   $getRoot,
   $getSelection,
   $isDecoratorNode,
   $isElementNode,
+  $isRangeSelection,
   COMMAND_PRIORITY_LOW,
   KEY_DOWN_COMMAND,
 } from 'lexical';

@@ -87,4 +87,9 @@ export const ENDPOINTS = {
 		REGISTER_TOKEN: "/notifications/tokens",
 		REMOVE_TOKEN: (token: string) => `/notifications/tokens/${token}`,
 	},
+	AI: {
+		REWRITE: "/ai/rewrite",
+		SUGGEST_REPLY: (conversationId: string) =>
+			`/ai/conversations/${conversationId}/suggest-reply`,
+	},
 };

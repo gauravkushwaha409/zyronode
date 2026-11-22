@@ -7,6 +7,10 @@ import {
 import type React from 'react';
 
 interface AiToolsDropdownProps {
+  onSuggestReplyClick: Pick<
+    React.ComponentProps<typeof DropdownMenuItem>,
+    'onClick'
+  >;
   onFixGrammarClick: Pick<
     React.ComponentProps<typeof DropdownMenuItem>,
     'onClick'
@@ -30,6 +34,7 @@ interface AiToolsDropdownProps {
 }
 
 export function AiToolsDropdown({
+  onSuggestReplyClick,
   onFixGrammarClick,
   onRephraseClick,
   onElaborateClick,
@@ -38,6 +43,14 @@ export function AiToolsDropdown({
 }: AiToolsDropdownProps) {
   const dropdown = useDropdownWrapper({
     items: [
+      [
+        {
+          label: 'Suggest reply',
+          value: 'suggest-reply',
+          leftIcon: { name: 'chatboq-ai' },
+          onClick: onSuggestReplyClick.onClick,
+        },
+      ],
       [
         {
           label: 'Fix grammar',
