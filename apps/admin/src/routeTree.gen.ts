@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ShellRouteImport } from './routes/_shell'
 import { Route as ShellDashboardRouteImport } from './routes/_shell/dashboard'
 import { Route as ShellOrganizationsRouteImport } from './routes/_shell/organizations'
+import { Route as ShellRolesAndPermissionsRouteImport } from './routes/_shell/roles-and-permissions'
 import { Route as ShellSettingsRouteImport } from './routes/_shell/settings'
 import { Route as ShellUsersRouteImport } from './routes/_shell/users'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
@@ -36,6 +37,12 @@ const ShellOrganizationsRoute = ShellOrganizationsRouteImport.update({
   path: '/organizations',
   getParentRoute: () => ShellRoute,
 } as any)
+const ShellRolesAndPermissionsRoute =
+  ShellRolesAndPermissionsRouteImport.update({
+    id: '/roles-and-permissions',
+    path: '/roles-and-permissions',
+    getParentRoute: () => ShellRoute,
+  } as any)
 const ShellSettingsRoute = ShellSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -56,6 +63,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof ShellDashboardRoute
   '/organizations': typeof ShellOrganizationsRoute
+  '/roles-and-permissions': typeof ShellRolesAndPermissionsRoute
   '/settings': typeof ShellSettingsRoute
   '/users': typeof ShellUsersRoute
   '/auth/login': typeof AuthLoginRoute
@@ -64,6 +72,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof ShellDashboardRoute
   '/organizations': typeof ShellOrganizationsRoute
+  '/roles-and-permissions': typeof ShellRolesAndPermissionsRoute
   '/settings': typeof ShellSettingsRoute
   '/users': typeof ShellUsersRoute
   '/auth/login': typeof AuthLoginRoute
@@ -74,6 +83,7 @@ export interface FileRoutesById {
   '/_shell': typeof ShellRouteWithChildren
   '/_shell/dashboard': typeof ShellDashboardRoute
   '/_shell/organizations': typeof ShellOrganizationsRoute
+  '/_shell/roles-and-permissions': typeof ShellRolesAndPermissionsRoute
   '/_shell/settings': typeof ShellSettingsRoute
   '/_shell/users': typeof ShellUsersRoute
   '/auth/login': typeof AuthLoginRoute
@@ -84,6 +94,7 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/organizations'
+    | '/roles-and-permissions'
     | '/settings'
     | '/users'
     | '/auth/login'
@@ -92,6 +103,7 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/organizations'
+    | '/roles-and-permissions'
     | '/settings'
     | '/users'
     | '/auth/login'
@@ -101,6 +113,7 @@ export interface FileRouteTypes {
     | '/_shell'
     | '/_shell/dashboard'
     | '/_shell/organizations'
+    | '/_shell/roles-and-permissions'
     | '/_shell/settings'
     | '/_shell/users'
     | '/auth/login'
@@ -142,6 +155,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShellOrganizationsRouteImport
       parentRoute: typeof ShellRoute
     }
+    '/_shell/roles-and-permissions': {
+      id: '/_shell/roles-and-permissions'
+      path: '/roles-and-permissions'
+      fullPath: '/roles-and-permissions'
+      preLoaderRoute: typeof ShellRolesAndPermissionsRouteImport
+      parentRoute: typeof ShellRoute
+    }
     '/_shell/settings': {
       id: '/_shell/settings'
       path: '/settings'
@@ -169,6 +189,7 @@ declare module '@tanstack/react-router' {
 interface ShellRouteChildren {
   ShellDashboardRoute: typeof ShellDashboardRoute
   ShellOrganizationsRoute: typeof ShellOrganizationsRoute
+  ShellRolesAndPermissionsRoute: typeof ShellRolesAndPermissionsRoute
   ShellSettingsRoute: typeof ShellSettingsRoute
   ShellUsersRoute: typeof ShellUsersRoute
 }
@@ -176,6 +197,7 @@ interface ShellRouteChildren {
 const ShellRouteChildren: ShellRouteChildren = {
   ShellDashboardRoute: ShellDashboardRoute,
   ShellOrganizationsRoute: ShellOrganizationsRoute,
+  ShellRolesAndPermissionsRoute: ShellRolesAndPermissionsRoute,
   ShellSettingsRoute: ShellSettingsRoute,
   ShellUsersRoute: ShellUsersRoute,
 }

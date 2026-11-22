@@ -13,12 +13,10 @@ import type { AdminUserRow, PlatformRole } from "../types";
 
 const PAGE_SIZE = 10;
 
-const roleVariants: Record<PlatformRole, BadgeProps["variant"]> = {
-	NONE: "secondary",
-	MANAGER: "info",
-	ADMIN: "magenta",
-	SUPER_ADMIN: "success",
-};
+function roleVariant(role: PlatformRole | null): BadgeProps["variant"] {
+	if (!role) return "secondary";
+	return role.isSystem ? "success" : "info";
+}
 
 function formatDate(value: string) {
 	return new Intl.DateTimeFormat(undefined, {
@@ -51,8 +49,8 @@ const columns: ColumnDef<AdminUserRow>[] = [
 		header: "Platform role",
 		size: 130,
 		cell: ({ row }) => (
-			<Badge variant={roleVariants[row.original.platformRole]} size="sm">
-				{row.original.platformRole.replace("_", " ")}
+			<Badge variant={roleVariant(row.original.platformRole)} size="sm">
+				{row.original.platformRole?.name ?? "No platform role"}
 			</Badge>
 		),
 	},

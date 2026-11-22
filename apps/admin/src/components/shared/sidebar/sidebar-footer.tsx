@@ -58,7 +58,7 @@ export function SidebarFooter({ open }: SidebarFooterProps) {
 							weight="regular"
 							className="text-gray-400 truncate max-w-32"
 						>
-							{user?.platformRole?.replace("_", " ") ?? "Administrator"}
+							{user?.platformRole?.name ?? "Administrator"}
 						</Typography.T5>
 					</div>
 					<button

@@ -1,15 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { AdminPage } from "@/pages/admin-page";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_shell/settings")({
-	component: SettingsPage,
+	beforeLoad: () => {
+		throw redirect({ to: "/roles-and-permissions" });
+	},
 });
-
-function SettingsPage() {
-	return (
-		<AdminPage
-			title="Settings"
-			description="Configure platform-wide admin preferences."
-		/>
-	);
-}

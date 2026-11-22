@@ -24,9 +24,9 @@ export const ADMIN_SIDEBAR_DATA: SidebarItems = {
 	],
 	LOWER: [
 		{
-			label: "Settings",
-			icon: "settings",
-			path: ADMIN_ROUTES.SETTINGS,
+			label: "Role and Permission",
+			icon: "all-roles",
+			path: ADMIN_ROUTES.ROLES_AND_PERMISSIONS,
 		},
 	],
 };
