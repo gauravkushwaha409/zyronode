@@ -15,10 +15,40 @@ const DEFAULT_BASE_URL = "https://openrouter.ai/api/v1";
 // Override with OPENROUTER_MODEL to pin a specific `:free` model.
 const DEFAULT_MODEL = "openrouter/free";
 
-interface OpenRouterChatResponse {
+interface ResponsesOutputContent {
+	type?: string;
+	text?: string;
+}
+
+interface ResponsesOutputItem {
+	type?: string;
+	content?: ResponsesOutputContent[];
+}
+
+interface ResponsesUsage {
+	input_tokens?: number;
+	output_tokens?: number;
+	total_tokens?: number;
+	cost?: number;
+}
+
+interface OpenRouterResponsesResponse {
 	model?: string;
-	choices?: Array<{ message?: { content?: string | null } }>;
-	usage?: OpenRouterUsage;
+	status?: string;
+	output?: ResponsesOutputItem[];
+	usage?: ResponsesUsage;
+}
+
+function extractText(json: OpenRouterResponsesResponse): string {
+	const message = (json.output ?? []).find((item) => item.type === "message");
+	if (!message?.content) return "";
+	return message.content
+		.filter(
+			(part) => part.type === "output_text" && typeof part.text === "string",
+		)
+		.map((part) => part.text)
+		.join("")
+		.trim();
 }
 
 @Injectable()
@@ -45,19 +75,28 @@ export class OpenRouterClient {
 		const model = process.env.OPENROUTER_MODEL ?? DEFAULT_MODEL;
 		const timeoutMs = Number(process.env.AI_TIMEOUT_MS) || 30_000;
 		const maxTokens =
-			options?.maxTokens ?? (Number(process.env.AI_MAX_OUTPUT_TOKENS) || 500);
+			options?.maxTokens ?? (Number(process.env.AI_MAX_OUTPUT_TOKENS) || 800);
 
 		const fallbackModels = (process.env.OPENROUTER_FALLBACK_MODELS ?? "")
 			.split(",")
 			.map((value) => value.trim())
 			.filter(Boolean);
 
+		const instructions = messages
+			.filter((message) => message.role === "system")
+			.map((message) => message.content)
+			.join("\n\n");
+		const input = messages
+			.filter((message) => message.role !== "system")
+			.map((message) => ({ role: message.role, content: message.content }));
+
 		const body: Record<string, unknown> = {
 			model,
-			messages,
-			max_tokens: maxTokens,
+			input,
+			max_output_tokens: maxTokens,
 			temperature: options?.temperature ?? 0.4,
 		};
+		if (instructions) body.instructions = instructions;
 		if (fallbackModels.length) body.models = fallbackModels;
 
 		const headers: Record<string, string> = {
@@ -68,7 +107,7 @@ export class OpenRouterClient {
 			headers["HTTP-Referer"] = process.env.OPENROUTER_SITE_URL;
 		}
 		if (process.env.OPENROUTER_APP_NAME) {
-			headers["X-Title"] = process.env.OPENROUTER_APP_NAME;
+			headers["X-OpenRouter-Title"] = process.env.OPENROUTER_APP_NAME;
 		}
 
 		for (let attempt = 0; attempt < 2; attempt += 1) {
@@ -76,7 +115,7 @@ export class OpenRouterClient {
 			const timer = setTimeout(() => controller.abort(), timeoutMs);
 
 			try {
-				const response = await fetch(`${baseUrl}/chat/completions`, {
+				const response = await fetch(`${baseUrl}/responses`, {
 					method: "POST",
 					headers,
 					body: JSON.stringify(body),
@@ -94,16 +133,25 @@ export class OpenRouterClient {
 					throw new ServiceUnavailableException("AI provider is unavailable");
 				}
 
-				const json = (await response.json()) as OpenRouterChatResponse;
-				const text = json.choices?.[0]?.message?.content;
-				if (typeof text !== "string" || !text.trim()) {
+				const json = (await response.json()) as OpenRouterResponsesResponse;
+				const text = extractText(json);
+				if (!text) {
 					throw new BadGatewayException("AI provider returned an empty response");
 				}
 
+				const usage: OpenRouterUsage | undefined = json.usage
+					? {
+							prompt_tokens: json.usage.input_tokens,
+							completion_tokens: json.usage.output_tokens,
+							total_tokens: json.usage.total_tokens,
+							cost: json.usage.cost,
+						}
+					: undefined;
+
 				return {
-					text: text.trim(),
+					text,
 					model: json.model ?? model,
-					usage: json.usage,
+					usage,
 				};
 			} catch (error) {
 				if (
