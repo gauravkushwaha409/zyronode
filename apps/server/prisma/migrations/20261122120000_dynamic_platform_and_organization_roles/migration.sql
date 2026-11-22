@@ -10,7 +10,7 @@ ALTER TABLE "User"
 CREATE INDEX "User_platformRoleId_idx" ON "User"("platformRoleId");
 
 -- Preserve the existing super-admin account during the transition.
-INSERT INTO "roles" ("id", "name", "description", "isSystem", "scope", "createdAt", "updatedAt")
+INSERT INTO "roles" ("id", "name", "description", "isSystem", "scope", "created_at", "updated_at")
 VALUES (
   '9e0a6e77-0c7f-4b4d-8a43-9c2d7a4b1f30',
   'superadmin',
@@ -25,7 +25,7 @@ ON CONFLICT ("id") DO UPDATE SET
   "isSystem" = true,
   "scope" = 'PLATFORM';
 
-INSERT INTO "roles" ("id", "name", "description", "isSystem", "scope", "createdAt", "updatedAt")
+INSERT INTO "roles" ("id", "name", "description", "isSystem", "scope", "created_at", "updated_at")
 VALUES (
   'f60829d4-5fcd-4ffc-b7a3-744c7fc56c54',
   'Owner',
