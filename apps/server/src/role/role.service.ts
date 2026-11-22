@@ -36,7 +36,12 @@ export class RoleService {
 		await this.assertMembership(organizationId, userId);
 
 		const roles = await this.prisma.role.findMany({
-			where: { OR: [{ organizationId }, { organizationId: null }] },
+			where: {
+				OR: [
+					{ organizationId },
+					{ organizationId: null, scope: "ORGANIZATION" },
+				],
+			},
 			orderBy: [{ isSystem: "asc" }, { name: "asc" }],
 			include: ROLE_INCLUDE,
 		});
@@ -76,6 +81,7 @@ export class RoleService {
 				name: dto.name,
 				description: dto.description,
 				organizationId,
+				scope: "ORGANIZATION",
 				permissions: {
 					createMany: {
 						data: dto.permissionIds.map((permissionId) => ({ permissionId })),

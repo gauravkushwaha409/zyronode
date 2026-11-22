@@ -19,7 +19,7 @@ const ADMIN_USER_SELECT = {
 	firstName: true,
 	lastName: true,
 	profile: true,
-	platformRole: true,
+	platformRole: { select: { id: true, name: true, isSystem: true, scope: true } },
 } as const;
 
 @Injectable()
@@ -36,7 +36,7 @@ export class AdminAuthService {
 
 		// Same error for unknown users, wrong passwords, and non-admins so the
 		// endpoint cannot be used to enumerate platform administrators.
-		if (!user?.password || user.platformRole === "NONE") {
+		if (!user?.password || !user.platformRole) {
 			throw new UnauthorizedException({
 				error: "Invalid credentials",
 				error_code: "INVALID_CREDENTIALS",
@@ -80,7 +80,7 @@ export class AdminAuthService {
 			select: ADMIN_USER_SELECT,
 		});
 
-		if (!user || user.platformRole === "NONE") {
+		if (!user || !user.platformRole) {
 			throw new ForbiddenException({
 				message: "Platform admin access is required",
 				error_code: "FORBIDDEN",

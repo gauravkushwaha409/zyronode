@@ -6,7 +6,6 @@ import {
 	NotFoundException,
 } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import { SYSTEM_ROLE_IDS } from "../role/role.constants";
 import { CreateTeamInvitationDto } from "./dto/create-team-invitation.dto";
 
 const INVITATION_INCLUDE = {
@@ -53,10 +52,11 @@ export class TeamInvitationService {
 		if (dto.roleId) {
 			const role = await this.prisma.role.findUnique({
 				where: { id: dto.roleId },
-				select: { id: true, organizationId: true },
+				select: { id: true, organizationId: true, scope: true },
 			});
 			if (
 				!role ||
+				role.scope !== "ORGANIZATION" ||
 				(role.organizationId !== null && role.organizationId !== organizationId)
 			) {
 				throw new BadRequestException({
@@ -104,7 +104,7 @@ export class TeamInvitationService {
 				organizationId,
 				email,
 				invitedById: userId,
-				roleId: dto.roleId ?? SYSTEM_ROLE_IDS.NONE,
+			roleId: dto.roleId,
 				teamId: dto.teamId,
 			},
 			include: INVITATION_INCLUDE,

@@ -14,6 +14,9 @@ export class RoleEntity {
 	@ApiProperty({ description: "True for platform-wide seeded roles (immutable)" })
 	isSystem!: boolean;
 
+	@ApiProperty({ enum: ["PLATFORM", "ORGANIZATION"] })
+	scope!: "PLATFORM" | "ORGANIZATION";
+
 	@ApiProperty({ description: "Owning organization; null for system roles" })
 	organizationId!: string | null;
 
