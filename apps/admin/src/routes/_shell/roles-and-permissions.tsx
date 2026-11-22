@@ -1,4 +1,4 @@
-import { cn, Typography } from "@package/ui";
+import { Button, Typography } from "@package/ui";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { PermissionsList } from "@/features/roles/components/permissions-list";
@@ -36,19 +36,16 @@ function RolesAndPermissionsPage() {
 					{TABS.map((tab) => {
 						const isSelected = activeTab === tab.id;
 						return (
-							<button
+							<Button
 								key={tab.id}
-								type="button"
 								onClick={() => setActiveTab(tab.id)}
-								className={cn(
-									"px-3.5 py-2 text-xs font-semibold rounded-md transition-colors cursor-pointer",
-									isSelected
-										? "bg-primary-50 text-primary-900 border-b-2 border-primary-600"
-										: "text-gray-600 hover:text-gray-900 hover:bg-gray-100",
-								)}
+								variant="ghost"
+								size="sm"
+								selected={isSelected}
+								className="h-auto rounded-md px-3.5 py-2 text-xs font-semibold"
 							>
 								{tab.label}
-							</button>
+							</Button>
 						);
 					})}
 				</div>

@@ -1,4 +1,4 @@
-import { Badge, Input, Typography } from "@package/ui";
+import { Badge, GlobalSearch, Typography } from "@package/ui";
 import { useMemo, useState } from "react";
 import { useAdminPermissionsQuery } from "../hooks/use-admin-roles";
 import type { AdminPermission } from "../types";
@@ -50,11 +50,9 @@ export function PermissionsList() {
 						{permissions.length} system permissions grouped by functional modules
 					</Typography.T4>
 				</div>
-				<Input
-					leftIcon="main-search"
+				<GlobalSearch
+					search={{ value: search, onChange: setSearch }}
 					placeholder="Search permissions or keys..."
-					value={search}
-					onChange={(e) => setSearch(e.target.value)}
 					className="w-72"
 				/>
 			</div>

@@ -48,10 +48,51 @@ const buttonVariants = cva(
 				"icon-lg": "h-11 w-11",
 				"icon-xl": "h-12 w-12",
 			},
+			selected: {
+				true: "",
+				false: "",
+			},
 		},
+		compoundVariants: [
+			{ variant: "default", selected: true, class: "bg-primary-600" },
+			{
+				variant: "primary-shade",
+				selected: true,
+				class: "bg-primary-100 text-primary-600 border-primary-200 border-b-2 border-primary-600",
+			},
+			{
+				variant: "outline",
+				selected: true,
+				class: "bg-primary-50 text-primary-600 border-primary-600",
+			},
+			{
+				variant: "secondary",
+				selected: true,
+				class: "bg-gray-fill-100 text-gray-950 border-gray-border-300",
+			},
+			{ variant: "gray", selected: true, class: "bg-gray-800" },
+			{ variant: "success", selected: true, class: "bg-success-600" },
+			{
+				variant: "ghost",
+				selected: true,
+				class: "bg-gray-100 text-gray-900",
+			},
+			{ variant: "alert", selected: true, class: "bg-alert-600" },
+			{
+				variant: "alert-shade",
+				selected: true,
+				class: "bg-alert-50 text-alert-600 border-alert-100",
+			},
+			{
+				variant: "link",
+				selected: true,
+				class: "text-primary-700 underline",
+			},
+		],
 		defaultVariants: {
 			variant: "default",
 			size: "default",
+			selected: false,
 		},
 	},
 );
@@ -87,6 +128,7 @@ interface ButtonProps
 	tooltipPlacement?: TooltipContentProps["placement"];
 	showTipArrow?: TooltipContentProps["showTipArrow"];
 	showLoading?: boolean;
+	selected?: boolean;
 }
 
 function Button({
@@ -106,6 +148,7 @@ function Button({
 	tooltipPlacement,
 	showTipArrow,
 	showLoading = true,
+	selected,
 	children,
 	...props
 }: ButtonProps) {
@@ -143,9 +186,11 @@ function Button({
 			data-slot="button"
 			data-variant={variant}
 			data-size={size}
+		data-selected={selected === undefined ? undefined : String(selected)}
+		aria-pressed={selected}
 			disabled={isPending}
 			data-icon-only={isIconOnly || undefined}
-			className={cn(buttonVariants({ variant, size, className }))}
+		className={cn(buttonVariants({ variant, size, selected, className }))}
 			{...props}
 		>
 			{content}

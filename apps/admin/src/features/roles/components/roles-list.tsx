@@ -4,7 +4,7 @@ import {
 	type ColumnDef,
 	ConfirmationDialog,
 	cn,
-	Input,
+	GlobalSearch,
 	Table,
 	Typography,
 	toast,
@@ -269,11 +269,9 @@ export function RolesList({ scope, readOnly = false }: RolesListProps) {
 				</div>
 
 				<div className="flex items-center gap-2">
-					<Input
-						leftIcon="main-search"
+					<GlobalSearch
+						search={{ value: search, onChange: setSearch }}
 						placeholder="Search roles..."
-						value={search}
-						onChange={(e) => setSearch(e.target.value)}
 						className="w-64"
 					/>
 					{!readOnly && (
