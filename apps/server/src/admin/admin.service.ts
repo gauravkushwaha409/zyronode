@@ -210,7 +210,8 @@ export class AdminService {
 		};
 	}
 
-	async createRole(dto: CreateRoleDto) {
+	async createRole(dto: CreateRoleDto, callerId: string) {
+		await this.assertSuperadmin(callerId);
 		if (dto.permissionIds?.length) {
 			const count = await this.prisma.permission.count({
 				where: { id: { in: dto.permissionIds } },
@@ -247,7 +248,7 @@ export class AdminService {
 						},
 					},
 				},
-				_count: { select: { members: true } },
+				_count: { select: { members: true, platformUsers: true } },
 			},
 		});
 
@@ -261,12 +262,19 @@ export class AdminService {
 		};
 	}
 
-	async updateRole(roleId: string, dto: UpdateRoleDto) {
+	async updateRole(roleId: string, dto: UpdateRoleDto, callerId: string) {
+		await this.assertSuperadmin(callerId);
 		const existing = await this.prisma.role.findUnique({
 			where: { id: roleId },
 		});
 		if (!existing) {
 			throw new NotFoundException("Role not found");
+		}
+		if (existing.scope !== "PLATFORM") {
+			throw new BadRequestException("Only platform roles can be managed here");
+		}
+		if (existing.isSystem) {
+			throw new BadRequestException("System roles cannot be modified");
 		}
 
 		if (dto.permissionIds) {
@@ -327,20 +335,24 @@ export class AdminService {
 		};
 	}
 
-	async deleteRole(roleId: string) {
+	async deleteRole(roleId: string, callerId: string) {
+		await this.assertSuperadmin(callerId);
 		const role = await this.prisma.role.findUnique({
 			where: { id: roleId },
-			include: { _count: { select: { members: true } } },
+			include: { _count: { select: { members: true, platformUsers: true } } },
 		});
 		if (!role) {
 			throw new NotFoundException("Role not found");
 		}
+		if (role.scope !== "PLATFORM") {
+			throw new BadRequestException("Only platform roles can be managed here");
+		}
 		if (role.isSystem) {
 			throw new BadRequestException("System roles cannot be deleted");
 		}
-		if (role._count.members > 0) {
+		if (role._count.members > 0 || role._count.platformUsers > 0) {
 			throw new BadRequestException(
-				"Cannot delete a role that is assigned to organization members",
+				"Cannot delete a role that is assigned to users or organization members",
 			);
 		}
 
@@ -431,5 +443,19 @@ export class AdminService {
 			message: "Platform role updated successfully",
 			data: updated,
 		};
+	}
+
+	private async assertSuperadmin(userId: string) {
+		const user = await this.prisma.user.findUnique({
+			where: { id: userId },
+			select: { platformRole: { select: { name: true, scope: true } } },
+		});
+
+		if (
+			user?.platformRole?.scope !== "PLATFORM" ||
+			user.platformRole.name.toLowerCase() !== "superadmin"
+		) {
+			throw new ForbiddenException("Only superadmin can manage platform roles");
+		}
 	}
 }

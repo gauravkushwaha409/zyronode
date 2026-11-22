@@ -65,16 +65,20 @@ export class AdminController {
 	@Post("roles")
 	@ApiOperation({ summary: "Create a role from admin" })
 	@ApiResponse({ status: 201, description: "Role created" })
-	createRole(@Body() dto: CreateRoleDto) {
-		return this.adminService.createRole(dto);
+	createRole(@Body() dto: CreateRoleDto, @CurrentUser("id") callerId: string) {
+		return this.adminService.createRole(dto, callerId);
 	}
 
 	@Patch("roles/:roleId")
 	@ApiOperation({ summary: "Update role details and permissions" })
 	@ApiParam({ name: "roleId", description: "Role ID" })
 	@ApiResponse({ status: 200, description: "Role updated" })
-	updateRole(@Param("roleId") roleId: string, @Body() dto: UpdateRoleDto) {
-		return this.adminService.updateRole(roleId, dto);
+	updateRole(
+		@Param("roleId") roleId: string,
+		@Body() dto: UpdateRoleDto,
+		@CurrentUser("id") callerId: string,
+	) {
+		return this.adminService.updateRole(roleId, dto, callerId);
 	}
 
 	@Delete("roles/:roleId")
@@ -82,8 +86,8 @@ export class AdminController {
 	@ApiOperation({ summary: "Delete an unassigned custom role" })
 	@ApiParam({ name: "roleId", description: "Role ID" })
 	@ApiResponse({ status: 200, description: "Role deleted" })
-	deleteRole(@Param("roleId") roleId: string) {
-		return this.adminService.deleteRole(roleId);
+	deleteRole(@Param("roleId") roleId: string, @CurrentUser("id") callerId: string) {
+		return this.adminService.deleteRole(roleId, callerId);
 	}
 
 	@Get("platform-staff")
