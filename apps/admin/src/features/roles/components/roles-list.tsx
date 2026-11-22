@@ -20,7 +20,12 @@ import {
 import type { AdminRole } from "../types";
 import { type RoleDialogMode, RoleFormDialog } from "./role-form-dialog";
 
-export function RolesList() {
+interface RolesListProps {
+	scope?: "PLATFORM" | "ORGANIZATION";
+	readOnly?: boolean;
+}
+
+export function RolesList({ scope, readOnly = false }: RolesListProps) {
 	const [typeFilter, setTypeFilter] = useState<"all" | "system" | "custom">(
 		"all",
 	);
@@ -39,6 +44,7 @@ export function RolesList() {
 	}, [search]);
 
 	const rolesQuery = useAdminRolesQuery({
+		scope,
 		type: typeFilter,
 		search: debouncedSearch || undefined,
 	});
@@ -152,14 +158,16 @@ export function RolesList() {
 						>
 							View
 						</Button>
-						<Button
-							size="xs"
-							variant="gray"
-							onClick={() => setDialog({ mode: "edit", role })}
-						>
-							Edit
-						</Button>
-						{!role.isSystem && (
+						{!readOnly && !role.isSystem && (
+							<Button
+								size="xs"
+								variant="gray"
+								onClick={() => setDialog({ mode: "edit", role })}
+							>
+								Edit
+							</Button>
+						)}
+						{!readOnly && !role.isSystem && (
 							<Button size="xs" variant="alert" onClick={() => setDeleteTarget(role)}>
 								Delete
 							</Button>
@@ -268,13 +276,15 @@ export function RolesList() {
 						onChange={(e) => setSearch(e.target.value)}
 						className="w-64"
 					/>
-					<Button
-						size="sm"
-						onClick={() => setDialog({ mode: "create" })}
-						className="shrink-0"
-					>
-						Create Role
-					</Button>
+					{!readOnly && (
+						<Button
+							size="sm"
+							onClick={() => setDialog({ mode: "create" })}
+							className="shrink-0"
+						>
+							Create Platform Role
+						</Button>
+					)}
 				</div>
 			</div>
 

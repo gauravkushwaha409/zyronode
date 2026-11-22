@@ -14,7 +14,12 @@ import type {
 
 export function useAdminRolesQuery(params?: RoleListParams) {
 	return useQuery<AdminRolesListResponse, AdminRolesError>(
-		[...ADMIN_QUERY_KEY.ROLES.LIST, params?.type ?? "all", params?.search ?? ""],
+		[
+			...ADMIN_QUERY_KEY.ROLES.LIST,
+			params?.scope ?? "all",
+			params?.type ?? "all",
+			params?.search ?? "",
+		],
 		() => adminRolesService.listRoles(params),
 		undefined,
 		{

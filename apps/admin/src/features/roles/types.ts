@@ -60,6 +60,7 @@ export interface AdminRole {
 export interface RoleListParams {
 	search?: string;
 	type?: "all" | "system" | "custom";
+	scope?: "PLATFORM" | "ORGANIZATION";
 }
 
 export interface CreateRolePayload {

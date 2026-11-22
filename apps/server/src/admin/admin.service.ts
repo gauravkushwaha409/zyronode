@@ -135,6 +135,9 @@ export class AdminService {
 		} else if (query?.type === "custom") {
 			where.isSystem = false;
 		}
+		if (query?.scope) {
+			where.scope = query.scope;
+		}
 
 		if (search) {
 			where.OR = [

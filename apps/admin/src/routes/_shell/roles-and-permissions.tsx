@@ -2,7 +2,6 @@ import { cn, Typography } from "@package/ui";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { PermissionsList } from "@/features/roles/components/permissions-list";
-import { PlatformRolesInfo } from "@/features/roles/components/platform-roles-info";
 import { RolesList } from "@/features/roles/components/roles-list";
 
 export const Route = createFileRoute("/_shell/roles-and-permissions")({
@@ -56,9 +55,11 @@ function RolesAndPermissionsPage() {
 			</div>
 
 			<div className="flex-1 overflow-auto p-6">
-				{activeTab === "roles" && <RolesList />}
+				{activeTab === "roles" && (
+					<RolesList scope="ORGANIZATION" readOnly />
+				)}
 				{activeTab === "permissions" && <PermissionsList />}
-				{activeTab === "platform" && <PlatformRolesInfo />}
+				{activeTab === "platform" && <RolesList scope="PLATFORM" />}
 			</div>
 		</div>
 	);
