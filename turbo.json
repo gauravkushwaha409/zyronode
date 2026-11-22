@@ -48,7 +48,6 @@
         "OBSERVE_APP_KEY" ,
         "OBSERVE_APP_SECRET",
 
-        "S3_ENDPOINT",
         "S3_BUCKET",
         "S3_PUBLIC_URL",
         "AWS_REGION",

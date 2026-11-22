@@ -223,6 +223,8 @@ The Vite config uses a single `PROXY` env var:
 | `PROXY` | Enable/disable Vite proxy (set in docker-compose) |
 | `AWS_REGION` | AWS region for S3 and SES |
 | `AWS_ACCESS_KEY_ID/SECRET_ACCESS_KEY` | AWS credentials (or use an IAM role) |
+| `S3_BUCKET` | Existing S3 bucket for uploads |
+| `S3_PUBLIC_URL` | Optional bucket or CDN base URL for reading uploads |
 | `SES_FROM_EMAIL/SES_FROM_NAME` | Verified SES sender identity |
 | `GOOGLE_CLIENT_ID/SECRET` | Google OAuth |
 | `CLOUDFLARE_TURNSTILE_*` | CAPTCHA verification |

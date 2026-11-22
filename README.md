@@ -89,7 +89,7 @@ Env files live in `env/`: copy `env/.env.example` to `env/.env.<environment>` (`
 ## Docker
 
 ```sh
-pnpm docker:development:up      # postgres + redis + localstack + server + app + widget
+pnpm docker:development:up      # postgres + redis + server + app + admin + widget
 pnpm docker:development:logs
 pnpm docker:development:down
 pnpm docker:development:reset   # down -v + up -d (destroys DB)
