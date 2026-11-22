@@ -42,7 +42,7 @@ zyronode/
 
 | Module | Purpose |
 |--------|---------|
-| `AuthModule` | Registration, login (bcrypt + Turnstile CAPTCHA), Google OAuth, JWT (access + refresh cookies), email verification (OTP via Resend), password reset |
+| `AuthModule` | Registration, login (bcrypt + Turnstile CAPTCHA), Google OAuth, JWT (access + refresh cookies), email verification (OTP via SES), password reset |
 | `PrismaModule` | Global PrismaClient with `PrismaPg` adapter |
 | `RedisModule` | Global ioredis client (Redis 7) |
 | `OrganizationModule` | Create org, list user's orgs |
@@ -51,7 +51,8 @@ zyronode/
 | `ChatModule` | Socket.io gateway — room-based events, typing indicators |
 | `SseModule` | Server-Sent Events with Redis pub/sub for cross-instance fanout |
 | `InboxModule` | Inbox listing with unread counts, close/reopen conversations |
-| `OtpModule` | OTP generation, verification, email sending via Resend |
+| `OtpModule` | OTP generation and verification; sends OTP email via `EmailModule` |
+| `EmailModule` | AWS SES v2 transactional email delivery |
 
 ### Key Server Files
 
@@ -220,7 +221,11 @@ The Vite config uses a single `PROXY` env var:
 | `REDIS_HOST` | Redis hostname |
 | `VITE_SERVER_URL` | Frontend API origin |
 | `PROXY` | Enable/disable Vite proxy (set in docker-compose) |
-| `RESEND_API_KEY` | Email service |
+| `AWS_REGION` | AWS region for S3 and SES |
+| `AWS_ACCESS_KEY_ID/SECRET_ACCESS_KEY` | AWS credentials (or use an IAM role) |
+| `S3_BUCKET` | Existing S3 bucket for uploads |
+| `S3_PUBLIC_URL` | Optional bucket or CDN base URL for reading uploads |
+| `SES_FROM_EMAIL/SES_FROM_NAME` | Verified SES sender identity |
 | `GOOGLE_CLIENT_ID/SECRET` | Google OAuth |
 | `CLOUDFLARE_TURNSTILE_*` | CAPTCHA verification |
 

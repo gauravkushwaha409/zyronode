@@ -4,6 +4,7 @@ import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
 import { EmailVerifiedGuard } from "../common/gaurds/email-verified.guard";
 import { OnboardingGuard } from "../common/gaurds/onboarding.guard";
+import { EmailModule } from "../email/email.module";
 import { OtpModule } from "../otp/otp.module";
 import { AdminAuthController } from "./admin-auth.controller";
 import { AdminAuthService } from "./admin-auth.service";
@@ -23,6 +24,7 @@ import { JwtStrategy } from "./strategies/jwt.strategy";
 			secret: process.env.JWT_SECRET,
 		}),
 		OtpModule,
+		EmailModule,
 	],
 	controllers: [AuthController, AdminAuthController],
 	providers: [

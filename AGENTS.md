@@ -28,7 +28,7 @@
 Each app owns its Dockerfiles: `apps/<app>/docker/Dockerfile.development` (bind-mount dev image) and `apps/<app>/docker/Dockerfile.production` (release image for production; `APP_ENV` build arg picks `env/.env.<APP_ENV>`). Build context is always the repo root. Compose files live in `docker/docker-compose.<environment>.yml`. Compose paths are relative to `docker/`; each file sets its own project `name:` so volumes never collide.
 
 ```sh
-pnpm docker:development:up      # postgres + redis + localstack + server + app + admin + widget
+pnpm docker:development:up      # postgres + redis + server + app + admin + widget
 pnpm docker:development:logs
 pnpm docker:development:down
 pnpm docker:development:reset   # down -v + up -d (destroys DB)

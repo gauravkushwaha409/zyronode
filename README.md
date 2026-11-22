@@ -52,7 +52,7 @@ pnpm install
 
 # 2. Create your environment file
 cp env/.env.example env/.env.development
-#    then fill in secrets (JWT_SECRET, OAuth, Resend, TURN, etc.)
+#    then fill in secrets (JWT_SECRET, OAuth, email, TURN, etc.)
 
 # 3. Generate Prisma client and apply migrations
 pnpm prisma:generate
@@ -89,7 +89,7 @@ Env files live in `env/`: copy `env/.env.example` to `env/.env.<environment>` (`
 ## Docker
 
 ```sh
-pnpm docker:development:up      # postgres + redis + localstack + server + app + widget
+pnpm docker:development:up      # postgres + redis + server + app + admin + widget
 pnpm docker:development:logs
 pnpm docker:development:down
 pnpm docker:development:reset   # down -v + up -d (destroys DB)

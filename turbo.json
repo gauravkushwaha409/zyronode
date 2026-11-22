@@ -42,21 +42,20 @@
         "GOOGLE_CLIENT_ID",
         "GOOGLE_CLIENT_SECRET",
         "GOOGLE_CALLBACK_URL",
-        
-        "RESEND_API_KEY",
-        "RESEND_FROM_EMAIL",
-
-
         "REDIS_HOST",
         "REDIS_PORT",
 
         "OBSERVE_APP_KEY" ,
         "OBSERVE_APP_SECRET",
 
-        "S3_ENDPOINT",
         "S3_BUCKET",
         "S3_PUBLIC_URL",
-        "AWS_REGION"
+        "AWS_REGION",
+        "AWS_ACCESS_KEY_ID",
+        "AWS_SECRET_ACCESS_KEY",
+        "AWS_SESSION_TOKEN",
+        "SES_FROM_EMAIL",
+        "SES_FROM_NAME"
       ]
     },
     "prisma:migrate": {

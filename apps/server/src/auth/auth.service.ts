@@ -1,4 +1,6 @@
 // apps/server/src/auth/auth.service.ts
+
+import { randomBytes } from "node:crypto";
 import {
 	ConflictException,
 	Injectable,
@@ -7,9 +9,8 @@ import {
 	UnauthorizedException,
 } from "@nestjs/common";
 import * as bcryptjs from "bcryptjs";
-import { randomBytes } from "crypto";
 import type { Response } from "express";
-import { Resend } from "resend";
+import { EmailService } from "../email/email.service";
 import { OtpService } from "../otp/otp.service";
 import { OtpPurpose } from "../otp/types/otp-purpose.type";
 import { PrismaService } from "../prisma/prisma.service";
@@ -21,7 +22,6 @@ import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
 import { SetPasswordDto } from "./dto/set-password.dto";
 import { UserOnboardingDto } from "./dto/user-onboarding.dto";
-import { VerifyEmailDto } from "./dto/verify-email.dto";
 import { AuthJwtService } from "./jwt.service";
 
 const RESET_TOKEN_TTL_SECONDS = 15 * 60; // 15 minutes
@@ -30,16 +30,14 @@ const USER_PROFILE_TTL_SECONDS = 5 * 60; // 5 minutes
 @Injectable()
 export class AuthService {
 	private readonly logger = new Logger(AuthService.name);
-	private readonly resend: Resend;
 
 	constructor(
 		private prisma: PrismaService,
 		private authJwtService: AuthJwtService,
 		private otpService: OtpService,
 		private redis: RedisService,
-	) {
-		this.resend = new Resend(process.env.RESEND_API_KEY);
-	}
+		private email: EmailService,
+	) {}
 
 	private async hashPassword(password: string) {
 		return await bcryptjs.hash(password, 10);
@@ -87,9 +85,9 @@ export class AuthService {
 		});
 
 		try {
-			await this.otpService.generateAndSendOtp(dto.email);
+			await this.otpService.generateOtp(dto.email);
 		} catch (error) {
-			this.logger.error(`Failed to send verification OTP: ${error}`);
+			this.logger.error(`Failed to send verification email: ${error}`);
 		}
 
 		return {
@@ -115,7 +113,7 @@ export class AuthService {
 				email: dto.email,
 			},
 		});
-		if (!user || !user.password) {
+		if (!user?.password) {
 			throw new UnauthorizedException({
 				error: "Invalid credentials",
 				error_code: "INVALID_CREDENTIALS",
@@ -341,35 +339,14 @@ export class AuthService {
 				(_, b, c) => process.env[b ?? c] ?? "",
 			) || `http://localhost:${process.env.APP_PORT ?? "3000"}`;
 		const resetUrl = `${appUrl}/auth/set-password?token=${token}`;
-		const from = process.env.RESEND_FROM_EMAIL || "noreply@example.com";
 
-		const { data, error, headers } = await this.resend.emails.send({
-			from: "onboarding@resend.dev",
-			to: dto.email,
-			subject: "Reset your password",
-			html: `
-					<div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 24px;">
-						<h2 style="color: #333;">Reset Your Password</h2>
-						<p style="color: #555; font-size: 16px;">
-							You requested a password reset. Click the link below to set a new password:
-						</p>
-						<div style="margin: 16px 0;">
-							<a href="${resetUrl}" style="display: inline-block; background: #111; color: #fff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold;">
-								Reset Password
-							</a>
-						</div>
-						<p style="color: #777; font-size: 14px;">
-							This link expires in 15 minutes.
-							If you did not request this, you can safely ignore this email.
-						</p>
-					</div>
-				`,
-		});
-		if (data) {
-			console.log(`Password reset email sent to ${dto.email}`);
-		}
-		if (error) {
-			this.logger.error(`Failed to send reset email:`, { error });
+		try {
+			await this.email.sendPasswordReset(dto.email, resetUrl);
+			this.logger.log(`Password reset email sent to ${dto.email}`);
+		} catch (error) {
+			this.logger.error(
+				`Failed to send password reset email: ${(error as Error).message}`,
+			);
 		}
 	}
 
@@ -420,10 +397,7 @@ export class AuthService {
 			};
 		}
 
-		await this.otpService.generateAndSendOtp(
-			user.email,
-			OtpPurpose.EMAIL_VERIFICATION,
-		);
+		await this.otpService.generateOtp(user.email, OtpPurpose.EMAIL_VERIFICATION);
 
 		return {
 			message: "Verification code sent successfully",
