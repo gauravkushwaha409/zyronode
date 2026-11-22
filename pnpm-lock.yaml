@@ -418,6 +418,9 @@ importers:
       '@nestjs/websockets':
         specifier: ^12.0.0
         version: 12.0.1(@nestjs/common@12.0.1(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1))(@nestjs/core@12.0.1)(@nestjs/platform-socket.io@12.0.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      '@openrouter/sdk':
+        specifier: ^1.5.127
+        version: 1.5.127
       '@package/call-signaling':
         specifier: workspace:*
         version: link:../../packages/call-signaling
@@ -2159,6 +2162,9 @@ packages:
 
   '@one-ini/wasm@0.1.1':
     resolution: {integrity: sha512-XuySG1E38YScSJoMlqovLru4KTUNSjgVTIjyh7qMX6aNN5HY5Ct5LhRJdxO79JtTzKfzV/bnWpz+zquYrISsvw==}
+
+  '@openrouter/sdk@1.5.127':
+    resolution: {integrity: sha512-Xnix4qhB0GyGdWSzCsYz2mzbd8eqhKm8OBNhqttBHMqB724Io+OR3VCaRA9pwCs8sclBo2hnG3I/GHosVo1dYg==}
 
   '@opentelemetry/api@1.10.0':
     resolution: {integrity: sha512-lMkyes8iHrG+mk6WH7X70MdCLI2RS0FwNBY1PyQ8UemaijE2m5mv5A0Niy3HtbYTFrgkUEQjFMXmSAk2hQDuPQ==}
@@ -9077,6 +9083,10 @@ snapshots:
 
   '@one-ini/wasm@0.1.1':
     optional: true
+
+  '@openrouter/sdk@1.5.127':
+    dependencies:
+      zod: 3.25.3
 
   '@opentelemetry/api@1.10.0':
     optional: true
