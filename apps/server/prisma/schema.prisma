@@ -54,7 +54,8 @@ model Organization {
   website       String? // their public website
   phone         String?
   industry      String?
-  plan          PlanType             @default(FREE)
+  planId        String?
+  plan          Plan?                @relation(fields: [planId], references: [id], onDelete: SetNull)
   isActive      Boolean              @default(true)
   visitors      Visitor[]
   members       OrganizationMember[]
@@ -72,6 +73,26 @@ model Organization {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("organizations")
+}
+
+// SaaS subscription catalog managed by platform administrators.
+model Plan {
+  id             String         @id @default(uuid())
+  name           String
+  slug           String         @unique
+  description    String?
+  monthlyPrice   Int            @default(0) // minor currency units
+  annualPrice    Int            @default(0) // minor currency units
+  maxMembers     Int?
+  maxVisitors    Int?
+  isActive       Boolean        @default(true)
+  organizations  Organization[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([isActive])
+  @@map("plans")
 }
 
 // junction table ==> one user => many orgs; one org => many users
@@ -307,13 +328,6 @@ model VisitorPageVisit {
   @@index([visitorId])
   @@index([visitorId, enteredAt(sort: Desc)])
   @@map("visitor_page_visits")
-}
-
-enum PlanType {
-  FREE
-  STARTER
-  PRO
-  ENTERPRISE
 }
 
 enum VisitorStatus {

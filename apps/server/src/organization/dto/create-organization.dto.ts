@@ -1,6 +1,5 @@
-import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { PlanType } from '../../generated/prisma/client';
 
 export class CreateOrganizationDto {
   @ApiProperty({ description: 'Organization name', example: 'Acme Corp' })
@@ -23,8 +22,8 @@ export class CreateOrganizationDto {
   @IsOptional()
   industry?: string;
 
-  @ApiPropertyOptional({ description: 'Organization plan', enum: PlanType, default: PlanType.FREE })
-  @IsEnum(PlanType)
+  @ApiPropertyOptional({ description: 'Subscription plan ID' })
   @IsOptional()
-  plan?: PlanType;
+  @IsUUID()
+  planId?: string;
 }
