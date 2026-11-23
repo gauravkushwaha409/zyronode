@@ -7,6 +7,11 @@ export const ADMIN_ENDPOINTS = {
 	ORGANIZATIONS: {
 		LIST: "/admin/organizations",
 	},
+	PLANS: {
+		LIST: "/admin/plans",
+		CREATE: "/admin/plans",
+		UPDATE: (planId: string) => `/admin/plans/${planId}`,
+	},
 	USERS: {
 		LIST: "/admin/users",
 	},
@@ -31,6 +36,9 @@ export const ADMIN_QUERY_KEY = {
 	},
 	ORGANIZATIONS: {
 		LIST: ["admin", "organizations", "list"] as const,
+	},
+	PLANS: {
+		LIST: ["admin", "plans", "list"] as const,
 	},
 	USERS: {
 		LIST: ["admin", "users", "list"] as const,

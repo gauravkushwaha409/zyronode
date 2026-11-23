@@ -28,5 +28,10 @@ export const ADMIN_SIDEBAR_DATA: SidebarItems = {
 			icon: "all-roles",
 			path: ADMIN_ROUTES.ROLES_AND_PERMISSIONS,
 		},
+		{
+			label: "Billing & Plans",
+			icon: "plan",
+			path: ADMIN_ROUTES.BILLING,
+		},
 	],
 };

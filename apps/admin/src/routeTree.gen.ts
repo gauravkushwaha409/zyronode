@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ShellRouteImport } from './routes/_shell'
 import { Route as ShellDashboardRouteImport } from './routes/_shell/dashboard'
+import { Route as ShellBillingRouteImport } from './routes/_shell/billing'
 import { Route as ShellOrganizationsRouteImport } from './routes/_shell/organizations'
 import { Route as ShellRolesAndPermissionsRouteImport } from './routes/_shell/roles-and-permissions'
 import { Route as ShellSettingsRouteImport } from './routes/_shell/settings'
@@ -30,6 +31,11 @@ const ShellRoute = ShellRouteImport.update({
 const ShellDashboardRoute = ShellDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => ShellRoute,
+} as any)
+const ShellBillingRoute = ShellBillingRouteImport.update({
+  id: '/billing',
+  path: '/billing',
   getParentRoute: () => ShellRoute,
 } as any)
 const ShellOrganizationsRoute = ShellOrganizationsRouteImport.update({
@@ -61,6 +67,7 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/billing': typeof ShellBillingRoute
   '/dashboard': typeof ShellDashboardRoute
   '/organizations': typeof ShellOrganizationsRoute
   '/roles-and-permissions': typeof ShellRolesAndPermissionsRoute
@@ -70,6 +77,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/billing': typeof ShellBillingRoute
   '/dashboard': typeof ShellDashboardRoute
   '/organizations': typeof ShellOrganizationsRoute
   '/roles-and-permissions': typeof ShellRolesAndPermissionsRoute
@@ -81,6 +89,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_shell': typeof ShellRouteWithChildren
+  '/_shell/billing': typeof ShellBillingRoute
   '/_shell/dashboard': typeof ShellDashboardRoute
   '/_shell/organizations': typeof ShellOrganizationsRoute
   '/_shell/roles-and-permissions': typeof ShellRolesAndPermissionsRoute
@@ -92,6 +101,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/billing'
     | '/dashboard'
     | '/organizations'
     | '/roles-and-permissions'
@@ -101,6 +111,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/billing'
     | '/dashboard'
     | '/organizations'
     | '/roles-and-permissions'
@@ -111,6 +122,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_shell'
+    | '/_shell/billing'
     | '/_shell/dashboard'
     | '/_shell/organizations'
     | '/_shell/roles-and-permissions'
@@ -140,6 +152,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof ShellRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_shell/billing': {
+      id: '/_shell/billing'
+      path: '/billing'
+      fullPath: '/billing'
+      preLoaderRoute: typeof ShellBillingRouteImport
+      parentRoute: typeof ShellRoute
     }
     '/_shell/dashboard': {
       id: '/_shell/dashboard'
@@ -187,6 +206,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface ShellRouteChildren {
+  ShellBillingRoute: typeof ShellBillingRoute
   ShellDashboardRoute: typeof ShellDashboardRoute
   ShellOrganizationsRoute: typeof ShellOrganizationsRoute
   ShellRolesAndPermissionsRoute: typeof ShellRolesAndPermissionsRoute
@@ -195,6 +215,7 @@ interface ShellRouteChildren {
 }
 
 const ShellRouteChildren: ShellRouteChildren = {
+  ShellBillingRoute: ShellBillingRoute,
   ShellDashboardRoute: ShellDashboardRoute,
   ShellOrganizationsRoute: ShellOrganizationsRoute,
   ShellRolesAndPermissionsRoute: ShellRolesAndPermissionsRoute,
