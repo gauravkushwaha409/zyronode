@@ -26,6 +26,8 @@ import { AdminService } from "./admin.service";
 import { ListAdminQueryDto } from "./dto/list-admin-query.dto";
 import { ListRolesQueryDto } from "./dto/list-roles-query.dto";
 import { UpdatePlatformRoleDto } from "./dto/update-platform-role.dto";
+import { CreatePlanDto } from "./dto/create-plan.dto";
+import { UpdatePlanDto } from "./dto/update-plan.dto";
 
 @ApiTags("Admin")
 @ApiBearerAuth()
@@ -46,6 +48,28 @@ export class AdminController {
 	@ApiResponse({ status: 200, description: "Users returned" })
 	listUsers(@Query() query: ListAdminQueryDto) {
 		return this.adminService.listUsers(query);
+	}
+
+	@Get("plans")
+	@ApiOperation({ summary: "List SaaS subscription plans" })
+	listPlans() {
+		return this.adminService.listPlans();
+	}
+
+	@Post("plans")
+	@ApiOperation({ summary: "Create a SaaS subscription plan" })
+	createPlan(@Body() dto: CreatePlanDto, @CurrentUser("id") callerId: string) {
+		return this.adminService.createPlan(dto, callerId);
+	}
+
+	@Patch("plans/:planId")
+	@ApiOperation({ summary: "Update a SaaS subscription plan" })
+	updatePlan(
+		@Param("planId") planId: string,
+		@Body() dto: UpdatePlanDto,
+		@CurrentUser("id") callerId: string,
+	) {
+		return this.adminService.updatePlan(planId, dto, callerId);
 	}
 
 	@Get("roles")

@@ -9,6 +9,8 @@ import { CreateRoleDto } from "../role/dto/create-role.dto";
 import { UpdateRoleDto } from "../role/dto/update-role.dto";
 import { ListAdminQueryDto } from "./dto/list-admin-query.dto";
 import { ListRolesQueryDto } from "./dto/list-roles-query.dto";
+import { CreatePlanDto } from "./dto/create-plan.dto";
+import { UpdatePlanDto } from "./dto/update-plan.dto";
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 20;
@@ -388,6 +390,27 @@ export class AdminService {
 			message: "Platform staff fetched successfully",
 			data: { items: users },
 		};
+	}
+
+	async listPlans() {
+		return {
+			message: "Plans fetched successfully",
+			data: { items: await this.prisma.plan.findMany({ orderBy: { monthlyPrice: "asc" } }) },
+		};
+	}
+
+	async createPlan(dto: CreatePlanDto, callerId: string) {
+		await this.assertSuperadmin(callerId);
+		const plan = await this.prisma.plan.create({ data: dto });
+		return { message: "Plan created successfully", data: plan };
+	}
+
+	async updatePlan(planId: string, dto: UpdatePlanDto, callerId: string) {
+		await this.assertSuperadmin(callerId);
+		const existing = await this.prisma.plan.findUnique({ where: { id: planId } });
+		if (!existing) throw new NotFoundException("Plan not found");
+		const plan = await this.prisma.plan.update({ where: { id: planId }, data: dto });
+		return { message: "Plan updated successfully", data: plan };
 	}
 
 	async updateUserPlatformRole(
